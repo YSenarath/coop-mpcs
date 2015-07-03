@@ -8,7 +8,6 @@ package ui.view.pos;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import javax.swing.JComboBox;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -30,10 +29,7 @@ public class POSInterface extends javax.swing.JFrame {
 
     private void initializeGUI() {
         setLocationRelativeTo(null);
-        URL iconURL = getClass().getResource("/images/pos/pos_icon.png");
-        ImageIcon icon = new ImageIcon(iconURL);
-
-        setIconImage(icon.getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/images/pos/pos_icon.png")).getImage());
         ActionListener timerListener = (ActionEvent e) -> {
             Date currentDate = new Date();
             lblDate.setText(new SimpleDateFormat("EEE, d MMM yyyy").format(currentDate));
