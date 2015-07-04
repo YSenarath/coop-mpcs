@@ -82,9 +82,9 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="sidePanel" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btnCachierLog" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnCachierLog" min="-2" pref="30" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btnManagerLog" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnManagerLog" min="-2" pref="30" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                   </Group>
                   <Component id="interfaceContainerPanel" max="32767" attributes="0"/>
@@ -592,7 +592,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="lblLogo" pref="684" max="32767" attributes="0"/>
+                                  <Component id="lblLogo" pref="693" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="lblWelcome" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -649,7 +649,7 @@
                                           <Group type="102" attributes="0">
                                               <Component id="lblBill" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="txtBillNumber" min="-2" pref="101" max="-2" attributes="0"/>
+                                              <Component id="txtBillNumber" min="-2" pref="165" max="-2" attributes="0"/>
                                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
@@ -662,7 +662,7 @@
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="btnReset" min="-2" pref="125" max="-2" attributes="0"/>
                                               <EmptySpace max="32767" attributes="0"/>
-                                              <Component id="btnPayment" min="-2" pref="125" max="-2" attributes="0"/>
+                                              <Component id="btnPayment" min="-2" pref="130" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -683,7 +683,7 @@
                                           <Component id="billButtonPanel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="itemTableSP" pref="443" max="32767" attributes="0"/>
+                                      <Component id="itemTableSP" pref="450" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="billSummeryPanel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -713,7 +713,7 @@
                                       </Border>
                                     </Property>
                                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                                      <Table columnCount="6" rowCount="10">
+                                      <Table columnCount="6" rowCount="0">
                                         <Column editable="false" title="Code" type="java.lang.String"/>
                                         <Column editable="false" title="Description" type="java.lang.String"/>
                                         <Column editable="false" title="Qty" type="java.lang.Double"/>
@@ -905,13 +905,13 @@
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="lblCode" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="btnLoad" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="btnLoad" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                               <Component id="itemCodeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="lblProduct" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="btnSearch" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="btnSearch" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                               <Component id="itemProductComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -1126,7 +1126,7 @@
                             <Component class="javax.swing.JLabel" name="lblBill">
                               <Properties>
                                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Tahoma" size="14" style="0"/>
+                                  <Font name="Tahoma" size="14" style="1"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" value="Bill Number : "/>
                               </Properties>
@@ -1134,10 +1134,11 @@
                             <Component class="javax.swing.JTextField" name="txtBillNumber">
                               <Properties>
                                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Tahoma" size="14" style="0"/>
+                                  <Font name="Tahoma" size="14" style="1"/>
                                 </Property>
                                 <Property name="horizontalAlignment" type="int" value="4"/>
                                 <Property name="text" type="java.lang.String" value="&lt;Bill No&gt;"/>
+                                <Property name="enabled" type="boolean" value="false"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JButton" name="btnReset">
@@ -1201,7 +1202,7 @@
                                           <Component id="btnAddPayment" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                           <Component id="btnRemove" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace pref="91" max="32767" attributes="0"/>
+                                      <EmptySpace pref="100" max="32767" attributes="0"/>
                                       <Component id="paymentInfoPanel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
@@ -1255,7 +1256,7 @@
                                     <Component class="javax.swing.JTable" name="paymentsTable">
                                       <Properties>
                                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                                          <Table columnCount="2" rowCount="4">
+                                          <Table columnCount="2" rowCount="0">
                                             <Column editable="false" title="Option" type="java.lang.Object"/>
                                             <Column editable="false" title="Amount" type="java.lang.Double"/>
                                           </Table>
@@ -2283,7 +2284,7 @@
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="billItemSP1" alignment="0" pref="475" max="32767" attributes="0"/>
+                                  <Component id="billItemSP1" alignment="0" pref="484" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                           </Layout>
@@ -2298,7 +2299,7 @@
                                 <Component class="javax.swing.JTable" name="billRefunditemTable">
                                   <Properties>
                                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                                      <Table columnCount="7" rowCount="10">
+                                      <Table columnCount="8" rowCount="0">
                                         <Column editable="false" title="Code" type="java.lang.String"/>
                                         <Column editable="false" title="Description" type="java.lang.String"/>
                                         <Column editable="false" title="Price" type="java.lang.Double"/>
@@ -2306,6 +2307,7 @@
                                         <Column editable="false" title="Value" type="java.lang.Double"/>
                                         <Column editable="false" title="Disc" type="java.lang.Double"/>
                                         <Column editable="false" title="Sub total" type="java.lang.Double"/>
+                                        <Column editable="true" title="Refund" type="java.lang.Boolean"/>
                                       </Table>
                                     </Property>
                                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -2331,6 +2333,21 @@
                                           <Renderer/>
                                         </Column>
                                         <Column maxWidth="-1" minWidth="-1" prefWidth="100" resizable="true">
+                                          <Title/>
+                                          <Editor/>
+                                          <Renderer/>
+                                        </Column>
+                                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                                          <Title/>
+                                          <Editor/>
+                                          <Renderer/>
+                                        </Column>
+                                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                                          <Title/>
+                                          <Editor/>
+                                          <Renderer/>
+                                        </Column>
+                                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                                           <Title/>
                                           <Editor/>
                                           <Renderer/>
@@ -2612,7 +2629,7 @@
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="billItemSP" alignment="0" pref="475" max="32767" attributes="0"/>
+                                  <Component id="billItemSP" alignment="0" pref="484" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                           </Layout>
@@ -2627,7 +2644,7 @@
                                 <Component class="javax.swing.JTable" name="printItemTable">
                                   <Properties>
                                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                                      <Table columnCount="5" rowCount="10">
+                                      <Table columnCount="5" rowCount="0">
                                         <Column editable="false" title="Code" type="java.lang.String"/>
                                         <Column editable="false" title="Description" type="java.lang.String"/>
                                         <Column editable="false" title="Price" type="java.lang.Double"/>

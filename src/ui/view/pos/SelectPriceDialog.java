@@ -33,13 +33,9 @@ public class SelectPriceDialog extends javax.swing.JDialog {
         containerPanel = new javax.swing.JPanel();
         lblItemCodeVal = new javax.swing.JLabel();
         lblItemCode = new javax.swing.JLabel();
-        lblDescription = new javax.swing.JLabel();
-        lblItemDescriptionVal = new javax.swing.JLabel();
         itemPriceContainerPanel = new javax.swing.JPanel();
         itemPriceSP = new javax.swing.JScrollPane();
         itemPriceTable = new javax.swing.JTable();
-        btnSelect = new javax.swing.JButton();
-        btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Select Price");
@@ -58,13 +54,6 @@ public class SelectPriceDialog extends javax.swing.JDialog {
         lblItemCode.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblItemCode.setText("Code");
 
-        lblDescription.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        lblDescription.setText("Description");
-
-        lblItemDescriptionVal.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        lblItemDescriptionVal.setText("<Description>");
-        lblItemDescriptionVal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
         itemPriceTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
@@ -82,30 +71,12 @@ public class SelectPriceDialog extends javax.swing.JDialog {
         itemPriceContainerPanel.setLayout(itemPriceContainerPanelLayout);
         itemPriceContainerPanelLayout.setHorizontalGroup(
             itemPriceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(itemPriceContainerPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(itemPriceSP, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(itemPriceSP, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         itemPriceContainerPanelLayout.setVerticalGroup(
             itemPriceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(itemPriceContainerPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(itemPriceSP, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(itemPriceSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
         );
-
-        btnSelect.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btnSelect.setText("Select");
-
-        btnCancel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btnCancel.setMnemonic('E');
-        btnCancel.setText("Cancel");
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout containerPanelLayout = new javax.swing.GroupLayout(containerPanel);
         containerPanel.setLayout(containerPanelLayout);
@@ -116,19 +87,10 @@ public class SelectPriceDialog extends javax.swing.JDialog {
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(itemPriceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(containerPanelLayout.createSequentialGroup()
-                        .addComponent(lblDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblItemDescriptionVal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(containerPanelLayout.createSequentialGroup()
                         .addComponent(lblItemCode, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblItemCodeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 157, Short.MAX_VALUE))
-                    .addGroup(containerPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 73, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         containerPanelLayout.setVerticalGroup(
@@ -139,15 +101,7 @@ public class SelectPriceDialog extends javax.swing.JDialog {
                     .addComponent(lblItemCode, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblItemCodeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblItemDescriptionVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(itemPriceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -165,21 +119,12 @@ public class SelectPriceDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnSelect;
     private javax.swing.JPanel containerPanel;
     private javax.swing.JPanel itemPriceContainerPanel;
     private javax.swing.JScrollPane itemPriceSP;
     private javax.swing.JTable itemPriceTable;
-    private javax.swing.JLabel lblDescription;
     private javax.swing.JLabel lblItemCode;
     private javax.swing.JLabel lblItemCodeVal;
-    private javax.swing.JLabel lblItemDescriptionVal;
     // End of variables declaration//GEN-END:variables
 }

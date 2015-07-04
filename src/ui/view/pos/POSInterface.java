@@ -13,6 +13,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
 
@@ -38,6 +39,79 @@ public class POSInterface extends javax.swing.JFrame {
         Timer timer = new Timer(1000, timerListener);
         timer.setInitialDelay(0);
         timer.start();
+    }
+
+    private static void setupUI() {
+
+        //try {
+        //    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        //} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        //}
+        Properties props = new Properties();
+
+        //RGB colours
+        String buttonClolor = "200 200 200";
+        String controlClolor = "200 200 200";
+
+        String menuColor = "222 222 222";
+        String menuBackgroundColor = "224 224 224";
+
+        String selectionBackgroundColor = "240 240 240";
+        String selectionForegroundColor = "67 148 103";
+
+        String rollOverClolor = "114 114 114";
+
+        String frameColor = "171 171 171";
+        String windowTitleColor = "10 10 10";
+
+        //Customize Theme
+        props.put("logoString", "");
+
+        props.put("linuxStyleScrollBar", "on");
+        props.put("centerWindowTitle", "on");
+        props.put("textAntiAliasing", "on");
+        props.put("textAntiAliasingMode", "default");
+        props.put("toolbarDecorated", "off");
+        props.put("windowDecoration", "on");
+        props.put("dynamicLayout", "on");
+        props.put("darkTexture", "off");
+
+        props.put("buttonColor", buttonClolor);//button colours
+        props.put("buttonColorLight", buttonClolor);
+        props.put("buttonColorDark", buttonClolor);
+
+        props.put("controlColor", controlClolor);//Control colours
+        props.put("controlColorLight", controlClolor);
+        props.put("controlColorDark", controlClolor);
+
+        props.put("menuColorLight", menuColor);//menu colours
+        props.put("menuColorDark", menuColor);
+        props.put("menuBackgroundColor", menuBackgroundColor);
+
+        props.put("selectionBackgroundColor", selectionBackgroundColor);//hilighted text
+        props.put("selectionForegroundColor", selectionForegroundColor);
+
+        props.put("rolloverColor", rollOverClolor); //on hovering
+        props.put("rolloverColorLight", rollOverClolor);
+        props.put("rolloverColorDark", rollOverClolor);
+
+        props.put("frameColor", frameColor);
+        props.put("windowTitleColorLight", windowTitleColor);//Windows boarder colours
+        props.put("windowTitleColorDark", windowTitleColor);
+        props.put("disabledForegroundColor", windowTitleColor);
+
+        try {
+            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
+            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ey) {
+                System.exit(3);
+            }
+            System.exit(3);
+        }
     }
 
     /**
@@ -422,7 +496,7 @@ public class POSInterface extends javax.swing.JFrame {
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 684, Short.MAX_VALUE)
+                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblWelcome)
                 .addContainerGap())
@@ -435,16 +509,7 @@ public class POSInterface extends javax.swing.JFrame {
         billItemTable.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         billItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
                 "Code", "Description", "Qty", "Price", "Discount", "Sub total"
@@ -601,12 +666,12 @@ public class POSInterface extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCode, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLoad)
+                    .addComponent(btnLoad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSearch)
+                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(itemProductComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -677,12 +742,13 @@ public class POSInterface extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        lblBill.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblBill.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblBill.setText("Bill Number : ");
 
-        txtBillNumber.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtBillNumber.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         txtBillNumber.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtBillNumber.setText("<Bill No>");
+        txtBillNumber.setEnabled(false);
 
         btnReset.setText("Reset");
 
@@ -698,7 +764,7 @@ public class POSInterface extends javax.swing.JFrame {
                     .addGroup(itemAddPanelLayout.createSequentialGroup()
                         .addComponent(lblBill)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(itemAddPanelLayout.createSequentialGroup()
                         .addComponent(productPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -709,7 +775,7 @@ public class POSInterface extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         itemAddPanelLayout.setVerticalGroup(
@@ -724,7 +790,7 @@ public class POSInterface extends javax.swing.JFrame {
                     .addComponent(productPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(billButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
+                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(billSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -749,10 +815,7 @@ public class POSInterface extends javax.swing.JFrame {
 
         paymentsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+
             },
             new String [] {
                 "Option", "Amount"
@@ -1104,7 +1167,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
                 .addComponent(paymentInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1338,26 +1401,17 @@ public class POSInterface extends javax.swing.JFrame {
 
         billRefunditemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+
             },
             new String [] {
-                "Code", "Description", "Price", "Qty", "Value", "Disc", "Sub total"
+                "Code", "Description", "Price", "Qty", "Value", "Disc", "Sub total", "Refund"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
+                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -1387,7 +1441,7 @@ public class POSInterface extends javax.swing.JFrame {
         );
         billRefundItemPanelLayout.setVerticalGroup(
             billRefundItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP1, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
+            .addComponent(billItemSP1, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
         );
 
         lblBill3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -1532,16 +1586,7 @@ public class POSInterface extends javax.swing.JFrame {
 
         printItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
                 "Code", "Description", "Price", "Qty", "Sub total"
@@ -1581,7 +1626,7 @@ public class POSInterface extends javax.swing.JFrame {
         );
         billItemPanelLayout.setVerticalGroup(
             billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
+            .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
         );
 
         billPaymentSummeryPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -1823,9 +1868,9 @@ public class POSInterface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sidePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCachierLog, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCachierLog, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnManagerLog, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnManagerLog, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(6, 6, 6))
             .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -1984,21 +2029,9 @@ public class POSInterface extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            // Set System L&F
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-        }
-        //</editor-fold>
 
-        //</editor-fold>
+        setupUI();
 
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new POSInterface().setVisible(true);
         });
