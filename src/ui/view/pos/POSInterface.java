@@ -22,25 +22,37 @@ import javax.swing.Timer;
  * @author Shehan
  */
 public class POSInterface extends javax.swing.JFrame {
-
+    
     public POSInterface() {
         initComponents();
         initializeGUI();
     }
-
+    
     private void initializeGUI() {
         setLocationRelativeTo(null);
         setIconImage(new ImageIcon(getClass().getResource("/images/pos/pos_icon.png")).getImage());
         ActionListener timerListener = (ActionEvent e) -> {
             Date currentDate = new Date();
-            lblDate.setText(new SimpleDateFormat("EEE, d MMM yyyy").format(currentDate));
-            lblTime.setText(new SimpleDateFormat("h:mm a").format(currentDate));
+            
+            String strDate = new SimpleDateFormat("EEE, d MMM yyyy").format(currentDate);
+            String strTime = new SimpleDateFormat("h:mm a").format(currentDate);
+            
+            lblDate.setText(strDate);
+            lblBillDateVal.setText(strDate);
+            
+            lblTime.setText(strTime);
+            lblBillTimeVal.setText(strTime);
         };
         Timer timer = new Timer(1000, timerListener);
         timer.setInitialDelay(0);
         timer.start();
+        
+        billTaskPane.setCollapsed(true);
+        otherTaskPane.setCollapsed(true);
+        settingsTaskPane.setCollapsed(true);
+        
     }
-
+    
     private static void setupUI() {
 
         //try {
@@ -52,21 +64,21 @@ public class POSInterface extends javax.swing.JFrame {
         //RGB colours
         String buttonClolor = "200 200 200";
         String controlClolor = "200 200 200";
-
+        
         String menuColor = "222 222 222";
         String menuBackgroundColor = "224 224 224";
-
+        
         String selectionBackgroundColor = "240 240 240";
         String selectionForegroundColor = "67 148 103";
-
+        
         String rollOverClolor = "114 114 114";
-
+        
         String frameColor = "171 171 171";
         String windowTitleColor = "10 10 10";
 
         //Customize Theme
         props.put("logoString", "");
-
+        
         props.put("linuxStyleScrollBar", "on");
         props.put("centerWindowTitle", "on");
         props.put("textAntiAliasing", "on");
@@ -75,35 +87,35 @@ public class POSInterface extends javax.swing.JFrame {
         props.put("windowDecoration", "on");
         props.put("dynamicLayout", "on");
         props.put("darkTexture", "off");
-
+        
         props.put("buttonColor", buttonClolor);//button colours
         props.put("buttonColorLight", buttonClolor);
         props.put("buttonColorDark", buttonClolor);
-
+        
         props.put("controlColor", controlClolor);//Control colours
         props.put("controlColorLight", controlClolor);
         props.put("controlColorDark", controlClolor);
-
+        
         props.put("menuColorLight", menuColor);//menu colours
         props.put("menuColorDark", menuColor);
         props.put("menuBackgroundColor", menuBackgroundColor);
-
+        
         props.put("selectionBackgroundColor", selectionBackgroundColor);//hilighted text
         props.put("selectionForegroundColor", selectionForegroundColor);
-
+        
         props.put("rolloverColor", rollOverClolor); //on hovering
         props.put("rolloverColorLight", rollOverClolor);
         props.put("rolloverColorDark", rollOverClolor);
-
+        
         props.put("frameColor", frameColor);
         props.put("windowTitleColorLight", windowTitleColor);//Windows boarder colours
         props.put("windowTitleColorDark", windowTitleColor);
         props.put("disabledForegroundColor", windowTitleColor);
-
+        
         try {
             com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
             UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
-
+            
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -143,6 +155,8 @@ public class POSInterface extends javax.swing.JFrame {
         btnBillRefund = new javax.swing.JButton();
         btnBillCopy = new javax.swing.JButton();
         btnCashWithdrawal = new javax.swing.JButton();
+        settingsTaskPane = new org.jdesktop.swingx.JXTaskPane();
+        btnCheckStock1 = new javax.swing.JButton();
         interfaceContainerPanel = new javax.swing.JPanel();
         cardPanel = new javax.swing.JPanel();
         welcomePanel = new javax.swing.JPanel();
@@ -162,11 +176,12 @@ public class POSInterface extends javax.swing.JFrame {
         lblCode = new javax.swing.JLabel();
         lblProduct = new javax.swing.JLabel();
         lblQty = new javax.swing.JLabel();
-        txtQty = new javax.swing.JTextField();
         btnLoad = new javax.swing.JButton();
         btnSearch = new javax.swing.JButton();
         itemCodeComboBox = new javax.swing.JComboBox();
         itemProductComboBox = new javax.swing.JComboBox();
+        lblUnit = new javax.swing.JLabel();
+        txtQty = new javax.swing.JFormattedTextField();
         billSummeryPanel = new javax.swing.JPanel();
         lblItemNoDisplay = new javax.swing.JLabel();
         lblItems = new javax.swing.JLabel();
@@ -189,24 +204,24 @@ public class POSInterface extends javax.swing.JFrame {
         lblTotalVal = new javax.swing.JLabel();
         lblBillValueDisplay1 = new javax.swing.JLabel();
         lblBillValueDisplay2 = new javax.swing.JLabel();
-        txtDiscountPercent = new javax.swing.JTextField();
-        txtDiscountVal = new javax.swing.JTextField();
         lblChangeDisplay = new javax.swing.JLabel();
         lblChangeVal = new javax.swing.JLabel();
+        txtDiscountPercent = new javax.swing.JFormattedTextField();
+        txtDiscountVal = new javax.swing.JFormattedTextField();
         paymentSelectorPanel = new javax.swing.JPanel();
         lblPaymentOption = new javax.swing.JLabel();
         paymentOptionComboBox = new javax.swing.JComboBox();
         paymentDetailsPanel = new javax.swing.JPanel();
         cashPaymentPanel = new javax.swing.JPanel();
         lblCashPaymentAmountDisplay = new javax.swing.JLabel();
-        txtCashPaymentAmount = new javax.swing.JTextField();
+        txtCashPaymentAmount = new javax.swing.JFormattedTextField();
         cardPaymentPanel = new javax.swing.JPanel();
         lblCashPaymentAmountDisplay1 = new javax.swing.JLabel();
-        txtCardPaymentAmount = new javax.swing.JTextField();
         lblCardType = new javax.swing.JLabel();
         cardTypeComboBox = new javax.swing.JComboBox();
         lblCardNo = new javax.swing.JLabel();
-        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        cardpaymentCardNo = new javax.swing.JFormattedTextField();
+        txtCardPaymentAmount = new javax.swing.JFormattedTextField();
         creditpaymentPanel = new javax.swing.JPanel();
         stampPayment = new javax.swing.JPanel();
         specialPayment = new javax.swing.JPanel();
@@ -420,7 +435,7 @@ public class POSInterface extends javax.swing.JFrame {
 
         jXTaskPaneContainer1.add(billTaskPane);
 
-        otherTaskPane.setCollapsed(true);
+        otherTaskPane.setSpecial(true);
         otherTaskPane.setTitle("Other");
 
         btnBillRefund.setText("Refund");
@@ -451,6 +466,28 @@ public class POSInterface extends javax.swing.JFrame {
         otherTaskPane.getContentPane().add(btnCashWithdrawal);
 
         jXTaskPaneContainer1.add(otherTaskPane);
+
+        settingsTaskPane.setBackground(new java.awt.Color(102, 102, 102));
+        settingsTaskPane.setForeground(new java.awt.Color(153, 153, 153));
+        settingsTaskPane.setSpecial(true);
+        settingsTaskPane.setTitle("Settings");
+        settingsTaskPane.setToolTipText("");
+        settingsTaskPane.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                settingsTaskPaneMouseClicked(evt);
+            }
+        });
+
+        btnCheckStock1.setText("Configure");
+        btnCheckStock1.setPreferredSize(new java.awt.Dimension(73, 30));
+        btnCheckStock1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCheckStock1ActionPerformed(evt);
+            }
+        });
+        settingsTaskPane.getContentPane().add(btnCheckStock1);
+
+        jXTaskPaneContainer1.add(settingsTaskPane);
 
         javax.swing.GroupLayout sidePanelLayout = new javax.swing.GroupLayout(sidePanel);
         sidePanel.setLayout(sidePanelLayout);
@@ -614,8 +651,6 @@ public class POSInterface extends javax.swing.JFrame {
         lblQty.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblQty.setText("Qty.");
 
-        txtQty.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
         btnLoad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnLoad.setText("Load [ F3 ]");
 
@@ -635,6 +670,14 @@ public class POSInterface extends javax.swing.JFrame {
         itemProductComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         itemProductComboBox.setMaximumRowCount(5);
 
+        lblUnit.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblUnit.setText("<Unit>");
+
+        txtQty.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat(""))));
+        txtQty.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtQty.setToolTipText("");
+        txtQty.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout productPanelLayout = new javax.swing.GroupLayout(productPanel);
         productPanel.setLayout(productPanelLayout);
         productPanelLayout.setHorizontalGroup(
@@ -653,7 +696,9 @@ public class POSInterface extends javax.swing.JFrame {
                     .addGroup(productPanelLayout.createSequentialGroup()
                         .addComponent(lblQty, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnLoad, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
@@ -676,7 +721,8 @@ public class POSInterface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblQty, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -818,14 +864,14 @@ public class POSInterface extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Option", "Amount"
+                "Payment ID", "Option", "Amount"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Double.class
+                java.lang.String.class, java.lang.String.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -843,7 +889,7 @@ public class POSInterface extends javax.swing.JFrame {
         paymentOptionsPanel.setLayout(paymentOptionsPanelLayout);
         paymentOptionsPanelLayout.setHorizontalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(paymentOptionsSP)
+            .addComponent(paymentOptionsSP, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
         );
         paymentOptionsPanelLayout.setVerticalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -877,14 +923,6 @@ public class POSInterface extends javax.swing.JFrame {
         lblBillValueDisplay2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblBillValueDisplay2.setText("Discount value");
 
-        txtDiscountPercent.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        txtDiscountPercent.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        txtDiscountPercent.setText("0.00");
-
-        txtDiscountVal.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        txtDiscountVal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        txtDiscountVal.setText("0.00");
-
         lblChangeDisplay.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblChangeDisplay.setForeground(new java.awt.Color(204, 0, 51));
         lblChangeDisplay.setText("Change cash");
@@ -894,6 +932,14 @@ public class POSInterface extends javax.swing.JFrame {
         lblChangeVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblChangeVal.setText("0.00");
         lblChangeVal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        txtDiscountPercent.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat(""))));
+        txtDiscountPercent.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtDiscountPercent.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        txtDiscountVal.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat(""))));
+        txtDiscountVal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtDiscountVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout paymentInfoPanelLayout = new javax.swing.GroupLayout(paymentInfoPanel);
         paymentInfoPanel.setLayout(paymentInfoPanelLayout);
@@ -907,9 +953,9 @@ public class POSInterface extends javax.swing.JFrame {
                     .addComponent(lblBillValueDisplay2))
                 .addGap(18, 18, 18)
                 .addGroup(paymentInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtDiscountVal, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
                     .addComponent(lblBillValueVal, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                    .addComponent(txtDiscountPercent))
+                    .addComponent(txtDiscountPercent)
+                    .addComponent(txtDiscountVal))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 237, Short.MAX_VALUE)
                 .addComponent(lblChangeDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -930,7 +976,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(paymentInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblBillValueDisplay1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtDiscountPercent, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDiscountPercent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(paymentInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(paymentInfoPanelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
@@ -946,7 +992,7 @@ public class POSInterface extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(paymentInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblBillValueDisplay2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtDiscountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtDiscountVal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
@@ -993,10 +1039,12 @@ public class POSInterface extends javax.swing.JFrame {
         paymentDetailsPanel.setBorder(dropShadowBorder8);
         paymentDetailsPanel.setLayout(new java.awt.CardLayout());
 
-        lblCashPaymentAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblCashPaymentAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCashPaymentAmountDisplay.setText("Amount  (Rs.)");
 
-        txtCashPaymentAmount.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtCashPaymentAmount.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.00"))));
+        txtCashPaymentAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtCashPaymentAmount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout cashPaymentPanelLayout = new javax.swing.GroupLayout(cashPaymentPanel);
         cashPaymentPanel.setLayout(cashPaymentPanelLayout);
@@ -1004,40 +1052,42 @@ public class POSInterface extends javax.swing.JFrame {
             cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cashPaymentPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(121, Short.MAX_VALUE))
+                .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(254, Short.MAX_VALUE))
         );
         cashPaymentPanelLayout.setVerticalGroup(
             cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cashPaymentPanelLayout.createSequentialGroup()
-                .addGap(34, 34, 34)
+                .addContainerGap()
                 .addGroup(cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCashPaymentAmountDisplay)
+                    .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(270, Short.MAX_VALUE))
+                .addContainerGap(298, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cashPaymentPanel, "cashCard");
 
-        lblCashPaymentAmountDisplay1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblCashPaymentAmountDisplay1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCashPaymentAmountDisplay1.setText("Amount  (Rs.)");
 
-        txtCardPaymentAmount.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-
-        lblCardType.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblCardType.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCardType.setText("Card Type");
 
         cardTypeComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         cardTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-- Select --", "AMEX", "MASTER", "VISA" }));
 
-        lblCardNo.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblCardNo.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCardNo.setText("Card No ");
 
-        jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("####"))));
-        jFormattedTextField1.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jFormattedTextField1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        cardpaymentCardNo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("####"))));
+        cardpaymentCardNo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        cardpaymentCardNo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        txtCardPaymentAmount.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.00"))));
+        txtCardPaymentAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtCardPaymentAmount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout cardPaymentPanelLayout = new javax.swing.GroupLayout(cardPaymentPanel);
         cardPaymentPanel.setLayout(cardPaymentPanelLayout);
@@ -1046,27 +1096,26 @@ public class POSInterface extends javax.swing.JFrame {
             .addGroup(cardPaymentPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(cardPaymentPanelLayout.createSequentialGroup()
+                    .addGroup(cardPaymentPanelLayout.createSequentialGroup()
+                        .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblCashPaymentAmountDisplay1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtCardPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(cardPaymentPanelLayout.createSequentialGroup()
-                            .addComponent(lblCardType, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cardTypeComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(lblCardType, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cardTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtCardPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(cardPaymentPanelLayout.createSequentialGroup()
                         .addComponent(lblCardNo, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(121, Short.MAX_VALUE))
+                        .addComponent(cardpaymentCardNo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(179, Short.MAX_VALUE))
         );
         cardPaymentPanelLayout.setVerticalGroup(
             cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardPaymentPanelLayout.createSequentialGroup()
-                .addGap(34, 34, 34)
+                .addContainerGap()
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCashPaymentAmountDisplay1)
+                    .addComponent(lblCashPaymentAmountDisplay1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCardPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1075,8 +1124,8 @@ public class POSInterface extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCardNo)
-                    .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(182, Short.MAX_VALUE))
+                    .addComponent(cardpaymentCardNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(216, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cardPaymentPanel, "bankCard");
@@ -1085,7 +1134,7 @@ public class POSInterface extends javax.swing.JFrame {
         creditpaymentPanel.setLayout(creditpaymentPanelLayout);
         creditpaymentPanelLayout.setHorizontalGroup(
             creditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 530, Short.MAX_VALUE)
+            .addGap(0, 588, Short.MAX_VALUE)
         );
         creditpaymentPanelLayout.setVerticalGroup(
             creditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1098,7 +1147,7 @@ public class POSInterface extends javax.swing.JFrame {
         stampPayment.setLayout(stampPaymentLayout);
         stampPaymentLayout.setHorizontalGroup(
             stampPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 530, Short.MAX_VALUE)
+            .addGap(0, 588, Short.MAX_VALUE)
         );
         stampPaymentLayout.setVerticalGroup(
             stampPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1111,7 +1160,7 @@ public class POSInterface extends javax.swing.JFrame {
         specialPayment.setLayout(specialPaymentLayout);
         specialPaymentLayout.setHorizontalGroup(
             specialPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 530, Short.MAX_VALUE)
+            .addGap(0, 588, Short.MAX_VALUE)
         );
         specialPaymentLayout.setVerticalGroup(
             specialPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1167,7 +1216,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
                 .addComponent(paymentInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1397,21 +1446,19 @@ public class POSInterface extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        billRefundItemPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         billRefunditemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Code", "Description", "Price", "Qty", "Value", "Disc", "Sub total", "Refund"
+                "Code", "Description", "Price", "Qty", "Value", "Disc", "Sub total", "Refund Qty", "Refund"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Boolean.class
+                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, true
+                false, false, false, false, false, false, false, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -1441,7 +1488,7 @@ public class POSInterface extends javax.swing.JFrame {
         );
         billRefundItemPanelLayout.setVerticalGroup(
             billRefundItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP1, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
+            .addComponent(billItemSP1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
         );
 
         lblBill3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -1582,8 +1629,6 @@ public class POSInterface extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        billItemPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         printItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1626,7 +1671,7 @@ public class POSInterface extends javax.swing.JFrame {
         );
         billItemPanelLayout.setVerticalGroup(
             billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
+            .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
         );
 
         billPaymentSummeryPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -1841,7 +1886,7 @@ public class POSInterface extends javax.swing.JFrame {
         );
 
         btnCachierLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnCachierLog.setText("Cashier Log Off");
+        btnCachierLog.setText("Cashier Log ");
         btnCachierLog.setPreferredSize(new java.awt.Dimension(71, 35));
 
         btnManagerLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -1942,6 +1987,7 @@ public class POSInterface extends javax.swing.JFrame {
         card.show(cardPanel, "welcomeCard");
         billTaskPane.setCollapsed(true);
         otherTaskPane.setCollapsed(true);
+        settingsTaskPane.setCollapsed(true);
 
     }//GEN-LAST:event_btnInvoiceCancelActionPerformed
 
@@ -1950,14 +1996,14 @@ public class POSInterface extends javax.swing.JFrame {
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "invoiceCard");
         billTaskPane.setCollapsed(false);
-        otherTaskPane.setCollapsed(true);
+        //otherTaskPane.setCollapsed(false);
     }//GEN-LAST:event_billTaskPaneMouseClicked
 
     private void btnBillRefundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBillRefundActionPerformed
         // TODO add your handling code here:
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "refundCard");
-        billTaskPane.setCollapsed(true);
+        //billTaskPane.setCollapsed(true);
 
     }//GEN-LAST:event_btnBillRefundActionPerformed
 
@@ -1965,7 +2011,7 @@ public class POSInterface extends javax.swing.JFrame {
         // TODO add your handling code here:
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "billCopyCard");
-        billTaskPane.setCollapsed(true);
+        //billTaskPane.setCollapsed(true);
     }//GEN-LAST:event_btnBillCopyActionPerformed
 
     private void btnCashWithdrawalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCashWithdrawalActionPerformed
@@ -1979,6 +2025,7 @@ public class POSInterface extends javax.swing.JFrame {
         card.show(cardPanel, "welcomeCard");
         billTaskPane.setCollapsed(true);
         otherTaskPane.setCollapsed(true);
+        settingsTaskPane.setCollapsed(true);
     }//GEN-LAST:event_btnCancelPrintActionPerformed
 
     private void paymentOptionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentOptionComboBoxActionPerformed
@@ -2023,15 +2070,24 @@ public class POSInterface extends javax.swing.JFrame {
         card.show(cardPanel, "welcomeCard");
         billTaskPane.setCollapsed(true);
         otherTaskPane.setCollapsed(true);
+        settingsTaskPane.setCollapsed(true);
     }//GEN-LAST:event_btnRefundCancelActionPerformed
+
+    private void btnCheckStock1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckStock1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCheckStock1ActionPerformed
+
+    private void settingsTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsTaskPaneMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_settingsTaskPaneMouseClicked
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-
+        
         setupUI();
-
+        
         java.awt.EventQueue.invokeLater(() -> {
             new POSInterface().setVisible(true);
         });
@@ -2059,6 +2115,7 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JButton btnCancelPrint;
     private javax.swing.JButton btnCashWithdrawal;
     private javax.swing.JButton btnCheckStock;
+    private javax.swing.JButton btnCheckStock1;
     private javax.swing.JButton btnClearItem;
     private javax.swing.JButton btnConfirm;
     private javax.swing.JButton btnDeleteItem;
@@ -2079,6 +2136,7 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JPanel cardPanel;
     private javax.swing.JPanel cardPaymentPanel;
     private javax.swing.JComboBox cardTypeComboBox;
+    private javax.swing.JFormattedTextField cardpaymentCardNo;
     private javax.swing.JPanel cashPaymentPanel;
     private javax.swing.JPanel counterInfoPanel;
     private javax.swing.JPanel creditpaymentPanel;
@@ -2088,7 +2146,6 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JComboBox itemCodeComboBox;
     private javax.swing.JComboBox itemProductComboBox;
     private javax.swing.JScrollPane itemTableSP;
-    private javax.swing.JFormattedTextField jFormattedTextField1;
     private org.jdesktop.swingx.JXTaskPaneContainer jXTaskPaneContainer1;
     private javax.swing.JLabel lblBill;
     private javax.swing.JLabel lblBill1;
@@ -2169,6 +2226,7 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JLabel lblTimeDisplay;
     private javax.swing.JLabel lblTotalDisplay;
     private javax.swing.JLabel lblTotalVal;
+    private javax.swing.JLabel lblUnit;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JLayeredPane mainLayerPanel;
     private org.jdesktop.swingx.JXTaskPane otherTaskPane;
@@ -2183,17 +2241,18 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JTable printItemTable;
     private javax.swing.JPanel productPanel;
     private javax.swing.JPanel refundPanel;
+    private org.jdesktop.swingx.JXTaskPane settingsTaskPane;
     private javax.swing.JPanel sidePanel;
     private javax.swing.JPanel specialPayment;
     private javax.swing.JPanel stampPayment;
     private org.jdesktop.swingx.JXStatusBar statusBar;
     private javax.swing.JPanel statusPanel;
     private javax.swing.JTextField txtBillNumber;
-    private javax.swing.JTextField txtCardPaymentAmount;
-    private javax.swing.JTextField txtCashPaymentAmount;
-    private javax.swing.JTextField txtDiscountPercent;
-    private javax.swing.JTextField txtDiscountVal;
-    private javax.swing.JTextField txtQty;
+    private javax.swing.JFormattedTextField txtCardPaymentAmount;
+    private javax.swing.JFormattedTextField txtCashPaymentAmount;
+    private javax.swing.JFormattedTextField txtDiscountPercent;
+    private javax.swing.JFormattedTextField txtDiscountVal;
+    private javax.swing.JFormattedTextField txtQty;
     private javax.swing.JTextField txtSearchBillNO;
     private javax.swing.JTextField txtSearchBillNO1;
     private javax.swing.JPanel uiPanel;

@@ -34,15 +34,14 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         cashWithdrawalInfoPanel = new javax.swing.JPanel();
         lblCashWithrawalNoDisplay = new javax.swing.JLabel();
         lblCashWithrawalNoVal = new javax.swing.JLabel();
+        lblCounterDisplay = new javax.swing.JLabel();
+        lblCounter = new javax.swing.JLabel();
         infoPanel = new javax.swing.JPanel();
         lblWithdrawAmountDisplay = new javax.swing.JLabel();
         lblCashierName = new javax.swing.JLabel();
         lblNameDisplay = new javax.swing.JLabel();
         lblCashierID = new javax.swing.JLabel();
-        lblCounterDisplay = new javax.swing.JLabel();
-        lblCounter = new javax.swing.JLabel();
         lblCashierPassDisplay = new javax.swing.JLabel();
-        txtWithdrawAmount = new javax.swing.JTextField();
         lblDateDisplay = new javax.swing.JLabel();
         lblSignOnDate = new javax.swing.JLabel();
         lblTimeDisplay = new javax.swing.JLabel();
@@ -61,6 +60,11 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         txtChiefCashierPassword = new javax.swing.JPasswordField();
         btnCancel = new javax.swing.JButton();
         btnOk = new javax.swing.JButton();
+        lblCurrentAmountDisplay = new javax.swing.JLabel();
+        lblCurrentAmountVal = new javax.swing.JLabel();
+        lblShiftDisplay = new javax.swing.JLabel();
+        lblShiftVal = new javax.swing.JLabel();
+        txtWithdrawalAmountVal = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cash Withdrawal");
@@ -77,6 +81,15 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         lblCashWithrawalNoVal.setText("<Withdrawal No>");
         lblCashWithrawalNoVal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        lblCounterDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblCounterDisplay.setText("Counter");
+        lblCounterDisplay.setToolTipText("");
+
+        lblCounter.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblCounter.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblCounter.setText("<counter>");
+        lblCounter.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
         javax.swing.GroupLayout cashWithdrawalInfoPanelLayout = new javax.swing.GroupLayout(cashWithdrawalInfoPanel);
         cashWithdrawalInfoPanel.setLayout(cashWithdrawalInfoPanelLayout);
         cashWithdrawalInfoPanelLayout.setHorizontalGroup(
@@ -86,15 +99,23 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                 .addComponent(lblCashWithrawalNoDisplay)
                 .addGap(47, 47, 47)
                 .addComponent(lblCashWithrawalNoVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addComponent(lblCounterDisplay)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         cashWithdrawalInfoPanelLayout.setVerticalGroup(
             cashWithdrawalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cashWithdrawalInfoPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(cashWithdrawalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCashWithrawalNoVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCashWithrawalNoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(cashWithdrawalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(cashWithdrawalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblCounterDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(cashWithdrawalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblCashWithrawalNoVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblCashWithrawalNoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -118,19 +139,8 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         lblCashierID.setText("<Cashier ID>");
         lblCashierID.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        lblCounterDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        lblCounterDisplay.setText("Counter");
-        lblCounterDisplay.setToolTipText("");
-
-        lblCounter.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        lblCounter.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblCounter.setText("<counter>");
-        lblCounter.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         lblCashierPassDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCashierPassDisplay.setText("Cashier Password");
-
-        txtWithdrawAmount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         lblDateDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblDateDisplay.setText("Date");
@@ -201,6 +211,27 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
 
         btnOk.setText("OK");
 
+        lblCurrentAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblCurrentAmountDisplay.setText("Current Amount (Rs.) ");
+
+        lblCurrentAmountVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblCurrentAmountVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblCurrentAmountVal.setText("<Amount>");
+        lblCurrentAmountVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        lblShiftDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblShiftDisplay.setText("Shift");
+        lblShiftDisplay.setToolTipText("");
+
+        lblShiftVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblShiftVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblShiftVal.setText("<Shift>");
+        lblShiftVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        txtWithdrawalAmountVal.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat(""))));
+        txtWithdrawalAmountVal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtWithdrawalAmountVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout infoPanelLayout = new javax.swing.GroupLayout(infoPanel);
         infoPanel.setLayout(infoPanelLayout);
         infoPanelLayout.setHorizontalGroup(
@@ -230,12 +261,6 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                                     .addComponent(lblInitialAmountDisplay))
                                 .addGap(34, 34, 34)
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(infoPanelLayout.createSequentialGroup()
-                                        .addComponent(lblCashierID, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
-                                        .addComponent(lblCounterDisplay)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(lblCashierName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(infoPanelLayout.createSequentialGroup()
                                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -247,34 +272,48 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                                             .addComponent(lblCWDate, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)))
                                     .addGroup(infoPanelLayout.createSequentialGroup()
                                         .addComponent(lblInitialAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 0, Short.MAX_VALUE))))
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(infoPanelLayout.createSequentialGroup()
+                                        .addComponent(lblCashierID, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(lblShiftDisplay)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(lblShiftVal, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addComponent(lblChiefCashierPasswordDisplay)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtChiefCashierPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(infoPanelLayout.createSequentialGroup()
-                                .addComponent(lblWithdrawAmountDisplay)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtWithdrawAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(infoPanelLayout.createSequentialGroup()
-                                .addComponent(lblCashierPassDisplay)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtCashierPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addComponent(lblChiefCashierIDDisplay)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblChiefCashierID, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(lblChiefCashierID, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPanelLayout.createSequentialGroup()
+                                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblCashierPassDisplay)
+                                    .addComponent(lblWithdrawAmountDisplay))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtCashierPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                                    .addComponent(txtWithdrawalAmountVal))))))
                 .addContainerGap())
+            .addGroup(infoPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblCurrentAmountDisplay)
+                .addGap(18, 18, 18)
+                .addComponent(lblCurrentAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         infoPanelLayout.setVerticalGroup(
             infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(infoPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCashierID, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCashierIDDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCounterDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblShiftDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblShiftVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblCashierID, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblCashierIDDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(6, 6, 6)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblNameDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -297,10 +336,14 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblInitialAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblInitialAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(69, 69, 69)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCurrentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblCurrentAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblWithdrawAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtWithdrawAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtWithdrawalAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashierPassDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -316,8 +359,7 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -375,10 +417,14 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
     private javax.swing.JLabel lblChiefCashierPasswordDisplay;
     private javax.swing.JLabel lblCounter;
     private javax.swing.JLabel lblCounterDisplay;
+    private javax.swing.JLabel lblCurrentAmountDisplay;
+    private javax.swing.JLabel lblCurrentAmountVal;
     private javax.swing.JLabel lblDateDisplay;
     private javax.swing.JLabel lblInitialAmount;
     private javax.swing.JLabel lblInitialAmountDisplay;
     private javax.swing.JLabel lblNameDisplay;
+    private javax.swing.JLabel lblShiftDisplay;
+    private javax.swing.JLabel lblShiftVal;
     private javax.swing.JLabel lblSignOn;
     private javax.swing.JLabel lblSignOnDate;
     private javax.swing.JLabel lblSignOnTime;
@@ -386,6 +432,6 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
     private javax.swing.JLabel lblWithdrawAmountDisplay;
     private javax.swing.JPasswordField txtCashierPassword;
     private javax.swing.JPasswordField txtChiefCashierPassword;
-    private javax.swing.JTextField txtWithdrawAmount;
+    private javax.swing.JFormattedTextField txtWithdrawalAmountVal;
     // End of variables declaration//GEN-END:variables
 }
