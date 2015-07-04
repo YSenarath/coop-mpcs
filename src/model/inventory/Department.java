@@ -13,6 +13,7 @@ import model.inventory.Category;
  * @author Nadheesh
  */
 public class Department {
+
     private int departmentId;
     private String departmentName;
     private ArrayList<Category> categories;

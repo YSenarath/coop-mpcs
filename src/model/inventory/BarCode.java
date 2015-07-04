@@ -10,5 +10,5 @@ package model.inventory;
  * @author Nadheesh
  */
 public class BarCode {
-    
+
 }

@@ -12,6 +12,7 @@ import model.unit.Unit;
  * @author Nadheesh
  */
 public class Product {
+
     private int productCode;
     private BarCode productBarCode;
     private String description;

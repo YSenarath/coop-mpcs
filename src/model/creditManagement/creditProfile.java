@@ -10,5 +10,5 @@ package model.creditManagement;
  * @author HP
  */
 public class creditProfile {
-    
+
 }

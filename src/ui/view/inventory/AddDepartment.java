@@ -9,16 +9,16 @@ package ui.view.inventory;
  *
  * @author Nadheesh
  */
-public class AddDepartment extends Add{
-    
+public class AddDepartment extends Add {
+
     public AddDepartment() {
-        
-       super.idString="Department";
-       super.nameString="Department";
-       super.title="Manage Departments";
-       
-       init();
-       
+
+        super.idString = "Department";
+        super.nameString = "Department";
+        super.title = "Manage Departments";
+
+        init();
+
     }
 
     @Override
@@ -40,5 +40,5 @@ public class AddDepartment extends Add{
     public void removeButtonPressed() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

@@ -13,6 +13,7 @@ import model.unit.LKR;
  * @author Nadheesh
  */
 public class Batch {
+
     private int batchId;
     private String grnNumber;
     private Product product;

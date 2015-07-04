@@ -13,12 +13,13 @@ import model.supplier.Supplier;
  * @author Yasas
  */
 public class GoodRecieveNote {
+
     private String f14Number;
     private String invoiceNo;
     private Date invoiceDate;
     private Supplier supplier;
     private String location;
-    private String paymentType;  
+    private String paymentType;
 
     public String getF14Number() {
         return f14Number;
@@ -67,5 +68,5 @@ public class GoodRecieveNote {
     public void setPaymentType(String paymentType) {
         this.paymentType = paymentType;
     }
-    
+
 }

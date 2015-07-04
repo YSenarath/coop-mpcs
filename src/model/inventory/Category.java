@@ -13,6 +13,7 @@ import model.unit.Percentage;
  * @author Nadheesh
  */
 public class Category {
+
     private int categoryId;
     private int categoryName;
     private String description;

@@ -10,6 +10,7 @@ package model.supplier;
  * @author Yasas
  */
 public class Supplier {
+
     private String supplerID;
     private String name;
     private String contactPerson;
@@ -118,6 +119,5 @@ public class Supplier {
     public void setCancelDate(String cancelDate) {
         this.cancelDate = cancelDate;
     }
-    
-    
+
 }

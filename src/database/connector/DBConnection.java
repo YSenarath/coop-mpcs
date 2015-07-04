@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 public class DBConnection {
 
     private static Logger logger = Logger.getLogger(DBConnection.class);
-    
+
     private static DBConnection dbConnetion;
     private Connection connection;
 
@@ -43,7 +43,7 @@ public class DBConnection {
     }
 
     private void closeConnection() throws SQLException {
-          logger.debug("closeConnection invoked");
+        logger.debug("closeConnection invoked");
         if (connection != null) {
             connection.close();
             logger.debug("connection closed");
@@ -61,7 +61,7 @@ public class DBConnection {
      */
     public static Connection getConnectionToDB(String server, String port, String database, Properties connectionProps) throws SQLException {
         logger.debug("getConnectionToDB invoked for : " + server + ", " + port + ", " + database + ", " + connectionProps.getProperty("user") + ", " + connectionProps.getProperty("password"));
-       
+
         DBConnection dBConnection = getDBConnection(server, port, database, connectionProps);
         return dBConnection.getConnection();
     }

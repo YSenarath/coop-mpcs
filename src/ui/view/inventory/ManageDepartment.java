@@ -9,19 +9,18 @@ package ui.view.inventory;
  *
  * @author Nadheesh
  */
-public class ManageDepartment extends Manage{
-    
-    
-    public ManageDepartment(){
-        
+public class ManageDepartment extends Manage {
+
+    public ManageDepartment() {
+
         super.title = "Manage Departments";
-        super.colCount=6;
-        super.colSizes=new int[] {100,150,250,150,200,200};
-        super.colTitle =new String[] { "Category ID", "Category Name", "Descripton", "Discount", "Discount Start Date", "Discount Finish Date"};
-        super.colTypes=new Class [] {java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class};
-        super.idString="Department";
-        super.nameString= "Department";
-        super.tableName="Categories";
+        super.colCount = 6;
+        super.colSizes = new int[]{100, 150, 250, 150, 200, 200};
+        super.colTitle = new String[]{"Category ID", "Category Name", "Descripton", "Discount", "Discount Start Date", "Discount Finish Date"};
+        super.colTypes = new Class[]{java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class};
+        super.idString = "Department";
+        super.nameString = "Department";
+        super.tableName = "Categories";
         init();
     }
 

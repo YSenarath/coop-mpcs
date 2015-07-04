@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+
 /**
  *
  * @author Shehan
@@ -17,19 +18,18 @@ import org.apache.log4j.Logger;
 public class DBTest {
 
     private static Logger logger = Logger.getLogger(DBTest.class);
-    
+
     public static void main(String[] args) {
         Properties connectionProps = new Properties();
-        
-        
-        String server="localhost";
-        String port="3306";
-        String database ="ClinicManagementSystem";
+
+        String server = "localhost";
+        String port = "3306";
+        String database = "ClinicManagementSystem";
         connectionProps.put("user", "root");
         connectionProps.put("password", "msw15931");
-        
+
         try {
-            Connection coonection=DBConnection.getConnectionToDB(server,port, database, connectionProps);
+            Connection coonection = DBConnection.getConnectionToDB(server, port, database, connectionProps);
             logger.info(" Connected to Database ");
             DBConnection.closeConnectionToDB();
             logger.info(" Disconnected from Database ");

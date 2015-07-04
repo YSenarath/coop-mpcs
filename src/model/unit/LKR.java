@@ -10,5 +10,5 @@ package model.unit;
  * @author Nadheesh
  */
 public class LKR {
-    
+
 }

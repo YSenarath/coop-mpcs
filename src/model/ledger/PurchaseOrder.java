@@ -10,5 +10,5 @@ package model.ledger;
  * @author Yasas
  */
 public class PurchaseOrder {
-    
+
 }
