@@ -5,11 +5,15 @@
  */
 package ui.view.pos;
 
+import org.apache.log4j.Logger;
+
 /**
  *
  * @author Shehan
  */
 public class CashWithdrawalDialog extends javax.swing.JDialog {
+
+    private static final Logger logger = Logger.getLogger(CashWithdrawalDialog.class);
 
     /**
      * Creates new form NewJDialog
@@ -21,6 +25,16 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
+    }
+
+    //Withdraw cash from counter
+    private void withdrawCash() {
+        logger.warn("withdrawCash not implemented");
+    }
+
+    //Cancel withdraw
+    private void cancelWithdraw() {
+        this.dispose();
     }
 
     /**
@@ -210,6 +224,11 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         });
 
         btnOk.setText("OK");
+        btnOk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOkActionPerformed(evt);
+            }
+        });
 
         lblCurrentAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCurrentAmountDisplay.setText("Current Amount (Rs.) ");
@@ -394,8 +413,13 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
-        this.dispose();
+        cancelWithdraw();
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
+        // TODO add your handling code here:
+        withdrawCash();
+    }//GEN-LAST:event_btnOkActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;

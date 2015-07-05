@@ -6,7 +6,6 @@
 package ui.view.pos;
 
 import java.awt.Frame;
-import javax.swing.JRootPane;
 
 /**
  *
@@ -27,6 +26,16 @@ public class CheckStockDialog extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(null);
         this.parent = parent;
+    }
+
+    //Show search item 
+    private void searchItem() {
+        new SearchItemDialog(parent, true).setVisible(true);
+    }
+
+    //Cancel check
+    private void cancelCheck() {
+        this.dispose();
     }
 
     /**
@@ -199,12 +208,12 @@ public class CheckStockDialog extends javax.swing.JDialog {
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
         // TODO add your handling code here:
-        this.dispose();
+        cancelCheck();
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
-        new SearchItemDialog(parent, true).setVisible(true);
+        searchItem();
     }//GEN-LAST:event_btnSearchActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

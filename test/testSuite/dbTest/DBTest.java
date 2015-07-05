@@ -24,8 +24,8 @@ public class DBTest {
         String server = "localhost";
         String port = "3306";
         String database = "COOP_MPCS_DB";
-        connectionProps.put("user", "coop_cashier");
-        connectionProps.put("password", "1234");
+        connectionProps.put("user", "admin");
+        connectionProps.put("password", "admin");
 
         try {
             DBConnection.getConnectionToDB(server, port, database, connectionProps);

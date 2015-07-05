@@ -288,6 +288,7 @@
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="null"/>
                     </Property>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <SubComponents>
                     <Container class="org.jdesktop.swingx.JXTaskPane" name="billTaskPane">
@@ -300,11 +301,23 @@
                         </Property>
                         <Property name="special" type="boolean" value="true"/>
                         <Property name="title" type="java.lang.String" value="Bill"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
                         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="billTaskPaneMouseClicked"/>
                       </Events>
                       <SubComponents>
+                        <Component class="javax.swing.JButton" name="btnNewSale">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="New Sale [ F7 ]"/>
+                            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                              <Dimension value="[73, 30]"/>
+                            </Property>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnNewSaleActionPerformed"/>
+                          </Events>
+                        </Component>
                         <Component class="javax.swing.JButton" name="btnCheckStock">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="Check Stock [ F2 ]"/>
@@ -316,14 +329,6 @@
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCheckStockActionPerformed"/>
                           </Events>
                         </Component>
-                        <Component class="javax.swing.JButton" name="btnNewSale">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="New Sale [ F7 ]"/>
-                            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                              <Dimension value="[73, 30]"/>
-                            </Property>
-                          </Properties>
-                        </Component>
                         <Component class="javax.swing.JButton" name="btnHoldSale">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="Hold Sale [ F9 ]"/>
@@ -331,6 +336,9 @@
                               <Dimension value="[73, 30]"/>
                             </Property>
                           </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnHoldSaleActionPerformed"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JButton" name="btnRestoreSale">
                           <Properties>
@@ -339,6 +347,9 @@
                               <Dimension value="[73, 30]"/>
                             </Property>
                           </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRestoreSaleActionPerformed"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                       <LayoutCode>
@@ -397,7 +408,11 @@
                       <Properties>
                         <Property name="special" type="boolean" value="true"/>
                         <Property name="title" type="java.lang.String" value="Other"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="otherTaskPaneMouseClicked"/>
+                      </Events>
                       <SubComponents>
                         <Component class="javax.swing.JButton" name="btnBillRefund">
                           <Properties>
@@ -496,12 +511,13 @@
                         <Property name="special" type="boolean" value="true"/>
                         <Property name="title" type="java.lang.String" value="Settings"/>
                         <Property name="toolTipText" type="java.lang.String" value=""/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
                         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="settingsTaskPaneMouseClicked"/>
                       </Events>
                       <SubComponents>
-                        <Component class="javax.swing.JButton" name="btnCheckStock1">
+                        <Component class="javax.swing.JButton" name="btnConfigure">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="Configure"/>
                             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -509,7 +525,7 @@
                             </Property>
                           </Properties>
                           <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCheckStock1ActionPerformed"/>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfigureActionPerformed"/>
                           </Events>
                         </Component>
                       </SubComponents>
@@ -793,7 +809,7 @@
                                       </Border>
                                     </Property>
                                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                                      <Table columnCount="6" rowCount="0">
+                                      <Table columnCount="6" rowCount="4">
                                         <Column editable="false" title="Code" type="java.lang.String"/>
                                         <Column editable="false" title="Description" type="java.lang.String"/>
                                         <Column editable="false" title="Qty" type="java.lang.Double"/>
@@ -914,6 +930,9 @@
                                     </Property>
                                     <Property name="text" type="java.lang.String" value="Add [Enter]"/>
                                   </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddItemActionPerformed"/>
+                                  </Events>
                                 </Component>
                                 <Component class="javax.swing.JButton" name="btnDeleteItem">
                                   <Properties>
@@ -922,6 +941,9 @@
                                     </Property>
                                     <Property name="text" type="java.lang.String" value="Delete [Del]"/>
                                   </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDeleteItemActionPerformed"/>
+                                  </Events>
                                 </Component>
                                 <Component class="javax.swing.JButton" name="btnClearItem">
                                   <Properties>
@@ -930,6 +952,9 @@
                                     </Property>
                                     <Property name="text" type="java.lang.String" value="Clear [ESC]"/>
                                   </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnClearItemActionPerformed"/>
+                                  </Events>
                                 </Component>
                               </SubComponents>
                             </Container>
@@ -961,7 +986,7 @@
                                                   <EmptySpace max="-2" attributes="0"/>
                                                   <Group type="103" groupAlignment="0" attributes="0">
                                                       <Component id="itemCodeComboBox" min="-2" pref="100" max="-2" attributes="0"/>
-                                                      <Component id="itemProductComboBox" min="-2" pref="350" max="-2" attributes="0"/>
+                                                      <Component id="txtProductDesc" min="-2" pref="300" max="-2" attributes="0"/>
                                                   </Group>
                                               </Group>
                                               <Group type="102" alignment="0" attributes="0">
@@ -972,7 +997,7 @@
                                                   <Component id="lblUnit" min="-2" pref="81" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
-                                          <EmptySpace pref="28" max="32767" attributes="0"/>
+                                          <EmptySpace pref="110" max="32767" attributes="0"/>
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                               <Component id="btnLoad" pref="125" max="32767" attributes="0"/>
                                               <Component id="btnSearch" pref="125" max="32767" attributes="0"/>
@@ -994,7 +1019,7 @@
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="lblProduct" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                               <Component id="btnSearch" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="itemProductComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="txtProductDesc" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
@@ -1039,6 +1064,9 @@
                                     </Property>
                                     <Property name="text" type="java.lang.String" value="Load [ F3 ]"/>
                                   </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLoadActionPerformed"/>
+                                  </Events>
                                 </Component>
                                 <Component class="javax.swing.JButton" name="btnSearch">
                                   <Properties>
@@ -1055,19 +1083,7 @@
                                   <Properties>
                                     <Property name="editable" type="boolean" value="true"/>
                                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                      <Font name="Tahoma" size="14" style="0"/>
-                                    </Property>
-                                    <Property name="maximumRowCount" type="int" value="5"/>
-                                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                                      <StringArray count="0"/>
-                                    </Property>
-                                  </Properties>
-                                </Component>
-                                <Component class="javax.swing.JComboBox" name="itemProductComboBox">
-                                  <Properties>
-                                    <Property name="editable" type="boolean" value="true"/>
-                                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                      <Font name="Tahoma" size="14" style="0"/>
+                                      <Font name="Tahoma" size="12" style="0"/>
                                     </Property>
                                     <Property name="maximumRowCount" type="int" value="5"/>
                                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
@@ -1091,7 +1107,14 @@
                                     <Property name="horizontalAlignment" type="int" value="4"/>
                                     <Property name="toolTipText" type="java.lang.String" value=""/>
                                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                      <Font name="Tahoma" size="14" style="0"/>
+                                      <Font name="Tahoma" size="12" style="0"/>
+                                    </Property>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="txtProductDesc">
+                                  <Properties>
+                                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                                      <Font name="Tahoma" size="12" style="0"/>
                                     </Property>
                                   </Properties>
                                 </Component>
@@ -1894,6 +1917,9 @@
                                 </Property>
                                 <Property name="text" type="java.lang.String" value="Add Payment [ F3 ]"/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddPaymentActionPerformed"/>
+                              </Events>
                             </Component>
                             <Component class="javax.swing.JButton" name="btnRemove">
                               <Properties>
@@ -1902,6 +1928,9 @@
                                 </Property>
                                 <Property name="text" type="java.lang.String" value="Remove"/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRemoveActionPerformed"/>
+                              </Events>
                             </Component>
                             <Component class="javax.swing.JButton" name="btnConfirm">
                               <Properties>
@@ -1910,6 +1939,9 @@
                                   <Dimension value="[100, 23]"/>
                                 </Property>
                               </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfirmActionPerformed"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -1973,7 +2005,7 @@
                                               <EmptySpace max="32767" attributes="0"/>
                                               <Component id="btnRefundCancel" min="-2" pref="125" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="btnNewBill" min="-2" pref="125" max="-2" attributes="0"/>
+                                              <Component id="btnNewBillFromRefund" min="-2" pref="125" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -2103,7 +2135,7 @@
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="lblRefundChangeCashDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                           <Component id="lblRefundChangeCashVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                          <Component id="btnNewBill" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="btnNewBillFromRefund" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                           <Component id="btnRefundCancel" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="32767" attributes="0"/>
@@ -2266,11 +2298,14 @@
                                 </Property>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JButton" name="btnNewBill">
+                            <Component class="javax.swing.JButton" name="btnNewBillFromRefund">
                               <Properties>
                                 <Property name="text" type="java.lang.String" value="New Bill"/>
                                 <Property name="toolTipText" type="java.lang.String" value=""/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnNewBillFromRefundActionPerformed"/>
+                              </Events>
                             </Component>
                             <Component class="javax.swing.JLabel" name="lblRefundCancelSubTotalDisplay">
                               <Properties>
@@ -3097,6 +3132,9 @@
                                 <Property name="text" type="java.lang.String" value="Print"/>
                                 <Property name="toolTipText" type="java.lang.String" value=""/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPrintBillActionPerformed"/>
+                              </Events>
                             </Component>
                             <Component class="javax.swing.JLabel" name="lblBillPrintDateDisplay">
                               <Properties>
@@ -3138,6 +3176,9 @@
                   <Dimension value="[71, 35]"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCachierLogActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnManagerLog">
               <Properties>
@@ -3149,6 +3190,9 @@
                   <Dimension value="[71, 35]"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnManagerLogActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

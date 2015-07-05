@@ -16,43 +16,311 @@ import java.util.Date;
 import java.util.Properties;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Shehan
  */
 public class POSInterface extends javax.swing.JFrame {
-    
+
+    private static final Logger logger = Logger.getLogger(POSInterface.class);
+
+    private boolean isCashierLogedIn;
+
     public POSInterface() {
         initComponents();
         initializeGUI();
+        initializeStates();
+
     }
-    
+
     private void initializeGUI() {
         setLocationRelativeTo(null);
         setIconImage(new ImageIcon(getClass().getResource("/images/pos/pos_icon.png")).getImage());
         ActionListener timerListener = (ActionEvent e) -> {
             Date currentDate = new Date();
-            
+
             String strDate = new SimpleDateFormat("EEE, d MMM yyyy").format(currentDate);
             String strTime = new SimpleDateFormat("h:mm a").format(currentDate);
-            
+
             lblDate.setText(strDate);
             lblBillDateVal.setText(strDate);
-            
+
             lblTime.setText(strTime);
             lblBillTimeVal.setText(strTime);
         };
         Timer timer = new Timer(1000, timerListener);
         timer.setInitialDelay(0);
         timer.start();
-        
+
+        //billTaskPane.setCollapsed(true);
+        billTaskPane.setCollapsed(false);
+
+        otherTaskPane.setCollapsed(true);
+        settingsTaskPane.setCollapsed(true);
+
+    }
+
+    private void initializeStates() {
+        btnCachierLog.setText("Cashier logged off");
+        btnManagerLog.setText("Manager logged off");
+        isCashierLogedIn = false;
+    }
+
+    //user log in ui changes
+    private void setLogControls() {
+        logger.debug("setLogControles invoked");
+        if (isCashierLogedIn) {
+            btnCachierLog.setText("Cashier logged in");
+
+            lblCashier.setText("Test");
+            lblCounter.setText("1");
+        } else {
+            btnCachierLog.setText("Cashier logged off");
+
+            lblCashier.setText("<Cashier name>");
+            lblCounter.setText("<counter>");
+
+            CardLayout card = (CardLayout) cardPanel.getLayout();
+            card.show(cardPanel, "welcomeCard");
+            billTaskPane.setCollapsed(true);
+            otherTaskPane.setCollapsed(true);
+            settingsTaskPane.setCollapsed(true);
+        }
+    }
+
+    //Add item to the bill item table
+    private void bill_addItemToBillItemTable() {
+        logger.warn("bill_addItemToBillItemTable not implemented");
+    }
+
+    //Remove a added item from the bill item table
+    private void bill_deleteItemFromBillItemTable() {
+        logger.debug("bill_deleteItemFromBillItemTable invoked");
+
+        //NOT IMPLEMNTED - When a row is deleted the bottem most row gets auto matically selected. If no row selected by user delete from the bottom
+        DefaultTableModel billItemTableModel = (DefaultTableModel) billItemTable.getModel();
+        if (billItemTable.getSelectedRow() != -1) {
+            billItemTableModel.removeRow(billItemTable.getSelectedRow());
+
+        }
+    }
+
+    //Clear the current product fields in bill add item to bill
+    private void bill_clearSelectedItemSearch() {
+        logger.debug("bill_clearSelectedItemSearch invoked");
+
+        itemCodeComboBox.setSelectedIndex(-1);
+        txtProductDesc.setText("");
+        txtQty.setText("");
+        lblUnit.setText("<Unit>");
+    }
+
+    //Load the item information to the bill 
+    private void bill_loadLtemInfoToBill() {
+        logger.warn("bill_loadLtemInfoToBill not implemented");
+    }
+
+    //Show the payment panel in the bill
+    private void bill_showPaymentScreen() {
+        CardLayout card = (CardLayout) invoicePanel.getLayout();
+        card.next(invoicePanel);
+    }
+
+    //Show the add item panel in bill
+    private void bill_showAddItemPanel() {
+        CardLayout card = (CardLayout) invoicePanel.getLayout();
+        card.previous(invoicePanel);
+    }
+
+    //Cancel current bill and show welocme screen
+    private void bill_cancelBill() {
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "welcomeCard");
+        //billTaskPane.setCollapsed(true);
+        //otherTaskPane.setCollapsed(true);
+        //settingsTaskPane.setCollapsed(true);
+    }
+
+    //Show the main bill screen
+    private void bill_showInvoicePanel() {
+
+        if (isCashierLogedIn) {
+            // billTaskPane.setCollapsed(false);
+        } else {
+            logger.error("Cashier not logged in");
+            //  billTaskPane.setCollapsed(true);
+        }
+    }
+
+    //Toggle payment options in payment scrren
+    private void bill_togglePaymentOptions(java.awt.event.ActionEvent evt) {
+        CardLayout card = (CardLayout) paymentDetailsPanel.getLayout();
+        JComboBox paymentComboBox = (JComboBox) evt.getSource();
+        String selectedOption = (String) paymentComboBox.getSelectedItem();
+        if (null != selectedOption) {
+            switch (selectedOption) {
+                case "Cash":
+                    card.show(paymentDetailsPanel, "cashCard");
+                    break;
+                case "Card":
+                    card.show(paymentDetailsPanel, "bankCard");
+                    break;
+                case "Credit":
+                    card.show(paymentDetailsPanel, "creditCard");
+                    break;
+                case "Stamp":
+                    card.show(paymentDetailsPanel, "stampCard");
+                    break;
+                case "Special":
+                    card.show(paymentDetailsPanel, "specialCard");
+                    break;
+            }
+        }
+    }
+
+    //Add a payment option
+    private void bill_addPaymentOption() {
+        logger.warn("bill_addPaymentOption not implemented");
+    }
+
+    //Remove a payment option
+    private void bill_removePaymentOption() {
+        logger.warn("bill_removePaymentOption not implemented");
+    }
+
+    //Search a item
+    private void bill_searchItem() {
+        //NOT IMPLEMENTED - send a search string to the search UI
+        new SearchItemDialog(this, true).setVisible(true);
+    }
+
+    //New sale
+    private void bill_newSale() {
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "invoiceCard");
+    }
+
+    //Hold sale
+    private void bill_holdSale() {
+        logger.warn("bill_holdSale not implemented");
+    }
+
+    //Restore sale
+    private void bill_restoreSale() {
+        logger.warn("bill_restoreSale not implemented");
+    }
+
+    //Confirm bill
+    private void bill_confirm() {
+        logger.warn("bill_confirm not implemented");
+    }
+     
+    //Show bill copy screen
+    private void billCopy_ShowPanel() {
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "billCopyCard");
+        //billTaskPane.setCollapsed(true);
+    }
+
+    //Print a copy of the bill
+    private void billCopy_printBill() {
+        logger.warn("billCopy_printBill not implemented");
+    }
+
+    //Cancel bill copy and show the welcome screen
+    private void billCopy_cancel() {
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "welcomeCard");
         billTaskPane.setCollapsed(true);
         otherTaskPane.setCollapsed(true);
         settingsTaskPane.setCollapsed(true);
-        
     }
-    
+
+    //Show refund screen
+    private void refund_showRefundPanel() {
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "refundCard");
+        //billTaskPane.setCollapsed(true);
+    }
+
+    //Create a new bill from refund
+    private void refund_newBill() {
+        logger.warn("refund_newBill not implemented");
+    }
+
+    //Cancel a refund
+    private void refund_cancel() {
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "welcomeCard");
+        billTaskPane.setCollapsed(true);
+        otherTaskPane.setCollapsed(true);
+        settingsTaskPane.setCollapsed(true);
+    }
+
+    //Show the cash withdrawal UI
+    private void cashWithdrawal_showUI() {
+        new CashWithdrawalDialog(this, true).setVisible(true);
+    }
+
+    //Show the check stock UI
+    private void chechStock() {
+        new CheckStockDialog(this, true).setVisible(true);
+    }
+
+    //Show the settings task panel
+    private void settings_showTaskPane(java.awt.event.MouseEvent evt) {
+        if (!isCashierLogedIn) {
+            logger.error("Cashier not logged in");
+            settingsTaskPane.setCollapsed(true);
+            evt.consume();
+        }
+    }
+
+    //Show the other task panel
+    private void other_showTaskPane(java.awt.event.MouseEvent evt) {
+        if (!isCashierLogedIn) {
+            logger.error("Cashier not logged in");
+            otherTaskPane.setCollapsed(true);
+            evt.consume();
+        }
+    }
+
+    //Show configure UI
+    private void configure_show() {
+        logger.warn("configure_show not implemented");
+    }
+
+    //Mange cashier login
+    private void cashier_logIn() {
+        // TODO add your handling code here:
+
+        /*
+         Important :
+         1.NOT IMPLEMENTED - Show intial amount of drawayer  UI at log on
+         2.NOT IMPLEMENTED - Show log of UI to print the summery for cashier - 
+         */
+        logger.warn("NOT IMPLEMENTED - Show intial amount of drawayer  UI at log on");
+        logger.warn("NOT IMPLEMENTED - Show log of UI to print the summery for cashier");
+
+        if (!isCashierLogedIn) {
+            logger.info("Cashier logged on");
+            isCashierLogedIn = true;
+        } else {
+            logger.info("Cashier logged off");
+            isCashierLogedIn = false;
+        }
+        setLogControls();
+
+    }
+
+    //Manager features
+    private void manager_logIn() {
+        logger.warn("manager_logIn not implemented");
+    }
+
     private static void setupUI() {
 
         //try {
@@ -64,21 +332,21 @@ public class POSInterface extends javax.swing.JFrame {
         //RGB colours
         String buttonClolor = "200 200 200";
         String controlClolor = "200 200 200";
-        
+
         String menuColor = "222 222 222";
         String menuBackgroundColor = "224 224 224";
-        
+
         String selectionBackgroundColor = "240 240 240";
         String selectionForegroundColor = "67 148 103";
-        
+
         String rollOverClolor = "114 114 114";
-        
+
         String frameColor = "171 171 171";
         String windowTitleColor = "10 10 10";
 
         //Customize Theme
         props.put("logoString", "");
-        
+
         props.put("linuxStyleScrollBar", "on");
         props.put("centerWindowTitle", "on");
         props.put("textAntiAliasing", "on");
@@ -87,35 +355,35 @@ public class POSInterface extends javax.swing.JFrame {
         props.put("windowDecoration", "on");
         props.put("dynamicLayout", "on");
         props.put("darkTexture", "off");
-        
+
         props.put("buttonColor", buttonClolor);//button colours
         props.put("buttonColorLight", buttonClolor);
         props.put("buttonColorDark", buttonClolor);
-        
+
         props.put("controlColor", controlClolor);//Control colours
         props.put("controlColorLight", controlClolor);
         props.put("controlColorDark", controlClolor);
-        
+
         props.put("menuColorLight", menuColor);//menu colours
         props.put("menuColorDark", menuColor);
         props.put("menuBackgroundColor", menuBackgroundColor);
-        
+
         props.put("selectionBackgroundColor", selectionBackgroundColor);//hilighted text
         props.put("selectionForegroundColor", selectionForegroundColor);
-        
+
         props.put("rolloverColor", rollOverClolor); //on hovering
         props.put("rolloverColorLight", rollOverClolor);
         props.put("rolloverColorDark", rollOverClolor);
-        
+
         props.put("frameColor", frameColor);
         props.put("windowTitleColorLight", windowTitleColor);//Windows boarder colours
         props.put("windowTitleColorDark", windowTitleColor);
         props.put("disabledForegroundColor", windowTitleColor);
-        
+
         try {
             com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
             UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
-            
+
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -147,8 +415,8 @@ public class POSInterface extends javax.swing.JFrame {
         sidePanel = new javax.swing.JPanel();
         jXTaskPaneContainer1 = new org.jdesktop.swingx.JXTaskPaneContainer();
         billTaskPane = new org.jdesktop.swingx.JXTaskPane();
-        btnCheckStock = new javax.swing.JButton();
         btnNewSale = new javax.swing.JButton();
+        btnCheckStock = new javax.swing.JButton();
         btnHoldSale = new javax.swing.JButton();
         btnRestoreSale = new javax.swing.JButton();
         otherTaskPane = new org.jdesktop.swingx.JXTaskPane();
@@ -156,7 +424,7 @@ public class POSInterface extends javax.swing.JFrame {
         btnBillCopy = new javax.swing.JButton();
         btnCashWithdrawal = new javax.swing.JButton();
         settingsTaskPane = new org.jdesktop.swingx.JXTaskPane();
-        btnCheckStock1 = new javax.swing.JButton();
+        btnConfigure = new javax.swing.JButton();
         interfaceContainerPanel = new javax.swing.JPanel();
         cardPanel = new javax.swing.JPanel();
         welcomePanel = new javax.swing.JPanel();
@@ -179,9 +447,9 @@ public class POSInterface extends javax.swing.JFrame {
         btnLoad = new javax.swing.JButton();
         btnSearch = new javax.swing.JButton();
         itemCodeComboBox = new javax.swing.JComboBox();
-        itemProductComboBox = new javax.swing.JComboBox();
         lblUnit = new javax.swing.JLabel();
         txtQty = new javax.swing.JFormattedTextField();
+        txtProductDesc = new javax.swing.JTextField();
         billSummeryPanel = new javax.swing.JPanel();
         lblItemNoDisplay = new javax.swing.JLabel();
         lblItems = new javax.swing.JLabel();
@@ -244,7 +512,7 @@ public class POSInterface extends javax.swing.JFrame {
         lblRefundDiscountAmountVal = new javax.swing.JLabel();
         lblRefundNetTotalDisplay = new javax.swing.JLabel();
         lblRefundNetTotalVal = new javax.swing.JLabel();
-        btnNewBill = new javax.swing.JButton();
+        btnNewBillFromRefund = new javax.swing.JButton();
         lblRefundCancelSubTotalDisplay = new javax.swing.JLabel();
         lblRefundCancelSubTotalVal = new javax.swing.JLabel();
         lblRefundCancelDiscountAmountDisplay = new javax.swing.JLabel();
@@ -398,6 +666,7 @@ public class POSInterface extends javax.swing.JFrame {
 
         jXTaskPaneContainer1.setBackground(new java.awt.Color(204, 204, 204));
         jXTaskPaneContainer1.setBorder(null);
+        jXTaskPaneContainer1.setEnabled(false);
         org.jdesktop.swingx.VerticalLayout verticalLayout1 = new org.jdesktop.swingx.VerticalLayout();
         verticalLayout1.setGap(15);
         jXTaskPaneContainer1.setLayout(verticalLayout1);
@@ -406,11 +675,21 @@ public class POSInterface extends javax.swing.JFrame {
         billTaskPane.setForeground(new java.awt.Color(153, 153, 153));
         billTaskPane.setSpecial(true);
         billTaskPane.setTitle("Bill");
+        billTaskPane.setEnabled(false);
         billTaskPane.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 billTaskPaneMouseClicked(evt);
             }
         });
+
+        btnNewSale.setText("New Sale [ F7 ]");
+        btnNewSale.setPreferredSize(new java.awt.Dimension(73, 30));
+        btnNewSale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewSaleActionPerformed(evt);
+            }
+        });
+        billTaskPane.getContentPane().add(btnNewSale);
 
         btnCheckStock.setText("Check Stock [ F2 ]");
         btnCheckStock.setPreferredSize(new java.awt.Dimension(73, 30));
@@ -421,22 +700,34 @@ public class POSInterface extends javax.swing.JFrame {
         });
         billTaskPane.getContentPane().add(btnCheckStock);
 
-        btnNewSale.setText("New Sale [ F7 ]");
-        btnNewSale.setPreferredSize(new java.awt.Dimension(73, 30));
-        billTaskPane.getContentPane().add(btnNewSale);
-
         btnHoldSale.setText("Hold Sale [ F9 ]");
         btnHoldSale.setPreferredSize(new java.awt.Dimension(73, 30));
+        btnHoldSale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHoldSaleActionPerformed(evt);
+            }
+        });
         billTaskPane.getContentPane().add(btnHoldSale);
 
         btnRestoreSale.setText("Restore Sale [F10 ]");
         btnRestoreSale.setPreferredSize(new java.awt.Dimension(73, 30));
+        btnRestoreSale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRestoreSaleActionPerformed(evt);
+            }
+        });
         billTaskPane.getContentPane().add(btnRestoreSale);
 
         jXTaskPaneContainer1.add(billTaskPane);
 
         otherTaskPane.setSpecial(true);
         otherTaskPane.setTitle("Other");
+        otherTaskPane.setEnabled(false);
+        otherTaskPane.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                otherTaskPaneMouseClicked(evt);
+            }
+        });
 
         btnBillRefund.setText("Refund");
         btnBillRefund.setPreferredSize(new java.awt.Dimension(0, 30));
@@ -472,20 +763,21 @@ public class POSInterface extends javax.swing.JFrame {
         settingsTaskPane.setSpecial(true);
         settingsTaskPane.setTitle("Settings");
         settingsTaskPane.setToolTipText("");
+        settingsTaskPane.setEnabled(false);
         settingsTaskPane.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 settingsTaskPaneMouseClicked(evt);
             }
         });
 
-        btnCheckStock1.setText("Configure");
-        btnCheckStock1.setPreferredSize(new java.awt.Dimension(73, 30));
-        btnCheckStock1.addActionListener(new java.awt.event.ActionListener() {
+        btnConfigure.setText("Configure");
+        btnConfigure.setPreferredSize(new java.awt.Dimension(73, 30));
+        btnConfigure.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCheckStock1ActionPerformed(evt);
+                btnConfigureActionPerformed(evt);
             }
         });
-        settingsTaskPane.getContentPane().add(btnCheckStock1);
+        settingsTaskPane.getContentPane().add(btnConfigure);
 
         jXTaskPaneContainer1.add(settingsTaskPane);
 
@@ -546,7 +838,10 @@ public class POSInterface extends javax.swing.JFrame {
         billItemTable.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         billItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
                 "Code", "Description", "Qty", "Price", "Discount", "Sub total"
@@ -604,12 +899,27 @@ public class POSInterface extends javax.swing.JFrame {
 
         btnAddItem.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnAddItem.setText("Add [Enter]");
+        btnAddItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddItemActionPerformed(evt);
+            }
+        });
 
         btnDeleteItem.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnDeleteItem.setText("Delete [Del]");
+        btnDeleteItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteItemActionPerformed(evt);
+            }
+        });
 
         btnClearItem.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnClearItem.setText("Clear [ESC]");
+        btnClearItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearItemActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout billButtonPanelLayout = new javax.swing.GroupLayout(billButtonPanel);
         billButtonPanel.setLayout(billButtonPanelLayout);
@@ -653,6 +963,11 @@ public class POSInterface extends javax.swing.JFrame {
 
         btnLoad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnLoad.setText("Load [ F3 ]");
+        btnLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoadActionPerformed(evt);
+            }
+        });
 
         btnSearch.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnSearch.setText("Search [ F5 ] ");
@@ -663,12 +978,8 @@ public class POSInterface extends javax.swing.JFrame {
         });
 
         itemCodeComboBox.setEditable(true);
-        itemCodeComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        itemCodeComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         itemCodeComboBox.setMaximumRowCount(5);
-
-        itemProductComboBox.setEditable(true);
-        itemProductComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        itemProductComboBox.setMaximumRowCount(5);
 
         lblUnit.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblUnit.setText("<Unit>");
@@ -676,7 +987,9 @@ public class POSInterface extends javax.swing.JFrame {
         txtQty.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat(""))));
         txtQty.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtQty.setToolTipText("");
-        txtQty.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtQty.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        txtProductDesc.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout productPanelLayout = new javax.swing.GroupLayout(productPanel);
         productPanel.setLayout(productPanelLayout);
@@ -692,14 +1005,14 @@ public class POSInterface extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(itemProductComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(productPanelLayout.createSequentialGroup()
                         .addComponent(lblQty, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lblUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 110, Short.MAX_VALUE)
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnLoad, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
@@ -717,7 +1030,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(itemProductComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblQty, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1171,12 +1484,27 @@ public class POSInterface extends javax.swing.JFrame {
 
         btnAddPayment.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnAddPayment.setText("Add Payment [ F3 ]");
+        btnAddPayment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddPaymentActionPerformed(evt);
+            }
+        });
 
         btnRemove.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnRemove.setText("Remove");
+        btnRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveActionPerformed(evt);
+            }
+        });
 
         btnConfirm.setText("Confirm [ Enter ]");
         btnConfirm.setPreferredSize(new java.awt.Dimension(100, 23));
+        btnConfirm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout paymentPanelLayout = new javax.swing.GroupLayout(paymentPanel);
         paymentPanel.setLayout(paymentPanelLayout);
@@ -1287,8 +1615,13 @@ public class POSInterface extends javax.swing.JFrame {
         lblRefundNetTotalVal.setText("<Amount>");
         lblRefundNetTotalVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        btnNewBill.setText("New Bill");
-        btnNewBill.setToolTipText("");
+        btnNewBillFromRefund.setText("New Bill");
+        btnNewBillFromRefund.setToolTipText("");
+        btnNewBillFromRefund.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewBillFromRefundActionPerformed(evt);
+            }
+        });
 
         lblRefundCancelSubTotalDisplay.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lblRefundCancelSubTotalDisplay.setText("Cancel Sub");
@@ -1344,7 +1677,7 @@ public class POSInterface extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnRefundCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnNewBill, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnNewBillFromRefund, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(billPaymentSummeryPanel1Layout.createSequentialGroup()
                         .addGroup(billPaymentSummeryPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, billPaymentSummeryPanel1Layout.createSequentialGroup()
@@ -1441,7 +1774,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addGroup(billPaymentSummeryPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRefundChangeCashDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblRefundChangeCashVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnNewBill, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnNewBillFromRefund, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRefundCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1742,6 +2075,11 @@ public class POSInterface extends javax.swing.JFrame {
 
         btnPrintBill.setText("Print");
         btnPrintBill.setToolTipText("");
+        btnPrintBill.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPrintBillActionPerformed(evt);
+            }
+        });
 
         lblBillPrintDateDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblBillPrintDateDisplay.setText("Bill Date");
@@ -1888,10 +2226,20 @@ public class POSInterface extends javax.swing.JFrame {
         btnCachierLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnCachierLog.setText("Cashier Log ");
         btnCachierLog.setPreferredSize(new java.awt.Dimension(71, 35));
+        btnCachierLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCachierLogActionPerformed(evt);
+            }
+        });
 
         btnManagerLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnManagerLog.setText("Manager Log Off");
         btnManagerLog.setPreferredSize(new java.awt.Dimension(71, 35));
+        btnManagerLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnManagerLogActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout mainLayerPanelLayout = new javax.swing.GroupLayout(mainLayerPanel);
         mainLayerPanel.setLayout(mainLayerPanelLayout);
@@ -1971,123 +2319,155 @@ public class POSInterface extends javax.swing.JFrame {
 
     private void btnPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaymentActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) invoicePanel.getLayout();
-        card.next(invoicePanel);
+        bill_showPaymentScreen();
     }//GEN-LAST:event_btnPaymentActionPerformed
 
     private void btnPreviousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPreviousActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) invoicePanel.getLayout();
-        card.previous(invoicePanel);
+        bill_showAddItemPanel();
     }//GEN-LAST:event_btnPreviousActionPerformed
 
     private void btnInvoiceCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInvoiceCancelActionPerformed
         // TODO add your handling code here:'
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "welcomeCard");
-        billTaskPane.setCollapsed(true);
-        otherTaskPane.setCollapsed(true);
-        settingsTaskPane.setCollapsed(true);
-
+        bill_cancelBill();
     }//GEN-LAST:event_btnInvoiceCancelActionPerformed
 
     private void billTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_billTaskPaneMouseClicked
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "invoiceCard");
-        billTaskPane.setCollapsed(false);
-        //otherTaskPane.setCollapsed(false);
+        bill_showInvoicePanel();
     }//GEN-LAST:event_billTaskPaneMouseClicked
 
     private void btnBillRefundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBillRefundActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "refundCard");
-        //billTaskPane.setCollapsed(true);
-
+        refund_showRefundPanel();
     }//GEN-LAST:event_btnBillRefundActionPerformed
 
     private void btnBillCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBillCopyActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "billCopyCard");
-        //billTaskPane.setCollapsed(true);
+        billCopy_ShowPanel();
     }//GEN-LAST:event_btnBillCopyActionPerformed
 
     private void btnCashWithdrawalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCashWithdrawalActionPerformed
         // TODO add your handling code here:
-        new CashWithdrawalDialog(this, true).setVisible(true);
+        cashWithdrawal_showUI();
     }//GEN-LAST:event_btnCashWithdrawalActionPerformed
 
     private void btnCancelPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPrintActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "welcomeCard");
-        billTaskPane.setCollapsed(true);
-        otherTaskPane.setCollapsed(true);
-        settingsTaskPane.setCollapsed(true);
+        billCopy_cancel();
     }//GEN-LAST:event_btnCancelPrintActionPerformed
 
     private void paymentOptionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentOptionComboBoxActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) paymentDetailsPanel.getLayout();
-        JComboBox paymentComboBox = (JComboBox) evt.getSource();
-        String selectedOption = (String) paymentComboBox.getSelectedItem();
-        if (null != selectedOption) {
-            switch (selectedOption) {
-                case "Cash":
-                    card.show(paymentDetailsPanel, "cashCard");
-                    break;
-                case "Card":
-                    card.show(paymentDetailsPanel, "bankCard");
-                    break;
-                case "Credit":
-                    card.show(paymentDetailsPanel, "creditCard");
-                    break;
-                case "Stamp":
-                    card.show(paymentDetailsPanel, "stampCard");
-                    break;
-                case "Special":
-                    card.show(paymentDetailsPanel, "specialCard");
-                    break;
-            }
-        }
+        bill_togglePaymentOptions(evt);
     }//GEN-LAST:event_paymentOptionComboBoxActionPerformed
 
     private void btnCheckStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckStockActionPerformed
         // TODO add your handling code here:
-        new CheckStockDialog(this, true).setVisible(true);
+        chechStock();
     }//GEN-LAST:event_btnCheckStockActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
-        new SearchItemDialog(this, true).setVisible(true);
+        bill_searchItem();
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnRefundCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefundCancelActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "welcomeCard");
-        billTaskPane.setCollapsed(true);
-        otherTaskPane.setCollapsed(true);
-        settingsTaskPane.setCollapsed(true);
+        refund_cancel();
     }//GEN-LAST:event_btnRefundCancelActionPerformed
-
-    private void btnCheckStock1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckStock1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCheckStock1ActionPerformed
 
     private void settingsTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsTaskPaneMouseClicked
         // TODO add your handling code here:
+        settings_showTaskPane(evt);
     }//GEN-LAST:event_settingsTaskPaneMouseClicked
+
+    private void btnCachierLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCachierLogActionPerformed
+        cashier_logIn();
+    }//GEN-LAST:event_btnCachierLogActionPerformed
+
+    private void otherTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_otherTaskPaneMouseClicked
+        // TODO add your handling code here:
+        other_showTaskPane(evt);
+    }//GEN-LAST:event_otherTaskPaneMouseClicked
+
+    private void btnNewSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewSaleActionPerformed
+        // TODO add your handling code here:
+        bill_newSale();
+    }//GEN-LAST:event_btnNewSaleActionPerformed
+
+    private void btnDeleteItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteItemActionPerformed
+        // TODO add your handling code here:
+        bill_deleteItemFromBillItemTable();
+    }//GEN-LAST:event_btnDeleteItemActionPerformed
+
+    private void btnClearItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearItemActionPerformed
+        // TODO add your handling code here:
+        bill_clearSelectedItemSearch();
+    }//GEN-LAST:event_btnClearItemActionPerformed
+
+    private void btnAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddItemActionPerformed
+        // TODO add your handling code here:
+        bill_addItemToBillItemTable();
+    }//GEN-LAST:event_btnAddItemActionPerformed
+
+    private void btnLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadActionPerformed
+        // TODO add your handling code here:
+        bill_loadLtemInfoToBill();
+    }//GEN-LAST:event_btnLoadActionPerformed
+
+    private void btnPrintBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintBillActionPerformed
+        // TODO add your handling code here:
+        billCopy_printBill();
+    }//GEN-LAST:event_btnPrintBillActionPerformed
+
+    private void btnConfigureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigureActionPerformed
+        // TODO add your handling code here:
+        configure_show();
+    }//GEN-LAST:event_btnConfigureActionPerformed
+
+    private void btnHoldSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoldSaleActionPerformed
+        // TODO add your handling code here:
+        bill_holdSale();
+    }//GEN-LAST:event_btnHoldSaleActionPerformed
+
+    private void btnRestoreSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestoreSaleActionPerformed
+        // TODO add your handling code here:
+        bill_restoreSale();
+    }//GEN-LAST:event_btnRestoreSaleActionPerformed
+
+    private void btnNewBillFromRefundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewBillFromRefundActionPerformed
+        // TODO add your handling code here:
+        refund_newBill();
+    }//GEN-LAST:event_btnNewBillFromRefundActionPerformed
+
+    private void btnAddPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPaymentActionPerformed
+        // TODO add your handling code here:
+        bill_addPaymentOption();
+    }//GEN-LAST:event_btnAddPaymentActionPerformed
+
+    private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
+        // TODO add your handling code here:
+        bill_removePaymentOption();
+    }//GEN-LAST:event_btnRemoveActionPerformed
+
+    private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmActionPerformed
+        // TODO add your handling code here:
+        bill_confirm();
+    }//GEN-LAST:event_btnConfirmActionPerformed
+
+    private void btnManagerLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManagerLogActionPerformed
+        // TODO add your handling code here:
+        manager_logIn();
+    }//GEN-LAST:event_btnManagerLogActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        
+
         setupUI();
-        
+
         java.awt.EventQueue.invokeLater(() -> {
             new POSInterface().setVisible(true);
         });
@@ -2115,15 +2495,15 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JButton btnCancelPrint;
     private javax.swing.JButton btnCashWithdrawal;
     private javax.swing.JButton btnCheckStock;
-    private javax.swing.JButton btnCheckStock1;
     private javax.swing.JButton btnClearItem;
+    private javax.swing.JButton btnConfigure;
     private javax.swing.JButton btnConfirm;
     private javax.swing.JButton btnDeleteItem;
     private javax.swing.JButton btnHoldSale;
     private javax.swing.JButton btnInvoiceCancel;
     private javax.swing.JButton btnLoad;
     private javax.swing.JButton btnManagerLog;
-    private javax.swing.JButton btnNewBill;
+    private javax.swing.JButton btnNewBillFromRefund;
     private javax.swing.JButton btnNewSale;
     private javax.swing.JButton btnPayment;
     private javax.swing.JButton btnPrevious;
@@ -2144,7 +2524,6 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JPanel invoicePanel;
     private javax.swing.JPanel itemAddPanel;
     private javax.swing.JComboBox itemCodeComboBox;
-    private javax.swing.JComboBox itemProductComboBox;
     private javax.swing.JScrollPane itemTableSP;
     private org.jdesktop.swingx.JXTaskPaneContainer jXTaskPaneContainer1;
     private javax.swing.JLabel lblBill;
@@ -2252,6 +2631,7 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField txtCashPaymentAmount;
     private javax.swing.JFormattedTextField txtDiscountPercent;
     private javax.swing.JFormattedTextField txtDiscountVal;
+    private javax.swing.JTextField txtProductDesc;
     private javax.swing.JFormattedTextField txtQty;
     private javax.swing.JTextField txtSearchBillNO;
     private javax.swing.JTextField txtSearchBillNO1;

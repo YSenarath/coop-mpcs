@@ -6,12 +6,15 @@
 package ui.view.pos;
 
 import java.awt.Frame;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Shehan
  */
 public class SearchItemDialog extends javax.swing.JDialog {
+
+    private static final Logger logger = Logger.getLogger(SearchItemDialog.class);
 
     /**
      * Creates new form SearchItemDialog
@@ -23,6 +26,26 @@ public class SearchItemDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
+    }
+
+    //Perform search
+    private void search() {
+        logger.warn("search not implemented");
+    }
+
+    //Clear fields
+    private void clear() {
+        logger.warn("clear not implemented");
+    }
+
+    //Select Item
+    private void selectItem() {
+        logger.warn("selectItem not implemented");
+    }
+
+    //Cancel Search
+    private void cancelSearch() {
+        this.dispose();
     }
 
     /**
@@ -69,6 +92,11 @@ public class SearchItemDialog extends javax.swing.JDialog {
 
         btnSearch.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnSearch.setText("Search [ F5 ] ");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         lblDepartment.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblDepartment.setText("Department");
@@ -128,9 +156,19 @@ public class SearchItemDialog extends javax.swing.JDialog {
 
         btnClear.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         btnSelect.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnSelect.setText("Select");
+        btnSelect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSelectActionPerformed(evt);
+            }
+        });
 
         btnCancel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnCancel.setMnemonic('E');
@@ -158,7 +196,6 @@ public class SearchItemDialog extends javax.swing.JDialog {
                             .addComponent(lblDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(departmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(containerPanelLayout.createSequentialGroup()
                                 .addComponent(txtProduct)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -168,7 +205,9 @@ public class SearchItemDialog extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(containerPanelLayout.createSequentialGroup()
-                                .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(departmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(containerPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -229,8 +268,23 @@ public class SearchItemDialog extends javax.swing.JDialog {
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
-        this.dispose();
+        cancelSearch();
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        search();
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        clear();
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectActionPerformed
+        // TODO add your handling code here:
+        selectItem();
+    }//GEN-LAST:event_btnSelectActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;

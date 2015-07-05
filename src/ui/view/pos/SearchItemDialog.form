@@ -72,7 +72,6 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="departmentComboBox" min="-2" pref="188" max="-2" attributes="0"/>
                               <Group type="102" attributes="0">
                                   <Component id="txtProduct" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -84,7 +83,10 @@
                                   <Component id="btnClear" min="-2" pref="125" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
-                                  <Component id="itemCodeComboBox" min="-2" pref="188" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="departmentComboBox" min="-2" pref="188" max="-2" attributes="0"/>
+                                      <Component id="itemCodeComboBox" min="-2" pref="188" max="-2" attributes="0"/>
+                                  </Group>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -168,6 +170,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Search [ F5 ] "/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSearchActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblDepartment">
           <Properties>
@@ -306,6 +311,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Clear"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnClearActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnSelect">
           <Properties>
@@ -314,6 +322,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Select"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSelectActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnCancel">
           <Properties>
