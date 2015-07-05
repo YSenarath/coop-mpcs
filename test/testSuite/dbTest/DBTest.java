@@ -6,6 +6,7 @@
 package testSuite.dbTest;
 
 import database.connector.DBConnection;
+import util.definitions.AppConstants;
 import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
@@ -20,15 +21,11 @@ public class DBTest {
 
     public static void main(String[] args) {
         Properties connectionProps = new Properties();
-
-        String server = "localhost";
-        String port = "3306";
-        String database = "COOP_MPCS_DB";
         connectionProps.put("user", "admin");
         connectionProps.put("password", "admin");
 
         try {
-            DBConnection.getConnectionToDB(server, port, database, connectionProps);
+            DBConnection.getConnectionToDB(AppConstants.SERVER, AppConstants.PORT, AppConstants.DATABASE, connectionProps);
             logger.info(" Connected to Database ");
             DBConnection.closeConnectionToDB();
             logger.info(" Disconnected from Database ");

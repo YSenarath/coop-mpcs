@@ -217,7 +217,7 @@ public class POSInterface extends javax.swing.JFrame {
     private void bill_confirm() {
         logger.warn("bill_confirm not implemented");
     }
-     
+
     //Show bill copy screen
     private void billCopy_ShowPanel() {
         CardLayout card = (CardLayout) cardPanel.getLayout();
