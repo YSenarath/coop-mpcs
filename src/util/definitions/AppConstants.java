@@ -15,6 +15,11 @@ public interface AppConstants {
     public static final String SERVER = "localhost";
     public static final String PORT = "3306";
     public static final String DATABASE = "COOP";
+    
+    public static final String USER_NAME = "admin";
+    public static final String PASSWORD = "admin";
+    
+    
 
     //Database table names
     public static final String CASHIER = "cashier";

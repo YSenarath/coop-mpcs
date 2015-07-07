@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import util.definitions.AppConstants;
 
 /**
  *
@@ -13,26 +14,29 @@ import org.apache.log4j.Logger;
  */
 public class DBConnection {
 
-    private static Logger logger = Logger.getLogger(DBConnection.class);
+    private static final Logger logger = Logger.getLogger(DBConnection.class);
 
     private static DBConnection dbConnetion;
     private Connection connection;
 
-    private DBConnection(String server, String port, String database, Properties connectionProps) throws SQLException {
+    private DBConnection() throws SQLException {
         DriverManager.registerDriver(new Driver());
         try {
-            logger.debug("MYSQL string = jdbc:mysql://" + server + ":" + port + "/" + database + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
+            Properties connectionProps = new Properties();
+            connectionProps.put("user", AppConstants.USER_NAME);
+            connectionProps.put("password", AppConstants.PASSWORD);
+            logger.debug("MYSQL string = jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
 
-            connection = DriverManager.getConnection("jdbc:mysql://" + server + ":" + port + "/" + database, connectionProps);
+            connection = DriverManager.getConnection("jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE, connectionProps);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private static DBConnection getDBConnection(String server, String port, String database, Properties connectionProps) throws SQLException {
+    private static DBConnection getDBConnection() throws SQLException {
         logger.debug("getDBConnection invoked");
         if (dbConnetion == null) {
-            dbConnetion = new DBConnection(server, port, database, connectionProps);
+            dbConnetion = new DBConnection();
         }
         return dbConnetion;
     }
@@ -52,18 +56,11 @@ public class DBConnection {
 
     /**
      *
-     * @param server server location
-     * @param port port number
-     * @param database database to connect
-     * @param connectionProps username and password
      * @return connection to DBMS
      * @throws SQLException
      */
-    public static Connection getConnectionToDB(String server, String port, String database, Properties connectionProps) throws SQLException {
-        logger.debug("getConnectionToDB invoked for : " + server + ", " + port + ", " + database + ", " + connectionProps.getProperty("user") + ", " + connectionProps.getProperty("password"));
-
-        DBConnection dBConnection = getDBConnection(server, port, database, connectionProps);
-        return dBConnection.getConnection();
+    public static Connection getConnectionToDB() throws SQLException {
+        return getDBConnection().getConnection();
     }
 
     public static void closeConnectionToDB() throws SQLException {

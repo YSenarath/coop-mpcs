@@ -6,10 +6,12 @@
 package ui.view.pos;
 
 import java.util.Properties;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.log4j.Logger;
 import ui.handler.pos.LoginHandler;
+import util.Utilities;
 
 /**
  *
@@ -32,11 +34,19 @@ public class LogIn extends javax.swing.JFrame {
 
     //Log in to application
     public void logIn() {
-        if (loginhandler.isUserAuthenticated(txtUsername.getText(), txtPassword.getPassword())) {
-            new POSInterface().setVisible(true);
-            exitApp();
-        }else{
-            logger.error("User not identified");
+        try {
+            double initialAmount = Double.valueOf(ftxtIntialAmount.getText());
+            if (loginhandler.isUserAuthenticated(txtUsername.getText(), txtPassword.getPassword(), initialAmount)) {
+                new POSInterface().setVisible(true);
+                exitApp();
+            } else {
+                Utilities.showMsgBox("User not identified", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                logger.error("User not identified");
+            }
+        } catch (Exception ex) {
+            logger.error("Critial error : " + ex.getMessage());
+            Utilities.showMsgBox("Critial error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
         }
 
     }
@@ -140,6 +150,11 @@ public class LogIn extends javax.swing.JFrame {
         setTitle("COOP POS LOG IN");
         setResizable(false);
 
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder1.setShowLeftShadow(true);
+        dropShadowBorder1.setShowTopShadow(true);
+        containerpanel.setBorder(dropShadowBorder1);
+
         lbluserName.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lbluserName.setText("User Name");
 
@@ -169,6 +184,8 @@ public class LogIn extends javax.swing.JFrame {
         lblInitialCashAmount.setToolTipText("");
 
         ftxtIntialAmount.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.00"))));
+        ftxtIntialAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        ftxtIntialAmount.setText("5000.00");
         ftxtIntialAmount.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout containerpanelLayout = new javax.swing.GroupLayout(containerpanel);
@@ -214,7 +231,7 @@ public class LogIn extends javax.swing.JFrame {
                 .addGroup(containerpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblInitialCashAmount)
                     .addComponent(ftxtIntialAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addGroup(containerpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnOK)
                     .addComponent(btnCancel))

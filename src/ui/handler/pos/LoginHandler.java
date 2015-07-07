@@ -5,7 +5,11 @@
  */
 package ui.handler.pos;
 
+import controller.pos.LoginController;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import javax.swing.JFrame;
+import model.pos.User;
 import org.apache.log4j.Logger;
 
 /**
@@ -21,14 +25,28 @@ public class LoginHandler {
         this.loginFrame = loginFrame;
     }
 
-    public boolean isUserAuthenticated(String userName, char[] password) {
+    public boolean isUserAuthenticated(String userName, char[] password, double initialAmount) throws SQLException {
         String strPassword = new String(password);
-        
         //get users from the datanase using LoginControoler and authenticate the given username and password
+
+        //send user name and password and use a SELECT query 
+        if (!(userName.isEmpty() || strPassword.isEmpty())) {
+            ArrayList<User> allUsers = LoginController.getAllCashRecipts();
+
+            for (User user : allUsers) {
+                logger.info(user.getUserName() + " , " + user.getPassword());
+                if (user.getUserName().equals(userName) && user.getPassword().equals(strPassword)) {
+                    setIntitialAmount(initialAmount);
+                    return true;
+                }
+            }
+
+        }
+
         return false;
     }
 
-    public void setIntitialAmount(String amount) {
+    private void setIntitialAmount(double initialAmount) {
 
     }
 }

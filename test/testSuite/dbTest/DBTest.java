@@ -20,12 +20,9 @@ public class DBTest {
     private static Logger logger = Logger.getLogger(DBTest.class);
 
     public static void main(String[] args) {
-        Properties connectionProps = new Properties();
-        connectionProps.put("user", "admin");
-        connectionProps.put("password", "admin");
 
         try {
-            DBConnection.getConnectionToDB(AppConstants.SERVER, AppConstants.PORT, AppConstants.DATABASE, connectionProps);
+            DBConnection.getConnectionToDB();
             logger.info(" Connected to Database ");
             DBConnection.closeConnectionToDB();
             logger.info(" Disconnected from Database ");
