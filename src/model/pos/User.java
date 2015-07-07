@@ -12,11 +12,25 @@ package model.pos;
 public class User {
 
     private String userName;
+    private String employeeId;
     private String password;
+    private UserType userType;
 
-    public User(String name, String password) {
-        this.userName = name;
+    public User(String userName, String employeeId, String password, String userType) {
+        this.userName = userName;
+        this.employeeId = employeeId;
         this.password = password;
+        switch (userType) {
+            case "manager":
+                this.userType = UserType.MANAGER;
+                break;
+            case "cashier":
+                this.userType = UserType.CASHIER;
+                break;
+            case "inventory_manager":
+                this.userType = UserType.INVENTORY;
+                break;
+        }
     }
 
     /**
@@ -45,6 +59,34 @@ public class User {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * @return the userType
+     */
+    public UserType getUserType() {
+        return userType;
+    }
+
+    /**
+     * @param userType the userType to set
+     */
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
+
+    /**
+     * @return the employeeId
+     */
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    /**
+     * @param employeeId the employeeId to set
+     */
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 
 }

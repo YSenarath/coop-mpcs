@@ -5,6 +5,7 @@
  */
 package ui.view.pos;
 
+import com.mysql.jdbc.Util;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,7 +18,9 @@ import java.util.Properties;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
+import model.pos.Employee;
 import org.apache.log4j.Logger;
+import util.Utilities;
 
 /**
  *
@@ -29,10 +32,20 @@ public class POSInterface extends javax.swing.JFrame {
 
     private boolean isCashierLogedIn;
 
+    private Employee user;
+
     public POSInterface() {
         initComponents();
         initializeGUI();
         initializeStates();
+
+    }
+
+    public POSInterface(Employee employee) {
+        initComponents();
+        initializeGUI();
+        initializeStates();
+        setUser(employee);
 
     }
 
@@ -61,6 +74,8 @@ public class POSInterface extends javax.swing.JFrame {
         otherTaskPane.setCollapsed(true);
         settingsTaskPane.setCollapsed(true);
 
+        lblCounter.setText(Utilities.loadProperty("counter"));
+
     }
 
     private void initializeStates() {
@@ -69,7 +84,12 @@ public class POSInterface extends javax.swing.JFrame {
         isCashierLogedIn = false;
     }
 
+    private void setUser(Employee employee) {
+        this.user = employee;
+        lblCashier.setText(employee.getName());
+    }
     //user log in ui changes
+
     private void setLogControls() {
         logger.debug("setLogControles invoked");
         if (isCashierLogedIn) {

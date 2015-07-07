@@ -5,12 +5,16 @@
  */
 package ui.handler.pos;
 
-import controller.pos.LoginController;
+import controller.pos.CounterController;
+import controller.pos.EmployeeController;
+import controller.pos.UserController;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import javax.swing.JFrame;
+import model.pos.CounterLogin;
+import model.pos.Employee;
 import model.pos.User;
 import org.apache.log4j.Logger;
+import util.Utilities;
 
 /**
  *
@@ -25,28 +29,19 @@ public class LoginHandler {
         this.loginFrame = loginFrame;
     }
 
-    public boolean isUserAuthenticated(String userName, char[] password, double initialAmount) throws SQLException {
-        String strPassword = new String(password);
-        //get users from the datanase using LoginControoler and authenticate the given username and password
-
-        //send user name and password and use a SELECT query 
-        if (!(userName.isEmpty() || strPassword.isEmpty())) {
-            ArrayList<User> allUsers = LoginController.getAllCashRecipts();
-
-            for (User user : allUsers) {
-                logger.info(user.getUserName() + " , " + user.getPassword());
-                if (user.getUserName().equals(userName) && user.getPassword().equals(strPassword)) {
-                    setIntitialAmount(initialAmount);
-                    return true;
-                }
-            }
-
-        }
-
-        return false;
+    public boolean isUserAuthenticated(String userName, char[] password) throws SQLException {
+        logger.debug("isUserAuthenticated invoked");
+        return UserController.isUserAuthenticated(userName, new String(password));
     }
 
-    private void setIntitialAmount(double initialAmount) {
-
+    public Employee performCounterLogin(String userName, double intialAmount) throws SQLException {
+        logger.debug("setIntitialAmount invoked");
+        //Get cashier info ,counter info ,time, date and create a counter login
+        Employee employee = EmployeeController.getEmployee(UserController.getUser(userName).getEmployeeId());
+        if (CounterController.addCounterLogin(new CounterLogin(employee.getEmployee_Id(), Utilities.loadProperty("counter"),
+                Utilities.getCurrentTime(true), Utilities.getCurrentDate(), intialAmount))) {
+            return employee;
+        }
+        return null;
     }
 }

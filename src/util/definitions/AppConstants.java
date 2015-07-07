@@ -22,7 +22,7 @@ public interface AppConstants {
     
 
     //Database table names
-    public static final String CASHIER = "cashier";
+    public static final String EMPLOYEE = "employee";
     public static final String COUNTER = "counter";
     public static final String CASH_WITHDRAWAL = "cash_withdrawal";
     public static final String COUNTER_LOGIN = "counter_login";

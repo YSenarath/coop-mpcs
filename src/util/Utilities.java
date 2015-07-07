@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 
 /**
@@ -45,4 +46,13 @@ public class Utilities {
         JOptionPane.showMessageDialog(null, msg, title, msgType);
     }
 
+    //Save a client app specific property
+    public static void saveProperty(String key, String value) {
+        Preferences.userNodeForPackage(Utilities.class).put(key, value);
+    }
+
+    //Load a client app specific property
+    public static String loadProperty(String key) {
+        return Preferences.userNodeForPackage(Utilities.class).get(key, "NULL");
+    }
 }
