@@ -5,11 +5,15 @@
  */
 package ui.view.pos;
 
+import org.apache.log4j.Logger;
+
 /**
  *
  * @author Shehan
  */
 public class SelectPriceInterface extends javax.swing.JInternalFrame {
+
+    private static final Logger logger = Logger.getLogger(SelectPriceInterface.class);
 
     /**
      * Creates new form SelectPriceInterface

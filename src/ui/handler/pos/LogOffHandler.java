@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
  */
 public class LogOffHandler {
 
-    private static final Logger logger = Logger.getLogger(LogInHandler.class);
+    private static final Logger logger = Logger.getLogger(LogOffHandler.class);
     private final JFrame posInterface;
 
     public LogOffHandler(JFrame posInterface) {
