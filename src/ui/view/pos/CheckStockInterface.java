@@ -5,32 +5,48 @@
  */
 package ui.view.pos;
 
-import java.awt.Frame;
+import java.awt.Dimension;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Shehan
  */
-public class CheckStockDialog extends javax.swing.JDialog {
+public class CheckStockInterface extends javax.swing.JInternalFrame {
 
-    private final Frame parent;
+    private static final Logger logger = Logger.getLogger(CheckStockInterface.class);
+    private final JDesktopPane desktopPane;
+
+    private JInternalFrame searchItemInterface;
 
     /**
-     * Creates new form CheckStock
+     * Creates new form CheckStockInterface
      *
-     * @param parent
-     * @param modal
+     * @param desktopPane
      */
-    public CheckStockDialog(Frame parent, boolean modal) {
-        super(parent, modal);
+    public CheckStockInterface(JDesktopPane desktopPane) {
         initComponents();
-        setLocationRelativeTo(null);
-        this.parent = parent;
+        this.desktopPane = desktopPane;
+        Dimension desktopSize = desktopPane.getSize();
+        Dimension jInternalFrameSize = this.getSize();
+        this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
     }
 
     //Show search item 
     private void searchItem() {
-        new SearchItemDialog(parent, true).setVisible(true);
+        //new SearchItemDialog(parent, true).setVisible(true);
+        logger.debug("searchItem invoked");
+
+        if (searchItemInterface == null) {
+            searchItemInterface = new SearchItemInterface(desktopPane);
+        } else {
+            desktopPane.remove(searchItemInterface);
+        }
+        desktopPane.add(searchItemInterface);
+        searchItemInterface.setVisible(true);
     }
 
     //Cancel check
@@ -57,10 +73,8 @@ public class CheckStockDialog extends javax.swing.JDialog {
         itemInfoTable = new javax.swing.JTable();
         btnOk = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Check stock");
-        setName("checkStockDialog"); // NOI18N
-        setResizable(false);
+        setClosable(true);
+        setTitle("Check Stock");
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -98,7 +112,7 @@ public class CheckStockDialog extends javax.swing.JDialog {
                     .addComponent(lblProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
+                    .addComponent(txtProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
                     .addGroup(stockInfoPanelLayout.createSequentialGroup()
                         .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -155,7 +169,7 @@ public class CheckStockDialog extends javax.swing.JDialog {
         );
         itemInfoContainerLayout.setVerticalGroup(
             itemInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
+            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         btnOk.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -206,15 +220,16 @@ public class CheckStockDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        searchItem();
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
         // TODO add your handling code here:
         cancelCheck();
     }//GEN-LAST:event_btnOkActionPerformed
 
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
-        searchItem();
-    }//GEN-LAST:event_btnSearchActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnOk;

@@ -3,23 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui.view.pos;
+package ui.view.pos.old;
 
-import com.mysql.jdbc.Util;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.JComboBox;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import model.pos.Employee;
 import org.apache.log4j.Logger;
+import ui.handler.pos.LogOffHandler;
 import util.Utilities;
 
 /**
@@ -32,20 +35,23 @@ public class POSInterface extends javax.swing.JFrame {
 
     private boolean isCashierLogedIn;
 
-    private Employee user;
+    private String userName;
+    private Employee cashier;
+
+    private LogOffHandler logoffhandler;
 
     public POSInterface() {
         initComponents();
         initializeGUI();
-        initializeStates();
 
+        isCashierLogedIn = true;
+        btnCashierLog.setEnabled(false);
     }
 
-    public POSInterface(Employee employee) {
+    public POSInterface(String userName, Employee cashier) {
         initComponents();
         initializeGUI();
-        initializeStates();
-        setUser(employee);
+        setUser(userName, cashier);
 
     }
 
@@ -72,42 +78,36 @@ public class POSInterface extends javax.swing.JFrame {
         billTaskPane.setCollapsed(false);
 
         otherTaskPane.setCollapsed(true);
-        settingsTaskPane.setCollapsed(true);
 
         lblCounter.setText(Utilities.loadProperty("counter"));
 
+        logoffhandler = new LogOffHandler(this);
     }
 
-    private void initializeStates() {
-        btnCachierLog.setText("Cashier logged off");
-        btnManagerLog.setText("Manager logged off");
-        isCashierLogedIn = false;
-    }
-
-    private void setUser(Employee employee) {
-        this.user = employee;
-        lblCashier.setText(employee.getName());
+    private void setUser(String userName, Employee cashier) {
+        this.cashier = cashier;
+        this.userName = userName;
+        lblCashier.setText(this.cashier.getName());
+        this.isCashierLogedIn = true;
     }
     //user log in ui changes
 
-    private void setLogControls() {
+    private void setLogOffControls() {
         logger.debug("setLogControles invoked");
-        if (isCashierLogedIn) {
-            btnCachierLog.setText("Cashier logged in");
-
-            lblCashier.setText("Test");
-            lblCounter.setText("1");
-        } else {
-            btnCachierLog.setText("Cashier logged off");
+        if (!isCashierLogedIn) {
+            btnCashierLog.setText("Cashier logged off");
+            btnCashierLog.setEnabled(false);
 
             lblCashier.setText("<Cashier name>");
             lblCounter.setText("<counter>");
 
             CardLayout card = (CardLayout) cardPanel.getLayout();
             card.show(cardPanel, "welcomeCard");
+
             billTaskPane.setCollapsed(true);
             otherTaskPane.setCollapsed(true);
-            settingsTaskPane.setCollapsed(true);
+            billTaskPane.setEnabled(false);
+            otherTaskPane.setEnabled(false);
         }
     }
 
@@ -120,7 +120,7 @@ public class POSInterface extends javax.swing.JFrame {
     private void bill_deleteItemFromBillItemTable() {
         logger.debug("bill_deleteItemFromBillItemTable invoked");
 
-        //NOT IMPLEMNTED - When a row is deleted the bottem most row gets auto matically selected. If no row selected by user delete from the bottom
+        //NOT IMPLEMNTED - When a row is deleted the bottem most row gets auto matically selected. If no row selected by cashier delete from the bottom
         DefaultTableModel billItemTableModel = (DefaultTableModel) billItemTable.getModel();
         if (billItemTable.getSelectedRow() != -1) {
             billItemTableModel.removeRow(billItemTable.getSelectedRow());
@@ -168,10 +168,10 @@ public class POSInterface extends javax.swing.JFrame {
     private void bill_showInvoicePanel() {
 
         if (isCashierLogedIn) {
-            // billTaskPane.setCollapsed(false);
+            billTaskPane.setCollapsed(false);
         } else {
             logger.error("Cashier not logged in");
-            //  billTaskPane.setCollapsed(true);
+            billTaskPane.setCollapsed(true);
         }
     }
 
@@ -256,7 +256,6 @@ public class POSInterface extends javax.swing.JFrame {
         card.show(cardPanel, "welcomeCard");
         billTaskPane.setCollapsed(true);
         otherTaskPane.setCollapsed(true);
-        settingsTaskPane.setCollapsed(true);
     }
 
     //Show refund screen
@@ -277,7 +276,6 @@ public class POSInterface extends javax.swing.JFrame {
         card.show(cardPanel, "welcomeCard");
         billTaskPane.setCollapsed(true);
         otherTaskPane.setCollapsed(true);
-        settingsTaskPane.setCollapsed(true);
     }
 
     //Show the cash withdrawal UI
@@ -294,7 +292,6 @@ public class POSInterface extends javax.swing.JFrame {
     private void settings_showTaskPane(java.awt.event.MouseEvent evt) {
         if (!isCashierLogedIn) {
             logger.error("Cashier not logged in");
-            settingsTaskPane.setCollapsed(true);
             evt.consume();
         }
     }
@@ -305,16 +302,13 @@ public class POSInterface extends javax.swing.JFrame {
             logger.error("Cashier not logged in");
             otherTaskPane.setCollapsed(true);
             evt.consume();
+        } else {
+            otherTaskPane.setCollapsed(false);
         }
     }
 
-    //Show configure UI
-    private void configure_show() {
-        logger.warn("configure_show not implemented");
-    }
-
     //Mange cashier login
-    private void cashier_logIn() {
+    private void cashier_logOff() {
         // TODO add your handling code here:
 
         /*
@@ -322,22 +316,30 @@ public class POSInterface extends javax.swing.JFrame {
          1.NOT IMPLEMENTED - Show intial amount of drawayer  UI at log on
          2.NOT IMPLEMENTED - Show log of UI to print the summery for cashier - 
          */
-        logger.warn("NOT IMPLEMENTED - Show intial amount of drawayer  UI at log on");
         logger.warn("NOT IMPLEMENTED - Show log of UI to print the summery for cashier");
+        logger.warn("Check for unfinished business");
 
-        if (!isCashierLogedIn) {
-            logger.info("Cashier logged on");
-            isCashierLogedIn = true;
-        } else {
-            logger.info("Cashier logged off");
-            isCashierLogedIn = false;
+        if (isCashierLogedIn) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to log off ?", "Warning", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                logger.info("Cashier logged off");
+                try {
+                    logoffhandler.logOffUser(userName);
+                    logger.debug("User : "+userName+" logged off");
+                } catch (SQLException ex) {
+                    logger.error("User log off error : " + ex.getMessage());
+
+                }
+                isCashierLogedIn = false;
+                logger.info("isCashierLogedIn :" + isCashierLogedIn);
+                setLogOffControls();
+            }
+
         }
-        setLogControls();
-
     }
 
     //Manager features
-    private void manager_logIn() {
+    private void manager_() {
         logger.warn("manager_logIn not implemented");
     }
 
@@ -443,8 +445,6 @@ public class POSInterface extends javax.swing.JFrame {
         btnBillRefund = new javax.swing.JButton();
         btnBillCopy = new javax.swing.JButton();
         btnCashWithdrawal = new javax.swing.JButton();
-        settingsTaskPane = new org.jdesktop.swingx.JXTaskPane();
-        btnConfigure = new javax.swing.JButton();
         interfaceContainerPanel = new javax.swing.JPanel();
         cardPanel = new javax.swing.JPanel();
         welcomePanel = new javax.swing.JPanel();
@@ -582,7 +582,7 @@ public class POSInterface extends javax.swing.JFrame {
         btnPrintBill = new javax.swing.JButton();
         lblBillPrintDateDisplay = new javax.swing.JLabel();
         lblBillPrintDate = new javax.swing.JLabel();
-        btnCachierLog = new javax.swing.JButton();
+        btnCashierLog = new javax.swing.JButton();
         btnManagerLog = new javax.swing.JButton();
         statusPanel = new javax.swing.JPanel();
         statusBar = new org.jdesktop.swingx.JXStatusBar();
@@ -778,29 +778,6 @@ public class POSInterface extends javax.swing.JFrame {
 
         jXTaskPaneContainer1.add(otherTaskPane);
 
-        settingsTaskPane.setBackground(new java.awt.Color(102, 102, 102));
-        settingsTaskPane.setForeground(new java.awt.Color(153, 153, 153));
-        settingsTaskPane.setSpecial(true);
-        settingsTaskPane.setTitle("Settings");
-        settingsTaskPane.setToolTipText("");
-        settingsTaskPane.setEnabled(false);
-        settingsTaskPane.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                settingsTaskPaneMouseClicked(evt);
-            }
-        });
-
-        btnConfigure.setText("Configure");
-        btnConfigure.setPreferredSize(new java.awt.Dimension(73, 30));
-        btnConfigure.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConfigureActionPerformed(evt);
-            }
-        });
-        settingsTaskPane.getContentPane().add(btnConfigure);
-
-        jXTaskPaneContainer1.add(settingsTaskPane);
-
         javax.swing.GroupLayout sidePanelLayout = new javax.swing.GroupLayout(sidePanel);
         sidePanel.setLayout(sidePanelLayout);
         sidePanelLayout.setHorizontalGroup(
@@ -836,7 +813,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
-                        .addGap(0, 431, Short.MAX_VALUE)
+                        .addGap(0, 331, Short.MAX_VALUE)
                         .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 586, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -845,7 +822,7 @@ public class POSInterface extends javax.swing.JFrame {
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
+                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblWelcome)
                 .addContainerGap())
@@ -1097,7 +1074,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addComponent(lblItemNoDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblItems, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblItemDiscountDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblItems1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1169,7 +1146,7 @@ public class POSInterface extends javax.swing.JFrame {
                     .addComponent(productPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(billButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(billSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1222,7 +1199,7 @@ public class POSInterface extends javax.swing.JFrame {
         paymentOptionsPanel.setLayout(paymentOptionsPanelLayout);
         paymentOptionsPanelLayout.setHorizontalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(paymentOptionsSP, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
+            .addComponent(paymentOptionsSP, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
         );
         paymentOptionsPanelLayout.setVerticalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1289,7 +1266,7 @@ public class POSInterface extends javax.swing.JFrame {
                     .addComponent(lblBillValueVal, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
                     .addComponent(txtDiscountPercent)
                     .addComponent(txtDiscountVal))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 237, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 137, Short.MAX_VALUE)
                 .addComponent(lblChangeDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblChangeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1564,7 +1541,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                 .addComponent(paymentInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1730,7 +1707,7 @@ public class POSInterface extends javax.swing.JFrame {
                                 .addComponent(lblRefundNetTotalDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(lblRefundNetTotalVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 141, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                         .addGroup(billPaymentSummeryPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lblRefundCancelNetTotalDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lblRefundCancelDiscountAmountDisplay, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1841,7 +1818,7 @@ public class POSInterface extends javax.swing.JFrame {
         );
         billRefundItemPanelLayout.setVerticalGroup(
             billRefundItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
+            .addComponent(billItemSP1, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
         );
 
         lblBill3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -1952,7 +1929,7 @@ public class POSInterface extends javax.swing.JFrame {
                 .addComponent(lblBill1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtSearchBillNO, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 142, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addComponent(lblBillDateDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblBillDateVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2024,7 +2001,7 @@ public class POSInterface extends javax.swing.JFrame {
         );
         billItemPanelLayout.setVerticalGroup(
             billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
+            .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
         );
 
         billPaymentSummeryPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -2236,24 +2213,24 @@ public class POSInterface extends javax.swing.JFrame {
         interfaceContainerPanel.setLayout(interfaceContainerPanelLayout);
         interfaceContainerPanelLayout.setHorizontalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 937, Short.MAX_VALUE)
         );
         interfaceContainerPanelLayout.setVerticalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
         );
 
-        btnCachierLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnCachierLog.setText("Cashier Log ");
-        btnCachierLog.setPreferredSize(new java.awt.Dimension(71, 35));
-        btnCachierLog.addActionListener(new java.awt.event.ActionListener() {
+        btnCashierLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnCashierLog.setText("Cashier Log Off");
+        btnCashierLog.setPreferredSize(new java.awt.Dimension(71, 35));
+        btnCashierLog.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCachierLogActionPerformed(evt);
+                btnCashierLogActionPerformed(evt);
             }
         });
 
         btnManagerLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnManagerLog.setText("Manager Log Off");
+        btnManagerLog.setText("Manager report");
         btnManagerLog.setPreferredSize(new java.awt.Dimension(71, 35));
         btnManagerLog.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2268,7 +2245,7 @@ public class POSInterface extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainLayerPanelLayout.createSequentialGroup()
                 .addGroup(mainLayerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(sidePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnCachierLog, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCashierLog, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnManagerLog, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(counterInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2280,8 +2257,8 @@ public class POSInterface extends javax.swing.JFrame {
                 .addComponent(counterInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sidePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCachierLog, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(1, 1, 1)
+                .addComponent(btnCashierLog, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnManagerLog, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(6, 6, 6))
@@ -2290,7 +2267,7 @@ public class POSInterface extends javax.swing.JFrame {
         mainLayerPanel.setLayer(counterInfoPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
         mainLayerPanel.setLayer(sidePanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
         mainLayerPanel.setLayer(interfaceContainerPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        mainLayerPanel.setLayer(btnCachierLog, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        mainLayerPanel.setLayer(btnCashierLog, javax.swing.JLayeredPane.DEFAULT_LAYER);
         mainLayerPanel.setLayer(btnManagerLog, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout uiPanelLayout = new javax.swing.GroupLayout(uiPanel);
@@ -2397,14 +2374,9 @@ public class POSInterface extends javax.swing.JFrame {
         refund_cancel();
     }//GEN-LAST:event_btnRefundCancelActionPerformed
 
-    private void settingsTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsTaskPaneMouseClicked
-        // TODO add your handling code here:
-        settings_showTaskPane(evt);
-    }//GEN-LAST:event_settingsTaskPaneMouseClicked
-
-    private void btnCachierLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCachierLogActionPerformed
-        cashier_logIn();
-    }//GEN-LAST:event_btnCachierLogActionPerformed
+    private void btnCashierLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCashierLogActionPerformed
+        cashier_logOff();
+    }//GEN-LAST:event_btnCashierLogActionPerformed
 
     private void otherTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_otherTaskPaneMouseClicked
         // TODO add your handling code here:
@@ -2441,11 +2413,6 @@ public class POSInterface extends javax.swing.JFrame {
         billCopy_printBill();
     }//GEN-LAST:event_btnPrintBillActionPerformed
 
-    private void btnConfigureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigureActionPerformed
-        // TODO add your handling code here:
-        configure_show();
-    }//GEN-LAST:event_btnConfigureActionPerformed
-
     private void btnHoldSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoldSaleActionPerformed
         // TODO add your handling code here:
         bill_holdSale();
@@ -2478,7 +2445,7 @@ public class POSInterface extends javax.swing.JFrame {
 
     private void btnManagerLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManagerLogActionPerformed
         // TODO add your handling code here:
-        manager_logIn();
+        manager_();
     }//GEN-LAST:event_btnManagerLogActionPerformed
 
     /**
@@ -2511,12 +2478,11 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JButton btnAddPayment;
     private javax.swing.JButton btnBillCopy;
     private javax.swing.JButton btnBillRefund;
-    private javax.swing.JButton btnCachierLog;
     private javax.swing.JButton btnCancelPrint;
     private javax.swing.JButton btnCashWithdrawal;
+    private javax.swing.JButton btnCashierLog;
     private javax.swing.JButton btnCheckStock;
     private javax.swing.JButton btnClearItem;
-    private javax.swing.JButton btnConfigure;
     private javax.swing.JButton btnConfirm;
     private javax.swing.JButton btnDeleteItem;
     private javax.swing.JButton btnHoldSale;
@@ -2640,7 +2606,6 @@ public class POSInterface extends javax.swing.JFrame {
     private javax.swing.JTable printItemTable;
     private javax.swing.JPanel productPanel;
     private javax.swing.JPanel refundPanel;
-    private org.jdesktop.swingx.JXTaskPane settingsTaskPane;
     private javax.swing.JPanel sidePanel;
     private javax.swing.JPanel specialPayment;
     private javax.swing.JPanel stampPayment;

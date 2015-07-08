@@ -8,11 +8,8 @@ package controller.pos;
 import database.connector.DBConnection;
 import database.handler.DBHandler;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import model.pos.CounterLogin;
-import model.pos.User;
 import util.definitions.AppConstants;
 
 /**
@@ -23,10 +20,10 @@ public class CounterController {
 
     public static boolean addCounterLogin(CounterLogin counterLogin) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + AppConstants.COUNTER_LOGIN + "(employee_id,counter_id,time,date,initial_amount) VALUES(?,?,?,?,?)";
+        String query = "INSERT INTO " + AppConstants.COUNTER_LOGIN + "(user_name,counter_id,time,date,initial_amount) VALUES(?,?,?,?,?)";
         int counterloginAdded = -1;
         Object[] ob = {
-            counterLogin.getEmployeeId(),
+            counterLogin.getUser_name(),
             counterLogin.getCounterId(),
             counterLogin.getTime(),
             counterLogin.getDate(),

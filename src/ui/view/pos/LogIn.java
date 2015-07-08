@@ -12,7 +12,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.pos.Employee;
 import org.apache.log4j.Logger;
-import ui.handler.pos.LoginHandler;
+import ui.handler.pos.LogInHandler;
 import util.Utilities;
 
 /**
@@ -23,27 +23,26 @@ public class LogIn extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(LogIn.class);
 
-    private final LoginHandler loginhandler;
+    private final LogInHandler loginhandler;
 
     /**
      * Creates new form LogIn
      */
-    public LogIn() {
+    private LogIn() {
         initComponents();
-        loginhandler = new LoginHandler(this);
+        loginhandler = new LogInHandler(this);
         setLocationRelativeTo(null);
     }
 
     //Log in to application
-    public void logIn() {
+    private void logIn() {
         try {
             String userName = txtUsername.getText();
             double initialAmount = Double.valueOf(ftxtIntialAmount.getText());
 
             if (loginhandler.isUserAuthenticated(userName, txtPassword.getPassword())) {
-              Employee employee = loginhandler.performCounterLogin(userName, initialAmount);
-                if ( employee!=null) {
-                    new POSInterface(employee).setVisible(true);
+                if (loginhandler.performCounterLogin(userName, initialAmount)) {
+                    new POSMDIInterface(userName).setVisible(true);
                 }
                 exitApp();
             } else {
@@ -57,8 +56,16 @@ public class LogIn extends javax.swing.JFrame {
             logger.error("Critial error : " + ex.getMessage());
             Utilities.showMsgBox("Critial error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 
+        } catch (Exception ex) {
+            logger.error("Error : " + ex.getMessage());
+            Utilities.showMsgBox("Error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
+    }
+
+    private void configure() {
+        logger.warn("Not implemented - show application configuration UI, after authenticationg user privilage level");
+        //On exiting config ui return to login screen
     }
 
     //Exit application
@@ -148,13 +155,15 @@ public class LogIn extends javax.swing.JFrame {
 
         containerPanel = new javax.swing.JPanel();
         lbluserName = new javax.swing.JLabel();
-        lblPassword = new javax.swing.JLabel();
         txtUsername = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
-        btnOK = new javax.swing.JButton();
-        btnCancel = new javax.swing.JButton();
-        lblInitialCashAmount = new javax.swing.JLabel();
         ftxtIntialAmount = new javax.swing.JFormattedTextField();
+        lblInitialCashAmount = new javax.swing.JLabel();
+        lblPassword = new javax.swing.JLabel();
+        btnConfigure = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
+        btnOK = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("COOP POS LOG IN");
@@ -168,20 +177,31 @@ public class LogIn extends javax.swing.JFrame {
         lbluserName.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lbluserName.setText("User Name");
 
-        lblPassword.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblPassword.setText("Password");
-
         txtUsername.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         txtPassword.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        btnOK.setText("Ok");
-        btnOK.addActionListener(new java.awt.event.ActionListener() {
+        ftxtIntialAmount.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.00"))));
+        ftxtIntialAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        ftxtIntialAmount.setText("5000.00");
+        ftxtIntialAmount.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        lblInitialCashAmount.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblInitialCashAmount.setText("Initial Cash Amount (Rs.) ");
+        lblInitialCashAmount.setToolTipText("");
+
+        lblPassword.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblPassword.setText("Password");
+
+        btnConfigure.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btnConfigure.setText("Configure");
+        btnConfigure.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOKActionPerformed(evt);
+                btnConfigureActionPerformed(evt);
             }
         });
 
+        btnCancel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -189,14 +209,17 @@ public class LogIn extends javax.swing.JFrame {
             }
         });
 
-        lblInitialCashAmount.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblInitialCashAmount.setText("Initial Cash Amount (Rs.) ");
-        lblInitialCashAmount.setToolTipText("");
+        btnOK.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btnOK.setText("Ok");
+        btnOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOKActionPerformed(evt);
+            }
+        });
 
-        ftxtIntialAmount.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.00"))));
-        ftxtIntialAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        ftxtIntialAmount.setText("5000.00");
-        ftxtIntialAmount.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pos/oosd logo.png"))); // NOI18N
+        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         javax.swing.GroupLayout containerPanelLayout = new javax.swing.GroupLayout(containerPanel);
         containerPanel.setLayout(containerPanelLayout);
@@ -206,31 +229,40 @@ public class LogIn extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
+                        .addComponent(btnConfigure)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnOK, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
+                    .addGroup(containerPanelLayout.createSequentialGroup()
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
-                                    .addComponent(lblInitialCashAmount)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
                                 .addGroup(containerPanelLayout.createSequentialGroup()
                                     .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(126, 126, 126)))
+                                    .addGap(142, 142, 142))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
+                                    .addComponent(lblInitialCashAmount)
+                                    .addGap(26, 26, 26)))
                             .addGroup(containerPanelLayout.createSequentialGroup()
                                 .addComponent(lbluserName, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(126, 126, 126)))
+                                .addGap(142, 142, 142)))
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtUsername)
-                            .addComponent(txtPassword)
-                            .addComponent(ftxtIntialAmount, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE))))
+                            .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ftxtIntialAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 8, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(54, 54, 54)))
                 .addContainerGap())
         );
         containerPanelLayout.setVerticalGroup(
             containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(containerPanelLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbluserName))
@@ -242,10 +274,11 @@ public class LogIn extends javax.swing.JFrame {
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblInitialCashAmount)
                     .addComponent(ftxtIntialAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 27, Short.MAX_VALUE)
+                .addGap(18, 30, Short.MAX_VALUE)
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnOK)
-                    .addComponent(btnCancel))
+                    .addComponent(btnOK, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnConfigure, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -263,15 +296,20 @@ public class LogIn extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+        // TODO add your handling code here:
+        logIn();
+    }//GEN-LAST:event_btnOKActionPerformed
+
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
         exitApp();
     }//GEN-LAST:event_btnCancelActionPerformed
 
-    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+    private void btnConfigureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigureActionPerformed
         // TODO add your handling code here:
-        logIn();
-    }//GEN-LAST:event_btnOKActionPerformed
+        configure();
+    }//GEN-LAST:event_btnConfigureActionPerformed
 
     /**
      * @param args the command line arguments
@@ -286,9 +324,11 @@ public class LogIn extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnConfigure;
     private javax.swing.JButton btnOK;
     private javax.swing.JPanel containerPanel;
     private javax.swing.JFormattedTextField ftxtIntialAmount;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblInitialCashAmount;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lbluserName;

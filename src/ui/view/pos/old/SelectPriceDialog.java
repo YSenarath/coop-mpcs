@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui.view.pos;
+package ui.view.pos.old;
 
 /**
  *
@@ -56,15 +56,23 @@ public class SelectPriceDialog extends javax.swing.JDialog {
 
         itemPriceTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Batch", "Price"
+                "Batch", "Qty", "Price"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Double.class, java.lang.Double.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         itemPriceSP.setViewportView(itemPriceTable);
 
         javax.swing.GroupLayout itemPriceContainerPanelLayout = new javax.swing.GroupLayout(itemPriceContainerPanel);
@@ -75,7 +83,7 @@ public class SelectPriceDialog extends javax.swing.JDialog {
         );
         itemPriceContainerPanelLayout.setVerticalGroup(
             itemPriceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemPriceSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+            .addComponent(itemPriceSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout containerPanelLayout = new javax.swing.GroupLayout(containerPanel);
@@ -90,7 +98,7 @@ public class SelectPriceDialog extends javax.swing.JDialog {
                         .addComponent(lblItemCode, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblItemCodeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 73, Short.MAX_VALUE)))
+                        .addGap(0, 125, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         containerPanelLayout.setVerticalGroup(

@@ -31,17 +31,27 @@ public class UserController {
         return resultSet.next();
     }
 
-    public static User getUser(String userName) throws SQLException {
+    public static User getUser(String search, String userName) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + AppConstants.USER + " WHERE user_name=? LIMIT 1";
+        String query = "SELECT * FROM " + AppConstants.USER + " WHERE " + search + "=? LIMIT 1";
         Object[] ob = {
             userName
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
         if (resultSet.next()) {
-            return new User(resultSet.getString("user_name"), resultSet.getString("employee_id"), resultSet.getString("password"), resultSet.getString("access_level"));
+            return new User(resultSet.getString("user_name"), resultSet.getString("password"), resultSet.getString("access_level"), resultSet.getBoolean("isLoggedIn"));
         }
         return null;
+    }
+
+    public static boolean setUserLoginState(String userName, boolean loginState) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "UPDATE " + AppConstants.USER + " SET isLoggedIn=? WHERE user_name=?";
+        Object[] ob = {
+            loginState,
+            userName
+        };
+        return DBHandler.setData(connection, query, ob) == 1;
     }
 
     public static ArrayList<User> getAllUsers() throws SQLException {
@@ -52,7 +62,7 @@ public class UserController {
         ArrayList<User> allUsers = new ArrayList<>();
 
         while (resultSet.next()) {
-            User user = new User(resultSet.getString("user_name"), resultSet.getString("employee_id"), resultSet.getString("password"), resultSet.getString("access_level"));
+            User user = new User(resultSet.getString("user_name"), resultSet.getString("password"), resultSet.getString("access_level"), resultSet.getBoolean("isLoggedIn"));
             allUsers.add(user);
         }
 

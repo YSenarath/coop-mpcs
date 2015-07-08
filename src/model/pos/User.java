@@ -15,10 +15,10 @@ public class User {
     private String employeeId;
     private String password;
     private UserType userType;
+    private boolean isLoggedin;
 
-    public User(String userName, String employeeId, String password, String userType) {
+    public User(String userName, String password, String userType, boolean isLoggedin) {
         this.userName = userName;
-        this.employeeId = employeeId;
         this.password = password;
         switch (userType) {
             case "manager":
@@ -31,6 +31,7 @@ public class User {
                 this.userType = UserType.INVENTORY;
                 break;
         }
+        this.isLoggedin = isLoggedin;
     }
 
     /**
@@ -45,6 +46,20 @@ public class User {
      */
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    /**
+     * @return the employeeId
+     */
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    /**
+     * @param employeeId the employeeId to set
+     */
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 
     /**
@@ -76,17 +91,17 @@ public class User {
     }
 
     /**
-     * @return the employeeId
+     * @return the isLoggedin
      */
-    public String getEmployeeId() {
-        return employeeId;
+    public boolean isLoggedin() {
+        return isLoggedin;
     }
 
     /**
-     * @param employeeId the employeeId to set
+     * @param isLoggedin the isLoggedin to set
      */
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
+    public void setIsLoggedin(boolean isLoggedin) {
+        this.isLoggedin = isLoggedin;
     }
 
 }
