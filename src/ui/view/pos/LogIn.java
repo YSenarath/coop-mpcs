@@ -12,7 +12,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.pos.Employee;
 import org.apache.log4j.Logger;
-import ui.handler.pos.LogHandler;
+import ui.handler.pos.LogInHandler;
 import util.Utilities;
 
 /**
@@ -23,14 +23,14 @@ public class LogIn extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(LogIn.class);
 
-    private final LogHandler loginhandler;
+    private final LogInHandler loginhandler;
 
     /**
      * Creates new form LogIn
      */
     private LogIn() {
         initComponents();
-        loginhandler = new LogHandler(this);
+        loginhandler = new LogInHandler(this);
         setLocationRelativeTo(null);
     }
 

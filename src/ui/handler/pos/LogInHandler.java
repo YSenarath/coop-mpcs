@@ -21,12 +21,12 @@ import util.Utilities;
  *
  * @author Shehan
  */
-public class LogHandler {
+public class LogInHandler {
 
-    private static final Logger logger = Logger.getLogger(LogHandler.class);
+    private static final Logger logger = Logger.getLogger(LogInHandler.class);
     private final JFrame loginFrame;
 
-    public LogHandler(JFrame loginFrame) {
+    public LogInHandler(JFrame loginFrame) {
         this.loginFrame = loginFrame;
     }
 
