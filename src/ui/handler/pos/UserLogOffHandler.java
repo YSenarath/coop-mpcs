@@ -14,12 +14,12 @@ import org.apache.log4j.Logger;
  *
  * @author Shehan
  */
-public class LogOffHandler {
+public class UserLogOffHandler {
 
-    private static final Logger logger = Logger.getLogger(LogInHandler.class);
+    private static final Logger logger = Logger.getLogger(UserLogInHandler.class);
     private final JFrame posInterface;
 
-    public LogOffHandler(JFrame posInterface) {
+    public UserLogOffHandler(JFrame posInterface) {
         this.posInterface = posInterface;
     }
 
