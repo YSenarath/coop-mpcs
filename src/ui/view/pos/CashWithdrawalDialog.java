@@ -5,36 +5,39 @@
  */
 package ui.view.pos;
 
-import java.awt.Dimension;
-import javax.swing.JDesktopPane;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Shehan
  */
-public class CashWithdrawInterface extends javax.swing.JInternalFrame {
+public class CashWithdrawalDialog extends javax.swing.JDialog {
 
-    private static final Logger logger = Logger.getLogger(CashWithdrawInterface.class);
+    private static final Logger logger = Logger.getLogger(CashWithdrawalDialog.class);
+    private final POSMDIInterface parent;
 
     /**
-     * Creates new form CashWithdrawInterface
+     * Creates new form NewJDialog
+     *
+     * @param parent
+     * @param modal
      */
-    public CashWithdrawInterface(JDesktopPane desktopPane) {
+    public CashWithdrawalDialog(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
-        Dimension desktopSize = desktopPane.getSize();
-        Dimension jInternalFrameSize = this.getSize();
-        this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        this.parent = (POSMDIInterface)parent;
+        setLocationRelativeTo(null);
+        
     }
 
-    private void cancelWithdraw() {
-        logger.warn("cancelWithdraw invoked");
-        this.dispose();
-    }
-
+    //Withdraw cash from counter
     private void withdrawCash() {
-        logger.warn("Not implemented");
+        logger.warn("withdrawCash not implemented");
+    }
+
+    //Cancel withdraw
+    private void cancelWithdraw() {
+        this.dispose();
     }
 
     /**
@@ -80,8 +83,10 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
         lblShiftVal = new javax.swing.JLabel();
         txtWithdrawalAmountVal = new javax.swing.JFormattedTextField();
 
-        setClosable(true);
-        setTitle("Cash Withdraw");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Cash Withdrawal");
+        setName("cashWithdrawalDialog"); // NOI18N
+        setResizable(false);
 
         cashWithdrawalPanel.setPreferredSize(new java.awt.Dimension(475, 600));
 
@@ -111,7 +116,7 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblCashWithrawalNoDisplay)
                 .addGap(47, 47, 47)
                 .addComponent(lblCashWithrawalNoVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                 .addComponent(lblCounterDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -373,7 +378,7 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblChiefCashierPasswordDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtChiefCashierPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 19, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -399,11 +404,11 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cashWithdrawalPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
+            .addComponent(cashWithdrawalPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cashWithdrawalPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+            .addComponent(cashWithdrawalPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
         );
 
         pack();
@@ -418,7 +423,6 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         withdrawCash();
     }//GEN-LAST:event_btnOkActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
@@ -457,5 +461,4 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPasswordField txtChiefCashierPassword;
     private javax.swing.JFormattedTextField txtWithdrawalAmountVal;
     // End of variables declaration//GEN-END:variables
-
 }

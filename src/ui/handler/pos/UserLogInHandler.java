@@ -6,12 +6,10 @@
 package ui.handler.pos;
 
 import controller.pos.CounterController;
-import controller.pos.EmployeeController;
 import controller.pos.UserController;
 import java.sql.SQLException;
 import javax.swing.JFrame;
 import model.pos.CounterLogin;
-import model.pos.Employee;
 import model.pos.User;
 import model.pos.UserType;
 import org.apache.log4j.Logger;
@@ -30,12 +28,15 @@ public class UserLogInHandler {
         this.loginFrame = loginFrame;
     }
 
-    public boolean isUserAuthenticated(String userName, char[] password) throws Exception {
+    public boolean isUserAuthenticated(String userName, char[] password, UserType requestedAccesslevel) throws Exception {
         logger.debug("isUserAuthenticated invoked");
         if (UserController.isUserAuthenticated(userName, new String(password))) {
             User user = UserController.getUser("user_name", userName);
+            if ((requestedAccesslevel == UserType.MANAGER || requestedAccesslevel == UserType.INVENTORY) && user.getUserType() == UserType.CASHIER) {
+                throw new Exception("User does not have administrator privilages ");
+            }
             if (!(user.getUserType() == UserType.MANAGER || user.getUserType() == UserType.CASHIER)) {
-                throw new Exception("Only cashier and admin can access the pos system ");
+                throw new Exception("User does not have pos privilages ");
             }
             if (user.getUserType() != UserType.MANAGER && user.isLoggedin()) {
                 throw new Exception("User :" + userName + " is already logged in");

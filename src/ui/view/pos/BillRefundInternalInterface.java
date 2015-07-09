@@ -6,21 +6,36 @@
 package ui.view.pos;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Shehan
  */
-public class BillRefundInterface extends javax.swing.JInternalFrame {
+public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
 
-    private static final Logger logger = Logger.getLogger(BillRefundInterface.class);
+    private static final Logger logger = Logger.getLogger(BillRefundInternalInterface.class);
+    private final POSMDIInterface parent;
+    private final JDesktopPane desktopPane;
 
     /**
      * Creates new form BillRefundInterface
+     *
+     * @param parent
+     * @param desktopPane
      */
-    public BillRefundInterface() {
+    public BillRefundInternalInterface(POSMDIInterface parent, JDesktopPane desktopPane) {
         initComponents();
+        this.parent = parent;
+        this.desktopPane = desktopPane;
+
+        Dimension desktopSize = desktopPane.getSize();
+        Dimension jInternalFrameSize = this.getSize();
+        this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
     }
 
     //Create a new bill from refund
@@ -30,8 +45,11 @@ public class BillRefundInterface extends javax.swing.JInternalFrame {
 
     //Cancel a refund
     private void refund_cancel() {
-         logger.debug("refund_cancel invoked");
-         this.dispose();
+        logger.debug("refund_cancel invoked");
+        parent.setIsMainActivityRunning(false);
+        parent.setIsBillRefundRunning(false);
+
+        this.dispose();
     }
 
     /**
@@ -78,12 +96,10 @@ public class BillRefundInterface extends javax.swing.JInternalFrame {
         lblBillRefundNoVal = new javax.swing.JLabel();
         lblBillRefundNoDisplay = new javax.swing.JLabel();
 
-        setClosable(true);
         setMaximizable(true);
         setResizable(true);
         setTitle("Bill Refund");
         setMinimumSize(new java.awt.Dimension(934, 598));
-        setPreferredSize(null);
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -245,7 +261,7 @@ public class BillRefundInterface extends javax.swing.JInternalFrame {
                                 .addComponent(lblRefundNetTotalDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(lblRefundNetTotalVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
                         .addGroup(billPaymentSummeryPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lblRefundCancelNetTotalDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lblRefundCancelDiscountAmountDisplay, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -316,17 +332,21 @@ public class BillRefundInterface extends javax.swing.JInternalFrame {
 
         billRefunditemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Code", "Description", "Price", "Qty", "Value", "Disc", "Sub total", "Refund Qty", "Refund"
+                "Code", "Description", "Price", "Qty", "Value", "Disc", "Change Qty", "Change value", "Change Dis", "Sub total"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Boolean.class
+                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, true, true
+                false, false, false, false, false, false, true, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -349,7 +369,7 @@ public class BillRefundInterface extends javax.swing.JInternalFrame {
         );
         billRefundItemPanelLayout.setVerticalGroup(
             billRefundItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP1, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
+            .addComponent(billItemSP1, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
         );
 
         lblBill3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -435,13 +455,13 @@ public class BillRefundInterface extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 918, Short.MAX_VALUE)
+            .addGap(0, 1030, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 568, Short.MAX_VALUE)
+            .addGap(0, 636, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -451,6 +471,7 @@ public class BillRefundInterface extends javax.swing.JInternalFrame {
 
     private void btnNewBillFromRefundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewBillFromRefundActionPerformed
         // TODO add your handling code here:
+        logger.warn("refund_newBill not implemented - show the invoice ui with a (-)ve balance");
         refund_newBill();
     }//GEN-LAST:event_btnNewBillFromRefundActionPerformed
 

@@ -6,21 +6,36 @@
 package ui.view.pos;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Shehan
  */
-public class BillCopyInterface extends javax.swing.JInternalFrame {
+public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
-    private static final Logger logger = Logger.getLogger(BillCopyInterface.class);
+    private static final Logger logger = Logger.getLogger(BillCopyInternalInterface.class);
+    private final POSMDIInterface parent;
+    private final JDesktopPane desktopPane;
 
     /**
      * Creates new form BillCopyInterface
+     *
+     * @param parent
+     * @param desktopPane
      */
-    public BillCopyInterface() {
+    public BillCopyInternalInterface(POSMDIInterface parent, JDesktopPane desktopPane) {
         initComponents();
+        this.parent = parent;
+        this.desktopPane = desktopPane;
+
+        Dimension desktopSize = desktopPane.getSize();
+        Dimension jInternalFrameSize = this.getSize();
+        this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
     }
 
     //Print a copy of the bill
@@ -31,6 +46,8 @@ public class BillCopyInterface extends javax.swing.JInternalFrame {
     //Cancel bill copy and show the welcome screen
     private void billCopy_cancel() {
         logger.debug("billCopy_cancel invoked");
+        parent.setIsMainActivityRunning(false);
+        parent.setIsBillCopyRunning(false);
         this.dispose();
     }
 
@@ -76,12 +93,10 @@ public class BillCopyInterface extends javax.swing.JInternalFrame {
         lblBillPrintDateDisplay = new javax.swing.JLabel();
         lblBillPrintDate = new javax.swing.JLabel();
 
-        setClosable(true);
         setMaximizable(true);
         setResizable(true);
         setTitle("Bill Copy");
         setMinimumSize(new java.awt.Dimension(926, 630));
-        setPreferredSize(null);
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);

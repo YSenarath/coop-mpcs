@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui.view.pos;
+package ui.view.pos.old;
 
 import java.awt.Dimension;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import org.apache.log4j.Logger;
+import ui.view.pos.POSMDIInterface;
 
 /**
  *
@@ -17,6 +19,8 @@ import org.apache.log4j.Logger;
 public class CheckStockInterface extends javax.swing.JInternalFrame {
 
     private static final Logger logger = Logger.getLogger(CheckStockInterface.class);
+    private final POSMDIInterface parent;
+
     private final JDesktopPane desktopPane;
 
     private JInternalFrame searchItemInterface;
@@ -24,11 +28,14 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     /**
      * Creates new form CheckStockInterface
      *
+     * @param parent
      * @param desktopPane
      */
-    public CheckStockInterface(JDesktopPane desktopPane) {
+    public CheckStockInterface(POSMDIInterface parent, JDesktopPane desktopPane) {
         initComponents();
+        this.parent = parent;
         this.desktopPane = desktopPane;
+        
         Dimension desktopSize = desktopPane.getSize();
         Dimension jInternalFrameSize = this.getSize();
         this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,

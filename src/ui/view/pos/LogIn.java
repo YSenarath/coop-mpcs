@@ -11,26 +11,28 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.pos.Employee;
+import model.pos.UserType;
 import org.apache.log4j.Logger;
-import ui.handler.pos.LogInHandler;
+import ui.handler.pos.UserLogInHandler;
 import util.Utilities;
+import static util.Utilities.setupUI;
 
 /**
  *
  * @author Shehan
  */
 public class LogIn extends javax.swing.JFrame {
-
+    
     private static final Logger logger = Logger.getLogger(LogIn.class);
-
-    private final LogInHandler loginhandler;
+    
+    private final UserLogInHandler loginhandler;
 
     /**
      * Creates new form LogIn
      */
     private LogIn() {
         initComponents();
-        loginhandler = new LogInHandler(this);
+        loginhandler = new UserLogInHandler(this);
         setLocationRelativeTo(null);
     }
 
@@ -39,8 +41,8 @@ public class LogIn extends javax.swing.JFrame {
         try {
             String userName = txtUsername.getText();
             double initialAmount = Double.valueOf(ftxtIntialAmount.getText());
-
-            if (loginhandler.isUserAuthenticated(userName, txtPassword.getPassword())) {
+            
+            if (loginhandler.isUserAuthenticated(userName, txtPassword.getPassword(), UserType.CASHIER)) {
                 if (loginhandler.performCounterLogin(userName, initialAmount)) {
                     new POSMDIInterface(userName).setVisible(true);
                 }
@@ -55,95 +57,46 @@ public class LogIn extends javax.swing.JFrame {
         } catch (NumberFormatException ex) {
             logger.error("Critial error : " + ex.getMessage());
             Utilities.showMsgBox("Critial error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-
+            
+        } catch (Exception ex) {
+            logger.error("Error : " + ex.getMessage());
+            Utilities.showMsgBox("Error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+    }
+    
+    private void configure() {
+        logger.warn("Not implemented - show application configuration UI, after authenticationg user privilage level");
+        try {
+            String userName = txtUsername.getText();
+            if (loginhandler.isUserAuthenticated(userName, txtPassword.getPassword(), UserType.MANAGER)) {
+                new ConfigureDialog(this, true).setVisible(true);
+                txtUsername.setText("");
+                txtPassword.setText("");
+            } else {
+                Utilities.showMsgBox("User not identified", "Configuring Failed", JOptionPane.ERROR_MESSAGE);
+                logger.error("User not identified");
+            }
+        } catch (SQLException ex) {
+            logger.error("SQL error : " + ex.getMessage());
+            Utilities.showMsgBox("SQL error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException ex) {
+            logger.error("Critial error : " + ex.getMessage());
+            Utilities.showMsgBox("Critial error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
             Utilities.showMsgBox("Error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-    }
-
-    private void configure() {
-        logger.warn("Not implemented - show application configuration UI, after authenticationg user privilage level");
+        //Show UI to
+        
         //On exiting config ui return to login screen
     }
 
     //Exit application
     private void exitApp() {
         this.dispose();
-    }
-
-    private static void setupUI() {
-
-        //try {
-        //    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        //} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-        //}
-        Properties props = new Properties();
-
-        //RGB colours
-        String buttonClolor = "200 200 200";
-        String controlClolor = "200 200 200";
-
-        String menuColor = "222 222 222";
-        String menuBackgroundColor = "224 224 224";
-
-        String selectionBackgroundColor = "240 240 240";
-        String selectionForegroundColor = "67 148 103";
-
-        String rollOverClolor = "114 114 114";
-
-        String frameColor = "171 171 171";
-        String windowTitleColor = "10 10 10";
-
-        //Customize Theme
-        props.put("logoString", "");
-
-        props.put("linuxStyleScrollBar", "on");
-        props.put("centerWindowTitle", "on");
-        props.put("textAntiAliasing", "on");
-        props.put("textAntiAliasingMode", "default");
-        props.put("toolbarDecorated", "off");
-        props.put("windowDecoration", "on");
-        props.put("dynamicLayout", "on");
-        props.put("darkTexture", "off");
-
-        props.put("buttonColor", buttonClolor);//button colours
-        props.put("buttonColorLight", buttonClolor);
-        props.put("buttonColorDark", buttonClolor);
-
-        props.put("controlColor", controlClolor);//Control colours
-        props.put("controlColorLight", controlClolor);
-        props.put("controlColorDark", controlClolor);
-
-        props.put("menuColorLight", menuColor);//menu colours
-        props.put("menuColorDark", menuColor);
-        props.put("menuBackgroundColor", menuBackgroundColor);
-
-        props.put("selectionBackgroundColor", selectionBackgroundColor);//hilighted text
-        props.put("selectionForegroundColor", selectionForegroundColor);
-
-        props.put("rolloverColor", rollOverClolor); //on hovering
-        props.put("rolloverColorLight", rollOverClolor);
-        props.put("rolloverColorDark", rollOverClolor);
-
-        props.put("frameColor", frameColor);
-        props.put("windowTitleColorLight", windowTitleColor);//Windows boarder colours
-        props.put("windowTitleColorDark", windowTitleColor);
-        props.put("disabledForegroundColor", windowTitleColor);
-
-        try {
-            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
-            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
-
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ey) {
-                System.exit(3);
-            }
-            System.exit(3);
-        }
     }
 
     /**
@@ -163,7 +116,7 @@ public class LogIn extends javax.swing.JFrame {
         btnConfigure = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         btnOK = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        lblLogo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("COOP POS LOG IN");
@@ -217,9 +170,9 @@ public class LogIn extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pos/oosd logo.png"))); // NOI18N
-        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        lblLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pos/oosd logo.png"))); // NOI18N
+        lblLogo.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         javax.swing.GroupLayout containerPanelLayout = new javax.swing.GroupLayout(containerPanel);
         containerPanel.setLayout(containerPanelLayout);
@@ -253,7 +206,7 @@ public class LogIn extends javax.swing.JFrame {
                         .addGap(0, 8, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
+                        .addComponent(lblLogo)
                         .addGap(54, 54, 54)))
                 .addContainerGap())
         );
@@ -261,7 +214,7 @@ public class LogIn extends javax.swing.JFrame {
             containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(containerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -328,8 +281,8 @@ public class LogIn extends javax.swing.JFrame {
     private javax.swing.JButton btnOK;
     private javax.swing.JPanel containerPanel;
     private javax.swing.JFormattedTextField ftxtIntialAmount;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblInitialCashAmount;
+    private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lbluserName;
     private javax.swing.JPasswordField txtPassword;

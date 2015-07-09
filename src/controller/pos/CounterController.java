@@ -20,7 +20,7 @@ public class CounterController {
 
     public static boolean addCounterLogin(CounterLogin counterLogin) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + AppConstants.COUNTER_LOGIN + "(user_name,counter_id,time,date,initial_amount) VALUES(?,?,?,?,?)";
+        String query = "INSERT INTO " + AppConstants.COUNTER_LOGIN + "(user_name,counter_id,login_time,login_date,initial_amount) VALUES(?,?,?,?,?)";
         int counterloginAdded = -1;
         Object[] ob = {
             counterLogin.getUser_name(),

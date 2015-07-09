@@ -22,7 +22,7 @@ import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import model.pos.Employee;
 import org.apache.log4j.Logger;
-import ui.handler.pos.LogOffHandler;
+import ui.handler.pos.UserLogOffHandler;
 import util.Utilities;
 
 /**
@@ -38,7 +38,7 @@ public class POSInterface extends javax.swing.JFrame {
     private String userName;
     private Employee cashier;
 
-    private LogOffHandler logoffhandler;
+    private UserLogOffHandler logoffhandler;
 
     public POSInterface() {
         initComponents();
@@ -81,7 +81,7 @@ public class POSInterface extends javax.swing.JFrame {
 
         lblCounter.setText(Utilities.loadProperty("counter"));
 
-        logoffhandler = new LogOffHandler(this);
+        logoffhandler = new UserLogOffHandler(this);
     }
 
     private void setUser(String userName, Employee cashier) {

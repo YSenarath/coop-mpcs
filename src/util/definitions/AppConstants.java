@@ -12,15 +12,15 @@ package util.definitions;
 public interface AppConstants {
 
     //Database connection
-    public static final String SERVER = "localhost";
-    public static final String PORT = "3306";
-    public static final String DATABASE = "COOP";
-    
-    public static final String USER_NAME = "admin";
-    public static final String PASSWORD = "admin";
-    
-    
+    public static final String SERVER = "localhost";//Default , must be a setting
+    public static final String PORT = "3306";//Default , must be a setting
+    public static final String DATABASE = "COOP";//Default , must be a setting
 
+    public static final String MYSQL_USER_NAME = "admin";//Default , must be a setting
+    public static final String MYSQL_PASSWORD = "admin"; //Default , must be a setting
+
+   // public static final String CHIEF_CASHIER_USER_NAME = "Shehan"; must be a setting
+    //public static final String CHIEF_CASHIER_PASSWORD = "1593"; must be a setting
     //Database table names
     public static final String EMPLOYEE = "employee";
     public static final String COUNTER = "counter";

@@ -6,8 +6,11 @@
 package ui.view.pos;
 
 import java.awt.CardLayout;
+import java.beans.PropertyVetoException;
+import java.util.logging.Level;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
@@ -16,18 +19,24 @@ import org.apache.log4j.Logger;
  *
  * @author Shehan
  */
-public class InvoiceInterface extends javax.swing.JInternalFrame {
+public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
-    private static final Logger logger = Logger.getLogger(InvoiceInterface.class);
+    private static final Logger logger = Logger.getLogger(InvoiceInternalInterface.class);
+    private final POSMDIInterface parent;
     private final JDesktopPane desktopPane;
     private JInternalFrame searchItemInterface;
 
     /**
      * Creates new form InvoiceInterface
+     *
+     * @param parent
+     * @param desktopPane
      */
-    public InvoiceInterface(JDesktopPane desktopPane) {
+    public InvoiceInternalInterface(POSMDIInterface parent, JDesktopPane desktopPane) {
         initComponents();
+        this.parent = parent;
         this.desktopPane = desktopPane;
+       
     }
 
     //Add item to the bill item table
@@ -76,6 +85,9 @@ public class InvoiceInterface extends javax.swing.JInternalFrame {
 
     //Cancel current bill and show welocme screen
     private void bill_cancelBill() {
+        logger.debug("bill_cancelBill invoked");
+        parent.setIsMainActivityRunning(false);
+        parent.setIsInvoiceRunning(false);
         this.dispose();
     }
 
@@ -118,13 +130,16 @@ public class InvoiceInterface extends javax.swing.JInternalFrame {
     //Search a item
     private void bill_searchItem() {
         logger.debug("bill_searchItem invoked");
-        if (searchItemInterface == null) {
-            searchItemInterface = new SearchItemInterface(desktopPane);
-        } else {
-            desktopPane.remove(searchItemInterface);
-        }
-        desktopPane.add(searchItemInterface);
-        searchItemInterface.setVisible(true);
+//        if (searchItemInterface == null) {
+//            searchItemInterface = new SearchItemInterface(desktopPane);
+//        } else {
+//            desktopPane.remove(searchItemInterface);
+//        }
+//        desktopPane.add(searchItemInterface);
+//        searchItemInterface.setVisible(true);
+//        setEnabled(false);
+        new SearchItemDialog(this, true).setVisible(true);
+
     }
 
     //New sale
@@ -224,12 +239,10 @@ public class InvoiceInterface extends javax.swing.JInternalFrame {
         btnRemove = new javax.swing.JButton();
         btnConfirm = new javax.swing.JButton();
 
-        setClosable(true);
         setMaximizable(true);
         setResizable(true);
         setTitle("Invoice");
         setMinimumSize(new java.awt.Dimension(994, 728));
-        setPreferredSize(null);
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);

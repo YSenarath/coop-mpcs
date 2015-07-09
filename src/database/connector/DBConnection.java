@@ -23,9 +23,9 @@ public class DBConnection {
         DriverManager.registerDriver(new Driver());
         try {
             Properties connectionProps = new Properties();
-            connectionProps.put("user", AppConstants.USER_NAME);
-            connectionProps.put("password", AppConstants.PASSWORD);
-            logger.debug("MYSQL string = jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
+            connectionProps.put("user", AppConstants.MYSQL_USER_NAME);
+            connectionProps.put("password", AppConstants.MYSQL_PASSWORD);
+            logger.debug("MYSQL connection = jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
 
             connection = DriverManager.getConnection("jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE, connectionProps);
         } catch (Exception e) {
@@ -34,20 +34,19 @@ public class DBConnection {
     }
 
     private static DBConnection getDBConnection() throws SQLException {
-        logger.debug("getDBConnection invoked");
         if (dbConnetion == null) {
-            dbConnetion = new DBConnection();
+            synchronized (DBConnection.class) {
+                dbConnetion = new DBConnection();
+            }
         }
         return dbConnetion;
     }
 
     private Connection getConnection() {
-        logger.debug("getConnection invoked");
         return connection;
     }
 
     private void closeConnection() throws SQLException {
-        logger.debug("closeConnection invoked");
         if (connection != null) {
             connection.close();
             logger.debug("connection closed");
@@ -64,7 +63,6 @@ public class DBConnection {
     }
 
     public static void closeConnectionToDB() throws SQLException {
-        logger.debug("closeConnectionToDB invoked");
         if (dbConnetion != null) {
             dbConnetion.closeConnection();
             dbConnetion = null;

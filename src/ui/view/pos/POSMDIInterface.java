@@ -8,20 +8,18 @@ package ui.view.pos;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Properties;
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import model.pos.Employee;
 import org.apache.log4j.Logger;
-import ui.handler.pos.LogOffHandler;
+import ui.handler.pos.UserLogOffHandler;
 import util.Utilities;
+import static util.Utilities.setupUI;
 
 /**
  *
@@ -31,17 +29,26 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(POSMDIInterface.class);
 
+    //Enable pos only if cashier is logged on
     private boolean isCashierLogedIn;
 
+    //Flag to to allow only one of the 3 ui of pos to run at once
+    private boolean isMainActivityRunning;
+
+    private boolean isInvoiceRunning;
+    private boolean isBillCopyRunning;
+    private boolean isbillRefundRunning;
+
+    //Name of the logged on cashier
     private String userName;
 
-    private LogOffHandler logoffhandler;
+    //Handler to handle cashier loggin off 
+    private UserLogOffHandler logoffhandler;
 
+    //The three main POS UI's
     private JInternalFrame invoiceInterface;
     private JInternalFrame billRefundInterface;
     private JInternalFrame billCopyInterface;
-    private JInternalFrame cashWithdrawInterface;
-    private JInternalFrame checkStockInterface;
 
     /**
      * Creates new form POSMDIInterface
@@ -91,7 +98,58 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         lblCounter.setText(Utilities.loadProperty("counter"));
 
-        logoffhandler = new LogOffHandler(this);
+        lblTaskLogo.setVisible(false);
+
+        logoffhandler = new UserLogOffHandler(this);
+
+        isMainActivityRunning = false;
+        isInvoiceRunning = false;
+        isBillCopyRunning = false;
+        isbillRefundRunning = false;
+    }
+
+    public void setIsMainActivityRunning(boolean value) {
+        this.isMainActivityRunning = value;
+    }
+
+    private boolean isMainActivityRunning() {
+        return this.isMainActivityRunning;
+    }
+
+    public void setIsInvoiceRunning(boolean value) {
+        this.isInvoiceRunning = value;
+    }
+
+    private boolean isInvoiceRunning() {
+        return this.isInvoiceRunning;
+    }
+
+    public void setIsBillCopyRunning(boolean value) {
+        this.isBillCopyRunning = value;
+    }
+
+    private boolean isBillCopyRunning() {
+        return this.isBillCopyRunning;
+    }
+
+    public void setIsBillRefundRunning(boolean value) {
+        this.isbillRefundRunning = value;
+    }
+
+    private boolean isBillRefundRunning() {
+        return this.isbillRefundRunning;
+    }
+
+    private void showDesktopPane(boolean val) {
+        if (val) {
+            CardLayout card = (CardLayout) cardContainerPanel.getLayout();
+            card.show(cardContainerPanel, "desktopCard");
+            lblTaskLogo.setVisible(true);
+        } else {
+            CardLayout card = (CardLayout) cardContainerPanel.getLayout();
+            card.show(cardContainerPanel, "welcomeCard");
+            lblTaskLogo.setVisible(false);
+        }
     }
 
     private void setUser(String userName) {
@@ -110,8 +168,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
             lblCashier.setText("<Cashier name>");
             lblCounter.setText("<counter>");
 
-            CardLayout card = (CardLayout) cardContainerPanel.getLayout();
-            card.show(cardContainerPanel, "welcomeCard");
+            showDesktopPane(false);
 
             billTaskPane.setCollapsed(true);
             otherTaskPane.setCollapsed(true);
@@ -144,24 +201,31 @@ public class POSMDIInterface extends javax.swing.JFrame {
         }
     }
 
-    //Search a item
-    private void bill_searchItem() {
-        //NOT IMPLEMENTED - send a search string to the search UI
-
-    }
-
     //New sale
     private void bill_newSale() {
         logger.debug("bill_newSale invoked");
-        CardLayout card = (CardLayout) cardContainerPanel.getLayout();
-        card.show(cardContainerPanel, "desktopCard");
+        if (isMainActivityRunning()) {
+            logger.error("A main activity is already running");
+            return;
+        }
+        showDesktopPane(true);
         if (invoiceInterface == null) {
-            invoiceInterface = new InvoiceInterface(desktopPane);
+            invoiceInterface = new InvoiceInternalInterface(this, desktopPane);
         } else {
             desktopPane.remove(invoiceInterface);
         }
+
+        setIsMainActivityRunning(true);
+        setIsInvoiceRunning(true);
+
         desktopPane.add(invoiceInterface);
         invoiceInterface.setVisible(true);
+        try {
+            invoiceInterface.setMaximum(true);
+        } catch (PropertyVetoException e) {
+            // Vetoed by internalFrame
+            // ... possibly add some handling for this case
+        }
     }
 
     //Hold sale
@@ -177,60 +241,60 @@ public class POSMDIInterface extends javax.swing.JFrame {
     //Show bill copy screen
     private void billCopy_ShowPanel() {
         logger.debug("billCopy_ShowPanel invoked");
-        CardLayout card = (CardLayout) cardContainerPanel.getLayout();
-        card.show(cardContainerPanel, "desktopCard");
-        if (billRefundInterface == null) {
-            billRefundInterface = new BillRefundInterface();
-        } else {
-            desktopPane.remove(billRefundInterface);
+
+        if (isMainActivityRunning()) {
+            logger.error("A main activity is already running");
+            return;
         }
-        desktopPane.add(billRefundInterface);
-        billRefundInterface.setVisible(true);
+
+        showDesktopPane(true);
+        if (billCopyInterface == null) {
+            billCopyInterface = new BillCopyInternalInterface(this, desktopPane);
+        } else {
+            desktopPane.remove(billCopyInterface);
+        }
+
+        setIsMainActivityRunning(true);
+        setIsBillCopyRunning(true);
+
+        desktopPane.add(billCopyInterface);
+        billCopyInterface.setVisible(true);
+
     }
 
     //Show refund screen
     private void refund_showRefundPanel() {
         logger.debug("refund_showRefundPanel invoked");
 
-        CardLayout card = (CardLayout) cardContainerPanel.getLayout();
-        card.show(cardContainerPanel, "desktopCard");
-        if (billCopyInterface == null) {
-            billCopyInterface = new BillCopyInterface();
-        } else {
-            desktopPane.remove(billCopyInterface);
+        if (isMainActivityRunning()) {
+            logger.error("A main activity is already running");
+            return;
         }
-        desktopPane.add(billCopyInterface);
-        billCopyInterface.setVisible(true);
+        if (billRefundInterface == null) {
+            billRefundInterface = new BillRefundInternalInterface(this, desktopPane);
+        } else {
+            desktopPane.remove(billRefundInterface);
+        }
+        setIsMainActivityRunning(true);
+        setIsBillRefundRunning(true);
+
+        desktopPane.add(billRefundInterface);
+        billRefundInterface.setVisible(true);
+        showDesktopPane(true);
+
     }
 
     //Show the cash withdrawal UI
     private void cashWithdrawal_showUI() {
         logger.debug("cashWithdrawal_showUI invoked");
+        new ui.view.pos.old.CashWithdrawalDialog(this, true).setVisible(true);
 
-        CardLayout card = (CardLayout) cardContainerPanel.getLayout();
-        card.show(cardContainerPanel, "desktopCard");
-        if (cashWithdrawInterface == null) {
-            cashWithdrawInterface = new CashWithdrawInterface(desktopPane);
-        } else {
-            desktopPane.remove(cashWithdrawInterface);
-        }
-        desktopPane.add(cashWithdrawInterface);
-        cashWithdrawInterface.setVisible(true);
     }
 
     //Show the check stock UI
     private void chechStock() {
         logger.debug("chechStock invoked");
-
-        CardLayout card = (CardLayout) cardContainerPanel.getLayout();
-        card.show(cardContainerPanel, "desktopCard");
-        if (checkStockInterface == null) {
-            checkStockInterface = new CheckStockInterface(desktopPane);
-        } else {
-            desktopPane.remove(checkStockInterface);
-        }
-        desktopPane.add(checkStockInterface);
-        checkStockInterface.setVisible(true);
+        new ui.view.pos.old.CheckStockDialog(this, true).setVisible(true);
     }
 
     //Mange cashier login
@@ -246,6 +310,10 @@ public class POSMDIInterface extends javax.swing.JFrame {
         logger.warn("Check for unfinished business");
 
         if (isCashierLogedIn) {
+            if (isInvoiceRunning() || isBillRefundRunning() || isBillCopyRunning()) {
+                Utilities.showMsgBox("Please exit all the POS interfaces.", "Cannot Log off", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to log off ?", "Warning", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 logger.info("Cashier logged off");
@@ -286,6 +354,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
         btnBillRefund = new javax.swing.JButton();
         btnBillCopy = new javax.swing.JButton();
         btnCashWithdrawal = new javax.swing.JButton();
+        logoPanel = new javax.swing.JPanel();
+        lblTaskLogo = new javax.swing.JLabel();
         counterInfoPanel = new javax.swing.JPanel();
         lblCashierDisplay = new javax.swing.JLabel();
         lblCashier = new javax.swing.JLabel();
@@ -314,9 +384,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
         dropShadowBorder1.setShowTopShadow(true);
         jxTaskPaneContainer.setBorder(dropShadowBorder1);
         jxTaskPaneContainer.setEnabled(false);
-        org.jdesktop.swingx.VerticalLayout verticalLayout3 = new org.jdesktop.swingx.VerticalLayout();
-        verticalLayout3.setGap(15);
-        jxTaskPaneContainer.setLayout(verticalLayout3);
 
         billTaskPane.setBackground(new java.awt.Color(102, 102, 102));
         billTaskPane.setForeground(new java.awt.Color(153, 153, 153));
@@ -365,8 +432,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
         });
         billTaskPane.getContentPane().add(btnRestoreSale);
 
-        jxTaskPaneContainer.add(billTaskPane);
-
         otherTaskPane.setSpecial(true);
         otherTaskPane.setTitle("Other");
         otherTaskPane.setEnabled(false);
@@ -403,7 +468,47 @@ public class POSMDIInterface extends javax.swing.JFrame {
         });
         otherTaskPane.getContentPane().add(btnCashWithdrawal);
 
-        jxTaskPaneContainer.add(otherTaskPane);
+        logoPanel.setBackground(new java.awt.Color(204, 204, 204));
+
+        lblTaskLogo.setBackground(new java.awt.Color(204, 204, 204));
+        lblTaskLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTaskLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pos/coop_200.png"))); // NOI18N
+
+        javax.swing.GroupLayout logoPanelLayout = new javax.swing.GroupLayout(logoPanel);
+        logoPanel.setLayout(logoPanelLayout);
+        logoPanelLayout.setHorizontalGroup(
+            logoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblTaskLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        logoPanelLayout.setVerticalGroup(
+            logoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblTaskLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jxTaskPaneContainerLayout = new javax.swing.GroupLayout(jxTaskPaneContainer);
+        jxTaskPaneContainer.setLayout(jxTaskPaneContainerLayout);
+        jxTaskPaneContainerLayout.setHorizontalGroup(
+            jxTaskPaneContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jxTaskPaneContainerLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(logoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jxTaskPaneContainerLayout.createSequentialGroup()
+                .addGroup(jxTaskPaneContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(billTaskPane, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(otherTaskPane, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        jxTaskPaneContainerLayout.setVerticalGroup(
+            jxTaskPaneContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jxTaskPaneContainerLayout.createSequentialGroup()
+                .addComponent(billTaskPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(otherTaskPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(logoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder2 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder2.setShadowSize(10);
@@ -502,7 +607,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         lblLogo.setBackground(new java.awt.Color(153, 153, 153));
         lblLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pos/coop_logo.png"))); // NOI18N
+        lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pos/coop_300.png"))); // NOI18N
 
         javax.swing.GroupLayout welcomePanelLayout = new javax.swing.GroupLayout(welcomePanel);
         welcomePanel.setLayout(welcomePanelLayout);
@@ -600,10 +705,10 @@ public class POSMDIInterface extends javax.swing.JFrame {
                     .addComponent(counterInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jxTaskPaneContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jxTaskPaneContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1051, Short.MAX_VALUE)
+                    .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -619,7 +724,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)))
+                        .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -693,74 +798,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
         });
     }
 
-    private static void setupUI() {
-
-        Properties props = new Properties();
-
-        //RGB colours
-        String buttonClolor = "200 200 200";
-        String controlClolor = "200 200 200";
-
-        String menuColor = "222 222 222";
-        String menuBackgroundColor = "224 224 224";
-
-        String selectionBackgroundColor = "240 240 240";
-        String selectionForegroundColor = "67 148 103";
-
-        String rollOverClolor = "114 114 114";
-
-        String frameColor = "171 171 171";
-        String windowTitleColor = "10 10 10";
-
-        //Customize Theme
-        props.put("logoString", "");
-
-        props.put("linuxStyleScrollBar", "on");
-        props.put("centerWindowTitle", "on");
-        props.put("textAntiAliasing", "on");
-        props.put("textAntiAliasingMode", "default");
-        props.put("toolbarDecorated", "off");
-        props.put("windowDecoration", "on");
-        props.put("dynamicLayout", "on");
-        props.put("darkTexture", "off");
-
-        props.put("buttonColor", buttonClolor);//button colours
-        props.put("buttonColorLight", buttonClolor);
-        props.put("buttonColorDark", buttonClolor);
-
-        props.put("controlColor", controlClolor);//Control colours
-        props.put("controlColorLight", controlClolor);
-        props.put("controlColorDark", controlClolor);
-
-        props.put("menuColorLight", menuColor);//menu colours
-        props.put("menuColorDark", menuColor);
-        props.put("menuBackgroundColor", menuBackgroundColor);
-
-        props.put("selectionBackgroundColor", selectionBackgroundColor);//hilighted text
-        props.put("selectionForegroundColor", selectionForegroundColor);
-
-        props.put("rolloverColor", rollOverClolor); //on hovering
-        props.put("rolloverColorLight", rollOverClolor);
-        props.put("rolloverColorDark", rollOverClolor);
-
-        props.put("frameColor", frameColor);
-        props.put("windowTitleColorLight", windowTitleColor);//Windows boarder colours
-        props.put("windowTitleColorDark", windowTitleColor);
-        props.put("disabledForegroundColor", windowTitleColor);
-
-        try {
-            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
-            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
-
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ey) {
-                System.exit(3);
-            }
-            System.exit(3);
-        }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.jdesktop.swingx.JXTaskPane billTaskPane;
@@ -786,9 +823,11 @@ public class POSMDIInterface extends javax.swing.JFrame {
     private javax.swing.JLabel lblDate;
     private javax.swing.JLabel lblDateDisplay;
     private javax.swing.JLabel lblLogo;
+    private javax.swing.JLabel lblTaskLogo;
     private javax.swing.JLabel lblTime;
     private javax.swing.JLabel lblTimeDisplay;
     private javax.swing.JLabel lblWelcome;
+    private javax.swing.JPanel logoPanel;
     private org.jdesktop.swingx.JXTaskPane otherTaskPane;
     private javax.swing.JPanel welcomePanel;
     // End of variables declaration//GEN-END:variables
