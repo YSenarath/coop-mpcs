@@ -71,6 +71,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         isCashierLogedIn = true;
         btnCashierLog.setText("Debug Mode");
         btnCashierLog.setEnabled(false);
+        bill_newSale();
     }
 
     private void initializeGUI() {

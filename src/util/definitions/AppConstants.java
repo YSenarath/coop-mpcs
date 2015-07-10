@@ -31,7 +31,8 @@ public interface AppConstants {
     public static final String DEPARTMENT = "department";
     public static final String CATAGORY = "catagory";
     public static final String PRODUCT = "product";
-    public static final String BATCh = "batch";
+    public static final String BATCH = "batch";
+    public static final String BILL = "invoice";
     public static final String BILL_ITEMS = "bill_items";
     public static final String USER = "user_credentials";
 

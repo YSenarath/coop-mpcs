@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class Invoice {
 
-    private final String invoiceNo;
+    private final int invoiceNo;
     //private Cashier cashier;//The cashier
     private Date date;
     private Time time;
@@ -26,7 +26,7 @@ public class Invoice {
     private ArrayList<InvoiceItem> invoiceItems;//invoice has items
     private ArrayList<Payment> payments;//Invoice has payments
 
-    public Invoice(String invoiceNo) {
+    public Invoice(int invoiceNo) {
         this.invoiceNo = invoiceNo;
         this.date = null;
         this.time = null;
@@ -38,7 +38,7 @@ public class Invoice {
         this.payments = null;
     }
 
-    public Invoice(String invoiceNo, Date date, Time time, int itemCount, double subTotal, double netTotal, double discount, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
+    public Invoice(int invoiceNo, Date date, Time time, int itemCount, double subTotal, double netTotal, double discount, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
         this.invoiceNo = invoiceNo;
         this.date = date;
         this.time = time;
@@ -53,7 +53,7 @@ public class Invoice {
     /**
      * @return the invoiceNo
      */
-    public String getInvoiceNo() {
+    public int getInvoiceNo() {
         return invoiceNo;
     }
 

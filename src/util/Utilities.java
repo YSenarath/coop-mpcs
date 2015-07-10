@@ -58,6 +58,10 @@ public class Utilities {
     public static String loadProperty(String key) {
         return Preferences.userNodeForPackage(Utilities.class).get(key, "NULL");
     }
+    
+    public static String formatId(String startingChar,int length,int val){
+        return String.format(startingChar+"%0"+length+"d", val);
+    }
 
     public static void setupUI() {
         Properties props = new Properties();

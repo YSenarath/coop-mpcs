@@ -953,9 +953,9 @@
                               <StringArray count="5">
                                 <StringItem index="0" value="Cash"/>
                                 <StringItem index="1" value="Card"/>
-                                <StringItem index="2" value="Credit"/>
-                                <StringItem index="3" value="Stamp"/>
-                                <StringItem index="4" value="Special"/>
+                                <StringItem index="2" value="Coop Credit"/>
+                                <StringItem index="3" value="Poshana"/>
+                                <StringItem index="4" value="Voucher"/>
                               </StringArray>
                             </Property>
                           </Properties>
@@ -1152,10 +1152,10 @@
                             </Component>
                           </SubComponents>
                         </Container>
-                        <Container class="javax.swing.JPanel" name="creditpaymentPanel">
+                        <Container class="javax.swing.JPanel" name="coopCreditpaymentPanel">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="creditCard"/>
+                              <CardConstraints cardName="coopCreditCard"/>
                             </Constraint>
                           </Constraints>
 
@@ -1172,10 +1172,10 @@
                             </DimensionLayout>
                           </Layout>
                         </Container>
-                        <Container class="javax.swing.JPanel" name="stampPayment">
+                        <Container class="javax.swing.JPanel" name="PoshanaPayment">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="stampCard"/>
+                              <CardConstraints cardName="poshanaCard"/>
                             </Constraint>
                           </Constraints>
 
@@ -1192,10 +1192,10 @@
                             </DimensionLayout>
                           </Layout>
                         </Container>
-                        <Container class="javax.swing.JPanel" name="specialPayment">
+                        <Container class="javax.swing.JPanel" name="VoucherPayment">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="specialCard"/>
+                              <CardConstraints cardName="voucherCard"/>
                             </Constraint>
                           </Constraints>
 

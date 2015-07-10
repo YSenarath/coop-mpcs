@@ -6,14 +6,14 @@
 package ui.view.pos;
 
 import java.awt.CardLayout;
-import java.beans.PropertyVetoException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
+import ui.handler.pos.BillHandler;
 
 /**
  *
@@ -26,6 +26,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private final JDesktopPane desktopPane;
     private JInternalFrame searchItemInterface;
 
+    private BillHandler billHandler;
+
     /**
      * Creates new form InvoiceInterface
      *
@@ -36,7 +38,23 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         initComponents();
         this.parent = parent;
         this.desktopPane = desktopPane;
-       
+        this.billHandler = new BillHandler();
+        
+        
+        showNewBillId();
+    }
+
+    private void showNewBillId() {
+        try {
+            txtBillNumber.setText(billHandler.getNewBillId());
+        } catch (SQLException ex) {
+            logger.error("Bill no error : " + ex.getMessage());
+        }
+    }
+
+    //Load the product ids to the temporory object array and show on combo box
+    private void loadProducts() {
+
     }
 
     //Add item to the bill item table
@@ -93,6 +111,14 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     //Toggle payment options in payment scrren
     private void bill_togglePaymentOptions(java.awt.event.ActionEvent evt) {
+        /*
+         Cash
+         Card
+         Coop Credit
+         Poshana
+         Voucher 
+         */
+
         CardLayout card = (CardLayout) paymentDetailsPanel.getLayout();
         JComboBox paymentComboBox = (JComboBox) evt.getSource();
         String selectedOption = (String) paymentComboBox.getSelectedItem();
@@ -104,14 +130,14 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 case "Card":
                     card.show(paymentDetailsPanel, "bankCard");
                     break;
-                case "Credit":
-                    card.show(paymentDetailsPanel, "creditCard");
+                case "Coop Credit":
+                    card.show(paymentDetailsPanel, "coopCreditCard");
                     break;
-                case "Stamp":
-                    card.show(paymentDetailsPanel, "stampCard");
+                case "Poshana":
+                    card.show(paymentDetailsPanel, "poshanaCard");
                     break;
-                case "Special":
-                    card.show(paymentDetailsPanel, "specialCard");
+                case "Voucher":
+                    card.show(paymentDetailsPanel, "voucherCard");
                     break;
             }
         }
@@ -232,9 +258,9 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         lblCardNo = new javax.swing.JLabel();
         cardpaymentCardNo = new javax.swing.JFormattedTextField();
         txtCardPaymentAmount = new javax.swing.JFormattedTextField();
-        creditpaymentPanel = new javax.swing.JPanel();
-        stampPayment = new javax.swing.JPanel();
-        specialPayment = new javax.swing.JPanel();
+        coopCreditpaymentPanel = new javax.swing.JPanel();
+        PoshanaPayment = new javax.swing.JPanel();
+        VoucherPayment = new javax.swing.JPanel();
         btnAddPayment = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
         btnConfirm = new javax.swing.JButton();
@@ -728,7 +754,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         lblPaymentOption.setText("Payment Type");
 
         paymentOptionComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        paymentOptionComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cash", "Card", "Credit", "Stamp", "Special" }));
+        paymentOptionComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cash", "Card", "Coop Credit", "Poshana", "Voucher" }));
         paymentOptionComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 paymentOptionComboBoxActionPerformed(evt);
@@ -853,44 +879,44 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         paymentDetailsPanel.add(cardPaymentPanel, "bankCard");
 
-        javax.swing.GroupLayout creditpaymentPanelLayout = new javax.swing.GroupLayout(creditpaymentPanel);
-        creditpaymentPanel.setLayout(creditpaymentPanelLayout);
-        creditpaymentPanelLayout.setHorizontalGroup(
-            creditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout coopCreditpaymentPanelLayout = new javax.swing.GroupLayout(coopCreditpaymentPanel);
+        coopCreditpaymentPanel.setLayout(coopCreditpaymentPanelLayout);
+        coopCreditpaymentPanelLayout.setHorizontalGroup(
+            coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 588, Short.MAX_VALUE)
         );
-        creditpaymentPanelLayout.setVerticalGroup(
-            creditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        coopCreditpaymentPanelLayout.setVerticalGroup(
+            coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 332, Short.MAX_VALUE)
         );
 
-        paymentDetailsPanel.add(creditpaymentPanel, "creditCard");
+        paymentDetailsPanel.add(coopCreditpaymentPanel, "coopCreditCard");
 
-        javax.swing.GroupLayout stampPaymentLayout = new javax.swing.GroupLayout(stampPayment);
-        stampPayment.setLayout(stampPaymentLayout);
-        stampPaymentLayout.setHorizontalGroup(
-            stampPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout PoshanaPaymentLayout = new javax.swing.GroupLayout(PoshanaPayment);
+        PoshanaPayment.setLayout(PoshanaPaymentLayout);
+        PoshanaPaymentLayout.setHorizontalGroup(
+            PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 588, Short.MAX_VALUE)
         );
-        stampPaymentLayout.setVerticalGroup(
-            stampPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        PoshanaPaymentLayout.setVerticalGroup(
+            PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 332, Short.MAX_VALUE)
         );
 
-        paymentDetailsPanel.add(stampPayment, "stampCard");
+        paymentDetailsPanel.add(PoshanaPayment, "poshanaCard");
 
-        javax.swing.GroupLayout specialPaymentLayout = new javax.swing.GroupLayout(specialPayment);
-        specialPayment.setLayout(specialPaymentLayout);
-        specialPaymentLayout.setHorizontalGroup(
-            specialPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout VoucherPaymentLayout = new javax.swing.GroupLayout(VoucherPayment);
+        VoucherPayment.setLayout(VoucherPaymentLayout);
+        VoucherPaymentLayout.setHorizontalGroup(
+            VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 588, Short.MAX_VALUE)
         );
-        specialPaymentLayout.setVerticalGroup(
-            specialPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        VoucherPaymentLayout.setVerticalGroup(
+            VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 332, Short.MAX_VALUE)
         );
 
-        paymentDetailsPanel.add(specialPayment, "specialCard");
+        paymentDetailsPanel.add(VoucherPayment, "voucherCard");
 
         btnAddPayment.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnAddPayment.setText("Add Payment [ F3 ]");
@@ -1058,6 +1084,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel PoshanaPayment;
+    private javax.swing.JPanel VoucherPayment;
     private javax.swing.JPanel billButtonPanel;
     private javax.swing.JTable billItemTable;
     private javax.swing.JPanel billSummeryPanel;
@@ -1078,7 +1106,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox cardTypeComboBox;
     private javax.swing.JFormattedTextField cardpaymentCardNo;
     private javax.swing.JPanel cashPaymentPanel;
-    private javax.swing.JPanel creditpaymentPanel;
+    private javax.swing.JPanel coopCreditpaymentPanel;
     private javax.swing.JPanel interfaceContainerPanel;
     private javax.swing.JPanel invoicePanel;
     private javax.swing.JPanel itemAddPanel;
@@ -1117,8 +1145,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel paymentSelectorPanel;
     private javax.swing.JTable paymentsTable;
     private javax.swing.JPanel productPanel;
-    private javax.swing.JPanel specialPayment;
-    private javax.swing.JPanel stampPayment;
     private javax.swing.JTextField txtBillNumber;
     private javax.swing.JFormattedTextField txtCardPaymentAmount;
     private javax.swing.JFormattedTextField txtCashPaymentAmount;
