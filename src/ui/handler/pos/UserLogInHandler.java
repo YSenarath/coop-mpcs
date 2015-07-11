@@ -8,7 +8,6 @@ package ui.handler.pos;
 import controller.pos.CounterController;
 import controller.pos.UserController;
 import java.sql.SQLException;
-import javax.swing.JFrame;
 import model.pos.CounterLogin;
 import model.pos.User;
 import model.pos.UserType;
@@ -22,13 +21,8 @@ import util.Utilities;
 public class UserLogInHandler {
 
     private static final Logger logger = Logger.getLogger(UserLogInHandler.class);
-    private final JFrame loginFrame;
 
-    public UserLogInHandler(JFrame loginFrame) {
-        this.loginFrame = loginFrame;
-    }
-
-    public boolean isUserAuthenticated(String userName, char[] password, UserType requestedAccesslevel) throws Exception {
+    public static boolean isUserAuthenticated(String userName, char[] password, UserType requestedAccesslevel) throws Exception {
         logger.debug("isUserAuthenticated invoked");
         if (UserController.isUserAuthenticated(userName, new String(password))) {
             User user = UserController.getUser("user_name", userName);
@@ -47,7 +41,7 @@ public class UserLogInHandler {
 
     }
 
-    public boolean performCounterLogin(String userName, double intialAmount) throws SQLException {
+    public static boolean performCounterLogin(String userName, double intialAmount) throws SQLException {
         logger.debug("setIntitialAmount invoked");
         //Get cashier info ,counter info ,time, date and create a counter login
         User user = UserController.getUser("user_name", userName);

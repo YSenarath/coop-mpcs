@@ -21,17 +21,14 @@ import static util.Utilities.setupUI;
  * @author Shehan
  */
 public class LogIn extends javax.swing.JFrame {
-    
+
     private static final Logger logger = Logger.getLogger(LogIn.class);
-    
-    private final UserLogInHandler loginhandler;
 
     /**
      * Creates new form LogIn
      */
     private LogIn() {
         initComponents();
-        loginhandler = new UserLogInHandler(this);
         setLocationRelativeTo(null);
     }
 
@@ -40,9 +37,9 @@ public class LogIn extends javax.swing.JFrame {
         try {
             String userName = txtUsername.getText();
             double initialAmount = Double.valueOf(ftxtIntialAmount.getText());
-            
-            if (loginhandler.isUserAuthenticated(userName, txtPassword.getPassword(), UserType.CASHIER)) {
-                if (loginhandler.performCounterLogin(userName, initialAmount)) {
+
+            if (UserLogInHandler.isUserAuthenticated(userName, txtPassword.getPassword(), UserType.CASHIER)) {
+                if (UserLogInHandler.performCounterLogin(userName, initialAmount)) {
                     new POSMDIInterface(userName).setVisible(true);
                 }
                 exitApp();
@@ -56,19 +53,19 @@ public class LogIn extends javax.swing.JFrame {
         } catch (NumberFormatException ex) {
             logger.error("Critial error : " + ex.getMessage());
             Utilities.showMsgBox("Critial error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            
+
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
             Utilities.showMsgBox("Error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
+
     }
-    
+
     private void configure() {
         logger.warn("Not implemented - show application configuration UI, after authenticationg user privilage level");
         try {
             String userName = txtUsername.getText();
-            if (loginhandler.isUserAuthenticated(userName, txtPassword.getPassword(), UserType.MANAGER)) {
+            if (UserLogInHandler.isUserAuthenticated(userName, txtPassword.getPassword(), UserType.MANAGER)) {
                 new ConfigureDialog(this, true).setVisible(true);
                 txtUsername.setText("");
                 txtPassword.setText("");
@@ -77,19 +74,17 @@ public class LogIn extends javax.swing.JFrame {
                 logger.error("User not identified");
             }
         } catch (SQLException ex) {
-            logger.error("SQL error : " + ex.getMessage());
             Utilities.showMsgBox("SQL error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException ex) {
             logger.error("Critial error : " + ex.getMessage());
             Utilities.showMsgBox("Critial error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            
+
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
             Utilities.showMsgBox("Error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         //Show UI to
-        
         //On exiting config ui return to login screen
     }
 

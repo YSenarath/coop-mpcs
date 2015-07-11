@@ -5,11 +5,14 @@
  */
 package model.inventory;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  *
  * @author Shehan
  */
-public class Product {
+public class Product implements Serializable{
 
     private int productId;
     private String name;
@@ -17,12 +20,17 @@ public class Product {
     private String description;
     private int categoryId;
     private int departmentId;
+
     private String unit;
     private double packSize;
     private double reorderValue;
-    private double maxQuantity;
+    private double reorderQty;
+    private double maxQty;
 
-    public Product(int productId, String name, long barcode, String description, int categoryId, int departmentId, String unit, double packSize, double reorderValue, double maxQuantity) {
+    private ArrayList<Batch> batches;
+    private Batch selectedBatch;
+
+    public Product(int productId, String name, long barcode, String description, int categoryId, int departmentId, String unit, double packSize, double reorderValue, double reorderQty, double maxQty) {
         this.productId = productId;
         this.name = name;
         this.barcode = barcode;
@@ -32,7 +40,10 @@ public class Product {
         this.unit = unit;
         this.packSize = packSize;
         this.reorderValue = reorderValue;
-        this.maxQuantity = maxQuantity;
+        this.reorderQty = reorderQty;
+        this.maxQty = maxQty;
+        this.batches = new ArrayList();
+        this.selectedBatch = null;
     }
 
     /**
@@ -162,17 +173,59 @@ public class Product {
     }
 
     /**
-     * @return the maxQuantity
+     * @return the reorderQty
      */
-    public double getMaxQuantity() {
-        return maxQuantity;
+    public double getReorderQty() {
+        return reorderQty;
     }
 
     /**
-     * @param maxQuantity the maxQuantity to set
+     * @param reorderQty the reorderQty to set
      */
-    public void setMaxQuantity(double maxQuantity) {
-        this.maxQuantity = maxQuantity;
+    public void setReorderQty(double reorderQty) {
+        this.reorderQty = reorderQty;
+    }
+
+    /**
+     * @return the maxQty
+     */
+    public double getMaxQty() {
+        return maxQty;
+    }
+
+    /**
+     * @param maxQty the maxQty to set
+     */
+    public void setMaxQty(double maxQty) {
+        this.maxQty = maxQty;
+    }
+
+    /**
+     * @return the batches
+     */
+    public ArrayList<Batch> getBatches() {
+        return batches;
+    }
+
+    /**
+     * @param batches the batches to set
+     */
+    public void setBatches(ArrayList<Batch> batches) {
+        this.batches = batches;
+    }
+
+    /**
+     * @return the selectedBatch
+     */
+    public Batch getSelectedBatch() {
+        return selectedBatch;
+    }
+
+    /**
+     * @param selectedBatch the selectedBatch to set
+     */
+    public void setSelectedBatch(Batch selectedBatch) {
+        this.selectedBatch = selectedBatch;
     }
 
 }

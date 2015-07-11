@@ -10,6 +10,8 @@ import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import model.inventory.Product;
 import model.pos.Invoice;
 import util.definitions.AppConstants;
 
@@ -30,4 +32,5 @@ public class InvoiceController {
         }
         return null;
     }
+    
 }

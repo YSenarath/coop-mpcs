@@ -1,9 +1,15 @@
 package util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
@@ -24,6 +30,35 @@ public class Utilities {
     //Get the mysql compatible current date as string
     public static String getCurrentDate() {
         return (new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+    }
+
+    //convert a string date to util.date
+    public static Date getDatefromString(String date) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return format.parse(date);
+        } catch (ParseException | NullPointerException ex) {
+            return null;
+        }
+    }
+
+    //Check if a util.date is in given range
+    public static boolean isDateBetweenRange(Date date, Date lowerLimit, Date upperLimit) {
+        if (date == null) {
+            return false;
+        } else {
+            if (lowerLimit != null && upperLimit != null) {
+                return date.after(lowerLimit) && date.before(upperLimit);
+            } else if (lowerLimit != null) {
+                return date.after(lowerLimit);
+            }
+        }
+        return false;
+    }
+
+    //Check if String date is in given range
+    public static boolean isDateBetweenRange(String date, String lowerLimit, String upperLimit) {
+        return isDateBetweenRange(getDatefromString(date), getDatefromString(lowerLimit), getDatefromString(upperLimit));
     }
 
     //Get the mysql compatible current time in 24h clock as string
@@ -58,9 +93,19 @@ public class Utilities {
     public static String loadProperty(String key) {
         return Preferences.userNodeForPackage(Utilities.class).get(key, "NULL");
     }
-    
-    public static String formatId(String startingChar,int length,int val){
-        return String.format(startingChar+"%0"+length+"d", val);
+
+    public static String formatId(String startingChar, int length, int val) {
+        return String.format(startingChar + "%0" + length + "d", val);
+    }
+
+    //Deep clone a object
+    public static Object deepClone(Object object) throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(object);
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        return ois.readObject();
     }
 
     public static void setupUI() {

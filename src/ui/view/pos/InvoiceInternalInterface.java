@@ -5,15 +5,40 @@
  */
 package ui.view.pos;
 
+import controller.inventory.BatchDiscountController;
+import controller.inventory.CategoryController;
+import controller.inventory.CategoryDiscountController;
 import java.awt.CardLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.PlainDocument;
+import model.inventory.Batch;
+import model.inventory.BatchDiscount;
+import model.inventory.Category;
+import model.inventory.CategoryDiscount;
+import model.inventory.Product;
 import org.apache.log4j.Logger;
 import ui.handler.pos.InvoiceHandler;
+import util.DoubleDocFilter;
+import util.Utilities;
 
 /**
  *
@@ -24,9 +49,27 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private static final Logger logger = Logger.getLogger(InvoiceInternalInterface.class);
     private final POSMDIInterface parent;
     private final JDesktopPane desktopPane;
-    private JInternalFrame searchItemInterface;
 
-    private final InvoiceHandler invoiceHandler;
+    private JInternalFrame searchItemInterface;
+    private SelectPriceInterface selectPriceInterface;
+
+    private Map<Integer, Product> availableProductMap;
+    private Product processingProduct;
+
+    DefaultComboBoxModel productComboBoxModel;
+    DefaultTableModel invoiceItemTableModel;
+
+    ActionListener productCodeListner;
+
+    private final JPanel glassPanel;
+    private final JLabel padding;
+
+    private double netTotal;
+    private double netDiscounts;
+    private int totalItemCount;
+
+    private final int NET_TOTAL_COLUMN = 7;
+    private final int NET_DISCOUNT_COLUMN = 6;
 
     /**
      * Creates new form InvoiceInterface
@@ -35,31 +78,247 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
      * @param desktopPane
      */
     public InvoiceInternalInterface(POSMDIInterface parent, JDesktopPane desktopPane) {
+        logger.debug("InvoiceInternalInterface constructor invoked");
+
         initComponents();
         this.parent = parent;
         this.desktopPane = desktopPane;
-        this.invoiceHandler = new InvoiceHandler();
-        
-        
+        this.selectPriceInterface = null;
+        this.searchItemInterface = null;
+        this.processingProduct = null;
+        this.productComboBoxModel = new DefaultComboBoxModel();
+        this.invoiceItemTableModel = (DefaultTableModel) invoiceItemTable.getModel();
+
+        netTotal = 0.00;
+        netDiscounts = 0.00;
+        totalItemCount = 0;
+
+        productCodeListner = (ActionEvent e) -> {
+            showProductDetails();
+        };
+        itemCodeComboBox.addActionListener(productCodeListner);
+
+        PlainDocument doc = (PlainDocument) txtPrice.getDocument();
+        doc.setDocumentFilter(new DoubleDocFilter());
+
+        doc = (PlainDocument) txtQty.getDocument();
+        doc.setDocumentFilter(new DoubleDocFilter());
+
+        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) invoiceItemTable.getDefaultRenderer(Object.class);
+        renderer.setHorizontalAlignment(JLabel.RIGHT);
+
+        txtPrice.setEnabled(false);
+        txtQty.setEnabled(false);
+
+        this.glassPanel = new JPanel(new GridLayout(0, 1));
+
+        this.padding = new JLabel();
+
+        glassPanel.setOpaque(
+                false);
+        glassPanel.add(padding);
+
+        glassPanel.addMouseListener(
+                new MouseAdapter() {
+                });
+        glassPanel.addMouseMotionListener(
+                new MouseMotionAdapter() {
+                });
+        glassPanel.addKeyListener(
+                new KeyAdapter() {
+                });
+        // make sure the focus won't leave the glass pane
+        glassPanel.setFocusCycleRoot(
+                true);
+        setGlassPane(glassPanel);
+
         showNextInvoiceId();
+
+        loadSellebleProducts();
+    }
+    //Price selection ui will call thi to set the price
+
+    public void setProductBatch(Batch selectedBatch) {
+        processingProduct.setSelectedBatch(selectedBatch);
+        setPropFromBatch();
     }
 
+    //Disable the glassPanel pane
+    public void disableGlassPane() {
+        glassPanel.setVisible(false);
+    }
+
+    //Method to get next invoice Id
     private void showNextInvoiceId() {
         try {
-            txtBillNumber.setText(invoiceHandler.getNextInvoicelId());
+            txtBillNumber.setText(InvoiceHandler.getNextInvoicelId());
         } catch (SQLException ex) {
             logger.error("Bill no error : " + ex.getMessage());
         }
     }
 
-    //Load the product ids to the temporory object array and show on combo box
-    private void loadProducts() {
+    //Load the products to the temporory object array and show on combo box
+    private void loadSellebleProducts() {
+        logger.debug("loadSellebleProducts invoked");
+        try {
 
+            ArrayList<Product> availableProducts = InvoiceHandler.getAllSellebleProducts();
+            availableProductMap = new HashMap<>();
+
+            itemCodeComboBox.removeActionListener(productCodeListner);
+            productComboBoxModel.removeAllElements();
+
+            availableProducts.stream().forEach((product) -> {
+                availableProductMap.put(product.getProductId(), product);
+                productComboBoxModel.addElement(new ProductComboItem(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())));
+            });
+            itemCodeComboBox.getModel().setSelectedItem(null);
+
+            itemCodeComboBox.setModel(productComboBoxModel);
+
+            bill_clearSelectedItemSearch();
+
+            itemCodeComboBox.requestFocus();
+            itemCodeComboBox.addActionListener(productCodeListner);
+
+        } catch (SQLException ex) {
+            logger.error("Product load error : " + ex.getMessage());
+        }
+    }
+
+    private void showProductDetails() {
+        if (itemCodeComboBox.getSelectedIndex() > -1) {
+
+            ProductComboItem productComboItem = (ProductComboItem) itemCodeComboBox.getSelectedItem();
+            int productId = productComboItem.getItemCode();
+
+            try {
+                //Create cloned object
+                processingProduct = (Product) util.Utilities.deepClone(availableProductMap.get(productId));
+
+                txtProductName.setText(processingProduct.getName());
+                txtProductDesc.setText(processingProduct.getDescription());
+                lblUnit.setText(processingProduct.getUnit());
+
+                if (processingProduct.getBatches().size() == 1) {
+                    logger.debug("Product has one batch");
+                    setProductBatch(processingProduct.getBatches().get(0));
+                } else if (processingProduct.getBatches().size() > 1) {
+                    logger.debug("Product has more than one batch");
+
+                    if (selectPriceInterface != null) {
+                        desktopPane.remove(selectPriceInterface);
+                    }
+                    selectPriceInterface = new SelectPriceInterface(this, desktopPane, productId, processingProduct.getBatches());
+                    desktopPane.add(selectPriceInterface, new Integer(10));//Make the price selection UI be on top of desktop pane      
+                    selectPriceInterface.setVisible(true);
+
+                    glassPanel.setVisible(true);//Disable this UI
+                    padding.requestFocus();  // required to trap key events
+
+                }
+                txtPrice.setEnabled(true);
+                txtQty.setEnabled(true);
+            } catch (IOException | ClassNotFoundException ex) {
+                logger.error("Product clone error : " + ex.getMessage());
+            }
+
+        }
+
+    }
+
+    //Get the product price from the appropriate batch
+    private void setPropFromBatch() {
+        txtPrice.setText(String.valueOf(processingProduct.getSelectedBatch().getUnitPrice()));
+        txtAvailableQty.setText(String.valueOf(processingProduct.getSelectedBatch().getQuantity()));
+        txtQty.requestFocus();
     }
 
     //Add item to the bill item table
     private void bill_addItemToBillItemTable() {
-        logger.warn("bill_addItemToBillItemTable not implemented");
+        logger.warn("bill_addItemToBillItemTable being implemented");
+        //When adding check for batch and catogory discounts
+        //Chech if discounts in time frame
+        try {
+            if (processingProduct == null || txtQty.getText().isEmpty()) {
+                logger.warn("Empty processingProduct or Qty");
+                return;
+            }
+
+            double qty = Double.parseDouble(txtQty.getText());
+
+            if (qty <= 0.00 || qty > processingProduct.getSelectedBatch().getQuantity()) {
+                Utilities.showMsgBox("Invalid item quantity ", "Incorrect quantity", JOptionPane.WARNING_MESSAGE);
+                txtQty.setText("");
+                return;
+            }
+            //get the category discount
+            double categorydDis = 0;
+            //get category and check if discount available ,if so get the discount
+            Category category = CategoryController.getBatchDiscount(processingProduct.getDepartmentId(), processingProduct.getCategoryId());
+            if (category.isDiscounted()) {
+                CategoryDiscount categoryDiscount = CategoryDiscountController.getCategoryDiscount(processingProduct.getDepartmentId(), processingProduct.getCategoryId());
+
+                if (categoryDiscount != null
+                        && (util.Utilities.isDateBetweenRange(util.Utilities.getCurrentDate(), categoryDiscount.getStartDate(), categoryDiscount.getEndDate()))) {
+
+                    categorydDis = categoryDiscount.getDiscount() / 100;
+                    logger.debug("Category discount :" + categorydDis);
+                    //Check discount validity
+                } else {
+                    logger.debug("No category discounts found");
+                }
+            } else {
+                logger.debug("Category discount disabled");
+            }
+
+            //get the batch discount
+            double batchDis = 0;
+            if (processingProduct.getSelectedBatch().isDiscounted()) {
+                BatchDiscount batchDiscount = BatchDiscountController.getBatchDiscount(processingProduct.getProductId(), processingProduct.getSelectedBatch().getBatchId());
+                if (batchDiscount != null
+                        && (util.Utilities.isDateBetweenRange(util.Utilities.getCurrentDate(), batchDiscount.getStartDate(), batchDiscount.getEndDate()))) {
+
+                    processingProduct.getSelectedBatch().setBatchDiscount(batchDiscount);
+                    batchDis = batchDiscount.getDiscount() / 100;
+                    logger.debug("batch discount :" + batchDis);
+                } else {
+                    logger.debug("No batch discounts found");
+                }
+            } else {
+                logger.debug("batch discount disabled");
+            }
+
+            double totalDiscount = categorydDis + batchDis;
+
+            int productCode = processingProduct.getProductId();
+            int batchId = processingProduct.getSelectedBatch().getBatchId();
+            String name = processingProduct.getName();
+            String description = processingProduct.getDescription();
+            double unitprice = processingProduct.getSelectedBatch().getUnitPrice();
+            String discountPercentage = totalDiscount == 0.0 ? "0.00" : String.format("%.2f", (unitprice * qty * totalDiscount)) + " (" + String.format("%.2f", totalDiscount * 100) + "%)";
+            double subTotal = unitprice * qty * (1 - totalDiscount);
+
+            //Add item to the table
+            Object[] ob = {
+                productCode,
+                batchId,
+                name,
+                description,
+                qty,
+                unitprice,
+                discountPercentage,
+                subTotal
+            };
+            invoiceItemTableModel.addRow(ob);
+
+            bill_clearSelectedItemSearch();//Ready for next product
+
+            calculateInvoiceParameters();//Update the invoice parameters
+        } catch (SQLException ex) {
+            logger.error("SQL  error : " + ex.getMessage(), ex);
+        }
+
     }
 
     //Remove a added item from the bill item table
@@ -67,11 +326,25 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         logger.debug("bill_deleteItemFromBillItemTable invoked");
 
         //NOT IMPLEMNTED - When a row is deleted the bottem most row gets auto matically selected. If no row selected by cashier delete from the bottom
-        DefaultTableModel billItemTableModel = (DefaultTableModel) billItemTable.getModel();
-        if (billItemTable.getSelectedRow() != -1) {
-            billItemTableModel.removeRow(billItemTable.getSelectedRow());
-
+        DefaultTableModel billItemTableModel = (DefaultTableModel) invoiceItemTable.getModel();
+        if (invoiceItemTable.getSelectedRow() != -1) {
+            billItemTableModel.removeRow(invoiceItemTable.getSelectedRow());
+            calculateInvoiceParameters();
         }
+    }
+
+    private void calculateInvoiceParameters() {
+        netTotal = 0.00;
+        netDiscounts = 0.00;
+        totalItemCount = 0;
+        for (int row = 0; row < invoiceItemTable.getRowCount(); row++) {
+            netTotal += Double.parseDouble(invoiceItemTable.getValueAt(row, NET_TOTAL_COLUMN).toString());
+            netDiscounts += Double.parseDouble((invoiceItemTable.getValueAt(row, NET_DISCOUNT_COLUMN).toString().split(" "))[0]);
+            totalItemCount += 1;
+        }
+        lblNetTotal.setText(String.valueOf(netTotal));
+        lblItemDiscounts.setText(String.valueOf(netDiscounts));
+        lblitemCount.setText(String.valueOf(totalItemCount));
     }
 
     //Clear the current product fields in bill add item to bill
@@ -79,9 +352,15 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         logger.debug("bill_clearSelectedItemSearch invoked");
 
         itemCodeComboBox.setSelectedIndex(-1);
+        itemCodeComboBox.setSelectedItem(null);
+        txtProductName.setText("");
         txtProductDesc.setText("");
-        txtQty.setText("");
-        lblUnit.setText("<Unit>");
+        txtAvailableQty.setText("");
+        txtPrice.setText("0.00");
+        txtQty.setText("0.00");
+        txtPrice.setEnabled(false);
+        txtQty.setEnabled(false);
+        lblUnit.setText("");
     }
 
     //Load the item information to the bill 
@@ -91,6 +370,9 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     //Show the payment panel in the bill
     private void bill_showPaymentScreen() {
+        if (totalItemCount < 1) {
+            return;
+        }
         CardLayout card = (CardLayout) invoicePanel.getLayout();
         card.next(invoicePanel);
     }
@@ -111,13 +393,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     //Toggle payment options in payment scrren
     private void bill_togglePaymentOptions(java.awt.event.ActionEvent evt) {
-        /*
-         Cash
-         Card
-         Coop Credit
-         Poshana
-         Voucher 
-         */
 
         CardLayout card = (CardLayout) paymentDetailsPanel.getLayout();
         JComboBox paymentComboBox = (JComboBox) evt.getSource();
@@ -196,12 +471,13 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLayeredPane1 = new javax.swing.JLayeredPane();
         interfaceContainerPanel = new javax.swing.JPanel();
         cardPanel = new javax.swing.JPanel();
         invoicePanel = new javax.swing.JPanel();
         itemAddPanel = new javax.swing.JPanel();
         itemTableSP = new javax.swing.JScrollPane();
-        billItemTable = new javax.swing.JTable();
+        invoiceItemTable = new javax.swing.JTable();
         btnPayment = new javax.swing.JButton();
         btnInvoiceCancel = new javax.swing.JButton();
         billButtonPanel = new javax.swing.JPanel();
@@ -210,21 +486,28 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         btnClearItem = new javax.swing.JButton();
         productPanel = new javax.swing.JPanel();
         lblCode = new javax.swing.JLabel();
-        lblProduct = new javax.swing.JLabel();
+        lblProductDesc = new javax.swing.JLabel();
         lblQty = new javax.swing.JLabel();
         btnLoad = new javax.swing.JButton();
         btnSearch = new javax.swing.JButton();
         itemCodeComboBox = new javax.swing.JComboBox();
         lblUnit = new javax.swing.JLabel();
-        txtQty = new javax.swing.JFormattedTextField();
         txtProductDesc = new javax.swing.JTextField();
+        lblPrice = new javax.swing.JLabel();
+        btnRefresh = new javax.swing.JButton();
+        lblProductName = new javax.swing.JLabel();
+        txtProductName = new javax.swing.JTextField();
+        txtPrice = new javax.swing.JFormattedTextField();
+        txtQty = new javax.swing.JFormattedTextField();
+        lblAvailableQtydisplay = new javax.swing.JLabel();
+        txtAvailableQty = new javax.swing.JTextField();
         billSummeryPanel = new javax.swing.JPanel();
         lblItemNoDisplay = new javax.swing.JLabel();
-        lblItems = new javax.swing.JLabel();
+        lblitemCount = new javax.swing.JLabel();
         lblNetDisplay = new javax.swing.JLabel();
         lblNetTotal = new javax.swing.JLabel();
         lblItemDiscountDisplay = new javax.swing.JLabel();
-        lblItems1 = new javax.swing.JLabel();
+        lblItemDiscounts = new javax.swing.JLabel();
         lblBill = new javax.swing.JLabel();
         txtBillNumber = new javax.swing.JTextField();
         btnReset = new javax.swing.JButton();
@@ -274,41 +557,32 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         dropShadowBorder1.setShowLeftShadow(true);
         dropShadowBorder1.setShowTopShadow(true);
         interfaceContainerPanel.setBorder(dropShadowBorder1);
+        interfaceContainerPanel.setOpaque(false);
 
         cardPanel.setLayout(new java.awt.CardLayout());
 
         invoicePanel.setLayout(new java.awt.CardLayout());
 
-        billItemTable.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        billItemTable.setModel(new javax.swing.table.DefaultTableModel(
+        invoiceItemTable.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        invoiceItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
-                "Code", "Description", "Qty", "Price", "Discount", "Sub total"
+                "Code", "Batch", "Name", "Description", "Qty", "Price", "Discount", "Sub total"
             }
         ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
-            };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        billItemTable.setRowHeight(21);
-        billItemTable.getTableHeader().setReorderingAllowed(false);
-        itemTableSP.setViewportView(billItemTable);
+        invoiceItemTable.setRowHeight(21);
+        invoiceItemTable.getTableHeader().setReorderingAllowed(false);
+        itemTableSP.setViewportView(invoiceItemTable);
 
         btnPayment.setText("Payment  > [ F12 ]");
         btnPayment.setToolTipText("");
@@ -388,13 +662,13 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         dropShadowBorder3.setShowTopShadow(true);
         productPanel.setBorder(dropShadowBorder3);
 
-        lblCode.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblCode.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCode.setText("Code");
 
-        lblProduct.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblProduct.setText("Product");
+        lblProductDesc.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblProductDesc.setText("Description");
 
-        lblQty.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblQty.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblQty.setText("Qty.");
 
         btnLoad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -417,15 +691,43 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         itemCodeComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         itemCodeComboBox.setMaximumRowCount(5);
 
-        lblUnit.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        lblUnit.setText("<Unit>");
+        lblUnit.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblUnit.setToolTipText("");
 
-        txtQty.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat(""))));
+        txtProductDesc.setEditable(false);
+        txtProductDesc.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        lblPrice.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblPrice.setText("Price (Rs.)");
+
+        btnRefresh.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
+
+        lblProductName.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblProductName.setText("Product name");
+
+        txtProductName.setEditable(false);
+        txtProductName.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        txtPrice.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        txtPrice.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtPrice.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        txtQty.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
         txtQty.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        txtQty.setToolTipText("");
-        txtQty.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtQty.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        txtProductDesc.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        lblAvailableQtydisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblAvailableQtydisplay.setText("Available Qty.");
+
+        txtAvailableQty.setEditable(false);
+        txtAvailableQty.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtAvailableQty.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
         javax.swing.GroupLayout productPanelLayout = new javax.swing.GroupLayout(productPanel);
         productPanel.setLayout(productPanelLayout);
@@ -434,24 +736,40 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             .addGroup(productPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblProductName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(productPanelLayout.createSequentialGroup()
-                        .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblProduct, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblCode, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lblQty, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblCode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblProductDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
+                            .addComponent(lblPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(lblAvailableQtydisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(productPanelLayout.createSequentialGroup()
-                        .addComponent(lblQty, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 110, Short.MAX_VALUE)
-                .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnLoad, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
+                        .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(txtAvailableQty, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                                .addComponent(txtPrice, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnLoad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(productPanelLayout.createSequentialGroup()
+                        .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(269, 269, 269)
+                        .addComponent(btnRefresh, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
+                    .addGroup(productPanelLayout.createSequentialGroup()
+                        .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(productPanelLayout.createSequentialGroup()
+                                .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtProductName, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         productPanelLayout.setVerticalGroup(
@@ -460,18 +778,35 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCode, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLoad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblQty, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtProductName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblProductName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(productPanelLayout.createSequentialGroup()
+                        .addComponent(btnLoad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(productPanelLayout.createSequentialGroup()
+                        .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblAvailableQtydisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtAvailableQty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(productPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblQty, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtQty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblUnit))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -481,10 +816,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         lblItemNoDisplay.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblItemNoDisplay.setText("Item(s)");
 
-        lblItems.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblItems.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblItems.setText("0");
-        lblItems.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        lblitemCount.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblitemCount.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblitemCount.setText("0");
+        lblitemCount.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         lblNetDisplay.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblNetDisplay.setText("Net Total (Rs.)");
@@ -498,11 +833,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         lblItemDiscountDisplay.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblItemDiscountDisplay.setText("Item Discount");
 
-        lblItems1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblItems1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblItems1.setText("0.00");
-        lblItems1.setToolTipText("");
-        lblItems1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        lblItemDiscounts.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblItemDiscounts.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblItemDiscounts.setText("0.00");
+        lblItemDiscounts.setToolTipText("");
+        lblItemDiscounts.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         javax.swing.GroupLayout billSummeryPanelLayout = new javax.swing.GroupLayout(billSummeryPanel);
         billSummeryPanel.setLayout(billSummeryPanelLayout);
@@ -512,11 +847,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(lblItemNoDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblItems, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblitemCount, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                 .addComponent(lblItemDiscountDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblItems1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblItemDiscounts, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(99, 99, 99)
                 .addComponent(lblNetDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -530,9 +865,9 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(billSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblNetTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblNetDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblItems1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblItemDiscounts, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblItemDiscountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblItems, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblitemCount, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblItemNoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -585,7 +920,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addComponent(productPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(billButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
+                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(billSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -705,7 +1040,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addComponent(lblBillValueVal, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
                     .addComponent(txtDiscountPercent)
                     .addComponent(txtDiscountVal))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 168, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblChangeDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblChangeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -980,7 +1315,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(paymentInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -997,26 +1332,38 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         interfaceContainerPanel.setLayout(interfaceContainerPanelLayout);
         interfaceContainerPanelLayout.setHorizontalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 968, Short.MAX_VALUE)
         );
         interfaceContainerPanelLayout.setVerticalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 743, Short.MAX_VALUE)
         );
+
+        javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
+        jLayeredPane1.setLayout(jLayeredPane1Layout);
+        jLayeredPane1Layout.setHorizontalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 978, Short.MAX_VALUE)
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jLayeredPane1Layout.setVerticalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 753, Short.MAX_VALUE)
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jLayeredPane1.setLayer(interfaceContainerPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 978, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jLayeredPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 698, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jLayeredPane1)
         );
 
         pack();
@@ -1082,12 +1429,16 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         bill_confirm();
     }//GEN-LAST:event_btnConfirmActionPerformed
 
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+        loadSellebleProducts();
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PoshanaPayment;
     private javax.swing.JPanel VoucherPayment;
     private javax.swing.JPanel billButtonPanel;
-    private javax.swing.JTable billItemTable;
     private javax.swing.JPanel billSummeryPanel;
     private javax.swing.JButton btnAddItem;
     private javax.swing.JButton btnAddPayment;
@@ -1098,6 +1449,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnLoad;
     private javax.swing.JButton btnPayment;
     private javax.swing.JButton btnPrevious;
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnRemove;
     private javax.swing.JButton btnReset;
     private javax.swing.JButton btnSearch;
@@ -1108,10 +1460,13 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel cashPaymentPanel;
     private javax.swing.JPanel coopCreditpaymentPanel;
     private javax.swing.JPanel interfaceContainerPanel;
+    private javax.swing.JTable invoiceItemTable;
     private javax.swing.JPanel invoicePanel;
     private javax.swing.JPanel itemAddPanel;
     private javax.swing.JComboBox itemCodeComboBox;
     private javax.swing.JScrollPane itemTableSP;
+    private javax.swing.JLayeredPane jLayeredPane1;
+    private javax.swing.JLabel lblAvailableQtydisplay;
     private javax.swing.JLabel lblBill;
     private javax.swing.JLabel lblBillValueDisplay;
     private javax.swing.JLabel lblBillValueDisplay1;
@@ -1125,17 +1480,19 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblChangeVal;
     private javax.swing.JLabel lblCode;
     private javax.swing.JLabel lblItemDiscountDisplay;
+    private javax.swing.JLabel lblItemDiscounts;
     private javax.swing.JLabel lblItemNoDisplay;
-    private javax.swing.JLabel lblItems;
-    private javax.swing.JLabel lblItems1;
     private javax.swing.JLabel lblNetDisplay;
     private javax.swing.JLabel lblNetTotal;
     private javax.swing.JLabel lblPaymentOption;
-    private javax.swing.JLabel lblProduct;
+    private javax.swing.JLabel lblPrice;
+    private javax.swing.JLabel lblProductDesc;
+    private javax.swing.JLabel lblProductName;
     private javax.swing.JLabel lblQty;
     private javax.swing.JLabel lblTotalDisplay;
     private javax.swing.JLabel lblTotalVal;
     private javax.swing.JLabel lblUnit;
+    private javax.swing.JLabel lblitemCount;
     private javax.swing.JPanel paymentDetailsPanel;
     private javax.swing.JPanel paymentInfoPanel;
     private javax.swing.JComboBox paymentOptionComboBox;
@@ -1145,12 +1502,15 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel paymentSelectorPanel;
     private javax.swing.JTable paymentsTable;
     private javax.swing.JPanel productPanel;
+    private javax.swing.JTextField txtAvailableQty;
     private javax.swing.JTextField txtBillNumber;
     private javax.swing.JFormattedTextField txtCardPaymentAmount;
     private javax.swing.JFormattedTextField txtCashPaymentAmount;
     private javax.swing.JFormattedTextField txtDiscountPercent;
     private javax.swing.JFormattedTextField txtDiscountVal;
+    private javax.swing.JFormattedTextField txtPrice;
     private javax.swing.JTextField txtProductDesc;
+    private javax.swing.JTextField txtProductName;
     private javax.swing.JFormattedTextField txtQty;
     // End of variables declaration//GEN-END:variables
 }

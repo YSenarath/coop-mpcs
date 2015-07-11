@@ -5,100 +5,55 @@
  */
 package ui.view.pos;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import javax.swing.JDesktopPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import model.inventory.Batch;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author Shehan
  */
-public class SelectPriceInterface extends javax.swing.JInternalFrame {
+public class SelectPriceDialog extends javax.swing.JDialog {
 
-    private static final Logger logger = Logger.getLogger(SelectPriceInterface.class);
     private final InvoiceInternalInterface parent;
-
     private final int productCode;
     private final ArrayList<Batch> batches;
-
+    private Batch selectedBatch;
     private Map<Integer, Batch> batchMap;
 
     /**
-     * Creates new form SelectPriceInterface
+     * Creates new form SelectPrice
      *
      * @param parent
-     * @param desktopPane
+     * @param modal
      * @param productCode
      * @param batches
      */
-    public SelectPriceInterface(InvoiceInternalInterface parent, JDesktopPane desktopPane, int productCode, ArrayList<Batch> batches) {
-        logger.debug("SelectPriceInterfa constructor invoked");
+    public SelectPriceDialog(InvoiceInternalInterface parent, boolean modal, int productCode, ArrayList<Batch> batches) {
+        super(JOptionPane.getFrameForComponent(parent), modal);
         initComponents();
 
-        this.parent = parent;
-
-        Dimension desktopSize = desktopPane.getSize();
-        Dimension jInternalFrameSize = this.getSize();
-        this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
-
-        this.productCode = productCode;
-        this.batches = batches;
-
-        itemPriceTable.addMouseListener(new MouseAdapter() {
+        itemPriceTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                JTable table = (JTable) mouseEvent.getSource();
-                Point point = mouseEvent.getPoint();
-                int row = table.rowAtPoint(point);
-                if (mouseEvent.getClickCount() == 2) {
-                    setSelectedBatch((int) itemPriceTable.getValueAt(row, 0));
+            public void valueChanged(ListSelectionEvent event) {
+                if (itemPriceTable.getSelectedRow() > -1) {
+                    // print first column value from selected row
+                    System.out.println(itemPriceTable.getValueAt(itemPriceTable.getSelectedRow(), 0).toString());
                 }
             }
         });
 
-        initiateBatchView();
-    }
-
-    private void initiateBatchView() {
-        logger.debug("initiateBatchView invoked");
-        lblItemCodeVal.setText(util.Utilities.formatId("P", 4, productCode));
-
-        DefaultTableModel itemTableModel = (DefaultTableModel) itemPriceTable.getModel();
-        itemTableModel.setRowCount(0);
-
-        batchMap = new HashMap<>();
-        for (Batch batch : batches) {
-            batchMap.put(batch.getBatchId(), batch);
-            Object[] ob = {
-                batch.getBatchId(),
-                batch.getExpDate(),
-                batch.getQuantity(),
-                batch.getUnitPrice()
-            };
-            itemTableModel.addRow(ob);
-        }
-    }
-
-    private void setSelectedBatch(int batchId) {
-        logger.debug("setSelectedBatch invoked");
-        parent.setProductBatch(batchMap.get(batchId));
-        parent.disableGlassPane();
-        this.dispose();
-    }
-
-    @Override
-    public boolean isSelected() {
-        return true;
+        setLocationRelativeTo(null);
+        this.parent = parent;
+        this.productCode = productCode;
+        this.batches = batches;
+//        for (Batch batch : batches) {
+//            batchMap.put(batch.getBatchId(), batch);
+//
+//        }
     }
 
     /**
@@ -115,7 +70,9 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
         itemPriceSP = new javax.swing.JScrollPane();
         itemPriceTable = new javax.swing.JTable();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Select Price");
+        setName("selectPriceDialog"); // NOI18N
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -132,7 +89,10 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
 
         itemPriceTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
                 "Batch", "Exp. Date", "Qty", "Price"
@@ -153,7 +113,6 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        itemPriceTable.getTableHeader().setReorderingAllowed(false);
         itemPriceSP.setViewportView(itemPriceTable);
 
         javax.swing.GroupLayout itemPriceContainerPanelLayout = new javax.swing.GroupLayout(itemPriceContainerPanel);
@@ -164,7 +123,7 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
         );
         itemPriceContainerPanelLayout.setVerticalGroup(
             itemPriceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemPriceSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+            .addComponent(itemPriceSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout containerPanelLayout = new javax.swing.GroupLayout(containerPanel);
@@ -179,7 +138,7 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
                         .addComponent(lblItemCode, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblItemCodeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 87, Short.MAX_VALUE)))
+                        .addGap(0, 125, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         containerPanelLayout.setVerticalGroup(
@@ -208,7 +167,6 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel containerPanel;
     private javax.swing.JPanel itemPriceContainerPanel;
@@ -218,4 +176,10 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblItemCodeVal;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * @return the selectedBatch
+     */
+    public Batch getSelectedBatch() {
+        return selectedBatch;
+    }
 }

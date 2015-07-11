@@ -5,11 +5,13 @@
  */
 package model.inventory;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Shehan
  */
-public class BatchDiscount {
+public class BatchDiscount implements Serializable {
 
     private int batchId;
     private int productId;
@@ -142,5 +144,5 @@ public class BatchDiscount {
     public void setMembersOnly(boolean membersOnly) {
         this.membersOnly = membersOnly;
     }
-    
+
 }

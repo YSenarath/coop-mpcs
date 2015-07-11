@@ -13,9 +13,12 @@ public class Category {
 
     private int categoryId;
     private int departmentId;
+
     private String name;
     private String description;
+
     private boolean discounted;
+    private CategoryDiscount categoryDiscount;
 
     public Category(int categoryId, int departmentId, String name, String description, boolean discounted) {
         this.categoryId = categoryId;
@@ -23,6 +26,7 @@ public class Category {
         this.name = name;
         this.description = description;
         this.discounted = discounted;
+        this.categoryDiscount = null;
     }
 
     /**
@@ -93,6 +97,20 @@ public class Category {
      */
     public void setDiscounted(boolean discounted) {
         this.discounted = discounted;
+    }
+
+    /**
+     * @return the categoryDiscount
+     */
+    public CategoryDiscount getCategoryDiscount() {
+        return categoryDiscount;
+    }
+
+    /**
+     * @param categoryDiscount the categoryDiscount to set
+     */
+    public void setCategoryDiscount(CategoryDiscount categoryDiscount) {
+        this.categoryDiscount = categoryDiscount;
     }
 
 }

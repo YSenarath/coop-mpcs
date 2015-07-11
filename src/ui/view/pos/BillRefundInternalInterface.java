@@ -28,6 +28,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
      * @param desktopPane
      */
     public BillRefundInternalInterface(POSMDIInterface parent, JDesktopPane desktopPane) {
+        logger.debug("BillRefundInternalInterface constructor invoked");
         initComponents();
         this.parent = parent;
         this.desktopPane = desktopPane;

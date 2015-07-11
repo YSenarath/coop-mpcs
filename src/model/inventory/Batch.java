@@ -5,26 +5,31 @@
  */
 package model.inventory;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Shehan
  */
-public class Batch {
+public class Batch implements Serializable {
 
     private int batchId;
     private int productId;
     private int grnNo;
+
     private double unitCost;
     private double costDiscount;
     private double unitPrice;
     private double quantity;
-    private String qty;
+    private String expDate;
     private String notifiDate;
     private double recievedQty;
     private boolean inStock;
-    private boolean discounted;
 
-    public Batch(int batchId, int productId, int grnNo, double unitCost, double costDiscount, double unitPrice, double quantity, String qty, String notifiDate, double recievedQty, boolean inStock, boolean discounted) {
+    private boolean discounted;
+    private BatchDiscount batchDiscount;
+
+    public Batch(int batchId, int productId, int grnNo, double unitCost, double costDiscount, double unitPrice, double quantity, String expDate, String notifiDate, double recievedQty, boolean inStock, boolean discounted) {
         this.batchId = batchId;
         this.productId = productId;
         this.grnNo = grnNo;
@@ -32,11 +37,12 @@ public class Batch {
         this.costDiscount = costDiscount;
         this.unitPrice = unitPrice;
         this.quantity = quantity;
-        this.qty = qty;
+        this.expDate = expDate;
         this.notifiDate = notifiDate;
         this.recievedQty = recievedQty;
         this.inStock = inStock;
         this.discounted = discounted;
+        this.batchDiscount = null;
     }
 
     /**
@@ -138,17 +144,17 @@ public class Batch {
     }
 
     /**
-     * @return the qty
+     * @return the expDate
      */
-    public String getQty() {
-        return qty;
+    public String getExpDate() {
+        return expDate;
     }
 
     /**
-     * @param qty the qty to set
+     * @param expDate the expDate to set
      */
-    public void setQty(String qty) {
-        this.qty = qty;
+    public void setExpDate(String expDate) {
+        this.expDate = expDate;
     }
 
     /**
@@ -205,6 +211,20 @@ public class Batch {
      */
     public void setDiscounted(boolean discounted) {
         this.discounted = discounted;
+    }
+
+    /**
+     * @return the batchDiscount
+     */
+    public BatchDiscount getBatchDiscount() {
+        return batchDiscount;
+    }
+
+    /**
+     * @param batchDiscount the batchDiscount to set
+     */
+    public void setBatchDiscount(BatchDiscount batchDiscount) {
+        this.batchDiscount = batchDiscount;
     }
 
 }

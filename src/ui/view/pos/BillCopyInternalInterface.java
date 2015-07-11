@@ -28,6 +28,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
      * @param desktopPane
      */
     public BillCopyInternalInterface(POSMDIInterface parent, JDesktopPane desktopPane) {
+        logger.debug("BillCopyInternalInterface constructor invoked");
         initComponents();
         this.parent = parent;
         this.desktopPane = desktopPane;

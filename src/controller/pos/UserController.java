@@ -39,7 +39,12 @@ public class UserController {
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
         if (resultSet.next()) {
-            return new User(resultSet.getString("user_name"), resultSet.getString("password"), resultSet.getString("access_level"), resultSet.getBoolean("isLoggedIn"));
+            return new User(
+                    resultSet.getString("user_name"),
+                    resultSet.getString("password"),
+                    resultSet.getString("access_level"),
+                    resultSet.getBoolean("isLoggedIn")
+            );
         }
         return null;
     }
@@ -56,13 +61,17 @@ public class UserController {
 
     public static ArrayList<User> getAllUsers() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-
         String query = "Select * From " + AppConstants.USER;
         ResultSet resultSet = DBHandler.getData(connection, query);
+        
         ArrayList<User> allUsers = new ArrayList<>();
-
         while (resultSet.next()) {
-            User user = new User(resultSet.getString("user_name"), resultSet.getString("password"), resultSet.getString("access_level"), resultSet.getBoolean("isLoggedIn"));
+            User user = new User(
+                    resultSet.getString("user_name"),
+                    resultSet.getString("password"),
+                    resultSet.getString("access_level"),
+                    resultSet.getBoolean("isLoggedIn")
+            );
             allUsers.add(user);
         }
 

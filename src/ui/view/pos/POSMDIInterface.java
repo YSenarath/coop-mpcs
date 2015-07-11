@@ -42,9 +42,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
     //Name of the logged on cashier
     private String userName;
 
-    //Handler to handle cashier loggin off 
-    private UserLogOffHandler logoffhandler;
-
     //The three main POS UI's
     private JInternalFrame invoiceInterface;
     private JInternalFrame billRefundInterface;
@@ -100,8 +97,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
         lblCounter.setText(Utilities.loadProperty("counter"));
 
         lblTaskLogo.setVisible(false);
-
-        logoffhandler = new UserLogOffHandler(this);
 
         isMainActivityRunning = false;
         isInvoiceRunning = false;
@@ -210,11 +205,10 @@ public class POSMDIInterface extends javax.swing.JFrame {
             return;
         }
         showDesktopPane(true);
-        if (invoiceInterface == null) {
-            invoiceInterface = new InvoiceInternalInterface(this, desktopPane);
-        } else {
+        if (invoiceInterface != null) {
             desktopPane.remove(invoiceInterface);
         }
+        invoiceInterface = new InvoiceInternalInterface(this, desktopPane);
 
         setIsMainActivityRunning(true);
         setIsInvoiceRunning(true);
@@ -249,12 +243,11 @@ public class POSMDIInterface extends javax.swing.JFrame {
         }
 
         showDesktopPane(true);
-        if (billCopyInterface == null) {
-            billCopyInterface = new BillCopyInternalInterface(this, desktopPane);
-        } else {
+        if (billCopyInterface != null) {
             desktopPane.remove(billCopyInterface);
-        }
 
+        }
+        billCopyInterface = new BillCopyInternalInterface(this, desktopPane);
         setIsMainActivityRunning(true);
         setIsBillCopyRunning(true);
 
@@ -271,11 +264,11 @@ public class POSMDIInterface extends javax.swing.JFrame {
             logger.error("A main activity is already running");
             return;
         }
-        if (billRefundInterface == null) {
-            billRefundInterface = new BillRefundInternalInterface(this, desktopPane);
-        } else {
+        if (billRefundInterface != null) {
             desktopPane.remove(billRefundInterface);
         }
+        billRefundInterface = new BillRefundInternalInterface(this, desktopPane);
+
         setIsMainActivityRunning(true);
         setIsBillRefundRunning(true);
 
@@ -319,7 +312,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
             if (dialogResult == JOptionPane.YES_OPTION) {
                 logger.info("Cashier logged off");
                 try {
-                    logoffhandler.logOffUser(userName);
+                    UserLogOffHandler.logOffUser(userName);
                     logger.debug("User : " + userName + " logged off");
                 } catch (SQLException ex) {
                     logger.error("User log off error : " + ex.getMessage());
@@ -618,7 +611,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
-                        .addGap(0, 445, Short.MAX_VALUE)
+                        .addGap(0, 385, Short.MAX_VALUE)
                         .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 586, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -627,7 +620,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 615, Short.MAX_VALUE)
+                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblWelcome)
                 .addContainerGap())
@@ -644,11 +637,11 @@ public class POSMDIInterface extends javax.swing.JFrame {
         desktopContainerPanel.setLayout(desktopContainerPanelLayout);
         desktopContainerPanelLayout.setHorizontalGroup(
             desktopContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1051, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 991, Short.MAX_VALUE)
         );
         desktopContainerPanelLayout.setVerticalGroup(
             desktopContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
         );
 
         cardContainerPanel.add(desktopContainerPanel, "desktopCard");
@@ -709,7 +702,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                         .addComponent(jxTaskPaneContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 991, Short.MAX_VALUE)
                     .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -725,7 +718,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
