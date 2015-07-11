@@ -9,10 +9,6 @@ package model.pos;
  *
  * @author Shehan
  */
-public class StampPayment extends Payment {
-
-    public StampPayment(String paymentId, double amount) {
-        super(paymentId, amount);
-    }
-
+public enum VoucherType {
+    EMPLOYEE,CUSTOMER
 }

@@ -14,12 +14,12 @@ import static util.Utilities.formatId;
  *
  * @author Shehan
  */
-public class BillHandler {
+public class InvoiceHandler {
 
-    public String getNewBillId() throws SQLException {
-        Invoice invoice = InvoiceController.getLastBillId();
+    public String getNextInvoicelId() throws SQLException {
+        Invoice invoice = InvoiceController.getLastInvoiceId();
         if (invoice != null) {
-            return formatId("B", 5, invoice.getInvoiceNo());
+            return formatId("B", 5, invoice.getInvoiceNo()+1);
         }
         return formatId("B", 5, 1);
     }

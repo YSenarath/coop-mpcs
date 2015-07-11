@@ -15,9 +15,9 @@ public class User {
     private String employeeId;
     private String password;
     private UserType userType;
-    private boolean isLoggedin;
+    private boolean loggedin;
 
-    public User(String userName, String password, String userType, boolean isLoggedin) {
+    public User(String userName, String password, String userType, boolean loggedin) {
         this.userName = userName;
         this.password = password;
         switch (userType) {
@@ -31,7 +31,7 @@ public class User {
                 this.userType = UserType.INVENTORY;
                 break;
         }
-        this.isLoggedin = isLoggedin;
+        this.loggedin = loggedin;
     }
 
     /**
@@ -91,17 +91,17 @@ public class User {
     }
 
     /**
-     * @return the isLoggedin
+     * @return the loggedin
      */
     public boolean isLoggedin() {
-        return isLoggedin;
+        return loggedin;
     }
 
     /**
-     * @param isLoggedin the isLoggedin to set
+     * @param loggedin the loggedin to set
      */
-    public void setIsLoggedin(boolean isLoggedin) {
-        this.isLoggedin = isLoggedin;
+    public void setLoggedin(boolean loggedin) {
+        this.loggedin = loggedin;
     }
 
 }

@@ -13,7 +13,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
-import ui.handler.pos.BillHandler;
+import ui.handler.pos.InvoiceHandler;
 
 /**
  *
@@ -26,7 +26,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private final JDesktopPane desktopPane;
     private JInternalFrame searchItemInterface;
 
-    private BillHandler billHandler;
+    private final InvoiceHandler invoiceHandler;
 
     /**
      * Creates new form InvoiceInterface
@@ -38,15 +38,15 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         initComponents();
         this.parent = parent;
         this.desktopPane = desktopPane;
-        this.billHandler = new BillHandler();
+        this.invoiceHandler = new InvoiceHandler();
         
         
-        showNewBillId();
+        showNextInvoiceId();
     }
 
-    private void showNewBillId() {
+    private void showNextInvoiceId() {
         try {
-            txtBillNumber.setText(billHandler.getNewBillId());
+            txtBillNumber.setText(invoiceHandler.getNextInvoicelId());
         } catch (SQLException ex) {
             logger.error("Bill no error : " + ex.getMessage());
         }

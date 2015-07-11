@@ -10,7 +10,6 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import model.pos.Employee;
 import model.pos.UserType;
 import org.apache.log4j.Logger;
 import ui.handler.pos.UserLogInHandler;

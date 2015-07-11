@@ -16,11 +16,11 @@ import java.util.ArrayList;
 public class Invoice {
 
     private final int invoiceNo;
-    //private Cashier cashier;//The cashier
+    private String username;//The cashier
+    private int counterid;
     private Date date;
     private Time time;
     private int itemCount;
-    private double subTotal;
     private double netTotal;
     private double discount;
     private ArrayList<InvoiceItem> invoiceItems;//invoice has items
@@ -28,22 +28,24 @@ public class Invoice {
 
     public Invoice(int invoiceNo) {
         this.invoiceNo = invoiceNo;
+        this.username = null;
+        this.counterid=-1;
         this.date = null;
         this.time = null;
         this.itemCount = 0;
-        this.subTotal = 0;
         this.netTotal = 0;
         this.discount = 0;
         this.invoiceItems = null;
         this.payments = null;
     }
 
-    public Invoice(int invoiceNo, Date date, Time time, int itemCount, double subTotal, double netTotal, double discount, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
+    public Invoice(int invoiceNo, String username, int counterid, Date date, Time time, int itemCount, double netTotal, double discount, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
         this.invoiceNo = invoiceNo;
+        this.username = username;
+        this.counterid = counterid;
         this.date = date;
         this.time = time;
         this.itemCount = itemCount;
-        this.subTotal = subTotal;
         this.netTotal = netTotal;
         this.discount = discount;
         this.invoiceItems = invoiceItems;
@@ -55,6 +57,34 @@ public class Invoice {
      */
     public int getInvoiceNo() {
         return invoiceNo;
+    }
+
+    /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * @return the counterid
+     */
+    public int getCounterid() {
+        return counterid;
+    }
+
+    /**
+     * @param counterid the counterid to set
+     */
+    public void setCounterid(int counterid) {
+        this.counterid = counterid;
     }
 
     /**
@@ -97,20 +127,6 @@ public class Invoice {
      */
     public void setItemCount(int itemCount) {
         this.itemCount = itemCount;
-    }
-
-    /**
-     * @return the subTotal
-     */
-    public double getSubTotal() {
-        return subTotal;
-    }
-
-    /**
-     * @param subTotal the subTotal to set
-     */
-    public void setSubTotal(double subTotal) {
-        this.subTotal = subTotal;
     }
 
     /**
@@ -168,5 +184,7 @@ public class Invoice {
     public void setPayments(ArrayList<Payment> payments) {
         this.payments = payments;
     }
+
+    
 
 }

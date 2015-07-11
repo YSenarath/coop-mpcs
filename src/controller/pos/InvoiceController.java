@@ -18,9 +18,9 @@ import util.definitions.AppConstants;
  * @author Shehan
  */
 public class InvoiceController {
-    public static Invoice getLastBillId() throws SQLException{
+    public static Invoice getLastInvoiceId() throws SQLException{
          Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT bill_id FROM " + AppConstants.BILL + " ORDER BY bill_id DESC LIMIT 1";
+        String query = "SELECT bill_id FROM " + AppConstants.INVOICE + " ORDER BY bill_id DESC LIMIT 1";
         
         ResultSet resultSet = DBHandler.getData(connection, query);
 

@@ -3,33 +3,34 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model.pos;
+package model.inventory;
 
 /**
  *
  * @author Shehan
  */
-public class Employee {
-    private String employee_Id;
+public class Department {
+
+    private int departmentId;
     private String name;
 
-    public Employee(String employee_Id, String name) {
-        this.employee_Id = employee_Id;
+    public Department(int departmentId, String name) {
+        this.departmentId = departmentId;
         this.name = name;
     }
 
     /**
-     * @return the employee_Id
+     * @return the departmentId
      */
-    public String getEmployee_Id() {
-        return employee_Id;
+    public int getDepartmentId() {
+        return departmentId;
     }
 
     /**
-     * @param employee_Id the employee_Id to set
+     * @param departmentId the departmentId to set
      */
-    public void setEmployee_Id(String employee_Id) {
-        this.employee_Id = employee_Id;
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
     }
 
     /**
@@ -45,5 +46,5 @@ public class Employee {
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }

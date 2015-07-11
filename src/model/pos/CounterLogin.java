@@ -11,7 +11,7 @@ package model.pos;
  */
 public class CounterLogin {
 
-    private String shiftId;
+    private int  shiftId;
     private String user_name;
     private String counterId;
     private String time;
@@ -19,7 +19,7 @@ public class CounterLogin {
     private double initialAmount;
 
     public CounterLogin(String user_name, String counterId, String time, String date, double initialAmount) {
-        this.shiftId = null;
+        this.shiftId = -1;
         this.user_name = user_name;
         this.counterId = counterId;
         this.time = time;
@@ -27,7 +27,7 @@ public class CounterLogin {
         this.initialAmount = initialAmount;
     }
 
-    public CounterLogin(String shiftId, String user_name, String counterId, String time, String date, double initialAmount) {
+    public CounterLogin(int shiftId, String user_name, String counterId, String time, String date, double initialAmount) {
         this.shiftId = shiftId;
         this.user_name = user_name;
         this.counterId = counterId;
@@ -39,14 +39,14 @@ public class CounterLogin {
     /**
      * @return the shiftId
      */
-    public String getShiftId() {
+    public int getShiftId() {
         return shiftId;
     }
 
     /**
      * @param shiftId the shiftId to set
      */
-    public void setShiftId(String shiftId) {
+    public void setShiftId(int shiftId) {
         this.shiftId = shiftId;
     }
 

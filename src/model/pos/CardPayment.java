@@ -14,8 +14,8 @@ public class CardPayment extends Payment {
     private CardType cardType;
     private int cardNo;
 
-    public CardPayment(String paymentId, CardType cardType, int cardNo, double amount) {
-        super(paymentId, amount);
+    public CardPayment(int billId,int paymentId, CardType cardType, int cardNo, double amount) {
+        super(billId,paymentId, amount);
         this.cardType = cardType;
         this.cardNo = cardNo;
     }

@@ -11,18 +11,27 @@ package model.pos;
  */
 public abstract class Payment {
 
-    private final String paymentId;
+    private final int billId;
+    private final int paymentId;
     private double amount;
 
-    protected Payment(String paymentId, double amount) {
+    protected Payment(int billId, int paymentId, double amount) {
+        this.billId = billId;
         this.paymentId = paymentId;
         this.amount = amount;
     }
 
     /**
+     * @return the billId
+     */
+    public int getBillId() {
+        return billId;
+    }
+
+    /**
      * @return the paymentId
      */
-    public String getPaymentId() {
+    public int getPaymentId() {
         return paymentId;
     }
 
@@ -39,4 +48,5 @@ public abstract class Payment {
     public void setAmount(double amount) {
         this.amount = amount;
     }
+
 }

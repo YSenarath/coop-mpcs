@@ -13,8 +13,8 @@ public class CashPayment extends Payment {
 
     private double changeAmount;
 
-    public CashPayment(String paymentId, double amount, double changeAmount) {
-        super(paymentId, amount);
+    public CashPayment(int billId, int paymentId, double amount, double changeAmount) {
+        super(billId, paymentId, amount);
         this.changeAmount = changeAmount;
     }
 

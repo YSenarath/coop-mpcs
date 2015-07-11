@@ -11,56 +11,104 @@ package model.pos;
  */
 public class InvoiceItem {
 
-    private String itemCode;
-    private int purchaseQty;
-    private double unitPrice;
+    private int billId;
+    private int batchId;
+    private int productId;
+    private double qty;
+    private double discount;
+    private double price;
 
-    public InvoiceItem(String itemCode, int purchaseQty, double unitPrice) {
-        this.itemCode = itemCode;
-        this.purchaseQty = purchaseQty;
-        this.unitPrice = unitPrice;
+    public InvoiceItem(int billId, int batchId, int productId, double qty, double discount, double price) {
+        this.billId = billId;
+        this.batchId = batchId;
+        this.productId = productId;
+        this.qty = qty;
+        this.discount = discount;
+        this.price = price;
     }
 
     /**
-     * @return the itemCode
+     * @return the billId
      */
-    public String getItemCode() {
-        return itemCode;
+    public int getBillId() {
+        return billId;
     }
 
     /**
-     * @param itemCode the itemCode to set
+     * @param billId the billId to set
      */
-    public void setItemCode(String itemCode) {
-        this.itemCode = itemCode;
+    public void setBillId(int billId) {
+        this.billId = billId;
     }
 
     /**
-     * @return the purchaseQty
+     * @return the batchId
      */
-    public int getPurchaseQty() {
-        return purchaseQty;
+    public int getBatchId() {
+        return batchId;
     }
 
     /**
-     * @param purchaseQty the purchaseQty to set
+     * @param batchId the batchId to set
      */
-    public void setPurchaseQty(int purchaseQty) {
-        this.purchaseQty = purchaseQty;
+    public void setBatchId(int batchId) {
+        this.batchId = batchId;
     }
 
     /**
-     * @return the unitPrice
+     * @return the productId
      */
-    public double getUnitPrice() {
-        return unitPrice;
+    public int getProductId() {
+        return productId;
     }
 
     /**
-     * @param unitPrice the unitPrice to set
+     * @param productId the productId to set
      */
-    public void setUnitPrice(double unitPrice) {
-        this.unitPrice = unitPrice;
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    /**
+     * @return the qty
+     */
+    public double getQty() {
+        return qty;
+    }
+
+    /**
+     * @param qty the qty to set
+     */
+    public void setQty(double qty) {
+        this.qty = qty;
+    }
+
+    /**
+     * @return the discount
+     */
+    public double getDiscount() {
+        return discount;
+    }
+
+    /**
+     * @param discount the discount to set
+     */
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
+    /**
+     * @return the price
+     */
+    public double getPrice() {
+        return price;
+    }
+
+    /**
+     * @param price the price to set
+     */
+    public void setPrice(double price) {
+        this.price = price;
     }
 
 }

@@ -9,6 +9,10 @@ package model.pos;
  *
  * @author Shehan
  */
-public class CreditPayment {
+public class CustomerVoucherPayment extends VoucherPayment{
 
+    public CustomerVoucherPayment(int billId, int paymentId, String voucherId, double amount) {
+        super(billId, paymentId, voucherId, amount);
+    }
+    
 }
