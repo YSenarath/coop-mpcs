@@ -11,48 +11,18 @@ package model.pos;
  */
 public class InvoiceItem {
 
-    private int billId;
-    private int batchId;
     private int productId;
+    private int batchId;
     private double qty;
     private double discount;
     private double price;
 
-    public InvoiceItem(int billId, int batchId, int productId, double qty, double discount, double price) {
-        this.billId = billId;
-        this.batchId = batchId;
+    public InvoiceItem(int productId, int batchId, double qty, double discount, double price) {
         this.productId = productId;
+        this.batchId = batchId;
         this.qty = qty;
         this.discount = discount;
         this.price = price;
-    }
-
-    /**
-     * @return the billId
-     */
-    public int getBillId() {
-        return billId;
-    }
-
-    /**
-     * @param billId the billId to set
-     */
-    public void setBillId(int billId) {
-        this.billId = billId;
-    }
-
-    /**
-     * @return the batchId
-     */
-    public int getBatchId() {
-        return batchId;
-    }
-
-    /**
-     * @param batchId the batchId to set
-     */
-    public void setBatchId(int batchId) {
-        this.batchId = batchId;
     }
 
     /**
@@ -67,6 +37,20 @@ public class InvoiceItem {
      */
     public void setProductId(int productId) {
         this.productId = productId;
+    }
+
+    /**
+     * @return the batchId
+     */
+    public int getBatchId() {
+        return batchId;
+    }
+
+    /**
+     * @param batchId the batchId to set
+     */
+    public void setBatchId(int batchId) {
+        this.batchId = batchId;
     }
 
     /**

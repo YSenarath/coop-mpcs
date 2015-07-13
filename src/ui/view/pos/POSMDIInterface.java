@@ -66,6 +66,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
     private void enableDebugMode() {
         setTitle("MEGA COOP CITY POS : DEBUG MODE");
         isCashierLogedIn = true;
+        this.userName = "Debug";
         btnCashierLog.setText("Debug Mode");
         btnCashierLog.setEnabled(false);
         bill_newSale();
@@ -150,7 +151,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
     private void setUser(String userName) {
         this.userName = userName;
-        lblCashier.setText(this.userName);
+        lblCashier.setText(this.getUserName());
         this.isCashierLogedIn = true;
     }
 
@@ -312,8 +313,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
             if (dialogResult == JOptionPane.YES_OPTION) {
                 logger.info("Cashier logged off");
                 try {
-                    UserLogOffHandler.logOffUser(userName);
-                    logger.debug("User : " + userName + " logged off");
+                    UserLogOffHandler.logOffUser(getUserName());
+                    logger.info("User : " + getUserName() + " logged off");
                 } catch (SQLException ex) {
                     logger.error("User log off error : " + ex.getMessage());
 
@@ -329,6 +330,13 @@ public class POSMDIInterface extends javax.swing.JFrame {
     //Manager features
     private void manager() {
         logger.warn("manager_logIn not implemented");
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName() {
+        return userName;
     }
 
     /**
@@ -371,6 +379,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MEGA COOP CITY POS");
+        setMinimumSize(new java.awt.Dimension(1300, 825));
 
         jxTaskPaneContainer.setBackground(new java.awt.Color(204, 204, 204));
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
@@ -611,7 +620,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
-                        .addGap(0, 385, Short.MAX_VALUE)
+                        .addGap(0, 444, Short.MAX_VALUE)
                         .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 586, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -620,13 +629,16 @@ public class POSMDIInterface extends javax.swing.JFrame {
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblWelcome)
                 .addContainerGap())
         );
 
         cardContainerPanel.add(welcomePanel, "welcomeCard");
+
+        desktopContainerPanel.setMinimumSize(new java.awt.Dimension(1050, 750));
+        desktopContainerPanel.setPreferredSize(new java.awt.Dimension(1050, 750));
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder3 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder3.setShowLeftShadow(true);
@@ -637,11 +649,11 @@ public class POSMDIInterface extends javax.swing.JFrame {
         desktopContainerPanel.setLayout(desktopContainerPanelLayout);
         desktopContainerPanelLayout.setHorizontalGroup(
             desktopContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 991, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1050, Short.MAX_VALUE)
         );
         desktopContainerPanelLayout.setVerticalGroup(
             desktopContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
         );
 
         cardContainerPanel.add(desktopContainerPanel, "desktopCard");
@@ -702,7 +714,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                         .addComponent(jxTaskPaneContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 991, Short.MAX_VALUE)
+                    .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -718,7 +730,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 712, Short.MAX_VALUE)))
+                        .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 

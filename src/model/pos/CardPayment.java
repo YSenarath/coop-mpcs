@@ -11,11 +11,15 @@ package model.pos;
  */
 public class CardPayment extends Payment {
 
-    private CardType cardType;
+    public static final String AMEX = "AMEX";
+    public static final String MASTER = "MASTER";
+    public static final String VISA = "VISA";
+
+    private String cardType;
     private int cardNo;
 
-    public CardPayment(int billId,int paymentId, CardType cardType, int cardNo, double amount) {
-        super(billId,paymentId, amount);
+    public CardPayment(int billId, int paymentId, String cardType, int cardNo, double amount) {
+        super(billId, paymentId, amount);
         this.cardType = cardType;
         this.cardNo = cardNo;
     }
@@ -23,14 +27,14 @@ public class CardPayment extends Payment {
     /**
      * @return the cardType
      */
-    public CardType getCardType() {
+    public String getCardType() {
         return cardType;
     }
 
     /**
      * @param cardType the cardType to set
      */
-    public void setCardType(CardType cardType) {
+    public void setCardType(String cardType) {
         this.cardType = cardType;
     }
 

@@ -25,7 +25,7 @@ public class DBConnection {
             Properties connectionProps = new Properties();
             connectionProps.put("user", AppConstants.MYSQL_USER_NAME);
             connectionProps.put("password", AppConstants.MYSQL_PASSWORD);
-            logger.debug("MYSQL connection = jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
+            logger.info("MYSQL connection = jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
 
             connection = DriverManager.getConnection("jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE, connectionProps);
         } catch (Exception e) {

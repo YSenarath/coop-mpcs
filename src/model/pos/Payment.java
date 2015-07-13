@@ -11,6 +11,12 @@ package model.pos;
  */
 public abstract class Payment {
 
+    public static final String CASH = "Cash";
+    public static final String CREDIT_CARD = "Credit Card";
+    public static final String COOP_CRDIT = "Coop Credit";
+    public static final String POSHANA = "Poshana";
+    public static final String VOUCHER = "Voucher";
+
     private final int billId;
     private final int paymentId;
     private double amount;

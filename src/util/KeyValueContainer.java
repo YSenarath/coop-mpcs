@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui.view.pos;
+package util;
 
 /**
  *
  * @author Shehan
  */
-public class ProductComboItem {
+public class KeyValueContainer {
 
     private final int itemCode;
     private final String value;
 
-    public ProductComboItem(int itemCode, String value) {
+    public KeyValueContainer(int itemCode, String value) {
         this.itemCode = itemCode;
         this.value = value;
     }

@@ -7,6 +7,7 @@ package ui.view.pos;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JDesktopPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import model.inventory.Batch;
 import org.apache.log4j.Logger;
@@ -31,6 +33,8 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
     private final ArrayList<Batch> batches;
 
     private Map<Integer, Batch> batchMap;
+
+    private boolean batchSelected = false;
 
     /**
      * Creates new form SelectPriceInterface
@@ -67,6 +71,7 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
         });
 
         initiateBatchView();
+        requestFocus();
     }
 
     private void initiateBatchView() {
@@ -92,7 +97,17 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
     private void setSelectedBatch(int batchId) {
         logger.debug("setSelectedBatch invoked");
         parent.setProductBatch(batchMap.get(batchId));
+        batchSelected = true;
         parent.disableGlassPane();
+        this.dispose();
+    }
+
+    private void escapeKeyHandler() {
+        if (!batchSelected) {
+            parent.invoiceClearProductinfo();
+            parent.disableGlassPane();
+
+        }
         this.dispose();
     }
 
@@ -115,7 +130,25 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
         itemPriceSP = new javax.swing.JScrollPane();
         itemPriceTable = new javax.swing.JTable();
 
+        setClosable(true);
         setTitle("Select Price");
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -207,6 +240,11 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+        // TODO add your handling code here:
+        escapeKeyHandler();
+    }//GEN-LAST:event_formInternalFrameClosing
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

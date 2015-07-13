@@ -15,31 +15,41 @@ import java.util.ArrayList;
  */
 public class Invoice {
 
-    private final int invoiceNo;
-    private String username;//The cashier
+    private int invoiceNo;
+    private String username;
     private int counterid;
-    private Date date;
-    private Time time;
+    private String date;
+    private String time;
+
     private int itemCount;
     private double netTotal;
     private double discount;
+
+    private double amountPaid;
+    private double change;
+
     private ArrayList<InvoiceItem> invoiceItems;//invoice has items
     private ArrayList<Payment> payments;//Invoice has payments
 
     public Invoice(int invoiceNo) {
         this.invoiceNo = invoiceNo;
         this.username = null;
-        this.counterid=-1;
+        this.counterid = -1;
         this.date = null;
         this.time = null;
+
         this.itemCount = 0;
         this.netTotal = 0;
         this.discount = 0;
+
+        this.amountPaid = 0;
+        this.change = 0;
+
         this.invoiceItems = null;
         this.payments = null;
     }
 
-    public Invoice(int invoiceNo, String username, int counterid, Date date, Time time, int itemCount, double netTotal, double discount, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
+    public Invoice(int invoiceNo, String username, int counterid, String date, String time, int itemCount, double netTotal, double discount, double amountPaid, double change, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
         this.invoiceNo = invoiceNo;
         this.username = username;
         this.counterid = counterid;
@@ -48,6 +58,8 @@ public class Invoice {
         this.itemCount = itemCount;
         this.netTotal = netTotal;
         this.discount = discount;
+        this.amountPaid = amountPaid;
+        this.change = change;
         this.invoiceItems = invoiceItems;
         this.payments = payments;
     }
@@ -57,6 +69,13 @@ public class Invoice {
      */
     public int getInvoiceNo() {
         return invoiceNo;
+    }
+
+    /**
+     * @param invoiceNo the invoiceNo to set
+     */
+    public void setInvoiceNo(int invoiceNo) {
+        this.invoiceNo = invoiceNo;
     }
 
     /**
@@ -90,28 +109,28 @@ public class Invoice {
     /**
      * @return the date
      */
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
     /**
      * @param date the date to set
      */
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
     /**
      * @return the time
      */
-    public Time getTime() {
+    public String getTime() {
         return time;
     }
 
     /**
      * @param time the time to set
      */
-    public void setTime(Time time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
@@ -158,6 +177,34 @@ public class Invoice {
     }
 
     /**
+     * @return the amountPaid
+     */
+    public double getAmountPaid() {
+        return amountPaid;
+    }
+
+    /**
+     * @param amountPaid the amountPaid to set
+     */
+    public void setAmountPaid(double amountPaid) {
+        this.amountPaid = amountPaid;
+    }
+
+    /**
+     * @return the change
+     */
+    public double getChange() {
+        return change;
+    }
+
+    /**
+     * @param change the change to set
+     */
+    public void setChange(double change) {
+        this.change = change;
+    }
+
+    /**
      * @return the invoiceItems
      */
     public ArrayList<InvoiceItem> getInvoiceItems() {
@@ -186,5 +233,4 @@ public class Invoice {
     }
 
     
-
 }
