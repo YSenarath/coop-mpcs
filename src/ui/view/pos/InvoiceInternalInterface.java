@@ -5,10 +5,13 @@
  */
 package ui.view.pos;
 
+import controller.inventory.BatchController;
 import util.KeyValueContainer;
 import controller.inventory.BatchDiscountController;
 import controller.inventory.CategoryController;
 import controller.inventory.CategoryDiscountController;
+import controller.inventory.ProductController;
+import controller.pos.InvoiceController;
 import java.awt.CardLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -24,7 +27,6 @@ import java.util.HashMap;
 import java.util.IllegalFormatConversionException;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -38,15 +40,13 @@ import model.inventory.Category;
 import model.inventory.CategoryDiscount;
 import model.inventory.Product;
 import model.pos.CardPayment;
+import model.pos.CashPayment;
 import model.pos.Invoice;
 import model.pos.InvoiceItem;
 import model.pos.Payment;
 import org.apache.log4j.Logger;
-import ui.handler.pos.InvoiceHandler;
-import util.CardNoLimit;
+import util.CharactorLimitDocument;
 import util.DoubleFilter;
-import util.DoubleKey;
-import util.IntegerFilter;
 import util.Utilities;
 
 /**
@@ -61,7 +61,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private final POSMDIInterface parent;
     private final JDesktopPane desktopPane;
 
-    private JInternalFrame searchItemInterface;
+    private SearchItemInterface searchItemInterface;
     private SelectPriceInterface selectPriceInterface;
 
     DefaultComboBoxModel productComboBoxModel;
@@ -78,11 +78,18 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private Invoice invoice;
     private Product processingProduct;
     private HashMap<Integer, Product> availableProductMap;
-    private HashMap<DoubleKey, InvoiceItem> invoiceItems;//keys - productId,batchId
-    private HashMap<DoubleKey, Payment> invoicePayments;//keys - invoiceId,paymentId
 
-    private final int NET_TOTAL_COLUMN = 7;
-    private final int NET_DISCOUNT_COLUMN = 6;
+    private final int PRODUCT_ID_COLUMN = 0;
+    private final int BATCH_ID_COLUMN = 1;
+    private final int UNIT_PRICE_COLUMN = 4;
+    private final int UNIT_QTY_COLUMN = 5;
+    private final int NET_DISCOUNT_COLUMN = 7;
+    private final int NET_TOTAL_COLUMN = 8;
+
+    private final int PAYMENT_OPTION_COLUMN = 0;
+    private final int PAYMENT_AMOUNT_COLUMN = 1;
+    private final int PAYMENT_OFFSET_0_COLUMN = 2;
+    private final int PAYMENT_OFFSET_1_COLUMN = 3;
 
     // </editor-fold>
     //
@@ -110,8 +117,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         this.invoice = null;
         this.processingProduct = null;
-        this.invoiceItems = new HashMap<>();
-        this.invoicePayments = new HashMap<>();
 
         productCodeListner = (ActionEvent e) -> {
             showProductDetails();
@@ -132,7 +137,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtQty.setEnabled(false);
 
         this.glassPanel = new JPanel(new GridLayout(0, 1));
-
         this.padding = new JLabel();
 
         glassPanel.setOpaque(false);
@@ -161,19 +165,60 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Helper Methods">
+    //Get last billID
+    public static int getLastInvoicelId() throws SQLException {
+        Invoice invoice = InvoiceController.getLastInvoiceId();
+        if (invoice != null) {
+            return invoice.getInvoiceNo();
+        }
+        return 0;
+    }
+
+    public static ArrayList<Product> getAllProducts() throws SQLException {
+        return ProductController.getAllProducts();
+    }
+
+    public static ArrayList<Product> getAllSellebleProducts() throws SQLException {
+        ArrayList<Product> products = ProductController.getAllAvailableProducts();
+        ArrayList<Product> availableProducts = new ArrayList();
+
+        for (Product product : products) {
+            product.setBatches(BatchController.getAllAvailableBatches(product.getProductId()));
+            if (product.getBatches().size() > 0) {
+                availableProducts.add(product);
+            }
+        }
+        return availableProducts;
+    }
+
     //Price selection ui will call this to set the price
     public void setProductBatch(Batch selectedBatch) {
         logger.debug("setProductBatch invoked");
 
         processingProduct.setSelectedBatch(selectedBatch);
         setPropFromBatch();
+        txtQty.requestFocus();
     }
 
     //Disable the glassPanel pane
-    public void disableGlassPane() {
+    public void disableGlassPane(boolean disableSearchInterface) {
         logger.debug("disableGlassPane invoked");
 
         glassPanel.setVisible(false);
+
+        if (disableSearchInterface && searchItemInterface != null) {
+            searchItemInterface.disableGlassPane();
+        }
+    }
+
+    //Enable the glassPanel pane
+    public void enableGlassPane(boolean enableSearchInterface) {
+        logger.debug("enableGlassPane invoked");
+        glassPanel.setVisible(true);//Disable this UI
+        if (enableSearchInterface && searchItemInterface != null) {
+            searchItemInterface.enableGlassPane();
+        }
+        padding.requestFocus();  // required to trap key events
     }
 
     //Clear the current product fields in bill add item to bill
@@ -194,13 +239,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtQty.setEnabled(false);
         lblUnit.setText("");
 
-    }
-
-    //Setup bill invoicePayment
-    private void setupPaymentSystem() {
-        logger.debug("setupPaymentSystem invoked");
-
-        calculatePaymentParameters();
     }
 
     //Clean item add card
@@ -233,27 +271,13 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         lblTotalVal.setText("");
     }
 
-    //Clear items card as well as payments card
-    private void resetInvoice() {
-        logger.debug("resetInvoice invoked");
-
-        this.processingProduct = null;
-        this.invoiceItems = new HashMap<>();
-        this.invoicePayments = new HashMap<>();
-
-        cleanItemAddUI();
-        cleanPaymentsUI();
-        showNewInvoiceId();
-        loadSellebleProducts();
-    }
-
     //Get the product price from the appropriate batch
     private void setPropFromBatch() {
         logger.debug("setPropFromBatch invoked");
 
         txtPrice.setText(String.format("%.2f", processingProduct.getSelectedBatch().getUnitPrice()));
         txtAvailableQty.setText(String.format("%.2f", processingProduct.getSelectedBatch().getQuantity()));
-        txtQty.requestFocus();
+
     }
 
     //double Format lable 
@@ -287,7 +311,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     }
 
     //Recalculate the invoice item parameters
-    private void calculateInvoiceParameters() {
+    private void calculateItemParameters() {
         logger.debug("calculateInvoiceParameters invoked");
 
         double netTotal = 0;
@@ -315,7 +339,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         double totalAmountPaid = 0;
         for (int row = 0; row < invoicePaymentsTable.getRowCount(); row++) {
-            totalAmountPaid += Double.parseDouble(invoicePaymentsTable.getValueAt(row, 1).toString());
+            totalAmountPaid += Double.parseDouble(invoicePaymentsTable.getValueAt(row, PAYMENT_AMOUNT_COLUMN).toString());
         }
         invoice.setAmountPaid(totalAmountPaid);
         lblTotalVal.setText(String.format("%.2f", invoice.getAmountPaid()));
@@ -326,35 +350,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         txtCashPaymentAmount.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
         txtCardPaymentAmount.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
-    }
-
-    //Show the add item panel in bill
-    private void showAddItemPanel() {
-        logger.debug("showAddItemPanel invoked");
-
-        CardLayout card = (CardLayout) invoicePanel.getLayout();
-        card.previous(invoicePanel);
-    }
-
-    //Cancel current bill and show welocme screen
-    private void cancelBill() {
-        logger.debug("cancelBill invoked");
-
-        parent.setIsMainActivityRunning(false);
-        parent.setIsInvoiceRunning(false);
-        this.dispose();
-    }
-
-    //Search a item
-    private void searchItem() {
-        logger.warn("bill_searchItem not implemented");
-
-    }
-
-    //Confirm bill
-    private void confirmInvoice() {
-        logger.warn("bill_confirm not implemented");
-        //Reset invoice arraylists
     }
 
     //Handle txt Qty key press
@@ -399,17 +394,86 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //
     //
     //
+// <editor-fold defaultstate="collapsed" desc="Essential invoice methods">
+    //Show the add item panel in bill
+    private void showAddItemPanel() {
+        logger.debug("showAddItemPanel invoked");
+
+        CardLayout card = (CardLayout) invoicePanel.getLayout();
+        card.previous(invoicePanel);
+    }
+
+    //Show the payment panel in the bill
+    private void showPaymentPanel() {
+        logger.debug("showPaymentScreen invoked");
+
+        calculateItemParameters();
+        if (invoice == null || invoice.getItemCount() < 1 || invoice.getNetTotal() < 0) {
+            logger.warn("invoice must have at least one item and total must be >=0");
+            // return;
+        }
+
+        calculatePaymentParameters();
+
+        paymentOptionComboBox.setSelectedIndex(0);
+
+        lblBillValueVal.setText(String.format("%.2f", invoice.getNetTotal()));
+
+        CardLayout invoiceCard = (CardLayout) invoicePanel.getLayout();
+        invoiceCard.next(invoicePanel);
+
+    }
+
+    //Clear items card as well as payments card
+    private void resetInvoice() {
+        logger.debug("resetInvoice invoked");
+
+        this.processingProduct = null;
+
+        cleanItemAddUI();
+        cleanPaymentsUI();
+        showNewInvoiceId();
+        loadSellebleProducts();
+    }
+
+    //Cancel current bill and show welocme screen
+    private void cancelBill() {
+        logger.debug("cancelBill invoked");
+
+        parent.setIsMainActivityRunning(false);
+        parent.setIsInvoiceRunning(false);
+        this.dispose();
+    }
+
+    //Search a item
+    private void searchItem() {
+        logger.debug("searchItem invoked");
+        if (searchItemInterface == null) {
+            searchItemInterface = new SearchItemInterface(desktopPane, this);
+        } else {
+            desktopPane.remove(searchItemInterface);
+        }
+        desktopPane.add(searchItemInterface, new Integer(20));//On top of all internal frames
+        searchItemInterface.setVisible(true);
+
+    }
+
+    // </editor-fold>
+    //
+    //
+    //
 // <editor-fold defaultstate="collapsed" desc="Add item System">
     //Method to get next invoice Id
     private void showNewInvoiceId() {
         logger.debug("showNextInvoiceId invoked");
 
         try {
-            invoice = new Invoice(InvoiceHandler.getLastInvoicelId());
-            invoice.setUsername(parent.getUserName());
+            invoice = new Invoice(getLastInvoicelId() + 1);
+            invoice.setUserName(parent.getUserName());
+            invoice.setCounterId(Integer.valueOf(Utilities.loadProperty("counter")));
             invoice.setDate(Utilities.getCurrentDate());
             invoice.setTime(Utilities.getCurrentTime(true));
-            txtBillNumber.setText(Utilities.formatId("B", 5, invoice.getInvoiceNo() + 1));
+            txtBillNumber.setText(Utilities.formatId("B", 5, invoice.getInvoiceNo()));
 
         } catch (SQLException ex) {
             logger.error("Bill no error : " + ex.getMessage());
@@ -422,7 +486,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         try {
 
-            ArrayList<Product> availableProducts = InvoiceHandler.getAllSellebleProducts();
+            ArrayList<Product> availableProducts = getAllSellebleProducts();
             availableProductMap = new HashMap<>();
 
             itemCodeComboBox.removeActionListener(productCodeListner);
@@ -435,6 +499,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             itemCodeComboBox.getModel().setSelectedItem(null);
 
             itemCodeComboBox.setModel(productComboBoxModel);
+            // AutoCompleteDecorator.decorate(itemCodeComboBox);
 
             itemCodeComboBox.addActionListener(productCodeListner);
             invoiceClearProductinfo();
@@ -451,7 +516,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         if (itemCodeComboBox.getSelectedIndex() > -1) {
 
             KeyValueContainer productComboItem = (KeyValueContainer) itemCodeComboBox.getSelectedItem();
-            int productId = productComboItem.getItemCode();
+            int productId = productComboItem.getKey();
 
             try {
                 //Create cloned object
@@ -474,8 +539,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     desktopPane.add(selectPriceInterface, new Integer(10));//Make the price selection UI be on top of desktop pane      
                     selectPriceInterface.setVisible(true);
 
-                    glassPanel.setVisible(true);//Disable this UI
-                    padding.requestFocus();  // required to trap key events
+                    enableGlassPane(false);
 
                 }
                 txtPrice.setEnabled(true);
@@ -506,6 +570,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             } catch (NumberFormatException ex) {
                 Utilities.showMsgBox("Please enter valid price and quantity ", "Incorrect quantity", JOptionPane.WARNING_MESSAGE);
                 logger.error("NumberFormatException  error : " + ex.getMessage(), ex);
+                txtQty.requestFocus();
                 return;
             }
 
@@ -527,7 +592,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             //get the category discount
             double categorydDis = 0;
             //get category and check if discount available ,if so get the category discount
-            Category category = CategoryController.getBatchDiscount(processingProduct.getDepartmentId(), processingProduct.getCategoryId());
+            Category category = CategoryController.getCategory(processingProduct.getDepartmentId(), processingProduct.getCategoryId());
             if (category.isDiscounted()) {
                 CategoryDiscount categoryDiscount = CategoryDiscountController.getCategoryDiscount(processingProduct.getDepartmentId(), processingProduct.getCategoryId());
 
@@ -569,35 +634,65 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
             int productId = processingProduct.getProductId();
             int batchId = processingProduct.getSelectedBatch().getBatchId();
-            String name = processingProduct.getName();
-            String description = processingProduct.getDescription();
 
-            String discountPercentage = totalDiscount == 0.0 ? "0.00" : String.format("%.2f", (unitPrice * qty * totalDiscount)) + " (" + String.format("%.2f", totalDiscount * 100) + "%)";
+            double itemDiscount = unitPrice * qty * totalDiscount;
             double subTotal = unitPrice * qty * (1 - totalDiscount);
             // </editor-fold>
             //
             // <editor-fold defaultstate="collapsed" desc="Add item to the table">  
-            Object[] ob = {
-                new KeyValueContainer(productId, util.Utilities.formatId("P", 4, productId) + " : " + batchId),
-                batchId,
-                name,
-                description,
-                String.format("%.2f", unitPrice),
-                String.format("%.2f", qty),
-                discountPercentage,
-                String.format("%.2f", subTotal)
-            };
-            invoiceItemTableModel.addRow(ob);
+
+            //if item is already in the table update it
+            boolean itemInTable = false;
+            for (int row = 0; row < invoiceItemTableModel.getRowCount(); row++) {
+                if (((KeyValueContainer) invoiceItemTable.getValueAt(row, PRODUCT_ID_COLUMN)).getKey() == productId
+                        && Integer.parseInt(invoiceItemTable.getValueAt(row, BATCH_ID_COLUMN).toString()) == batchId) {
+
+                    itemInTable = true;
+
+                    double qtyInTable = Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_QTY_COLUMN).toString());
+                    double discountInTable = Double.parseDouble(invoiceItemTable.getValueAt(row, NET_DISCOUNT_COLUMN).toString());
+                    double subTotalInTable = Double.parseDouble(invoiceItemTable.getValueAt(row, NET_TOTAL_COLUMN).toString());
+
+                    double newQty = qtyInTable + qty;
+
+                    if (newQty > processingProduct.getSelectedBatch().getQuantity()) {
+                        Utilities.showMsgBox("Total item quantity exceeds what is in the stock !", "Incorrect quantity", JOptionPane.WARNING_MESSAGE);
+                        txtQty.requestFocus();
+                        return;
+                    }
+                    double newTotalDiscount = discountInTable + itemDiscount;
+                    double newSubTotal = subTotalInTable + subTotal;
+
+                    invoiceItemTable.setValueAt(String.format("%.2f", newQty), row, UNIT_QTY_COLUMN);//Qty
+                    invoiceItemTable.setValueAt(String.format("%.2f", newTotalDiscount), row, NET_DISCOUNT_COLUMN);//Discount value
+                    invoiceItemTable.setValueAt(String.format("%.2f", newSubTotal), row, NET_TOTAL_COLUMN);//Sub total
+                    break;
+                }
+            }
+
+            if (!itemInTable) {
+
+                String name = processingProduct.getName();
+                String description = processingProduct.getDescription();
+
+                Object[] ob = {
+                    new KeyValueContainer(productId, util.Utilities.formatId("P", 4, productId)),
+                    batchId,
+                    name,
+                    description,
+                    String.format("%.2f", unitPrice),
+                    String.format("%.2f", qty),
+                    String.format("%.2f", totalDiscount * 100) + "%",
+                    String.format("%.2f", itemDiscount),
+                    String.format("%.2f", subTotal)
+                };
+                invoiceItemTableModel.addRow(ob);
+            }
+
             // </editor-fold>
-            //
-            // <editor-fold defaultstate="collapsed" desc="Add the product to the invoiceItems">  
-            invoiceItems.put(new DoubleKey(productId, batchId), new InvoiceItem(productId, batchId, qty, totalDiscount, unitPrice));
-            logger.info("Item added to invoiceItems");
-            // </editor-fold>
-            //
             invoiceClearProductinfo();//Ready for next product
 
-            calculateInvoiceParameters();//Update the invoice parameters
+            calculateItemParameters();//Update the invoice parameters
 
         } catch (SQLException ex) {
             logger.error("SQL  error : " + ex.getMessage(), ex);
@@ -605,25 +700,17 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     }
 
     //Remove a added item from the bill item table
-    private void bill_deleteItemFromBillItemTable() {
-        logger.debug("bill_deleteItemFromBillItemTable invoked");
+    private void deleteItemFromBillItemTable() {
+        logger.debug("deleteItemFromBillItemTable invoked");
 
         int row = invoiceItemTable.getSelectedRow();
         if (row != -1) {
-
-            //Remove from invoice items
-            int productId = ((KeyValueContainer) invoiceItemTable.getValueAt(row, 0)).getItemCode();
-            int batchId = (int) (invoiceItemTable.getValueAt(row, 1));
-            if (!invoiceItems.isEmpty()) {
-                invoiceItems.remove(new DoubleKey(productId, batchId));
-                logger.info("Item removed from invoiceItems");
-            }
 
             invoiceItemTableModel.removeRow(row);
             if ((invoiceItemTable.getRowCount() - 1) > -1) {
                 invoiceItemTable.setRowSelectionInterval((invoiceItemTable.getRowCount() - 1), (invoiceItemTable.getRowCount() - 1));
             }
-            calculateInvoiceParameters();
+            calculateItemParameters();
         }
 
     }
@@ -633,28 +720,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Payment System">
-    //Show the payment panel in the bill
-    private void showPaymentScreen() {
-        logger.debug("showPaymentScreen invoked");
-
-        calculateInvoiceParameters();
-        if (invoice == null || invoice.getItemCount() < 1 || invoice.getNetTotal() < 0) {
-            logger.warn("invoice must have at least one item and total must be >=0");
-            // return;
-        }
-
-        setupPaymentSystem();
-
-        paymentOptionComboBox.setSelectedIndex(0);
-
-        lblBillValueVal.setText(String.format("%.2f", invoice.getNetTotal()));
-
-        CardLayout invoiceCard = (CardLayout) invoicePanel.getLayout();
-        invoiceCard.next(invoicePanel);
-
-    }
-
-    //Toggle payment options in payment scrren
+    //Toggle payment options in payment screen
     private void togglePaymentOptions() {
         logger.debug("togglePaymentOptions invoked");
 
@@ -698,15 +764,15 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
             switch (selectedOption) {
                 case CardPayment.AMEX:
-                    txtcardNo.setDocument(new CardNoLimit(5));
+                    txtcardNo.setDocument(new CharactorLimitDocument(5));
                     break;
                 case CardPayment.MASTER:
                 case CardPayment.VISA:
-                    txtcardNo.setDocument(new CardNoLimit(4));
+                    txtcardNo.setDocument(new CharactorLimitDocument(4));
                     break;
             }
 
-            if (selectedOption.equals(CardPayment.AMEX) || selectedOption.equals(CardPayment.MASTER) || selectedOption.equals(CardPayment.VISA)) {
+            if (selectedOption.equals(CardPayment.AMEX) || selectedOption.equals(CardPayment.MASTER) || selectedOption.equals(CardPayment.MASTER)) {
                 txtcardNo.setEnabled(true);
                 txtCardPaymentAmount.setEnabled(true);
 
@@ -720,7 +786,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         logger.debug("addPaymentOption invoked");
 
         if (invoice.getAmountPaid() - invoice.getNetTotal() >= 0) {
-            logger.warn("Invoice amount fullfileed");
+            logger.warn("Invoice amount fulfilled");
             return;
         }
 
@@ -749,6 +815,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private void handleCashPayment() {
         logger.debug("handleCashPayment invoked");
 
+        // <editor-fold defaultstate="collapsed" desc="Validations"> 
         if (invoice == null) {
             logger.error("null invoice");
             return;
@@ -767,15 +834,34 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             return;
         }
 
-        //Can enter any amount with no restriction
-        Object[] ob = {
-            Payment.CASH,
-            String.format("%.2f", cashPaymentAmount),
-            "",
-            ""
-        };
+        // </editor-fold>
+        //
+        // <editor-fold defaultstate="collapsed" desc="Add payment to the table">
+        //if payment option already in the table update it
+        boolean itemInTable = false;
+        for (int row = 0; row < invoicePaymentsTable.getRowCount(); row++) {
+            if (invoicePaymentsTable.getValueAt(row, PAYMENT_OPTION_COLUMN).toString().equals(Payment.CASH)) {
+                itemInTable = true;
+                double cashPaymentInTable = Double.parseDouble(invoicePaymentsTable.getValueAt(row, PAYMENT_AMOUNT_COLUMN).toString());
+                double newCashPaymentAmount = cashPaymentInTable + cashPaymentAmount;
 
-        invoicePaymentsTableModel.addRow(ob);
+                invoicePaymentsTable.setValueAt(String.format("%.2f", newCashPaymentAmount), row, PAYMENT_AMOUNT_COLUMN);//Cash Payment amount
+                break;
+            }
+        }
+
+        //Can enter any amount with no restriction
+        if (!itemInTable) {
+            Object[] ob = {
+                Payment.CASH,
+                String.format("%.2f", cashPaymentAmount),
+                "",
+                ""
+            };
+            invoicePaymentsTableModel.addRow(ob);
+        }
+        // </editor-fold>
+        //
         logger.info("Cash payment added");
 
         calculatePaymentParameters();
@@ -784,6 +870,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private void handleCardPayment() {
         logger.debug("handleCardPayment invoked");
 
+        // <editor-fold defaultstate="collapsed" desc="Validations"> 
         if (invoice == null) {
             logger.error("null invoice");
             return;
@@ -792,35 +879,36 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         //Validate card type
         String cardType = cardTypeComboBox.getSelectedIndex() > -1 ? cardTypeComboBox.getSelectedItem().toString() : "";
 
+        String cardNumber = txtcardNo.getText();
+
         if (!cardType.equals(CardPayment.AMEX) && !cardType.equals(CardPayment.MASTER) && !cardType.equals(CardPayment.VISA)) {
             Utilities.showMsgBox("Please select a card type first", "", JOptionPane.WARNING_MESSAGE);
             paymentOptionComboBox.requestFocus();
 
             return;
 
-        } else if (cardType.equals(CardPayment.AMEX) && txtcardNo.getText().toCharArray().length != 5) {
+        } else if (cardType.equals(CardPayment.AMEX) && cardNumber.toCharArray().length != 5) {
             Utilities.showMsgBox("Amex card should have 5 numbers for card number", "Incorrect card number", JOptionPane.WARNING_MESSAGE);
             txtcardNo.requestFocus();
             return;
-        } else if (cardType.equals(CardPayment.MASTER) && txtcardNo.getText().toCharArray().length != 4) {
+        } else if (cardType.equals(CardPayment.MASTER) && cardNumber.toCharArray().length != 4) {
             Utilities.showMsgBox("Master card should have 4 numbers for card number", "Incorrect card number", JOptionPane.WARNING_MESSAGE);
             txtcardNo.requestFocus();
             return;
-        } else if (cardType.equals(CardPayment.VISA) && txtcardNo.getText().toCharArray().length != 4) {
+        } else if (cardType.equals(CardPayment.VISA) && cardNumber.toCharArray().length != 4) {
             Utilities.showMsgBox("Visa card should have 4 numbers for card number", "Incorrect card number", JOptionPane.WARNING_MESSAGE);
             txtcardNo.requestFocus();
             return;
         }
 
         //Validate card number
-        int cardNumber = 0;
         try {
-            cardNumber = Integer.parseInt(txtcardNo.getText());
-            if (cardNumber == 0) {
+            int cardNo = Integer.parseInt(cardNumber);
+            if (cardNo == 0) {
                 throw new NumberFormatException("Zero number");
             }
         } catch (NumberFormatException ex) {
-            Utilities.showMsgBox("Invalid number", "Incorrect card numbert", JOptionPane.WARNING_MESSAGE);
+            Utilities.showMsgBox("Invalid number", "Incorrect card number", JOptionPane.WARNING_MESSAGE);
             txtcardNo.requestFocus();
             return;
         }
@@ -846,15 +934,40 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             txtCardPaymentAmount.requestFocus();
             return;
         }
+        // </editor-fold>
 
-        Object[] ob = {
-            Payment.CREDIT_CARD + " : " + cardType,
-            String.format("%.2f", cardPaymentAmount),
-            cardType,
-            cardNumber
-        };
+        // <editor-fold defaultstate="collapsed" desc="Add payment to the table">
+        //if payment option already in the table update it
+        boolean itemInTable = false;
+        for (int row = 0; row < invoicePaymentsTable.getRowCount(); row++) {
 
-        invoicePaymentsTableModel.addRow(ob);
+            Object tableObject = invoicePaymentsTable.getValueAt(row, PAYMENT_OFFSET_0_COLUMN);//card type
+            String cardTypeInTable = tableObject != null ? tableObject.toString() : "";
+
+            tableObject = invoicePaymentsTable.getValueAt(row, PAYMENT_OFFSET_1_COLUMN);//card no
+            String cardNoInTable = tableObject != null ? tableObject.toString() : "";
+
+            if (cardTypeInTable.equals(cardType) && cardNoInTable.equals(cardNumber)) {
+                itemInTable = true;
+                double cardPaymentInTable = Double.parseDouble(invoicePaymentsTable.getValueAt(row, PAYMENT_AMOUNT_COLUMN).toString());
+                double newCardPaymentAmount = cardPaymentInTable + cardPaymentAmount;
+
+                invoicePaymentsTable.setValueAt(String.format("%.2f", newCardPaymentAmount), row, PAYMENT_AMOUNT_COLUMN);//Card Payment amount
+                break;
+            }
+        }
+
+        if (!itemInTable) {
+            Object[] ob = {
+                Payment.CREDIT_CARD + " : " + cardType,
+                String.format("%.2f", cardPaymentAmount),
+                cardType,//offset 0
+                cardNumber//offset 1
+            };
+            invoicePaymentsTableModel.addRow(ob);
+        }
+        // </editor-fold>
+        //
         logger.info("Card payment added");
 
         cardTypeComboBox.setSelectedIndex(-1);
@@ -896,7 +1009,107 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //
     //
     //
+// <editor-fold defaultstate="collapsed" desc="Finalize Invoice">
+    //Confirm bill
+    private void confirmInvoice() {
+        logger.debug("confirmInvoice invoked");
+
+        // <editor-fold defaultstate="collapsed" desc="Validation">        
+        //double check 
+        calculateItemParameters();
+        calculatePaymentParameters();
+
+        //Some thing wrong with items
+        if (invoice == null || invoice.getItemCount() < 1 || invoice.getNetTotal() < 0) {
+            logger.warn("invoice must have at least one item and total must be >=0");
+            return;
+        }
+
+        //Some thing wrong with payments
+        if (invoice == null || invoice.getNetTotal() > invoice.getAmountPaid()) {
+            logger.warn("invoice payment amount not fulfilled");
+            return;
+        }
+        // </editor-fold>
+        //
+        // <editor-fold defaultstate="collapsed" desc="Get items">        
+
+        //Get all items to an arrayList
+        ArrayList<InvoiceItem> invoiceItemsList = new ArrayList();
+        for (int row = 0; row < invoiceItemTable.getRowCount(); row++) {
+            InvoiceItem invoiceItem = new InvoiceItem(
+                    ((KeyValueContainer) invoiceItemTable.getValueAt(row, PRODUCT_ID_COLUMN)).getKey(),
+                    Integer.parseInt(invoiceItemTable.getValueAt(row, BATCH_ID_COLUMN).toString()),
+                    Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_PRICE_COLUMN).toString()),
+                    Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_QTY_COLUMN).toString()),
+                    Double.parseDouble(invoiceItemTable.getValueAt(row, NET_DISCOUNT_COLUMN).toString()),
+                    Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_PRICE_COLUMN).toString())
+            );
+
+            invoiceItemsList.add(invoiceItem);
+        }
+
+        //Add the items to the invoice
+        invoice.setInvoiceItems(invoiceItemsList);
+        // </editor-fold>
+        //
+        // <editor-fold defaultstate="collapsed" desc="Get payments">        
+
+        //Get all payments to an arraylist
+        ArrayList<Payment> invoicePaymntsList = new ArrayList();
+        for (int row = 0; row < invoicePaymentsTable.getRowCount(); row++) {
+
+            Object tableCellObject = invoicePaymentsTable.getValueAt(row, PAYMENT_OPTION_COLUMN);//payment option
+            String paymentOption = tableCellObject.toString();
+
+            tableCellObject = invoicePaymentsTable.getValueAt(row, PAYMENT_AMOUNT_COLUMN);//payment amount
+            double paymentAmount = Double.parseDouble(tableCellObject.toString());
+
+            tableCellObject = invoicePaymentsTable.getValueAt(row, PAYMENT_OFFSET_0_COLUMN);//off_set_0
+            String off_set_0 = tableCellObject != null ? tableCellObject.toString() : "";
+
+            tableCellObject = invoicePaymentsTable.getValueAt(row, PAYMENT_OFFSET_1_COLUMN);//off_set_1
+            String off_set_1 = tableCellObject != null ? tableCellObject.toString() : "";
+
+            if (paymentOption.contains(Payment.CASH)) {//Cash payment
+                Double changeAmount = Double.valueOf(lblChangeVal.getText());//if any change add it to cash payment
+//                if (changeAmount > 0 && paymentAmount < invoice.getAmountPaid()) {//Confirm excess pay is only by cash 
+//                    Utilities.showMsgBox("Excess can be paid only in cash", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+//                    logger.warn("Excess can be paid only in cash");
+//                    return;
+//                }
+                CashPayment cashPayment = new CashPayment(invoice.getInvoiceNo(), row + 1, paymentAmount, changeAmount);
+                invoicePaymntsList.add(cashPayment);
+
+            } else if (paymentOption.contains(Payment.CREDIT_CARD)) {//Coop credit payment
+                String cardType = off_set_0;
+                String cardNO = off_set_1;
+                CardPayment cardPayment = new CardPayment(invoice.getInvoiceNo(), row + 1, cardType, cardNO, paymentAmount);
+                invoicePaymntsList.add(cardPayment);
+
+            } else if (paymentOption.contains(Payment.COOP_CRDIT)) {//Credit Payment
+                logger.error("COOP_CRDIT Not implemented yet");
+            } else if (paymentOption.contains(Payment.POSHANA)) {//poshana payment
+                logger.error("POSHANA Not implemented yet");
+            } else if (paymentOption.contains(Payment.VOUCHER)) {//Voucher payment
+                logger.error("VOUCHER Not implemented yet");
+            }
+        }
+        invoice.setPayments(invoicePaymntsList);
+        // </editor-fold>
+        //
+        //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total,
+        //Reset invoice arraylists
+        InvoiceController.performTransaction(invoice);
+        resetInvoice();
+        showAddItemPanel();
+        logger.info("Payment complete");
+    }
+// </editor-fold>
+    //
+    //
 // <editor-fold defaultstate="collapsed" desc="Netbeans generated Code">
+
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
      */
@@ -946,7 +1159,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         paymentPanel = new javax.swing.JPanel();
         btnPrevious = new javax.swing.JButton();
         paymentOptionsPanel = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        ivoicePaymentsSP = new javax.swing.JScrollPane();
         invoicePaymentsTable = new javax.swing.JTable();
         paymentInfoPanel = new javax.swing.JPanel();
         lblBillValueDisplay = new javax.swing.JLabel();
@@ -998,11 +1211,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Code", "Batch", "Name", "Description", "Price (Rs.)", "Qty", "Discount", "Sub total (Rs.)"
+                "Code", "Batch", "Name", "Description", "Price (Rs.)", "Qty", "Discount %", "Discount value (Rs.)", "Sub total (Rs.)"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -1113,6 +1326,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             }
         });
 
+        itemCodeComboBox.setEditable(true);
         itemCodeComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         itemCodeComboBox.setMaximumRowCount(5);
 
@@ -1147,6 +1361,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtAvailableQty.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtAvailableQty.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
+        txtPrice.setEditable(false);
         txtPrice.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtPrice.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtPrice.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -1396,7 +1611,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             }
         });
         invoicePaymentsTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane2.setViewportView(invoicePaymentsTable);
+        ivoicePaymentsSP.setViewportView(invoicePaymentsTable);
         if (invoicePaymentsTable.getColumnModel().getColumnCount() > 0) {
             invoicePaymentsTable.getColumnModel().getColumn(2).setMinWidth(0);
             invoicePaymentsTable.getColumnModel().getColumn(2).setPreferredWidth(0);
@@ -1410,11 +1625,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         paymentOptionsPanel.setLayout(paymentOptionsPanelLayout);
         paymentOptionsPanelLayout.setHorizontalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(ivoicePaymentsSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         paymentOptionsPanelLayout.setVerticalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(ivoicePaymentsSP, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder4 = new org.jdesktop.swingx.border.DropShadowBorder();
@@ -1804,7 +2019,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     private void btnPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaymentActionPerformed
         // TODO add your handling code here:
-        showPaymentScreen();
+        showPaymentPanel();
     }//GEN-LAST:event_btnPaymentActionPerformed
 
     private void btnInvoiceCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInvoiceCancelActionPerformed
@@ -1819,7 +2034,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     private void btnDeleteItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteItemActionPerformed
         // TODO add your handling code here:
-        bill_deleteItemFromBillItemTable();
+        deleteItemFromBillItemTable();
     }//GEN-LAST:event_btnDeleteItemActionPerformed
 
     private void btnClearItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearItemActionPerformed
@@ -1942,8 +2157,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel itemAddPanel;
     private javax.swing.JComboBox itemCodeComboBox;
     private javax.swing.JScrollPane itemTableSP;
+    private javax.swing.JScrollPane ivoicePaymentsSP;
     private javax.swing.JLayeredPane jLayeredPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblAvailableQtydisplay;
     private javax.swing.JLabel lblBill;
     private javax.swing.JLabel lblBillValueDisplay;

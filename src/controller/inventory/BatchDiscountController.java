@@ -10,20 +10,18 @@ import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import model.inventory.Batch;
 import model.inventory.BatchDiscount;
-import util.definitions.AppConstants;
+import database.connector.DatabaseInterface;
 
 /**
  *
  * @author Shehan
  */
-public class BatchDiscountController {
+public class BatchDiscountController implements DatabaseInterface {
 
     public static BatchDiscount getBatchDiscount(int productId, int batchId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + AppConstants.BATCH_DISCOUNT + " WHERE batch_id=? AND product_id=?";
+        String query = "SELECT * FROM " + BATCH_DISCOUNT + " WHERE batch_id=? AND product_id=?";
         Object[] ob = {
             batchId,
             productId
@@ -37,7 +35,7 @@ public class BatchDiscountController {
                     resultSet.getString("start_date"),
                     resultSet.getString("end_date"),
                     resultSet.getBoolean("promotional"),
-                    resultSet.getDouble("quantity"),
+                    resultSet.getDouble("qty"),
                     resultSet.getBoolean("members_only")
             );
         }

@@ -157,11 +157,6 @@
                                       <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" alignment="0" attributes="0">
-                                              <Component id="lblRefundSubTotalDisplay" min="-2" pref="120" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="lblRefundSubTotalVal" min="-2" pref="127" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
                                               <Component id="lblRefundDiscountAmountDisplay" min="-2" pref="120" max="-2" attributes="0"/>
                                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                               <Component id="lblRefundDiscountAmountVal" min="-2" pref="127" max="-2" attributes="0"/>
@@ -175,13 +170,11 @@
                                       <EmptySpace pref="127" max="32767" attributes="0"/>
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Component id="lblRefundCancelNetTotalDisplay" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="lblRefundCancelDiscountAmountDisplay" alignment="1" max="32767" attributes="0"/>
-                                          <Component id="lblRefundCancelSubTotalDisplay" alignment="1" min="-2" pref="153" max="-2" attributes="0"/>
+                                          <Component id="lblRefundCancelDiscountAmountDisplay" alignment="1" pref="153" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="lblRefundCancelDiscountAmountVal" alignment="0" min="-2" pref="127" max="-2" attributes="0"/>
-                                          <Component id="lblRefundCancelSubTotalVal" alignment="0" min="-2" pref="127" max="-2" attributes="0"/>
                                           <Component id="lblRefundCancelNetTotalVal" alignment="0" min="-2" pref="127" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
@@ -223,11 +216,6 @@
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="lblRefundCancelSubTotalDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                          <Component id="lblRefundCancelSubTotalVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="lblRefundCancelDiscountAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                           <Component id="lblRefundCancelDiscountAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                       </Group>
@@ -238,11 +226,6 @@
                                       </Group>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="lblRefundSubTotalDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                          <Component id="lblRefundSubTotalVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="lblRefundDiscountAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                           <Component id="lblRefundDiscountAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
@@ -355,28 +338,6 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JLabel" name="lblRefundSubTotalDisplay">
-                      <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="12" style="1"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Sub Total"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="lblRefundSubTotalVal">
-                      <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="12" style="1"/>
-                        </Property>
-                        <Property name="horizontalAlignment" type="int" value="4"/>
-                        <Property name="text" type="java.lang.String" value="&lt;Amount&gt;"/>
-                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                            <EtchetBorder/>
-                          </Border>
-                        </Property>
-                      </Properties>
-                    </Component>
                     <Component class="javax.swing.JLabel" name="lblRefundDiscountAmountDisplay">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -429,28 +390,6 @@
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnNewBillFromRefundActionPerformed"/>
                       </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="lblRefundCancelSubTotalDisplay">
-                      <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="12" style="1"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Cancel Sub"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="lblRefundCancelSubTotalVal">
-                      <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="12" style="1"/>
-                        </Property>
-                        <Property name="horizontalAlignment" type="int" value="4"/>
-                        <Property name="text" type="java.lang.String" value="&lt;Amount&gt;"/>
-                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                            <EtchetBorder/>
-                          </Border>
-                        </Property>
-                      </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="lblRefundCancelDiscountAmountDisplay">
                       <Properties>

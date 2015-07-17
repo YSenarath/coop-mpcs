@@ -18,10 +18,9 @@ public class CategoryDiscount {
     private String endDate;
     private boolean promotional;
     private double quantity;
-    private boolean inStock;
     private boolean membersOnly;
 
-    public CategoryDiscount(int categoryId, int departmentId, double discount, String startDate, String endDate, boolean promotional, double quantity, boolean inStock, boolean membersOnly) {
+    public CategoryDiscount(int categoryId, int departmentId, double discount, String startDate, String endDate, boolean promotional, double quantity, boolean membersOnly) {
         this.categoryId = categoryId;
         this.departmentId = departmentId;
         this.discount = discount;
@@ -29,7 +28,6 @@ public class CategoryDiscount {
         this.endDate = endDate;
         this.promotional = promotional;
         this.quantity = quantity;
-        this.inStock = inStock;
         this.membersOnly = membersOnly;
     }
 
@@ -129,20 +127,6 @@ public class CategoryDiscount {
      */
     public void setQuantity(double quantity) {
         this.quantity = quantity;
-    }
-
-    /**
-     * @return the inStock
-     */
-    public boolean isInStock() {
-        return inStock;
-    }
-
-    /**
-     * @param inStock the inStock to set
-     */
-    public void setInStock(boolean inStock) {
-        this.inStock = inStock;
     }
 
     /**

@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package util.definitions;
+package database.connector;
 
 /**
  *
  * @author Shehan
  */
-public interface AppConstants {
+public interface DatabaseInterface {
 
     //Database connection
     public static final String SERVER = "localhost";//Default , must be a setting

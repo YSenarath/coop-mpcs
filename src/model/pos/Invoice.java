@@ -5,8 +5,6 @@
  */
 package model.pos;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.util.ArrayList;
 
 /**
@@ -16,8 +14,8 @@ import java.util.ArrayList;
 public class Invoice {
 
     private int invoiceNo;
-    private String username;
-    private int counterid;
+    private String userName;
+    private int counterId;
     private String date;
     private String time;
 
@@ -26,15 +24,14 @@ public class Invoice {
     private double discount;
 
     private double amountPaid;
-    private double change;
 
     private ArrayList<InvoiceItem> invoiceItems;//invoice has items
     private ArrayList<Payment> payments;//Invoice has payments
 
     public Invoice(int invoiceNo) {
         this.invoiceNo = invoiceNo;
-        this.username = null;
-        this.counterid = -1;
+        this.userName = null;
+        this.counterId = -1;
         this.date = null;
         this.time = null;
 
@@ -43,25 +40,37 @@ public class Invoice {
         this.discount = 0;
 
         this.amountPaid = 0;
-        this.change = 0;
 
         this.invoiceItems = null;
         this.payments = null;
     }
 
-    public Invoice(int invoiceNo, String username, int counterid, String date, String time, int itemCount, double netTotal, double discount, double amountPaid, double change, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
+    public Invoice(int invoiceNo, String userName, int counterId, String date, String time, int itemCount, double netTotal, double discount, double amountPaid, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
         this.invoiceNo = invoiceNo;
-        this.username = username;
-        this.counterid = counterid;
+        this.userName = userName;
+        this.counterId = counterId;
         this.date = date;
         this.time = time;
         this.itemCount = itemCount;
         this.netTotal = netTotal;
         this.discount = discount;
         this.amountPaid = amountPaid;
-        this.change = change;
         this.invoiceItems = invoiceItems;
         this.payments = payments;
+    }
+
+    public Invoice(int invoiceNo, String userName, int counterId, String date, String time, double netTotal) {
+        this.invoiceNo = invoiceNo;
+        this.userName = userName;
+        this.counterId = counterId;
+        this.date = date;
+        this.time = time;
+        this.itemCount = 0;
+        this.netTotal = netTotal;
+        this.discount = 0;
+        this.amountPaid = 0;
+        this.invoiceItems = null;
+        this.payments = null;
     }
 
     /**
@@ -79,31 +88,31 @@ public class Invoice {
     }
 
     /**
-     * @return the username
+     * @return the userName
      */
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
     /**
-     * @param username the username to set
+     * @param userName the userName to set
      */
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     /**
-     * @return the counterid
+     * @return the counterId
      */
-    public int getCounterid() {
-        return counterid;
+    public int getCounterId() {
+        return counterId;
     }
 
     /**
-     * @param counterid the counterid to set
+     * @param counterId the counterId to set
      */
-    public void setCounterid(int counterid) {
-        this.counterid = counterid;
+    public void setCounterId(int counterId) {
+        this.counterId = counterId;
     }
 
     /**
@@ -191,20 +200,6 @@ public class Invoice {
     }
 
     /**
-     * @return the change
-     */
-    public double getChange() {
-        return change;
-    }
-
-    /**
-     * @param change the change to set
-     */
-    public void setChange(double change) {
-        this.change = change;
-    }
-
-    /**
      * @return the invoiceItems
      */
     public ArrayList<InvoiceItem> getInvoiceItems() {
@@ -232,5 +227,4 @@ public class Invoice {
         this.payments = payments;
     }
 
-    
 }

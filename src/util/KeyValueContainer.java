@@ -11,11 +11,11 @@ package util;
  */
 public class KeyValueContainer {
 
-    private final int itemCode;
+    private final int key;
     private final String value;
 
-    public KeyValueContainer(int itemCode, String value) {
-        this.itemCode = itemCode;
+    public KeyValueContainer(int key, String value) {
+        this.key = key;
         this.value = value;
     }
 
@@ -24,8 +24,8 @@ public class KeyValueContainer {
         return value;
     }
 
-    public int getItemCode() {
-        return itemCode;
+    public int getKey() {
+        return key;
     }
 
     public String getValue() {

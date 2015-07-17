@@ -11,17 +11,17 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.inventory.CategoryDiscount;
-import util.definitions.AppConstants;
+import database.connector.DatabaseInterface;
 
 /**
  *
  * @author Shehan
  */
-public class CategoryDiscountController {
+public class CategoryDiscountController implements DatabaseInterface {
 
     public static CategoryDiscount getCategoryDiscount(int departmentId, int categoryId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + AppConstants.CATEGORY_DISCOUNT + " WHERE category_id=? AND department_id=?";
+        String query = "SELECT * FROM " + CATEGORY_DISCOUNT + " WHERE category_id=? AND department_id=?";
         Object[] ob = {
             categoryId,
             departmentId
@@ -36,8 +36,7 @@ public class CategoryDiscountController {
                     resultSet.getString("start_date"),
                     resultSet.getString("end_date"),
                     resultSet.getBoolean("promotional"),
-                    resultSet.getDouble("quantity"),
-                    resultSet.getBoolean("in_stock"),
+                    resultSet.getDouble("qty"),
                     resultSet.getBoolean("members_only"));
         }
         return null;

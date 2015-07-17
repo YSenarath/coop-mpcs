@@ -10,7 +10,6 @@ import controller.pos.UserController;
 import java.sql.SQLException;
 import model.pos.CounterLogin;
 import model.pos.User;
-import model.pos.UserType;
 import org.apache.log4j.Logger;
 import util.Utilities;
 
@@ -22,17 +21,17 @@ public class UserLogInHandler {
 
     private static final Logger logger = Logger.getLogger(UserLogInHandler.class);
 
-    public static boolean isUserAuthenticated(String userName, char[] password, UserType requestedAccesslevel) throws Exception {
+    public static boolean isUserAuthenticated(String userName, char[] password, String requestedAccesslevel) throws Exception {
         logger.debug("isUserAuthenticated invoked");
         if (UserController.isUserAuthenticated(userName, new String(password))) {
             User user = UserController.getUser("user_name", userName);
-            if ((requestedAccesslevel == UserType.MANAGER || requestedAccesslevel == UserType.INVENTORY) && user.getUserType() == UserType.CASHIER) {
+            if ((requestedAccesslevel == User.MANAGER || requestedAccesslevel == User.INVENTORY) && user.getUserType() == User.CASHIER) {
                 throw new Exception("User does not have administrator privilages ");
             }
-            if (!(user.getUserType() == UserType.MANAGER || user.getUserType() == UserType.CASHIER)) {
+            if (!(user.getUserType() == User.MANAGER || user.getUserType() == User.CASHIER)) {
                 throw new Exception("User does not have pos privilages ");
             }
-            if (user.getUserType() != UserType.MANAGER && user.isLoggedin()) {
+            if (user.getUserType() != User.MANAGER && user.isLoggedin()) {
                 throw new Exception("User :" + userName + " is already logged in");
             }
             return true;

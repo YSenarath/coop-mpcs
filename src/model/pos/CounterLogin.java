@@ -12,24 +12,24 @@ package model.pos;
 public class CounterLogin {
 
     private int  shiftId;
-    private String user_name;
+    private String userName;
     private String counterId;
     private String time;
     private String date;
     private double initialAmount;
 
-    public CounterLogin(String user_name, String counterId, String time, String date, double initialAmount) {
+    public CounterLogin(String userName, String counterId, String time, String date, double initialAmount) {
         this.shiftId = -1;
-        this.user_name = user_name;
+        this.userName = userName;
         this.counterId = counterId;
         this.time = time;
         this.date = date;
         this.initialAmount = initialAmount;
     }
 
-    public CounterLogin(int shiftId, String user_name, String counterId, String time, String date, double initialAmount) {
+    public CounterLogin(int shiftId, String userName, String counterId, String time, String date, double initialAmount) {
         this.shiftId = shiftId;
-        this.user_name = user_name;
+        this.userName = userName;
         this.counterId = counterId;
         this.time = time;
         this.date = date;
@@ -51,17 +51,17 @@ public class CounterLogin {
     }
 
     /**
-     * @return the user_name
+     * @return the userName
      */
-    public String getUser_name() {
-        return user_name;
+    public String getuUserName() {
+        return userName;
     }
 
     /**
-     * @param user_name the user_name to set
+     * @param user_name the userName to set
      */
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     /**

@@ -13,13 +13,15 @@ public class InvoiceItem {
 
     private int productId;
     private int batchId;
+    private double UnitPrice;
     private double qty;
     private double discount;
     private double price;
 
-    public InvoiceItem(int productId, int batchId, double qty, double discount, double price) {
+    public InvoiceItem(int productId, int batchId, double UnitPrice, double qty, double discount, double price) {
         this.productId = productId;
         this.batchId = batchId;
+        this.UnitPrice = UnitPrice;
         this.qty = qty;
         this.discount = discount;
         this.price = price;
@@ -51,6 +53,20 @@ public class InvoiceItem {
      */
     public void setBatchId(int batchId) {
         this.batchId = batchId;
+    }
+
+    /**
+     * @return the UnitPrice
+     */
+    public double getUnitPrice() {
+        return UnitPrice;
+    }
+
+    /**
+     * @param UnitPrice the UnitPrice to set
+     */
+    public void setUnitPrice(double UnitPrice) {
+        this.UnitPrice = UnitPrice;
     }
 
     /**

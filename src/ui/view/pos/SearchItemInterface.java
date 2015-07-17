@@ -5,62 +5,118 @@
  */
 package ui.view.pos;
 
-import java.awt.Frame;
-import javax.swing.JInternalFrame;
-import javax.swing.JOptionPane;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
+import javax.swing.JDesktopPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Shehan
  */
-public class SearchItemDialog extends javax.swing.JDialog {
+public class SearchItemInterface extends javax.swing.JInternalFrame {
 
-    private static final Logger logger = Logger.getLogger(SearchItemDialog.class);
+    private static final Logger logger = Logger.getLogger(SearchItemInterface.class);
 
-    private final JInternalFrame internalParent;
-    private final Frame mainParent;
+    private final InvoiceInternalInterface invoiceInterface;
+    private final CheckStockInterface checkStockInterface;
 
-    /**
-     * Creates new form SearchItemDialog
-     *
-     * @param parent
-     * @param modal
-     */
-    public SearchItemDialog(JInternalFrame parent, boolean modal) {
-        super(JOptionPane.getFrameForComponent(parent), modal);
-        initComponents();
-        this.internalParent = parent;
-        this.mainParent = null;
-        setLocationRelativeTo(null);
+    //Glass pane
+    private JPanel glassPanel;
+    private JLabel padding;
+
+    public SearchItemInterface(JDesktopPane desktopPane, InvoiceInternalInterface invoiceInterface) {
+        initUI(desktopPane);
+        this.invoiceInterface = invoiceInterface;
+        this.checkStockInterface = null;
+        invoiceInterface.enableGlassPane(false);
+
     }
 
-    public SearchItemDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public SearchItemInterface(JDesktopPane desktopPane, CheckStockInterface checkStockInterface) {
+        initUI(desktopPane);
+        this.invoiceInterface = null;
+        this.checkStockInterface = checkStockInterface;
+        checkStockInterface.enableGlassPane();
+    }
+
+    private void initUI(JDesktopPane desktopPane) {
         initComponents();
-        this.mainParent = parent;
-        this.internalParent = null;
-        setLocationRelativeTo(null);
+        Dimension desktopSize = desktopPane.getSize();
+        Dimension jInternalFrameSize = this.getSize();
+        this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+
+        this.glassPanel = new JPanel(new GridLayout(0, 1));
+        this.padding = new JLabel();
+
+        glassPanel.setOpaque(false);
+        glassPanel.add(padding);
+
+        glassPanel.addMouseListener(
+                new MouseAdapter() {
+                });
+        glassPanel.addMouseMotionListener(
+                new MouseMotionAdapter() {
+                });
+        glassPanel.addKeyListener(
+                new KeyAdapter() {
+                });
+
+        // make sure the focus won't leave the glass pane
+        glassPanel.setFocusCycleRoot(true);
+        setGlassPane(glassPanel);
+    }
+
+    //Disable the glassPanel pane
+    public void disableGlassPane() {
+        logger.debug("disableGlassPane invoked");
+
+        glassPanel.setVisible(false);
+    }
+
+    //Enable the glassPanel pane
+    public void enableGlassPane() {
+        logger.debug("enableGlassPane invoked");
+        glassPanel.setVisible(true);//Disable this UI
+        padding.requestFocus();  // required to trap key events
     }
 
     //Perform search
-
     private void search() {
         logger.warn("search not implemented");
     }
 
-    //Clear fieldsI
+    //Clear fields
     private void clear() {
         logger.warn("clear not implemented");
     }
 
     //Select Item
     private void selectItem() {
-        logger.warn("selectItem not implemented - will return the item code to the parent");
+        logger.warn("selectItem not implemented");
+
+        if (invoiceInterface != null) {
+            invoiceInterface.disableGlassPane(false);
+        }
+        if (checkStockInterface != null) {
+            checkStockInterface.disableGlassPane();
+        }
     }
 
     //Cancel Search
     private void cancelSearch() {
+        if (invoiceInterface != null) {
+            invoiceInterface.disableGlassPane(false);
+        }
+        if (checkStockInterface != null) {
+            checkStockInterface.disableGlassPane();
+        }
         this.dispose();
     }
 
@@ -88,10 +144,7 @@ public class SearchItemDialog extends javax.swing.JDialog {
         btnSelect = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Search Item");
-        setName("searchItemDialog"); // NOI18N
-        setResizable(false);
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -120,7 +173,6 @@ public class SearchItemDialog extends javax.swing.JDialog {
         lblCategory.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblCategory.setText("Category");
         lblCategory.setToolTipText("");
-        lblCategory.setEnabled(false);
 
         itemCodeComboBox.setEditable(true);
         itemCodeComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -133,7 +185,6 @@ public class SearchItemDialog extends javax.swing.JDialog {
         categoryComboBox.setEditable(true);
         categoryComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         categoryComboBox.setMaximumRowCount(5);
-        categoryComboBox.setEnabled(false);
 
         itemInfoTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -165,11 +216,11 @@ public class SearchItemDialog extends javax.swing.JDialog {
         itemInfoPanel.setLayout(itemInfoPanelLayout);
         itemInfoPanelLayout.setHorizontalGroup(
             itemInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemInfoSP, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+            .addComponent(itemInfoSP, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
         );
         itemInfoPanelLayout.setVerticalGroup(
             itemInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
+            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
         );
 
         btnClear.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -208,9 +259,9 @@ public class SearchItemDialog extends javax.swing.JDialog {
                     .addGroup(containerPanelLayout.createSequentialGroup()
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lblCategory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblCategory, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
                                 .addComponent(lblCode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblProduct, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE))
+                                .addComponent(lblProduct, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(lblDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -268,26 +319,15 @@ public class SearchItemDialog extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(containerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(containerPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(containerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(containerPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        // TODO add your handling code here:
-        cancelSearch();
-    }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
@@ -303,6 +343,12 @@ public class SearchItemDialog extends javax.swing.JDialog {
         // TODO add your handling code here:
         selectItem();
     }//GEN-LAST:event_btnSelectActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        // TODO add your handling code here:
+        cancelSearch();
+    }//GEN-LAST:event_btnCancelActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;

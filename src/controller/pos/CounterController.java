@@ -10,20 +10,20 @@ import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.SQLException;
 import model.pos.CounterLogin;
-import util.definitions.AppConstants;
+import database.connector.DatabaseInterface;
 
 /**
  *
  * @author Shehan
  */
-public class CounterController {
+public class CounterController implements DatabaseInterface {
 
     public static boolean addCounterLogin(CounterLogin counterLogin) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + AppConstants.COUNTER_LOGIN + "(user_name,counter_id,login_time,login_date,initial_amount) VALUES(?,?,?,?,?)";
+        String query = "INSERT INTO " + COUNTER_LOGIN + "(user_name,counter_id,login_time,login_date,initial_amount) VALUES(?,?,?,?,?)";
         int counterloginAdded = -1;
         Object[] ob = {
-            counterLogin.getUser_name(),
+            counterLogin.getuUserName(),
             counterLogin.getCounterId(),
             counterLogin.getTime(),
             counterLogin.getDate(),
@@ -35,7 +35,7 @@ public class CounterController {
 //
 //    public static String getLastShiftId() throws SQLException {
 //        Connection connection = DBConnection.getConnectionToDB();
-//        String query = "SELECT shift_id FROM " + AppConstants.COUNTER_LOGIN + " ORDER BY shift_id DESC LIMIT 1";
+//        String query = "SELECT shift_id FROM " + DatabaseInterface.COUNTER_LOGIN + " ORDER BY shift_id DESC LIMIT 1";
 //        ResultSet resultSet = DBHandler.getData(connection, query);
 //        if(resultSet.next()){
 //            return resultSet.getString("shift_id");

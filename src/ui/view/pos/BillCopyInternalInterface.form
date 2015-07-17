@@ -27,7 +27,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="910" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="925" max="32767" attributes="0"/>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Component id="interfaceContainerPanel" alignment="0" max="32767" attributes="0"/>
           </Group>
@@ -61,7 +61,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="cardPanel" alignment="0" max="32767" attributes="0"/>
+              <Component id="cardPanel" alignment="0" pref="590" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -116,7 +116,7 @@
                               <Component id="lblBill1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="txtSearchBillNO" min="-2" pref="101" max="-2" attributes="0"/>
-                              <EmptySpace pref="5" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                               <Component id="lblBillDateDisplay" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="lblBillDateVal" min="-2" pref="168" max="-2" attributes="0"/>
@@ -166,8 +166,11 @@
                           <Font name="Tahoma" size="14" style="0"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="4"/>
-                        <Property name="text" type="java.lang.String" value="&lt;Bill No&gt;"/>
+                        <Property name="toolTipText" type="java.lang.String" value=""/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtSearchBillNOKeyReleased"/>
+                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="lblBillDateVal">
                       <Properties>
@@ -247,7 +250,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="billItemSP" alignment="0" pref="313" max="32767" attributes="0"/>
+                          <Component id="billItemSP" alignment="0" pref="344" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -262,12 +265,13 @@
                         <Component class="javax.swing.JTable" name="printItemTable">
                           <Properties>
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                              <Table columnCount="5" rowCount="0">
-                                <Column editable="false" title="Code" type="java.lang.String"/>
-                                <Column editable="false" title="Description" type="java.lang.String"/>
-                                <Column editable="false" title="Price" type="java.lang.Double"/>
-                                <Column editable="false" title="Qty" type="java.lang.Double"/>
-                                <Column editable="false" title="Sub total" type="java.lang.Double"/>
+                              <Table columnCount="6" rowCount="0">
+                                <Column editable="false" title="Code" type="java.lang.Object"/>
+                                <Column editable="false" title="Description" type="java.lang.Object"/>
+                                <Column editable="false" title="Price (Rs.)" type="java.lang.Object"/>
+                                <Column editable="false" title="Qty" type="java.lang.Object"/>
+                                <Column editable="false" title="Discount (Rs.)" type="java.lang.Object"/>
+                                <Column editable="false" title="Sub total (Rs.)" type="java.lang.Object"/>
                               </Table>
                             </Property>
                             <Property name="rowHeight" type="int" value="21"/>
@@ -296,13 +300,6 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lblChangeCashDisplay" min="-2" pref="120" max="-2" attributes="0"/>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="lblChangeCashVal" min="-2" pref="127" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="btnCancelPrint" min="-2" pref="125" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="lblCardAmountDisplay" min="-2" pref="120" max="-2" attributes="0"/>
@@ -315,38 +312,35 @@
                                               <Component id="lblOtherAmountVal" min="-2" pref="127" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="lblCashAmountDisplay" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
-                                                  <Component id="lblBillPrintDateDisplay" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              </Group>
+                                              <Component id="lblCashAmountDisplay" min="-2" pref="120" max="-2" attributes="0"/>
                                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                                  <Component id="lblBillPrintDate" alignment="0" max="32767" attributes="0"/>
-                                                  <Component id="lblCashAmountVal" alignment="0" pref="127" max="32767" attributes="0"/>
-                                              </Group>
+                                              <Component id="lblCashAmountVal" min="-2" pref="127" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="lblSubTotalDisplay" min="-2" pref="120" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="lblSubTotalVal" min="-2" pref="127" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="lblDiscountAmountDisplay" min="-2" pref="120" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="lblDiscountAmountVal" min="-2" pref="127" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="lblNetTotalDisplay" min="-2" pref="120" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="lblNetTotalVal" min="-2" pref="127" max="-2" attributes="0"/>
-                                          </Group>
-                                      </Group>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="lblDiscountAmountDisplay" min="-2" pref="120" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="lblChangeCashDisplay" min="-2" pref="120" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="lblChangeCashVal" min="-2" pref="127" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="lblNetTotalDisplay" min="-2" pref="120" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="lblDiscountAmountVal" min="-2" pref="127" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="191" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="lblNetTotalVal" min="-2" pref="127" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="btnCancelPrint" min="-2" pref="125" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                               <Component id="btnPrintBill" min="-2" pref="125" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -358,49 +352,28 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="lblBillPrintDateDisplay" alignment="0" min="-2" pref="25" max="-2" attributes="0"/>
-                                          <Component id="lblBillPrintDate" alignment="1" min="-2" pref="25" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="lblCashAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="lblCashAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="lblCashAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                                  <Component id="lblCashAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="lblCardAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                                  <Component id="lblCardAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="lblOtherAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                                  <Component id="lblOtherAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              </Group>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="lblSubTotalDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                                  <Component id="lblSubTotalVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="lblDiscountAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                                  <Component id="lblDiscountAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="lblNetTotalDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                                  <Component id="lblNetTotalVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              </Group>
-                                          </Group>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="lblCardAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="lblCardAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="lblOtherAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="lblOtherAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="lblDiscountAmountDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="lblDiscountAmountVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="lblChangeCashDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                           <Component id="lblChangeCashVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="lblNetTotalDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="lblNetTotalVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="0" pref="1" max="32767" attributes="0"/>
                                   </Group>
@@ -506,28 +479,6 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JLabel" name="lblSubTotalDisplay">
-                      <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="12" style="1"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Sub Total"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="lblSubTotalVal">
-                      <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="12" style="1"/>
-                        </Property>
-                        <Property name="horizontalAlignment" type="int" value="4"/>
-                        <Property name="text" type="java.lang.String" value="&lt;Amount&gt;"/>
-                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                            <EtchetBorder/>
-                          </Border>
-                        </Property>
-                      </Properties>
-                    </Component>
                     <Component class="javax.swing.JLabel" name="lblDiscountAmountDisplay">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -589,28 +540,6 @@
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPrintBillActionPerformed"/>
                       </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="lblBillPrintDateDisplay">
-                      <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="14" style="1"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Bill Date"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="lblBillPrintDate">
-                      <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="14" style="1"/>
-                        </Property>
-                        <Property name="horizontalAlignment" type="int" value="4"/>
-                        <Property name="text" type="java.lang.String" value="&lt;date&gt;"/>
-                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                            <EtchetBorder/>
-                          </Border>
-                        </Property>
-                      </Properties>
                     </Component>
                   </SubComponents>
                 </Container>

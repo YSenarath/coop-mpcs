@@ -16,9 +16,9 @@ public class CardPayment extends Payment {
     public static final String VISA = "VISA";
 
     private String cardType;
-    private int cardNo;
+    private String cardNo;
 
-    public CardPayment(int billId, int paymentId, String cardType, int cardNo, double amount) {
+    public CardPayment(int billId, int paymentId, String cardType, String cardNo, double amount) {
         super(billId, paymentId, amount);
         this.cardType = cardType;
         this.cardNo = cardNo;
@@ -41,14 +41,14 @@ public class CardPayment extends Payment {
     /**
      * @return the cardNo
      */
-    public int getCardNo() {
+    public String getCardNo() {
         return cardNo;
     }
 
     /**
      * @param cardNo the cardNo to set
      */
-    public void setCardNo(int cardNo) {
+    public void setCardNo(String cardNo) {
         this.cardNo = cardNo;
     }
 

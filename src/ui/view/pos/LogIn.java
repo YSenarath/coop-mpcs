@@ -10,7 +10,7 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import model.pos.UserType;
+import model.pos.User;
 import org.apache.log4j.Logger;
 import ui.handler.pos.UserLogInHandler;
 import util.Utilities;
@@ -38,7 +38,7 @@ public class LogIn extends javax.swing.JFrame {
             String userName = txtUsername.getText();
             double initialAmount = Double.valueOf(ftxtIntialAmount.getText());
 
-            if (UserLogInHandler.isUserAuthenticated(userName, txtPassword.getPassword(), UserType.CASHIER)) {
+            if (UserLogInHandler.isUserAuthenticated(userName, txtPassword.getPassword(), User.CASHIER)) {
                 if (UserLogInHandler.performCounterLogin(userName, initialAmount)) {
                     new POSMDIInterface(userName).setVisible(true);
                 }
@@ -65,7 +65,7 @@ public class LogIn extends javax.swing.JFrame {
         logger.warn("Not implemented - show application configuration UI, after authenticationg user privilage level");
         try {
             String userName = txtUsername.getText();
-            if (UserLogInHandler.isUserAuthenticated(userName, txtPassword.getPassword(), UserType.MANAGER)) {
+            if (UserLogInHandler.isUserAuthenticated(userName, txtPassword.getPassword(), User.MANAGER)) {
                 new ConfigureDialog(this, true).setVisible(true);
                 txtUsername.setText("");
                 txtPassword.setText("");

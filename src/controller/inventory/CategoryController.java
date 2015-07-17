@@ -11,22 +11,23 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.inventory.Category;
-import util.definitions.AppConstants;
+import database.connector.DatabaseInterface;
 
 /**
  *
  * @author Shehan
  */
-public class CategoryController {
+public class CategoryController implements DatabaseInterface {
 
-    public static Category getBatchDiscount(int departmentId, int categoryId) throws SQLException {
+    public static Category getCategory(int departmentId, int categoryId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + AppConstants.CATAGORY + " WHERE category_id=? AND department_id=?";
+        String query = "SELECT * FROM " + CATAGORY + " WHERE category_id=? AND department_id=?";
         Object[] ob = {
             categoryId,
             departmentId
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
+        
         if (resultSet.next()) {
             return new Category(
                     resultSet.getInt("category_id"),

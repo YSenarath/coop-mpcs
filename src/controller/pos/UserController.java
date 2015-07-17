@@ -12,17 +12,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import model.pos.User;
-import util.definitions.AppConstants;
+import database.connector.DatabaseInterface;
 
 /**
  *
  * @author Shehan
  */
-public class UserController {
+public class UserController implements DatabaseInterface {
 
     public static boolean isUserAuthenticated(String userName, String password) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + AppConstants.USER + " WHERE user_name=? AND password=?";
+        String query = "SELECT * FROM " + USER + " WHERE user_name=? AND password=?";
         Object[] ob = {
             userName,
             password
@@ -33,7 +33,7 @@ public class UserController {
 
     public static User getUser(String search, String userName) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + AppConstants.USER + " WHERE " + search + "=? LIMIT 1";
+        String query = "SELECT * FROM " + USER + " WHERE " + search + "=? LIMIT 1";
         Object[] ob = {
             userName
         };
@@ -51,7 +51,7 @@ public class UserController {
 
     public static boolean setUserLoginState(String userName, boolean loginState) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "UPDATE " + AppConstants.USER + " SET isLoggedIn=? WHERE user_name=?";
+        String query = "UPDATE " + USER + " SET isLoggedIn=? WHERE user_name=?";
         Object[] ob = {
             loginState,
             userName
@@ -61,9 +61,9 @@ public class UserController {
 
     public static ArrayList<User> getAllUsers() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "Select * From " + AppConstants.USER;
+        String query = "Select * From " + USER;
         ResultSet resultSet = DBHandler.getData(connection, query);
-        
+
         ArrayList<User> allUsers = new ArrayList<>();
         while (resultSet.next()) {
             User user = new User(

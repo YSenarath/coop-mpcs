@@ -9,7 +9,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;

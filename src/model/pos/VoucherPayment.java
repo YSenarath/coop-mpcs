@@ -9,10 +9,14 @@ package model.pos;
  *
  * @author Shehan
  */
-public abstract class VoucherPayment extends Payment{
+public abstract class VoucherPayment extends Payment {
+
+    public static final String EMPLOYEE = "EMPLOYEE";
+    public static final String CUSTOMER = "CUSTOMER";
+
     private String voucherId;
 
-    public VoucherPayment(int billId, int paymentId,String voucherId,double amount) {
+    public VoucherPayment(int billId, int paymentId, String voucherId, double amount) {
         super(billId, paymentId, amount);
         this.voucherId = voucherId;
     }
@@ -30,5 +34,5 @@ public abstract class VoucherPayment extends Payment{
     public void setVoucherId(String voucherId) {
         this.voucherId = voucherId;
     }
-    
+
 }

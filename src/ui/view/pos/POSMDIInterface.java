@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.ImageIcon;
-import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import org.apache.log4j.Logger;
@@ -43,9 +42,10 @@ public class POSMDIInterface extends javax.swing.JFrame {
     private String userName;
 
     //The three main POS UI's
-    private JInternalFrame invoiceInterface;
-    private JInternalFrame billRefundInterface;
-    private JInternalFrame billCopyInterface;
+    private InvoiceInternalInterface invoiceInterface;
+    private BillRefundInternalInterface billRefundInterface;
+    private BillCopyInternalInterface billCopyInterface;
+    private CheckStockInterface checkStockInterface;
 
     /**
      * Creates new form POSMDIInterface
@@ -66,10 +66,12 @@ public class POSMDIInterface extends javax.swing.JFrame {
     private void enableDebugMode() {
         setTitle("MEGA COOP CITY POS : DEBUG MODE");
         isCashierLogedIn = true;
-        this.userName = "Debug";
+        this.userName = "msw";
         btnCashierLog.setText("Debug Mode");
         btnCashierLog.setEnabled(false);
-        bill_newSale();
+        // bill_newSale();
+        //chechStock();
+
     }
 
     private void initializeGUI() {
@@ -289,7 +291,15 @@ public class POSMDIInterface extends javax.swing.JFrame {
     //Show the check stock UI
     private void chechStock() {
         logger.debug("chechStock invoked");
-        new ui.view.pos.old.CheckStockDialog(this, true).setVisible(true);
+
+        showDesktopPane(true);
+        if (checkStockInterface != null) {
+            desktopPane.remove(checkStockInterface);
+        }
+        checkStockInterface = new CheckStockInterface(this, invoiceInterface, billRefundInterface, billCopyInterface, desktopPane);
+        desktopPane.add(checkStockInterface, new Integer(50));//On top of all others
+
+        checkStockInterface.setVisible(true);
     }
 
     //Mange cashier login

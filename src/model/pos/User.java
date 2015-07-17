@@ -11,10 +11,14 @@ package model.pos;
  */
 public class User {
 
+    public static final String MANAGER = "MANAGER";
+    public static final String CASHIER = "CASHIER";
+    public static final String INVENTORY = "INVENTORY";
+
     private String userName;
     private String employeeId;
     private String password;
-    private UserType userType;
+    private String userType;
     private boolean loggedin;
 
     public User(String userName, String password, String userType, boolean loggedin) {
@@ -22,13 +26,13 @@ public class User {
         this.password = password;
         switch (userType) {
             case "manager":
-                this.userType = UserType.MANAGER;
+                this.userType = MANAGER;
                 break;
             case "cashier":
-                this.userType = UserType.CASHIER;
+                this.userType =CASHIER;
                 break;
             case "inventory_manager":
-                this.userType = UserType.INVENTORY;
+                this.userType =INVENTORY;
                 break;
         }
         this.loggedin = loggedin;
@@ -79,14 +83,14 @@ public class User {
     /**
      * @return the userType
      */
-    public UserType getUserType() {
+    public String getUserType() {
         return userType;
     }
 
     /**
      * @param userType the userType to set
      */
-    public void setUserType(UserType userType) {
+    public void setUserType(String userType) {
         this.userType = userType;
     }
 
@@ -103,5 +107,6 @@ public class User {
     public void setLoggedin(boolean loggedin) {
         this.loggedin = loggedin;
     }
-
+    
+    
 }

@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model.pos;
+package controller.pos;
+
+import database.connector.DatabaseInterface;
 
 /**
  *
  * @author Shehan
  */
-public enum UserType {
-    MANAGER,INVENTORY,CASHIER
+public class CardPaymentController implements DatabaseInterface {
+
 }

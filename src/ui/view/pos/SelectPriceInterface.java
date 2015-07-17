@@ -98,14 +98,14 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
         logger.debug("setSelectedBatch invoked");
         parent.setProductBatch(batchMap.get(batchId));
         batchSelected = true;
-        parent.disableGlassPane();
+        parent.disableGlassPane(false);
         this.dispose();
     }
 
     private void escapeKeyHandler() {
         if (!batchSelected) {
             parent.invoiceClearProductinfo();
-            parent.disableGlassPane();
+            parent.disableGlassPane(false);
 
         }
         this.dispose();
