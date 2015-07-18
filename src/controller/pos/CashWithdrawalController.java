@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller.pos;
 
 import database.connector.DBConnection;
@@ -13,10 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.pos.CashWithdrawal;
 
-/**
- *
- * @author Shehan
- */
 public class CashWithdrawalController implements DatabaseInterface {
 
     public static CashWithdrawal getLastWithdrawalId() throws SQLException {
@@ -31,7 +22,7 @@ public class CashWithdrawalController implements DatabaseInterface {
         return null;
     }
 
-    private static boolean addCashWithdrawal(CashWithdrawal cashWithdrawal) throws SQLException {
+    public static boolean addCashWithdrawal(CashWithdrawal cashWithdrawal) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "INSERT INTO " + CASH_WITHDRAWAL + " (cash_withdrawal_id,user_name,counter_id,withdrawal_time,withdrawal_date,amount) VALUES (?,?,?,?,?,?) ";
         Object[] ob = {
@@ -42,7 +33,7 @@ public class CashWithdrawalController implements DatabaseInterface {
             cashWithdrawal.getDate(),
             cashWithdrawal.getAmount()
         };
-        return DBHandler.setData(connection, query, ob) > 0;
+        return DBHandler.setData(connection, query, ob) == 1;
 
     }
 }

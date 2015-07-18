@@ -7,10 +7,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 
-/**
- *
- * @author Shehan
- */
 public class DBConnection implements DatabaseInterface {
 
     private static final Logger logger = Logger.getLogger(DBConnection.class);

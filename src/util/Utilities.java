@@ -9,16 +9,15 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.IllegalFormatConversionException;
 import java.util.Properties;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-/**
- *
- * @author Shehan
- */
 public class Utilities {
 
     //Do not instantiate this class
@@ -26,9 +25,50 @@ public class Utilities {
 
     }
 
+    //Convert 24hour time to 12 hour time
+    public static String convert24hTo12h(String str24h) throws ParseException {
+        DateFormat format24h = new SimpleDateFormat("HH:mm:ss");
+        Date time = format24h.parse(str24h);
+        DateFormat format12h = new SimpleDateFormat("hh:mm:ss a");
+        return format12h.format(time).toLowerCase();
+    }
+
+    //Deep clone a object
+    public static Object deepClone(Object object) throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(object);
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        return ois.readObject();
+    }
+
+    //double Format text filed 
+    public static void doubleFormatComponentText(JTextField jTextField) {
+
+        if (jTextField.getText().equals("") || jTextField.getText().isEmpty()) {
+            return;
+        }
+        try {
+            jTextField.setText(String.format("%.2f", Double.parseDouble(jTextField.getText())));
+        } catch (NumberFormatException | IllegalFormatConversionException ex) {
+            jTextField.setText("");
+        }
+    }
+
     //Get the mysql compatible current date as string
     public static String getCurrentDate() {
         return (new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+    }
+
+    //Get the mysql compatible current time in 24h clock as string
+    public static String getCurrentTime(boolean is24h) {
+        if (is24h) {
+            return (new SimpleDateFormat("HH:mm:ss").format(new Date())).toLowerCase();
+        } else {
+            return (new SimpleDateFormat("hh:mm:ss a").format(new Date())).toLowerCase();
+        }
+
     }
 
     //convert a string date to util.date
@@ -39,6 +79,11 @@ public class Utilities {
         } catch (ParseException | NullPointerException ex) {
             return null;
         }
+    }
+
+    //Format 
+    public static String formatId(String startingChar, int length, int val) {
+        return String.format(startingChar + "%0" + length + "d", val);
     }
 
     //Check if a util.date is in given range
@@ -60,24 +105,6 @@ public class Utilities {
         return isDateBetweenRange(getDatefromString(date), getDatefromString(lowerLimit), getDatefromString(upperLimit));
     }
 
-    //Get the mysql compatible current time in 24h clock as string
-    public static String getCurrentTime(boolean is24h) {
-        if (is24h) {
-            return (new SimpleDateFormat("HH:mm:ss").format(new Date())).toLowerCase();
-        } else {
-            return (new SimpleDateFormat("hh:mm:ss a").format(new Date())).toLowerCase();
-        }
-
-    }
-
-    //Convert 24hour time to 12 hour time
-    public static String convert24hTo12h(String str24h) throws ParseException {
-        DateFormat format24h = new SimpleDateFormat("HH:mm:ss");
-        Date time = format24h.parse(str24h);
-        DateFormat format12h = new SimpleDateFormat("hh:mm:ss a");
-        return format12h.format(time).toLowerCase();
-    }
-
     //Show msg boxes
     public static void showMsgBox(String msg, String title, int msgType) {
         JOptionPane.showMessageDialog(null, msg, title, msgType);
@@ -93,18 +120,14 @@ public class Utilities {
         return Preferences.userNodeForPackage(Utilities.class).get(key, "NULL");
     }
 
-    public static String formatId(String startingChar, int length, int val) {
-        return String.format(startingChar + "%0" + length + "d", val);
+    //remove a client app specific property
+    public static void removeProperty(String key) {
+        Preferences.userNodeForPackage(Utilities.class).remove(key);
     }
 
-    //Deep clone a object
-    public static Object deepClone(Object object) throws IOException, ClassNotFoundException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(object);
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        ObjectInputStream ois = new ObjectInputStream(bais);
-        return ois.readObject();
+    //clear a client app specific property
+    public static void clearProperties() throws BackingStoreException {
+        Preferences.userNodeForPackage(Utilities.class).clear();
     }
 
     public static void setupUI() {

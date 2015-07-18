@@ -23,6 +23,7 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form CashWithdrawInterface
+     *
      * @param parent
      * @param desktopPane
      */
@@ -30,7 +31,7 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
         initComponents();
         this.parent = parent;
         this.desktopPane = desktopPane;
-        
+
         Dimension desktopSize = desktopPane.getSize();
         Dimension jInternalFrameSize = this.getSize();
         this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
@@ -427,7 +428,6 @@ public class CashWithdrawInterface extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         withdrawCash();
     }//GEN-LAST:event_btnOkActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;

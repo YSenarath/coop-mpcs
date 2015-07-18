@@ -1,35 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package util;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
-/**
- *
- * @author Shehan
- */
-
-/**
- *
- * ANSIColorLayout is a Log4J Layout that formats messages using ANSI colors.
- *
- * Each level (DEBUG,INFO,WARN) has its own color that you can customize. To use this file, in your log4j.properties or log4j.xml specify ANSIColorLayout instead of a PatternLayout.
- *
- *
- * <b>log4j.properties</b>
- *
- * log4j.appender.A1.layout=org.osuosl.logging.ANSIColorLayout log4j.appender.A1.layout.ConversionPattern=%-5p [%d{MM-dd-yyyy HH:mm:ss}] %c - %m%n
- *
- * log4j.appender.A1.all=\u001B[1;37m log4j.appender.A1.fatal=\u001B[1;31m log4j.appender.A1.error=\u001B[0;31m log4j.appender.A1.warn=\u001B[1;33m log4j.appender.A1.info=\u001B[0;37m log4j.appender.A1.debug=\u001B[0;36m log4j.appender.A1.reset=\u001B[1;37m log4j.appender.A1.stacktrace=\u001B[0;31m log4j.appender.A1.defaultcolor=\u001B[1;37m
- *
- *
- * @author peter Date: Nov 30, 2005 Time: 1:24:35 PM
- */
 public class ANSIColorLayout extends PatternLayout {
 
     public static final String DEFAULT_COLOR_ALL = "\u001B[1;37m";
@@ -172,7 +146,7 @@ public class ANSIColorLayout extends PatternLayout {
     @Override
     public String format(LoggingEvent loggingEvent) {
 
-        StringBuffer oBuffer = new StringBuffer();
+        StringBuilder oBuffer = new StringBuilder();
         switch (loggingEvent.getLevel().toInt()) {
             case Level.ALL_INT:
                 oBuffer.append(all);

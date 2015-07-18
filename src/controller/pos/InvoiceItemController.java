@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller.pos;
 
 import database.connector.DBConnection;
@@ -15,10 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import model.pos.InvoiceItem;
 
-/**
- *
- * @author Shehan
- */
 public class InvoiceItemController implements DatabaseInterface {
 
     public static boolean addInvoiceItem(InvoiceItem invoiceItem) throws SQLException {
@@ -32,7 +23,7 @@ public class InvoiceItemController implements DatabaseInterface {
             invoiceItem.getUnitPrice(),
             invoiceItem.getQty()
         };
-        return DBHandler.setData(connection, query, ob) > 0;
+        return DBHandler.setData(connection, query, ob) == 1;
     }
 
     public static ArrayList<InvoiceItem> getInvoiceItems(int invoiceNo) throws SQLException {

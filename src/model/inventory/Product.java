@@ -1,18 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model.inventory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- *
- * @author Shehan
- */
-public class Product implements Serializable{
+public class Product implements Serializable {
 
     private int productId;
     private String name;

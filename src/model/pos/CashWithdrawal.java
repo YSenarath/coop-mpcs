@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model.pos;
 
-/**
- *
- * @author Shehan
- */
 public class CashWithdrawal {
 
     private int withdrawalId;
@@ -34,6 +25,10 @@ public class CashWithdrawal {
         this.time = time;
         this.date = date;
         this.amount = amount;
+    }
+
+    public boolean isValidWithdrawal() {
+        return withdrawalId > 0 && !username.equals("") && counterId > 0 && !time.equals("") && !date.equals("") && amount > 0;
     }
 
     /**
@@ -119,6 +114,5 @@ public class CashWithdrawal {
     public void setAmount(double amount) {
         this.amount = amount;
     }
-    
 
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller.pos;
 
 import controller.inventory.BatchController;
@@ -11,7 +6,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import model.pos.CardPayment;
 import model.pos.CashPayment;
+import model.pos.CashWithdrawal;
 import model.pos.CoopCreditPayment;
+import model.pos.CounterLogin;
 import model.pos.CustomerVoucherPayment;
 import model.pos.EmployeeVoucherPayment;
 import model.pos.Invoice;
@@ -20,15 +17,58 @@ import model.pos.Payment;
 import model.pos.PoshanaPayment;
 import org.apache.log4j.Logger;
 
-/**
- *
- * @author Shehan
- */
 public class TransactionController {
 
     private static final Logger logger = Logger.getLogger(TransactionController.class);
 
-    public static boolean performTransaction(Invoice invoice) {
+    public static boolean performLogInTransaction(CounterLogin counterLogin) {
+        logger.debug("performLogInTransaction invoked");
+
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnectionToDB();
+            connection.setAutoCommit(false);
+            logger.debug("Connection setAutoCommit(false)");
+
+            //Change user login state
+            boolean result = UserController.setUserLoginState(counterLogin.getUserName(), true);
+            logger.info("User login state : " + result);
+
+            //Add counter login
+            result = CounterLoginController.addCounterLogin(counterLogin);
+            logger.info("Add counter login : " + result);
+
+            //Update counter amount
+            result = CounterController.setCounterAmount(counterLogin.getCounterId(), counterLogin.getInitialAmount());
+            logger.info("Update counter amount : " + result);
+
+            connection.commit();
+            return true;
+        } catch (Exception err0) {
+            logger.error("Exception occurred " + err0.getMessage());
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    logger.debug("Connection rolledback");
+                } catch (SQLException err1) {
+                    logger.error("SQLException occurred " + err1.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    logger.debug("Connection setAutoCommit(true)");
+                } catch (SQLException err2) {
+                    logger.error("SQLException occurred " + err2.getMessage());
+                }
+            }
+        }
+    }
+
+    public static boolean performInvoiceTransaction(Invoice invoice) {
+        logger.debug("performInvoiceTransaction invoked");
         //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total
         Connection connection = null;
         try {
@@ -47,7 +87,7 @@ public class TransactionController {
                 logger.info("Add invoice item : " + result);
 
                 //Update batch item
-                result = BatchController.updateBatchItem(invoiceItem);
+                result = BatchController.reduceBatchQty(invoiceItem);
                 logger.info("Update batch : " + result);
             }
 
@@ -61,7 +101,7 @@ public class TransactionController {
 
                     //Update counter amount
                     double amountAddedToCounter = cashPayment.getAmount() - cashPayment.getChangeAmount();
-                    result = CounterController.updateCounterAmount(invoice.getCounterId(), amountAddedToCounter);
+                    result = CounterController.addToCounterAmount(invoice.getCounterId(), amountAddedToCounter);
                     logger.info("Update counter amount : " + result);
 
                 } else if (payment instanceof CardPayment) {
@@ -105,5 +145,47 @@ public class TransactionController {
             }
         }
 
+    }
+
+    public static boolean performCashWithdrawalTransaction(CashWithdrawal cashWithdrawal) {
+        logger.debug("performInvoiceTransaction invoked");
+
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnectionToDB();
+            connection.setAutoCommit(false);
+            logger.debug("Connection setAutoCommit(false)");
+
+            //Perform withdrawal
+            boolean result = CashWithdrawalController.addCashWithdrawal(cashWithdrawal);
+            logger.info("Cash withdrawal : " + result);
+
+            //Update counter balance
+            result = CounterController.removeFromCounterAmount(cashWithdrawal.getCounterId(), cashWithdrawal.getAmount());
+            logger.info("Counter amount updated : " + result);
+
+            connection.commit();
+            return true;
+        } catch (Exception err0) {
+            logger.error("Exception occurred " + err0.getMessage());
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    logger.debug("Connection rolledback");
+                } catch (SQLException err1) {
+                    logger.error("SQLException occurred " + err1.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    logger.debug("Connection setAutoCommit(true)");
+                } catch (SQLException err2) {
+                    logger.error("SQLException occurred " + err2.getMessage());
+                }
+            }
+        }
     }
 }

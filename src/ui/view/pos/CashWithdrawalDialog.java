@@ -1,31 +1,34 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ui.view.pos;
 
 import controller.pos.CashWithdrawalController;
 import controller.pos.CounterController;
 import controller.pos.CounterLoginController;
+import controller.pos.SettingsController;
+import controller.pos.TransactionController;
+import controller.pos.UserController;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.text.PlainDocument;
 import model.pos.CashWithdrawal;
 import model.pos.Counter;
 import model.pos.CounterLogin;
+import model.pos.Setting;
 import org.apache.log4j.Logger;
+import util.DoubleFilter;
 import util.Utilities;
+import static util.Utilities.doubleFormatComponentText;
 
-/**
- *
- * @author Shehan
- */
 public class CashWithdrawalDialog extends javax.swing.JDialog {
 
+// <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(CashWithdrawalDialog.class);
     private final POSMDIInterface parent;
     private CashWithdrawal cashWithdrawal;
 
+    // </editor-fold>
+    //
+    //
 // <editor-fold defaultstate="collapsed" desc="Constructor">
     public CashWithdrawalDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -39,12 +42,14 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
     // </editor-fold>
     //
     //
+    //
 // <editor-fold defaultstate="collapsed" desc="Helper method">
     private void showInfo() {
         logger.debug("showInfo invoked");
 
         CashWithdrawal lastCashWithdrawal;
         try {
+
             lastCashWithdrawal = CashWithdrawalController.getLastWithdrawalId();
             if (lastCashWithdrawal != null) {
                 cashWithdrawal = new CashWithdrawal(lastCashWithdrawal.getWithdrawalId() + 1);
@@ -54,35 +59,88 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                 lblCashWithrawalNoVal.setText(Utilities.formatId("CW", 5, 1));
             }
 
-            lblCounter.setText(Utilities.loadProperty("counter"));
-            lblUser.setText(parent.getUserName());
+            String counterId = Utilities.loadProperty("counter");
+            lblCounter.setText(counterId);
+            cashWithdrawal.setCounterId(Integer.parseInt(counterId));
 
-            CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin();
-            if (lastCounterLogin == null) {
-                Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            } else {
-                lblShiftVal.setText(Utilities.formatId("SF", 5, lastCounterLogin.getShiftId()));
-                lblSignOnDate.setText(lastCounterLogin.getDate());
-                lblSignOnTime.setText(Utilities.convert24hTo12h(lastCounterLogin.getTime()));
-                lblInitialAmount.setText(String.format("%.2f", lastCounterLogin.getInitialAmount()));
-            }
+            String userName = parent.getUserName();
+            lblUser.setText(userName);
+            cashWithdrawal.setUsername(userName);
+
+            CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
+            lblShiftVal.setText(Utilities.formatId("SF", 5, lastCounterLogin.getShiftId()));
+            lblSignOnDate.setText(lastCounterLogin.getDate());
+            lblSignOnTime.setText(Utilities.convert24hTo12h(lastCounterLogin.getTime()));
+            lblInitialAmount.setText(String.format("%.2f", lastCounterLogin.getInitialAmount()));
+
             lblCWDate.setText(Utilities.getCurrentDate());
             lblCWTime.setText(Utilities.getCurrentTime(false));
 
+            cashWithdrawal.setDate(Utilities.getCurrentDate());
+            cashWithdrawal.setTime(Utilities.getCurrentTime(true));
+
             Counter counter = CounterController.getCounter(Integer.parseInt(Utilities.loadProperty("counter")));
-            if (counter == null) {
-                Utilities.showMsgBox("Counter does not exist", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+            lblCurrentAmountVal.setText(String.format("%.2f", counter.getCurrentAmount()));
+
+            Setting mainCashierSetting = SettingsController.getSetting("main_cashier_name");
+            if (mainCashierSetting != null) {
+                lblChiefCashierID.setText(mainCashierSetting.getValue());
             } else {
-                lblCurrentAmountVal.setText(String.format("%.2f", counter.getCurrentAmount()));
+                logger.error("main_cashier_name setting not found");
+                btnOk.setEnabled(false);
             }
+
+            ((PlainDocument) txtWithdrawalAmount.getDocument()).setDocumentFilter(new DoubleFilter());
+
         } catch (SQLException ex) {
             logger.error("SQL error : " + ex.getMessage());
+            btnOk.setEnabled(false);
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
+            btnOk.setEnabled(false);
+        }
+    }
+
+    //Handle txtWithdrawalAmount key press
+    private void txtWithdrawalAmountKeyPressHandler(java.awt.event.KeyEvent evt) {
+        logger.debug("txtWithdrawalAmountKeyPressHandler invoked");
+
+        if (txtWithdrawalAmount.getText().equals("")) {
+            txtWithdrawalAmount.requestFocus();
+            return;
         }
 
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtCashierPassword.requestFocus();
+        }
+    }
+
+    //Handle txtCashierPassword key press
+    private void txtCashierPasswordKeyPressHandler(java.awt.event.KeyEvent evt) {
+        logger.debug("txtCashierPasswordKeyPressHandler invoked");
+
+        if (new String(txtCashierPassword.getPassword()).equals("")) {
+            txtCashierPassword.requestFocus();
+            return;
+        }
+
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtChiefCashierPassword.requestFocus();
+        }
+    }
+
+    //Handle txtChiefCashierPassword key press
+    private void txtChiefCashierPasswordKeyPressHandler(java.awt.event.KeyEvent evt) {
+        logger.debug("txtChiefCashierPasswordKeyPressHandler invoked");
+
+        if (new String(txtChiefCashierPassword.getPassword()).equals("")) {
+            txtChiefCashierPassword.requestFocus();
+            return;
+        }
+
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            withdrawCash();
+        }
     }
 
     //Cancel withdraw
@@ -95,13 +153,81 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
     // </editor-fold>
     //
     //
+    //
 // <editor-fold defaultstate="collapsed" desc="Cash withdrawal">
     //Withdraw cash from counter
     private void withdrawCash() {
-        logger.warn("withdrawCash not implemented");
-    }
-    // </editor-fold>
+        logger.debug("withdrawCash invoked");
 
+        if (txtWithdrawalAmount.getText().isEmpty()) {
+            txtWithdrawalAmount.requestFocus();
+            txtCashierPassword.setText("");
+            txtChiefCashierPassword.setText("");
+            return;
+        }
+        if (new String(txtCashierPassword.getPassword()).isEmpty()) {
+            txtCashierPassword.requestFocus();
+            txtCashierPassword.setText("");
+            txtChiefCashierPassword.setText("");
+            return;
+        }
+        if (new String(txtChiefCashierPassword.getPassword()).isEmpty()) {
+            txtChiefCashierPassword.requestFocus();
+            txtCashierPassword.setText("");
+            txtChiefCashierPassword.setText("");
+            return;
+        }
+
+        double withdrawalAmount = Double.parseDouble(txtWithdrawalAmount.getText());
+        double maxWithdrawableAmount = Double.parseDouble(lblCurrentAmountVal.getText());
+        if (0 < withdrawalAmount && withdrawalAmount <= maxWithdrawableAmount) {
+            String userPassword = new String(txtCashierPassword.getPassword());
+            try {
+                if (UserController.isUserAuthenticated(parent.getUserName(), userPassword)) {
+                    String masterPassword = new String(txtChiefCashierPassword.getPassword());
+                    if (masterPassword.equals(SettingsController.getSetting("main_cashier_password").getValue())) {
+                        cashWithdrawal.setAmount(withdrawalAmount);
+                        if (cashWithdrawal.isValidWithdrawal()) {
+                            boolean result = TransactionController.performCashWithdrawalTransaction(cashWithdrawal);
+                            if (result) {
+                                Utilities.showMsgBox("Cash Withdrawal successfull", "Cash Withdrawal compleate", JOptionPane.INFORMATION_MESSAGE);
+                                this.dispose();
+                            } else {
+                                Utilities.showMsgBox("Cash Withdrawal not successfull", "Cash Withdrawal faliure", JOptionPane.INFORMATION_MESSAGE);
+                                logger.warn("Cash Withdrawal not successfull");
+                                txtWithdrawalAmount.setText("");
+                            }
+                        } else {
+                            Utilities.showMsgBox("CashWithdrawal not valid", "Withdrawal faliure", JOptionPane.ERROR_MESSAGE);
+                            logger.warn("CashWithdrawal not valid");
+                            txtWithdrawalAmount.setText("");
+                        }
+                    } else {
+                        Utilities.showMsgBox("Incorrect master password", "Authorization faliure", JOptionPane.ERROR_MESSAGE);
+                        logger.warn("Incorrect master password");
+                        txtChiefCashierPassword.requestFocus();
+                    }
+                } else {
+                    Utilities.showMsgBox("Incorrect user password", "Authorization faliure", JOptionPane.ERROR_MESSAGE);
+                    logger.warn("Incorrect user password");
+                    txtCashierPassword.requestFocus();
+                }
+            } catch (SQLException ex) {
+                logger.error("SQL error : " + ex.getMessage());
+            }
+        } else {
+            logger.warn("withdrawalAmount not in range");
+            Utilities.showMsgBox("withdrawal amount not in range", "Invalid amount", JOptionPane.ERROR_MESSAGE);
+            txtWithdrawalAmount.requestFocus();
+        }
+        txtCashierPassword.setText("");
+        txtChiefCashierPassword.setText("");
+    }
+
+    // </editor-fold>
+    //
+    //
+    //
 // <editor-fold defaultstate="collapsed" desc="Netbeans generated Code">    
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
@@ -142,9 +268,9 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         lblCurrentAmountVal = new javax.swing.JLabel();
         lblShiftDisplay = new javax.swing.JLabel();
         lblShiftVal = new javax.swing.JLabel();
-        txtWithdrawalAmountVal = new javax.swing.JFormattedTextField();
+        txtWithdrawalAmount = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Cash Withdrawal");
         setName("cashWithdrawalDialog"); // NOI18N
         setResizable(false);
@@ -189,8 +315,8 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                     .addGroup(cashWithdrawalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblCounterDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(lblCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(cashWithdrawalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblCashWithrawalNoVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(cashWithdrawalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(lblCashWithrawalNoVal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(lblCashWithrawalNoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -243,6 +369,11 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
 
         txtCashierPassword.setBackground(new java.awt.Color(255, 255, 0));
         txtCashierPassword.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtCashierPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCashierPasswordKeyReleased(evt);
+            }
+        });
 
         lblInitialAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblInitialAmountDisplay.setText("Initial Amount (Rs.) ");
@@ -263,6 +394,11 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
 
         txtChiefCashierPassword.setBackground(new java.awt.Color(255, 255, 0));
         txtChiefCashierPassword.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtChiefCashierPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtChiefCashierPasswordKeyReleased(evt);
+            }
+        });
 
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -293,9 +429,18 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         lblShiftVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblShiftVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        txtWithdrawalAmountVal.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat(""))));
-        txtWithdrawalAmountVal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        txtWithdrawalAmountVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtWithdrawalAmount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtWithdrawalAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtWithdrawalAmount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtWithdrawalAmountFocusLost(evt);
+            }
+        });
+        txtWithdrawalAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtWithdrawalAmountKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout infoPanelLayout = new javax.swing.GroupLayout(infoPanel);
         infoPanel.setLayout(infoPanelLayout);
@@ -357,7 +502,7 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(txtCashierPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
-                                    .addComponent(txtWithdrawalAmountVal))))))
+                                    .addComponent(txtWithdrawalAmount))))))
                 .addContainerGap())
             .addGroup(infoPanelLayout.createSequentialGroup()
                 .addContainerGap()
@@ -402,7 +547,7 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                 .addGap(38, 38, 38)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblWithdrawAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtWithdrawalAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtWithdrawalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashierPassDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -415,7 +560,7 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblChiefCashierPasswordDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtChiefCashierPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 53, Short.MAX_VALUE)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -461,6 +606,26 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         withdrawCash();
     }//GEN-LAST:event_btnOkActionPerformed
 
+    private void txtWithdrawalAmountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtWithdrawalAmountFocusLost
+        // TODO add your handling code here:
+        doubleFormatComponentText(txtWithdrawalAmount);
+    }//GEN-LAST:event_txtWithdrawalAmountFocusLost
+
+    private void txtWithdrawalAmountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtWithdrawalAmountKeyReleased
+        // TODO add your handling code here:
+        txtWithdrawalAmountKeyPressHandler(evt);
+    }//GEN-LAST:event_txtWithdrawalAmountKeyReleased
+
+    private void txtCashierPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCashierPasswordKeyReleased
+        // TODO add your handling code here:
+        txtCashierPasswordKeyPressHandler(evt);
+    }//GEN-LAST:event_txtCashierPasswordKeyReleased
+
+    private void txtChiefCashierPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtChiefCashierPasswordKeyReleased
+        // TODO add your handling code here:
+        txtChiefCashierPasswordKeyPressHandler(evt);
+    }//GEN-LAST:event_txtChiefCashierPasswordKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnOk;
@@ -494,7 +659,7 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
     private javax.swing.JLabel lblWithdrawAmountDisplay;
     private javax.swing.JPasswordField txtCashierPassword;
     private javax.swing.JPasswordField txtChiefCashierPassword;
-    private javax.swing.JFormattedTextField txtWithdrawalAmountVal;
+    private javax.swing.JTextField txtWithdrawalAmount;
     // End of variables declaration//GEN-END:variables
 // </editor-fold>
 }

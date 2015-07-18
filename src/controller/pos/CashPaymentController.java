@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller.pos;
 
 import database.connector.DBConnection;
@@ -13,10 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.pos.CashPayment;
 
-/**
- *
- * @author Shehan
- */
 public class CashPaymentController implements DatabaseInterface {
 
     public static boolean addCashPayment(CashPayment cashPayment) throws SQLException {
@@ -28,7 +19,7 @@ public class CashPaymentController implements DatabaseInterface {
             cashPayment.getAmount(),
             cashPayment.getChangeAmount()
         };
-        return DBHandler.setData(connection, query, ob) > 0;
+        return DBHandler.setData(connection, query, ob) == 1;
     }
 
     public static CashPayment getCashpayment(int invoiceNo) throws SQLException {

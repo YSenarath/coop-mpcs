@@ -1,22 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model.pos;
 
-/**
- *
- * @author Shehan
- */
 public class CounterLogin {
 
-    private int  shiftId;
+    private int shiftId;
     private String userName;
     private int counterId;
     private String time;
     private String date;
     private double initialAmount;
+    private boolean shiftEnded;
 
     public CounterLogin(String userName, int counterId, String time, String date, double initialAmount) {
         this.shiftId = -1;
@@ -25,15 +17,17 @@ public class CounterLogin {
         this.time = time;
         this.date = date;
         this.initialAmount = initialAmount;
+        this.shiftEnded = false;
     }
 
-    public CounterLogin(int shiftId, String userName, int counterId, String time, String date, double initialAmount) {
+    public CounterLogin(int shiftId, String userName, int counterId, String time, String date, double initialAmount, boolean shiftEnded) {
         this.shiftId = shiftId;
         this.userName = userName;
         this.counterId = counterId;
         this.time = time;
         this.date = date;
         this.initialAmount = initialAmount;
+        this.shiftEnded = shiftEnded;
     }
 
     /**
@@ -54,11 +48,11 @@ public class CounterLogin {
      * @return the userName
      */
     public String getuUserName() {
-        return userName;
+        return getUserName();
     }
 
     /**
-     * @param user_name the userName to set
+     * @param userName
      */
     public void setUserName(String userName) {
         this.userName = userName;
@@ -118,6 +112,27 @@ public class CounterLogin {
      */
     public void setInitialAmount(double initialAmount) {
         this.initialAmount = initialAmount;
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @return the shiftEnded
+     */
+    public boolean isShiftEnded() {
+        return shiftEnded;
+    }
+
+    /**
+     * @param shiftEnded the shiftEnded to set
+     */
+    public void setShiftEnded(boolean shiftEnded) {
+        this.shiftEnded = shiftEnded;
     }
 
 }

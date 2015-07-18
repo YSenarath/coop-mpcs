@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller.pos;
 
 import database.connector.DBConnection;
@@ -14,10 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import model.pos.CardPayment;
 
-/**
- *
- * @author Shehan
- */
 public class CardPaymentController implements DatabaseInterface {
 
     public static boolean addCardPayment(CardPayment cardPayment) throws SQLException {
@@ -29,7 +20,7 @@ public class CardPaymentController implements DatabaseInterface {
             cardPayment.getCardType(),
             cardPayment.getCardNo(),
             cardPayment.getAmount(),};
-        return DBHandler.setData(connection, query, ob) > 0;
+        return DBHandler.setData(connection, query, ob) == 1;
     }
 
     public static ArrayList<CardPayment> getCardPayments(int invoiceNo) throws SQLException {

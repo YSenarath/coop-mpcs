@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model.pos;
 
-/**
- *
- * @author Shehan
- */
 public class User {
 
     public static final String MANAGER = "MANAGER";
@@ -29,10 +20,10 @@ public class User {
                 this.userType = MANAGER;
                 break;
             case "cashier":
-                this.userType =CASHIER;
+                this.userType = CASHIER;
                 break;
             case "inventory_manager":
-                this.userType =INVENTORY;
+                this.userType = INVENTORY;
                 break;
         }
         this.loggedin = loggedin;
@@ -107,6 +98,5 @@ public class User {
     public void setLoggedin(boolean loggedin) {
         this.loggedin = loggedin;
     }
-    
-    
+
 }

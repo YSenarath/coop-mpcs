@@ -2,7 +2,7 @@
 
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="defaultCloseOperation" type="int" value="0"/>
     <Property name="title" type="java.lang.String" value="Cash Withdrawal"/>
     <Property name="name" type="java.lang.String" value="cashWithdrawalDialog" noResource="true"/>
     <Property name="resizable" type="boolean" value="false"/>
@@ -88,9 +88,9 @@
                               <Component id="lblCounterDisplay" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                               <Component id="lblCounter" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="103" groupAlignment="3" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="lblCashWithrawalNoVal" alignment="1" min="-2" pref="25" max="-2" attributes="0"/>
-                              <Component id="lblCashWithrawalNoDisplay" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                              <Component id="lblCashWithrawalNoDisplay" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -226,7 +226,7 @@
                                       <EmptySpace max="32767" attributes="0"/>
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Component id="txtCashierPassword" pref="168" max="32767" attributes="0"/>
-                                          <Component id="txtWithdrawalAmountVal" max="32767" attributes="0"/>
+                                          <Component id="txtWithdrawalAmount" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -287,7 +287,7 @@
                       <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="lblWithdrawAmountDisplay" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
-                          <Component id="txtWithdrawalAmountVal" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtWithdrawalAmount" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -304,7 +304,7 @@
                           <Component id="lblChiefCashierPasswordDisplay" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           <Component id="txtChiefCashierPassword" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" pref="53" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="btnOk" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="btnCancel" min="-2" pref="30" max="-2" attributes="0"/>
@@ -445,6 +445,9 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtCashierPasswordKeyReleased"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblInitialAmountDisplay">
               <Properties>
@@ -505,6 +508,9 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtChiefCashierPasswordKeyReleased"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnCancel">
               <Properties>
@@ -565,16 +571,17 @@
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JFormattedTextField" name="txtWithdrawalAmountVal">
+            <Component class="javax.swing.JTextField" name="txtWithdrawalAmount">
               <Properties>
-                <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
-                  <Format format="" subtype="-1" type="0"/>
-                </Property>
-                <Property name="horizontalAlignment" type="int" value="4"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
+                <Property name="horizontalAlignment" type="int" value="4"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtWithdrawalAmountFocusLost"/>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtWithdrawalAmountKeyReleased"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

@@ -1,10 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ui.view.pos;
 
+import controller.pos.CounterLoginController;
+import controller.pos.UserController;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,17 +12,14 @@ import java.util.Date;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import model.pos.CounterLogin;
 import org.apache.log4j.Logger;
-import ui.handler.pos.UserLogOffHandler;
 import util.Utilities;
 import static util.Utilities.setupUI;
 
-/**
- *
- * @author Shehan
- */
 public class POSMDIInterface extends javax.swing.JFrame {
 
+// <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(POSMDIInterface.class);
 
     //Enable pos only if cashier is logged on
@@ -47,26 +41,40 @@ public class POSMDIInterface extends javax.swing.JFrame {
     private BillCopyInternalInterface billCopyInterface;
     private CheckStockInterface checkStockInterface;
 
-    /**
-     * Creates new form POSMDIInterface
-     */
+    // </editor-fold>
+    //
+    //
+    //
+// <editor-fold defaultstate="collapsed" desc="Constructor">
     public POSMDIInterface() {
+        logger.debug("POSMDIInterface constructor invoked");
+
         initComponents();
         initializeGUI();
         enableDebugMode();
     }
 
     public POSMDIInterface(String userName) {
+        logger.debug("POSMDIInterface(String userName) constructor invoked");
+
         initComponents();
         initializeGUI();
-        setUser(userName);
+        showLoginDetails(userName);
 
     }
+    // </editor-fold>
+    //
+    //
+    //
+// <editor-fold defaultstate="collapsed" desc="Methods">
 
     private void enableDebugMode() {
+        logger.debug("enableDebugMode invoked");
+
         setTitle("MEGA COOP CITY POS : DEBUG MODE");
         isCashierLogedIn = true;
         this.userName = "msw";
+        lblCashier.setText("DEBUG : msw");
         btnCashierLog.setText("Debug Mode");
         btnCashierLog.setEnabled(false);
         // bill_newSale();
@@ -75,6 +83,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
     }
 
     private void initializeGUI() {
+        logger.debug("initializeGUI invoked");
 
         setLocationRelativeTo(null);
         setIconImage(new ImageIcon(getClass().getResource("/images/pos/pos_icon.png")).getImage());
@@ -93,11 +102,21 @@ public class POSMDIInterface extends javax.swing.JFrame {
         timer.start();
 
         //billTaskPane.setCollapsed(true);
-        billTaskPane.setCollapsed(false);
-
-        otherTaskPane.setCollapsed(true);
-
+        //billTaskPane.setCollapsed(false);
+        //otherTaskPane.setCollapsed(true);
         lblCounter.setText(Utilities.loadProperty("counter"));
+
+        try {
+            CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
+            if (lastCounterLogin == null || lastCounterLogin.isShiftEnded()) {
+                Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(3);
+            } else {
+                lblShift.setText(Utilities.formatId("SF", 5, lastCounterLogin.getShiftId()));
+            }
+        } catch (SQLException ex) {
+            logger.error("SQL Error : " + ex.getMessage());
+        }
 
         lblTaskLogo.setVisible(false);
 
@@ -108,6 +127,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
     }
 
     public String getUserName() {
+        logger.debug("getUserName invoked");
+
         if (!userName.isEmpty()) {
             return userName;
         } else {
@@ -148,6 +169,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
     }
 
     private void showDesktopPane(boolean val) {
+        logger.debug("showDesktopPane invoked");
+
         if (val) {
             CardLayout card = (CardLayout) cardContainerPanel.getLayout();
             card.show(cardContainerPanel, "desktopCard");
@@ -159,34 +182,42 @@ public class POSMDIInterface extends javax.swing.JFrame {
         }
     }
 
-    private void setUser(String userName) {
+    private void showLoginDetails(String userName) {
+        logger.debug("showLoginDetails invoked");
+
         this.userName = userName;
         lblCashier.setText(this.getUserName());
         this.isCashierLogedIn = true;
+
     }
 
     //user log in ui changes
     private void setLogOffControls() {
         logger.debug("setLogControles invoked");
+
         if (!isCashierLogedIn) {
             btnCashierLog.setText("Cashier logged off");
             btnCashierLog.setEnabled(false);
 
-            lblCashier.setText("<Cashier name>");
-            lblCounter.setText("<counter>");
+            lblCashier.setText("");
+            //lblCounter.setText("");
+            lblShift.setText("");
 
             showDesktopPane(false);
 
             billTaskPane.setCollapsed(true);
             otherTaskPane.setCollapsed(true);
+
             billTaskPane.setEnabled(false);
             otherTaskPane.setEnabled(false);
+
         }
     }
 
     //Show the main bill screen
-    private void bill_showInvoicePanel(java.awt.event.MouseEvent evt) {
-        logger.debug("bill_showInvoicePanel invoked");
+    private void showInvoicePane(java.awt.event.MouseEvent evt) {
+        logger.debug("showInvoicePane invoked");
+
         if (!isCashierLogedIn) {
             logger.error("Cashier not logged in");
             billTaskPane.setCollapsed(true);
@@ -197,8 +228,9 @@ public class POSMDIInterface extends javax.swing.JFrame {
     }
 
     //Show the other task panel
-    private void other_showTaskPane(java.awt.event.MouseEvent evt) {
-        logger.debug("other_showTaskPane invoked");
+    private void showOtherPane(java.awt.event.MouseEvent evt) {
+        logger.debug("showOtherPane invoked");
+
         if (!isCashierLogedIn) {
             logger.error("Cashier not logged in");
             otherTaskPane.setCollapsed(true);
@@ -209,8 +241,9 @@ public class POSMDIInterface extends javax.swing.JFrame {
     }
 
     //New sale
-    private void bill_newSale() {
-        logger.debug("bill_newSale invoked");
+    private void showNewInvoiceUI() {
+        logger.debug("showNewInvoiceUI invoked");
+
         if (isMainActivityRunning()) {
             logger.error("A main activity is already running");
             return;
@@ -228,25 +261,24 @@ public class POSMDIInterface extends javax.swing.JFrame {
         invoiceInterface.setVisible(true);
         try {
             invoiceInterface.setMaximum(true);
-        } catch (PropertyVetoException e) {
-            // Vetoed by internalFrame
-            // ... possibly add some handling for this case
+        } catch (PropertyVetoException ex) {
+            logger.error("PropertyVetoException : " + ex.getMessage());
         }
     }
 
     //Hold sale
-    private void bill_holdSale() {
-        logger.warn("bill_holdSale not implemented");
+    private void holdSale() {
+        logger.warn("holdSale not implemented");
     }
 
     //Restore sale
-    private void bill_restoreSale() {
-        logger.warn("bill_restoreSale not implemented");
+    private void restoreSale() {
+        logger.warn("restoreSale not implemented");
     }
 
     //Show bill copy screen
-    private void billCopy_ShowPanel() {
-        logger.debug("billCopy_ShowPanel invoked");
+    private void showBillCopyUI() {
+        logger.debug("showBillCopyUI invoked");
 
         if (isMainActivityRunning()) {
             logger.error("A main activity is already running");
@@ -268,8 +300,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
     }
 
     //Show refund screen
-    private void refund_showRefundPanel() {
-        logger.debug("refund_showRefundPanel invoked");
+    private void showRefundUI() {
+        logger.debug("showRefundUI invoked");
 
         if (isMainActivityRunning()) {
             logger.error("A main activity is already running");
@@ -290,15 +322,26 @@ public class POSMDIInterface extends javax.swing.JFrame {
     }
 
     //Show the cash withdrawal UI
-    private void cashWithdrawal_showUI() {
-        logger.debug("cashWithdrawal_showUI invoked");
-        new CashWithdrawalDialog(this, true).setVisible(true);
+    private void showCashWithdrawalShowUI() {
+        logger.debug("showCashWithdrawalShowUI invoked");
+
+        try {
+            CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
+            if (lastCounterLogin == null || lastCounterLogin.isShiftEnded()) {
+                Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                new CashWithdrawalDialog(this, true).setVisible(true);
+            }
+
+        } catch (SQLException ex) {
+            logger.error("SQL error : " + ex.getMessage());
+        }
 
     }
 
     //Show the check stock UI
-    private void chechStock() {
-        logger.debug("chechStock invoked");
+    private void showCheckStockUI() {
+        logger.debug("showCheckStockUI invoked");
 
         showDesktopPane(true);
         if (checkStockInterface != null) {
@@ -311,13 +354,13 @@ public class POSMDIInterface extends javax.swing.JFrame {
     }
 
     //Mange cashier login
-    private void cashier_logOff() {
+    private void cashierLogOff() {
+        logger.debug("cashierLogOff invoked");
         // TODO add your handling code here:
 
         /*
          Important :
-         1.NOT IMPLEMENTED - Show intial amount of drawayer  UI at log on
-         2.NOT IMPLEMENTED - Show log of UI to print the summery for cashier - 
+         1.NOT IMPLEMENTED - Show log of UI to print the summery for cashier - 
          */
         logger.warn("NOT IMPLEMENTED - Show log of UI to print the summery for cashier");
         logger.warn("Check for unfinished business");
@@ -329,9 +372,18 @@ public class POSMDIInterface extends javax.swing.JFrame {
             }
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to log off ?", "Warning", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
-                logger.info("Cashier logged off");
                 try {
-                    UserLogOffHandler.logOffUser(getUserName());
+                    UserController.setUserLoginState(userName, false);
+
+                    //set the last shift from this machine to eneded
+                    CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
+                    if (lastCounterLogin == null || lastCounterLogin.isShiftEnded()) {
+                        Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        boolean result = CounterLoginController.endShift(lastCounterLogin.getShiftId(), lastCounterLogin.getCounterId());
+                        logger.info("Shift ended : " + result);
+                    }
+
                     logger.info("User : " + getUserName() + " logged off");
                 } catch (SQLException ex) {
                     logger.error("User log off error : " + ex.getMessage());
@@ -347,13 +399,18 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
     //Manager features
     private void manager() {
-        logger.warn("manager_logIn not implemented");
+        logger.warn("manager not implemented");
+        if (isCashierLogedIn) {
+            logger.warn("User still logged in ");
+        }
+        this.dispose();
     }
 
-
-    /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
-     */
+    // </editor-fold>
+    //
+    //
+    //
+// <editor-fold defaultstate="collapsed" desc="Netbeans generated Code">    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -379,6 +436,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
         lblDate = new javax.swing.JLabel();
         lblTimeDisplay = new javax.swing.JLabel();
         lblTime = new javax.swing.JLabel();
+        lblShiftDisplay = new javax.swing.JLabel();
+        lblShift = new javax.swing.JLabel();
         cardContainerPanel = new javax.swing.JPanel();
         welcomePanel = new javax.swing.JPanel();
         lblWelcome = new javax.swing.JLabel();
@@ -389,7 +448,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         btnCashierLog = new javax.swing.JButton();
         btnManagerLog = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("MEGA COOP CITY POS");
         setMinimumSize(new java.awt.Dimension(1300, 825));
 
@@ -537,7 +596,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         lblCashier.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblCashier.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblCashier.setText("<Cashier name>");
         lblCashier.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
         lblCounterDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -546,7 +604,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         lblCounter.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblCounter.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblCounter.setText("<counter>");
         lblCounter.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
         lblDateDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -554,7 +611,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         lblDate.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblDate.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblDate.setText("<date>");
         lblDate.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
         lblTimeDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -562,8 +618,14 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         lblTime.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblTime.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblTime.setText("<time>");
         lblTime.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        lblShiftDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblShiftDisplay.setText("Shift");
+
+        lblShift.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblShift.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblShift.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
         javax.swing.GroupLayout counterInfoPanelLayout = new javax.swing.GroupLayout(counterInfoPanel);
         counterInfoPanel.setLayout(counterInfoPanelLayout);
@@ -584,10 +646,14 @@ public class POSMDIInterface extends javax.swing.JFrame {
                         .addComponent(lblTimeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblTime, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(counterInfoPanelLayout.createSequentialGroup()
-                        .addComponent(lblCounterDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, counterInfoPanelLayout.createSequentialGroup()
+                        .addGroup(counterInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblShiftDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblCounterDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(counterInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblCounter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblShift, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         counterInfoPanelLayout.setVerticalGroup(
@@ -597,11 +663,15 @@ public class POSMDIInterface extends javax.swing.JFrame {
                 .addGroup(counterInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashier, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblCashierDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(counterInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblShift, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblShiftDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(counterInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCounter, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblCounterDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 21, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addGroup(counterInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDate, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblDateDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -735,7 +805,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(counterInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(counterInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jxTaskPaneContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
@@ -751,51 +821,51 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
     private void btnNewSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewSaleActionPerformed
         // TODO add your handling code here:
-        bill_newSale();
+        showNewInvoiceUI();
     }//GEN-LAST:event_btnNewSaleActionPerformed
 
     private void btnCheckStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckStockActionPerformed
         // TODO add your handling code here:
-        chechStock();
+        showCheckStockUI();
     }//GEN-LAST:event_btnCheckStockActionPerformed
 
     private void btnHoldSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoldSaleActionPerformed
         // TODO add your handling code here:
-        bill_holdSale();
+        holdSale();
     }//GEN-LAST:event_btnHoldSaleActionPerformed
 
     private void btnRestoreSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestoreSaleActionPerformed
         // TODO add your handling code here:
-        bill_restoreSale();
+        restoreSale();
     }//GEN-LAST:event_btnRestoreSaleActionPerformed
 
     private void billTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_billTaskPaneMouseClicked
         // TODO add your handling code here:
-        bill_showInvoicePanel(evt);
+        showInvoicePane(evt);
     }//GEN-LAST:event_billTaskPaneMouseClicked
 
     private void btnBillRefundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBillRefundActionPerformed
         // TODO add your handling code here:
-        refund_showRefundPanel();
+        showRefundUI();
     }//GEN-LAST:event_btnBillRefundActionPerformed
 
     private void btnBillCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBillCopyActionPerformed
         // TODO add your handling code here:
-        billCopy_ShowPanel();
+        showBillCopyUI();
     }//GEN-LAST:event_btnBillCopyActionPerformed
 
     private void btnCashWithdrawalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCashWithdrawalActionPerformed
         // TODO add your handling code here:
-        cashWithdrawal_showUI();
+        showCashWithdrawalShowUI();
     }//GEN-LAST:event_btnCashWithdrawalActionPerformed
 
     private void otherTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_otherTaskPaneMouseClicked
         // TODO add your handling code here:
-        other_showTaskPane(evt);
+        showOtherPane(evt);
     }//GEN-LAST:event_otherTaskPaneMouseClicked
 
     private void btnCashierLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCashierLogActionPerformed
-        cashier_logOff();
+        cashierLogOff();
     }//GEN-LAST:event_btnCashierLogActionPerformed
 
     private void btnManagerLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManagerLogActionPerformed
@@ -803,9 +873,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
         manager();
     }//GEN-LAST:event_btnManagerLogActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         setupUI();
         /* Create and display the form */
@@ -815,7 +882,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
             }
         });
     }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.jdesktop.swingx.JXTaskPane billTaskPane;
@@ -841,6 +907,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
     private javax.swing.JLabel lblDate;
     private javax.swing.JLabel lblDateDisplay;
     private javax.swing.JLabel lblLogo;
+    private javax.swing.JLabel lblShift;
+    private javax.swing.JLabel lblShiftDisplay;
     private javax.swing.JLabel lblTaskLogo;
     private javax.swing.JLabel lblTime;
     private javax.swing.JLabel lblTimeDisplay;
@@ -849,5 +917,5 @@ public class POSMDIInterface extends javax.swing.JFrame {
     private org.jdesktop.swingx.JXTaskPane otherTaskPane;
     private javax.swing.JPanel welcomePanel;
     // End of variables declaration//GEN-END:variables
-
+// </editor-fold>
 }

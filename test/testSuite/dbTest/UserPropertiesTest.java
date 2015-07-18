@@ -5,6 +5,8 @@
  */
 package testSuite.dbTest;
 
+import java.util.logging.Level;
+import java.util.prefs.BackingStoreException;
 import org.apache.log4j.Logger;
 import util.Utilities;
 
@@ -20,12 +22,17 @@ public class UserPropertiesTest {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-
-        logger.info("Counter : " + Utilities.loadProperty("counter"));
-
-        Utilities.saveProperty("counter", "1");
-        logger.info("Counter : " + Utilities.loadProperty("counter"));
+        try {
+            // TODO code application logic here
+            
+            
+            
+            // Utilities.saveProperty("counter", "1");
+            Utilities.clearProperties();
+        } catch (BackingStoreException ex) {
+            java.util.logging.Logger.getLogger(UserPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //logger.info("Counter : " + Utilities.loadProperty("counter"));
 
     }
 
