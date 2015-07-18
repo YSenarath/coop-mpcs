@@ -16,8 +16,8 @@ public abstract class VoucherPayment extends Payment {
 
     private String voucherId;
 
-    public VoucherPayment(int billId, int paymentId, String voucherId, double amount) {
-        super(billId, paymentId, amount);
+    public VoucherPayment(int invoiceId, int paymentId, String voucherId, double amount) {
+        super(invoiceId, paymentId, amount);
         this.voucherId = voucherId;
     }
 

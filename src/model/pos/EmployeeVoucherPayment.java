@@ -13,8 +13,8 @@ public class EmployeeVoucherPayment extends VoucherPayment {
 
     private int employeeId;
 
-    public EmployeeVoucherPayment(int billId, int paymentId, String voucherId, int employeeId, double amount) {
-        super(billId, paymentId, voucherId, amount);
+    public EmployeeVoucherPayment(int invoiceId, int paymentId, String voucherId, int employeeId, double amount) {
+        super(invoiceId, paymentId, voucherId, amount);
         this.employeeId = employeeId;
     }
 

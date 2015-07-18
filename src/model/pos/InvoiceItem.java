@@ -11,20 +11,34 @@ package model.pos;
  */
 public class InvoiceItem {
 
+    private int invoiceId;
     private int productId;
     private int batchId;
     private double UnitPrice;
     private double qty;
     private double discount;
-    private double price;
 
-    public InvoiceItem(int productId, int batchId, double UnitPrice, double qty, double discount, double price) {
+    public InvoiceItem(int invoiceId, int productId, int batchId, double UnitPrice, double qty, double discount) {
+        this.invoiceId = invoiceId;
         this.productId = productId;
         this.batchId = batchId;
         this.UnitPrice = UnitPrice;
         this.qty = qty;
         this.discount = discount;
-        this.price = price;
+    }
+
+    /**
+     * @return the invoiceId
+     */
+    public int getInvoiceId() {
+        return invoiceId;
+    }
+
+    /**
+     * @param invoiceId the invoiceId to set
+     */
+    public void setInvoiceId(int invoiceId) {
+        this.invoiceId = invoiceId;
     }
 
     /**
@@ -95,20 +109,6 @@ public class InvoiceItem {
      */
     public void setDiscount(double discount) {
         this.discount = discount;
-    }
-
-    /**
-     * @return the price
-     */
-    public double getPrice() {
-        return price;
-    }
-
-    /**
-     * @param price the price to set
-     */
-    public void setPrice(double price) {
-        this.price = price;
     }
 
 }

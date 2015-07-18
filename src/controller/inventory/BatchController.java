@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import model.inventory.Batch;
 import database.connector.DatabaseInterface;
+import model.pos.InvoiceItem;
 
 /**
  *
@@ -27,7 +28,6 @@ public class BatchController implements DatabaseInterface {
             productId
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
-        
 
         ArrayList<Batch> batches = new ArrayList();
         while (resultSet.next()) {
@@ -49,8 +49,7 @@ public class BatchController implements DatabaseInterface {
         }
         return batches;
     }
-    
-    
+
     public static ArrayList<Batch> getAllBatches(int productId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + BATCH + " b WHERE b.product_id=? AND b.qty>0 ";
@@ -58,7 +57,6 @@ public class BatchController implements DatabaseInterface {
             productId
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
-        
 
         ArrayList<Batch> batches = new ArrayList();
         while (resultSet.next()) {
@@ -79,5 +77,16 @@ public class BatchController implements DatabaseInterface {
             batches.add(batch);
         }
         return batches;
+    }
+
+    public static boolean updateBatchItem(InvoiceItem invoiceItem) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "UPDATE " + BATCH + " SET qty=qty-? WHERE batch_id=? AND product_id=? ";
+        Object[] ob = {
+            invoiceItem.getQty(),
+            invoiceItem.getBatchId(),
+            invoiceItem.getProductId()
+        };
+        return DBHandler.setData(connection, query, ob) > 0;
     }
 }

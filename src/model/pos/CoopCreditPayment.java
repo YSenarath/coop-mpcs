@@ -13,8 +13,8 @@ public class CoopCreditPayment extends Payment {
 
     private int customerId;
 
-    public CoopCreditPayment(int billId, int paymentId, int customerId, double amount) {
-        super(billId, paymentId, amount);
+    public CoopCreditPayment(int invoiceId, int paymentId, int customerId, double amount) {
+        super(invoiceId, paymentId, amount);
         this.customerId = customerId;
     }
 

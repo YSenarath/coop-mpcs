@@ -12,6 +12,7 @@ import controller.inventory.CategoryController;
 import controller.inventory.CategoryDiscountController;
 import controller.inventory.ProductController;
 import controller.pos.InvoiceController;
+import controller.pos.TransactionController;
 import java.awt.CardLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -772,7 +773,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     break;
             }
 
-            if (selectedOption.equals(CardPayment.AMEX) || selectedOption.equals(CardPayment.MASTER) || selectedOption.equals(CardPayment.MASTER)) {
+            if (selectedOption.equals(CardPayment.AMEX) || selectedOption.equals(CardPayment.MASTER) || selectedOption.equals(CardPayment.VISA)) {
                 txtcardNo.setEnabled(true);
                 txtCardPaymentAmount.setEnabled(true);
 
@@ -1038,12 +1039,12 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         ArrayList<InvoiceItem> invoiceItemsList = new ArrayList();
         for (int row = 0; row < invoiceItemTable.getRowCount(); row++) {
             InvoiceItem invoiceItem = new InvoiceItem(
+                    invoice.getInvoiceNo(),
                     ((KeyValueContainer) invoiceItemTable.getValueAt(row, PRODUCT_ID_COLUMN)).getKey(),
                     Integer.parseInt(invoiceItemTable.getValueAt(row, BATCH_ID_COLUMN).toString()),
                     Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_PRICE_COLUMN).toString()),
                     Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_QTY_COLUMN).toString()),
-                    Double.parseDouble(invoiceItemTable.getValueAt(row, NET_DISCOUNT_COLUMN).toString()),
-                    Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_PRICE_COLUMN).toString())
+                    Double.parseDouble(invoiceItemTable.getValueAt(row, NET_DISCOUNT_COLUMN).toString())
             );
 
             invoiceItemsList.add(invoiceItem);
@@ -1098,14 +1099,22 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         invoice.setPayments(invoicePaymntsList);
         // </editor-fold>
         //
-        //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total,
-        //Reset invoice arraylists
-        InvoiceController.performTransaction(invoice);
-        resetInvoice();
-        showAddItemPanel();
-        logger.info("Payment complete");
+        // <editor-fold defaultstate="collapsed" desc="Perform Transaction">  
+        //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total
+        boolean result = TransactionController.performTransaction(invoice);
+        if (result) {
+            //Reset invoice arraylists
+            resetInvoice();
+            showAddItemPanel();
+            logger.info("Payment complete");
+        } else {
+            Utilities.showMsgBox("Something went wrong. Invice was not added to the database", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        // </editor-fold>
+        //
     }
 // </editor-fold>
+    //
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Netbeans generated Code">
@@ -1211,7 +1220,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Code", "Batch", "Name", "Description", "Price (Rs.)", "Qty", "Discount %", "Discount value (Rs.)", "Sub total (Rs.)"
+                "Code", "Batch", "Name", "Description", "Unit Price (Rs.)", "Qty", "Discount %", "Discount value (Rs.)", "Sub total (Rs.)"
             }
         ) {
             boolean[] canEdit = new boolean [] {

@@ -5,22 +5,30 @@
  */
 package ui.view.pos;
 
+import controller.inventory.ProductController;
+import controller.pos.CardPaymentController;
 import controller.pos.CashPaymentController;
 import controller.pos.InvoiceController;
+import controller.pos.InvoiceItemController;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import model.pos.CardPayment;
 import model.pos.CashPayment;
 import model.pos.Invoice;
+import model.pos.InvoiceItem;
 import org.apache.log4j.Logger;
+import util.KeyValueContainer;
+import util.Utilities;
 
 /**
  *
@@ -38,14 +46,9 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     private final JPanel glassPanel;
     private final JLabel padding;
 
-    /**
-     * Creates new form BillCopyInterface
-     *
-     * @param parent
-     * @param desktopPane
-     */
     public BillCopyInternalInterface(POSMDIInterface parent, JDesktopPane desktopPane) {
         logger.debug("BillCopyInternalInterface constructor invoked");
+
         initComponents();
         this.parent = parent;
         this.desktopPane = desktopPane;
@@ -100,29 +103,92 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         }
     }
 
+    //validate invoice number
+    private boolean isValidInvoiceNumber(String invoiceNo) {
+        invoiceNo = invoiceNo.toUpperCase();
+        if (invoiceNo.startsWith("B")) {
+            invoiceNo = invoiceNo.substring(1);
+            try {
+                int no = Integer.parseInt(invoiceNo);
+                return true;
+            } catch (NumberFormatException ex) {
+
+            }
+        }
+        return false;
+    }
+
+    //Show bill details
     private void getInvoiceInformation() {
         logger.debug("getInvoiceInformation invoked");
 
         String billNumber = txtSearchBillNO.getText();
         try {
+            if (!isValidInvoiceNumber(billNumber)) {
+                throw new Exception();
+            }
             int invoiceNumber = Integer.parseInt(billNumber.substring(1));
             logger.info("Invoice number : " + invoiceNumber);
 
-            printItemTableModel.setRowCount(0);
             Invoice invoice = InvoiceController.getInvoice(invoiceNumber);
 
             lblBillDateVal.setText(invoice.getDate());
-            lblBillTimeVal.setText(invoice.getTime());
+            lblBillTimeVal.setText(Utilities.convert24hTo12h(invoice.getTime()));
             lblBillCashierVal.setText(invoice.getUserName());
-            lblNetTotalVal.setText(String.format("%.2f", invoice.getNetTotal()));
+            txtNetAmount.setText(String.format("%.2f", invoice.getNetTotal()));
 
+            printItemTableModel.setRowCount(0);
+
+            ArrayList<InvoiceItem> invoiceItems = InvoiceItemController.getInvoiceItems(invoiceNumber);
+            double netDiscount = 0;
+            for (InvoiceItem InvoiceItem : invoiceItems) {
+                Object[] ob = {
+                    new KeyValueContainer(InvoiceItem.getProductId(), util.Utilities.formatId("P", 4, InvoiceItem.getProductId())),
+                    ProductController.getProduct(InvoiceItem.getProductId()).getDescription(),
+                    InvoiceItem.getUnitPrice(),
+                    InvoiceItem.getQty(),
+                    InvoiceItem.getDiscount(),
+                    InvoiceItem.getUnitPrice() * InvoiceItem.getQty() - InvoiceItem.getDiscount()
+                };
+                printItemTableModel.addRow(ob);
+                netDiscount += InvoiceItem.getDiscount();
+            }
+            txtDiscounts.setText(String.format("%.2f", netDiscount));
+
+            double totalPayments = 0;
             CashPayment cashPayment = CashPaymentController.getCashpayment(invoiceNumber);
             if (cashPayment != null) {
-                lblCashAmountVal.setText(String.format("%.2f", cashPayment.getAmount()));
-                lblChangeCashVal.setText(String.format("%.2f", cashPayment.getChangeAmount()));
+                txtCashPayment.setText(String.format("%.2f", cashPayment.getAmount()));
+                txtChange.setText(String.format("%.2f", cashPayment.getChangeAmount()));
+                totalPayments += cashPayment.getAmount();
             }
+
+            ArrayList<CardPayment> cardPayments = CardPaymentController.getCardPayments(invoiceNumber);
+            double amexAmount = 0;
+            double masterAmount = 0;
+            double visaAmount = 0;
+            for (CardPayment cardPayment : cardPayments) {
+                switch (cardPayment.getCardType()) {
+                    case CardPayment.AMEX:
+                        amexAmount += cardPayment.getAmount();
+                        break;
+                    case CardPayment.MASTER:
+                        masterAmount += cardPayment.getAmount();
+                        break;
+                    case CardPayment.VISA:
+                        visaAmount += cardPayment.getAmount();
+                        break;
+                }
+            }
+            txtAmexCardPayment.setText(String.format("%.2f", amexAmount));
+            txtMasterCardPayment.setText(String.format("%.2f", masterAmount));
+            txtVisaCardPayment.setText(String.format("%.2f", visaAmount));
+
+            totalPayments = totalPayments + amexAmount + masterAmount + visaAmount;
+            txtTotalPayments.setText(String.format("%.2f", totalPayments));
+
         } catch (Exception ex) {
-            util.Utilities.showMsgBox("Invalid bill number", "Error", JOptionPane.ERROR_MESSAGE);
+            util.Utilities.showMsgBox("Invalid bill number : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -139,6 +205,8 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         this.dispose();
     }
 
+    
+// <editor-fold defaultstate="collapsed" desc="Netbeans generated Code">
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
      */
@@ -147,7 +215,6 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         interfaceContainerPanel = new javax.swing.JPanel();
-        cardPanel = new javax.swing.JPanel();
         billCopyPanel = new javax.swing.JPanel();
         billInfoPanel = new javax.swing.JPanel();
         lblBill1 = new javax.swing.JLabel();
@@ -162,20 +229,30 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         billItemSP = new javax.swing.JScrollPane();
         printItemTable = new javax.swing.JTable();
         billPaymentSummeryPanel = new javax.swing.JPanel();
-        lblOtherAmountDisplay = new javax.swing.JLabel();
-        lblCashAmountDisplay = new javax.swing.JLabel();
-        lblCardAmountDisplay = new javax.swing.JLabel();
-        lblChangeCashDisplay = new javax.swing.JLabel();
-        lblCashAmountVal = new javax.swing.JLabel();
-        lblCardAmountVal = new javax.swing.JLabel();
-        lblOtherAmountVal = new javax.swing.JLabel();
-        lblChangeCashVal = new javax.swing.JLabel();
-        lblDiscountAmountDisplay = new javax.swing.JLabel();
-        lblDiscountAmountVal = new javax.swing.JLabel();
-        lblNetTotalDisplay = new javax.swing.JLabel();
-        lblNetTotalVal = new javax.swing.JLabel();
         btnCancelPrint = new javax.swing.JButton();
         btnPrintBill = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        txtCashPayment = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtAmexCardPayment = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtChange = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        txtMasterCardPayment = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        txtVisaCardPayment = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        txtCoopCreditPayment = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        txtPoshana = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        txtVoucher = new javax.swing.JTextField();
+        txtNetAmount = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        txtDiscounts = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        txtTotalPayments = new javax.swing.JTextField();
 
         setMaximizable(true);
         setResizable(true);
@@ -186,8 +263,6 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         dropShadowBorder1.setShowLeftShadow(true);
         dropShadowBorder1.setShowTopShadow(true);
         interfaceContainerPanel.setBorder(dropShadowBorder1);
-
-        cardPanel.setLayout(new java.awt.CardLayout());
 
         lblBill1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblBill1.setText("Bill Number : ");
@@ -234,7 +309,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblBill1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtSearchBillNO, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 5, Short.MAX_VALUE)
                 .addComponent(lblBillDateDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblBillDateVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -284,66 +359,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         printItemTable.getTableHeader().setReorderingAllowed(false);
         billItemSP.setViewportView(printItemTable);
 
-        javax.swing.GroupLayout billItemPanelLayout = new javax.swing.GroupLayout(billItemPanel);
-        billItemPanel.setLayout(billItemPanelLayout);
-        billItemPanelLayout.setHorizontalGroup(
-            billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP)
-        );
-        billItemPanelLayout.setVerticalGroup(
-            billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
-        );
-
         billPaymentSummeryPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        lblOtherAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblOtherAmountDisplay.setText("Other ");
-
-        lblCashAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblCashAmountDisplay.setText("Cash Amount");
-
-        lblCardAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblCardAmountDisplay.setText("Card Amount");
-
-        lblChangeCashDisplay.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblChangeCashDisplay.setText("Change Cash");
-
-        lblCashAmountVal.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblCashAmountVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblCashAmountVal.setText("<Amount>");
-        lblCashAmountVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        lblCardAmountVal.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblCardAmountVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblCardAmountVal.setText("<Amount>");
-        lblCardAmountVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        lblOtherAmountVal.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblOtherAmountVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblOtherAmountVal.setText("<Amount>");
-        lblOtherAmountVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        lblChangeCashVal.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblChangeCashVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblChangeCashVal.setText("<Amount>");
-        lblChangeCashVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        lblDiscountAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblDiscountAmountDisplay.setText("Discount Amount");
-
-        lblDiscountAmountVal.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblDiscountAmountVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblDiscountAmountVal.setText("<Amount>");
-        lblDiscountAmountVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        lblNetTotalDisplay.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblNetTotalDisplay.setText("Net Total");
-
-        lblNetTotalVal.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblNetTotalVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblNetTotalVal.setText("<Amount>");
-        lblNetTotalVal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         btnCancelPrint.setText("Cancel");
         btnCancelPrint.setToolTipText("");
@@ -361,6 +377,83 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel3.setText("Cash Payment (Rs.)");
+
+        txtCashPayment.setEditable(false);
+        txtCashPayment.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtCashPayment.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel4.setText("AMEX Card (Rs.)");
+
+        txtAmexCardPayment.setEditable(false);
+        txtAmexCardPayment.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtAmexCardPayment.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel5.setText("Change (Rs.)");
+
+        txtChange.setEditable(false);
+        txtChange.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtChange.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel6.setText("MASTER Card (Rs.)");
+
+        txtMasterCardPayment.setEditable(false);
+        txtMasterCardPayment.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtMasterCardPayment.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel7.setText("VISA Card (Rs.)");
+
+        txtVisaCardPayment.setEditable(false);
+        txtVisaCardPayment.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtVisaCardPayment.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel8.setText("COOP Credit (Rs.)");
+
+        txtCoopCreditPayment.setEditable(false);
+        txtCoopCreditPayment.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtCoopCreditPayment.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel9.setText("Poshana (Rs.)");
+
+        txtPoshana.setEditable(false);
+        txtPoshana.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtPoshana.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel10.setText("Voucher (Rs.)");
+
+        txtVoucher.setEditable(false);
+        txtVoucher.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtVoucher.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        txtNetAmount.setEditable(false);
+        txtNetAmount.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtNetAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setText("Net Amount (Rs.)");
+
+        txtDiscounts.setEditable(false);
+        txtDiscounts.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtDiscounts.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel2.setText("Discount (Rs.)");
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel11.setText("Total Payments (Rs.)");
+
+        txtTotalPayments.setEditable(false);
+        txtTotalPayments.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtTotalPayments.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
         javax.swing.GroupLayout billPaymentSummeryPanelLayout = new javax.swing.GroupLayout(billPaymentSummeryPanel);
         billPaymentSummeryPanel.setLayout(billPaymentSummeryPanelLayout);
         billPaymentSummeryPanelLayout.setHorizontalGroup(
@@ -371,36 +464,56 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                     .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
                         .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
-                                .addComponent(lblCardAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblCardAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
-                                .addComponent(lblOtherAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblOtherAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
-                                .addComponent(lblCashAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lblCashAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addComponent(lblDiscountAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
-                        .addComponent(lblChangeCashDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblChangeCashVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblNetTotalDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(33, 33, 33)
-                .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
-                        .addComponent(lblDiscountAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(191, 191, 191))
-                    .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
-                        .addComponent(lblNetTotalVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(154, 154, 154)
+                                .addComponent(txtVoucher, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel10))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnCancelPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addComponent(btnPrintBill, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnPrintBill, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                        .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                                .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel8))
+                                .addGap(30, 30, 30)
+                                .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtCoopCreditPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                                        .addComponent(txtAmexCardPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel6)
+                                        .addGap(18, 18, 18)
+                                        .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtChange, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                                                .addComponent(txtMasterCardPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jLabel7)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(txtVisaCardPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                            .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtCashPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel5)))
+                        .addGap(0, 87, Short.MAX_VALUE))
+                    .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addGap(58, 58, 58)
+                        .addComponent(txtPoshana, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtTotalPayments)
+                            .addComponent(txtNetAmount, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                            .addComponent(txtDiscounts))))
                 .addContainerGap())
         );
         billPaymentSummeryPanelLayout.setVerticalGroup(
@@ -408,32 +521,74 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel5)
+                        .addComponent(txtChange, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(txtCashPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel7)
+                        .addComponent(txtVisaCardPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6)
+                        .addComponent(txtMasterCardPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4)
+                        .addComponent(txtAmexCardPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
                         .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblCashAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblCashAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel8)
+                            .addComponent(txtCoopCreditPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
                         .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblCardAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblCardAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel9)
+                            .addComponent(txtPoshana, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
                         .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblOtherAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblOtherAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblDiscountAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblDiscountAmountVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel10)
+                            .addComponent(txtVoucher, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                        .addGap(18, 39, Short.MAX_VALUE)
                         .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblChangeCashDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblChangeCashVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblNetTotalDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblNetTotalVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 1, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, billPaymentSummeryPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                            .addComponent(jLabel2)
+                            .addComponent(txtDiscounts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
+                                .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtNetAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel1))
+                                .addGap(57, 57, 57))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, billPaymentSummeryPanelLayout.createSequentialGroup()
+                                .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtTotalPayments, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel11))
+                                .addGap(18, 18, 18)))
                         .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnPrintBill, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnCancelPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(btnCancelPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())))
+        );
+
+        javax.swing.GroupLayout billItemPanelLayout = new javax.swing.GroupLayout(billItemPanel);
+        billItemPanel.setLayout(billItemPanelLayout);
+        billItemPanelLayout.setHorizontalGroup(
+            billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(billItemSP)
+            .addComponent(billPaymentSummeryPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        billItemPanelLayout.setVerticalGroup(
+            billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(billItemPanelLayout.createSequentialGroup()
+                .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(billPaymentSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -443,10 +598,9 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             billCopyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(billCopyPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(billCopyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(billInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(billItemPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(billPaymentSummeryPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(billCopyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(billInfoPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(billItemPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         billCopyPanelLayout.setVerticalGroup(
@@ -455,36 +609,31 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(billInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(billItemPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(billPaymentSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(billItemPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        cardPanel.add(billCopyPanel, "billCopyCard");
 
         javax.swing.GroupLayout interfaceContainerPanelLayout = new javax.swing.GroupLayout(interfaceContainerPanel);
         interfaceContainerPanel.setLayout(interfaceContainerPanelLayout);
         interfaceContainerPanelLayout.setHorizontalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(billCopyPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         interfaceContainerPanelLayout.setVerticalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
+            .addComponent(billCopyPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 925, Short.MAX_VALUE)
+            .addGap(0, 910, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 600, Short.MAX_VALUE)
+            .addGap(0, 713, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -516,8 +665,18 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel billPaymentSummeryPanel;
     private javax.swing.JButton btnCancelPrint;
     private javax.swing.JButton btnPrintBill;
-    private javax.swing.JPanel cardPanel;
     private javax.swing.JPanel interfaceContainerPanel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel lblBill1;
     private javax.swing.JLabel lblBillCashierDisplay;
     private javax.swing.JLabel lblBillCashierVal;
@@ -525,19 +684,19 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblBillDateVal;
     private javax.swing.JLabel lblBillTimeDisplay;
     private javax.swing.JLabel lblBillTimeVal;
-    private javax.swing.JLabel lblCardAmountDisplay;
-    private javax.swing.JLabel lblCardAmountVal;
-    private javax.swing.JLabel lblCashAmountDisplay;
-    private javax.swing.JLabel lblCashAmountVal;
-    private javax.swing.JLabel lblChangeCashDisplay;
-    private javax.swing.JLabel lblChangeCashVal;
-    private javax.swing.JLabel lblDiscountAmountDisplay;
-    private javax.swing.JLabel lblDiscountAmountVal;
-    private javax.swing.JLabel lblNetTotalDisplay;
-    private javax.swing.JLabel lblNetTotalVal;
-    private javax.swing.JLabel lblOtherAmountDisplay;
-    private javax.swing.JLabel lblOtherAmountVal;
     private javax.swing.JTable printItemTable;
+    private javax.swing.JTextField txtAmexCardPayment;
+    private javax.swing.JTextField txtCashPayment;
+    private javax.swing.JTextField txtChange;
+    private javax.swing.JTextField txtCoopCreditPayment;
+    private javax.swing.JTextField txtDiscounts;
+    private javax.swing.JTextField txtMasterCardPayment;
+    private javax.swing.JTextField txtNetAmount;
+    private javax.swing.JTextField txtPoshana;
     private javax.swing.JTextField txtSearchBillNO;
+    private javax.swing.JTextField txtTotalPayments;
+    private javax.swing.JTextField txtVisaCardPayment;
+    private javax.swing.JTextField txtVoucher;
     // End of variables declaration//GEN-END:variables
+ // </editor-fold>
 }

@@ -185,7 +185,7 @@
                                     <Column editable="false" title="Batch" type="java.lang.Object"/>
                                     <Column editable="false" title="Name" type="java.lang.Object"/>
                                     <Column editable="false" title="Description" type="java.lang.Object"/>
-                                    <Column editable="false" title="Price (Rs.)" type="java.lang.Object"/>
+                                    <Column editable="false" title="Unit Price (Rs.)" type="java.lang.Object"/>
                                     <Column editable="false" title="Qty" type="java.lang.Object"/>
                                     <Column editable="false" title="Discount %" type="java.lang.Object"/>
                                     <Column editable="false" title="Discount value (Rs.)" type="java.lang.Object"/>

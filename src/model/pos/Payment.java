@@ -17,21 +17,21 @@ public abstract class Payment {
     public static final String POSHANA = "Poshana";
     public static final String VOUCHER = "Voucher";
 
-    private final int billId;
+    private final int invoiceId;
     private final int paymentId;
     private double amount;
 
-    protected Payment(int billId, int paymentId, double amount) {
-        this.billId = billId;
+    protected Payment(int invoiceId, int paymentId, double amount) {
+        this.invoiceId = invoiceId;
         this.paymentId = paymentId;
         this.amount = amount;
     }
 
     /**
-     * @return the billId
+     * @return the invoiceId
      */
-    public int getBillId() {
-        return billId;
+    public int getInvoiceId() {
+        return invoiceId;
     }
 
     /**

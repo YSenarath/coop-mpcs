@@ -69,9 +69,9 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblCashWithrawalNoDisplay" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="lblCashWithrawalNoVal" min="-2" pref="168" max="-2" attributes="0"/>
-                      <EmptySpace pref="39" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                       <Component id="lblCounterDisplay" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblCounter" min="-2" pref="90" max="-2" attributes="0"/>
@@ -89,7 +89,7 @@
                               <Component id="lblCounter" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="lblCashWithrawalNoVal" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                              <Component id="lblCashWithrawalNoVal" alignment="1" min="-2" pref="25" max="-2" attributes="0"/>
                               <Component id="lblCashWithrawalNoDisplay" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -104,7 +104,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Cash Withrawal No"/>
+                <Property name="text" type="java.lang.String" value="Cash Withdrawal No"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblCashWithrawalNoVal">
@@ -113,7 +113,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="0"/>
-                <Property name="text" type="java.lang.String" value="&lt;Withdrawal No&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
                     <LineBorder/>
@@ -136,7 +135,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;counter&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -179,7 +177,6 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="lblNameDisplay" alignment="0" min="-2" pref="84" max="-2" attributes="0"/>
                                           <Component id="lblTimeDisplay" alignment="0" min="-2" pref="60" max="-2" attributes="0"/>
                                           <Component id="lblDateDisplay" alignment="0" min="-2" pref="60" max="-2" attributes="0"/>
                                           <Component id="lblCashierIDDisplay" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -187,7 +184,6 @@
                                       </Group>
                                       <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="lblCashierName" max="32767" attributes="0"/>
                                           <Group type="102" attributes="0">
                                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                                   <Component id="lblSignOnDate" pref="168" max="32767" attributes="0"/>
@@ -204,8 +200,8 @@
                                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
-                                              <Component id="lblCashierID" min="-2" pref="168" max="-2" attributes="0"/>
-                                              <EmptySpace max="32767" attributes="0"/>
+                                              <Component id="lblUser" min="-2" pref="168" max="-2" attributes="0"/>
+                                              <EmptySpace pref="58" max="32767" attributes="0"/>
                                               <Component id="lblShiftDisplay" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="lblShiftVal" min="-2" pref="90" max="-2" attributes="0"/>
@@ -257,16 +253,11 @@
                               <Component id="lblShiftVal" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="lblCashierID" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                              <Component id="lblUser" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                               <Component id="lblCashierIDDisplay" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lblNameDisplay" min="-2" pref="25" max="-2" attributes="0"/>
-                          <Component id="lblCashierName" alignment="0" min="-2" pref="25" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lblSignOn" alignment="0" min="-2" pref="25" max="-2" attributes="0"/>
                           <Component id="lblCW" alignment="0" min="-2" pref="25" max="-2" attributes="0"/>
@@ -332,34 +323,12 @@
                 <Property name="text" type="java.lang.String" value="Withdraw Amount (Rs.)"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="lblCashierName">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Tahoma" size="14" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="&lt;Cashier Name&gt;"/>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                    <EtchetBorder/>
-                  </Border>
-                </Property>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="lblNameDisplay">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Tahoma" size="14" style="1"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Name"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="lblCashierID">
+            <Component class="javax.swing.JLabel" name="lblUser">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;Cashier ID&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -372,7 +341,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Cashier Password"/>
+                <Property name="text" type="java.lang.String" value="User Password"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblDateDisplay">
@@ -389,7 +358,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;date&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -411,7 +379,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;time&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -441,7 +408,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;date&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -455,7 +421,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;time&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -468,7 +433,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Cashier ID"/>
+                <Property name="text" type="java.lang.String" value="User ID"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JPasswordField" name="txtCashierPassword">
@@ -495,7 +460,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;Amount&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -517,7 +481,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;Cashier ID&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -573,7 +536,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;Amount&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>
@@ -596,7 +558,6 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
-                <Property name="text" type="java.lang.String" value="&lt;Shift&gt;"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                     <EtchetBorder/>

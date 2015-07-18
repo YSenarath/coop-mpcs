@@ -20,16 +20,14 @@ import database.connector.DatabaseInterface;
  */
 public class ProductController implements DatabaseInterface {
 
-    public static Product getProduct(int productId) throws SQLException {
+    public static ArrayList<Product> getAllAvailableProducts() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + PRODUCT + " WHERE p.product_id=b.? ";
-        Object[] ob = {
-            productId
-        };
-        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+        String query = "SELECT DISTINCT p.* FROM " + PRODUCT + " p ," + BATCH + " b WHERE p.product_id=b.product_id AND b.qty>0 AND b.in_stock=true";
+        ResultSet resultSet = DBHandler.getData(connection, query);
 
+        ArrayList<Product> products = new ArrayList();
         while (resultSet.next()) {
-            return new Product(
+            Product product = new Product(
                     resultSet.getInt("product_id"),
                     resultSet.getString("product_name"),
                     resultSet.getLong("barcode"),
@@ -42,8 +40,9 @@ public class ProductController implements DatabaseInterface {
                     resultSet.getDouble("reorder_qty"),
                     resultSet.getDouble("max_qty")
             );
+            products.add(product);
         }
-        return null;
+        return products;
     }
 
     public static ArrayList<Product> getAllProducts() throws SQLException {
@@ -71,14 +70,16 @@ public class ProductController implements DatabaseInterface {
         return products;
     }
 
-    public static ArrayList<Product> getAllAvailableProducts() throws SQLException {
+    public static Product getProduct(int productId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT DISTINCT p.* FROM " + PRODUCT + " p ," + BATCH + " b WHERE p.product_id=b.product_id AND b.qty>0 AND b.in_stock=true";
-        ResultSet resultSet = DBHandler.getData(connection, query);
+        String query = "SELECT * FROM " + PRODUCT + " WHERE product_id=? ";
+        Object[] ob = {
+            productId
+        };
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
 
-        ArrayList<Product> products = new ArrayList();
         while (resultSet.next()) {
-            Product product = new Product(
+            return new Product(
                     resultSet.getInt("product_id"),
                     resultSet.getString("product_name"),
                     resultSet.getLong("barcode"),
@@ -91,9 +92,8 @@ public class ProductController implements DatabaseInterface {
                     resultSet.getDouble("reorder_qty"),
                     resultSet.getDouble("max_qty")
             );
-            products.add(product);
         }
-        return products;
+        return null;
     }
-    
+
 }

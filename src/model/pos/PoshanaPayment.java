@@ -14,8 +14,8 @@ public class PoshanaPayment extends Payment {
     private String stampId;
     private String customerName;
 
-    public PoshanaPayment(int billId, int paymentId, String stampId, String customerName, double amount) {
-        super(billId, paymentId, amount);
+    public PoshanaPayment(int invoiceId, int paymentId, String stampId, String customerName, double amount) {
+        super(invoiceId, paymentId, amount);
         this.stampId = stampId;
         this.customerName = customerName;
     }

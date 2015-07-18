@@ -6,6 +6,7 @@
 package ui.handler.pos;
 
 import controller.pos.CounterController;
+import controller.pos.CounterLoginController;
 import controller.pos.UserController;
 import java.sql.SQLException;
 import model.pos.CounterLogin;
@@ -42,10 +43,13 @@ public class UserLogInHandler {
 
     public static boolean performCounterLogin(String userName, double intialAmount) throws SQLException {
         logger.debug("setIntitialAmount invoked");
+        logger.warn(" Must be a transaction");
         //Get cashier info ,counter info ,time, date and create a counter login
         User user = UserController.getUser("user_name", userName);
-        return UserController.setUserLoginState(userName, true)
-                && CounterController.addCounterLogin(new CounterLogin(user.getUserName(), Utilities.loadProperty("counter"),
-                                Utilities.getCurrentTime(true), Utilities.getCurrentDate(), intialAmount));
+        boolean result = UserController.setUserLoginState(userName, true)
+                && CounterLoginController.addCounterLogin(new CounterLogin(user.getUserName(), Integer.parseInt(Utilities.loadProperty("counter")),
+                                Utilities.getCurrentTime(true), Utilities.getCurrentDate(), intialAmount))
+                && CounterController.setInitialAmount(Integer.parseInt(Utilities.loadProperty("counter")), intialAmount);
+        return result;
     }
 }

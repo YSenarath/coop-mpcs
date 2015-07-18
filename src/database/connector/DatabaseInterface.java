@@ -39,7 +39,7 @@ public interface DatabaseInterface {
     public static final String BATCH_DISCOUNT = "batch_discount";
 
     public static final String INVOICE = "invoice";
-    public static final String INVOICE_ITEMS = "bill_items";
+    public static final String INVOICE_ITEMS = "invoice_items";
     public static final String CASH_PAYMENT = "cash_payment";
     public static final String CARD_PAYMENT = "card_payment";
     public static final String POSHANA_PAYMENT = "poshana_payment";

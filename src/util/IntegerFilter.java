@@ -19,7 +19,12 @@ public class IntegerFilter extends DocumentFilter {
 
     private boolean isPositiveInteger(String text) {
         try {
-            if (text.isEmpty() || text.equals(" ")) {
+            if (text.isEmpty()
+                    || text.equals(" ")
+                    || text.startsWith("0")
+                    || text.startsWith("00")
+                    || text.startsWith("000")
+                    || text.startsWith("0000")) {
                 return true;
             }
             return Integer.parseInt(text) > 0;

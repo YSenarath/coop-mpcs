@@ -13,12 +13,12 @@ public class CounterLogin {
 
     private int  shiftId;
     private String userName;
-    private String counterId;
+    private int counterId;
     private String time;
     private String date;
     private double initialAmount;
 
-    public CounterLogin(String userName, String counterId, String time, String date, double initialAmount) {
+    public CounterLogin(String userName, int counterId, String time, String date, double initialAmount) {
         this.shiftId = -1;
         this.userName = userName;
         this.counterId = counterId;
@@ -27,7 +27,7 @@ public class CounterLogin {
         this.initialAmount = initialAmount;
     }
 
-    public CounterLogin(int shiftId, String userName, String counterId, String time, String date, double initialAmount) {
+    public CounterLogin(int shiftId, String userName, int counterId, String time, String date, double initialAmount) {
         this.shiftId = shiftId;
         this.userName = userName;
         this.counterId = counterId;
@@ -67,14 +67,14 @@ public class CounterLogin {
     /**
      * @return the counterId
      */
-    public String getCounterId() {
+    public int getCounterId() {
         return counterId;
     }
 
     /**
      * @param counterId the counterId to set
      */
-    public void setCounterId(String counterId) {
+    public void setCounterId(int counterId) {
         this.counterId = counterId;
     }
 
