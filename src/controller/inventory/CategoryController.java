@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller.inventory;
 
 import database.connector.DBConnection;
@@ -13,10 +8,6 @@ import java.sql.SQLException;
 import model.inventory.Category;
 import database.connector.DatabaseInterface;
 
-/**
- *
- * @author Shehan
- */
 public class CategoryController implements DatabaseInterface {
 
     public static Category getCategory(int departmentId, int categoryId) throws SQLException {
@@ -27,7 +18,7 @@ public class CategoryController implements DatabaseInterface {
             departmentId
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
-        
+
         if (resultSet.next()) {
             return new Category(
                     resultSet.getInt("category_id"),

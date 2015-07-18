@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller.inventory;
 
 import database.connector.DBConnection;
@@ -15,10 +10,6 @@ import model.inventory.Batch;
 import database.connector.DatabaseInterface;
 import model.pos.InvoiceItem;
 
-/**
- *
- * @author Shehan
- */
 public class BatchController implements DatabaseInterface {
 
     public static ArrayList<Batch> getAllAvailableBatches(int productId) throws SQLException {
@@ -79,7 +70,7 @@ public class BatchController implements DatabaseInterface {
         return batches;
     }
 
-    public static boolean updateBatchItem(InvoiceItem invoiceItem) throws SQLException {
+    public static boolean reduceBatchQty(InvoiceItem invoiceItem) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "UPDATE " + BATCH + " SET qty=qty-? WHERE batch_id=? AND product_id=? ";
         Object[] ob = {
@@ -87,6 +78,17 @@ public class BatchController implements DatabaseInterface {
             invoiceItem.getBatchId(),
             invoiceItem.getProductId()
         };
-        return DBHandler.setData(connection, query, ob) > 0;
+        return DBHandler.setData(connection, query, ob) == 1;
+    }
+    
+    public static boolean increaseBatchQty(InvoiceItem invoiceItem) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "UPDATE " + BATCH + " SET qty=qty+? WHERE batch_id=? AND product_id=? ";
+        Object[] ob = {
+            invoiceItem.getQty(),
+            invoiceItem.getBatchId(),
+            invoiceItem.getProductId()
+        };
+        return DBHandler.setData(connection, query, ob) == 1;
     }
 }
