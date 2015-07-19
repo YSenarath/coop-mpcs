@@ -13,11 +13,11 @@ public class InvoiceController implements DatabaseInterface {
 
     public static boolean addInvoice(Invoice invoice) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + INVOICE + " (bill_id,user_name,counter_id,bill_time,bill_date,amount) VALUES (?,?,?,?,?,?) ";
+        String query = "INSERT INTO " + INVOICE + " (bill_id,shift_id,counter_id,bill_time,bill_date,amount) VALUES (?,?,?,?,?,?) ";
 
         Object[] ob = {
             invoice.getInvoiceNo(),
-            invoice.getUserName(),
+            invoice.getShiftId(),
             invoice.getCounterId(),
             invoice.getTime(),
             invoice.getDate(),
@@ -53,7 +53,7 @@ public class InvoiceController implements DatabaseInterface {
 
             return new Invoice(
                     resultSet.getInt("bill_id"),
-                    resultSet.getString("user_name"),
+                    resultSet.getInt("shift_id"),
                     resultSet.getInt("counter_id"),
                     resultSet.getString("bill_date"),
                     resultSet.getString("bill_time"),

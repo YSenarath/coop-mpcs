@@ -67,6 +67,46 @@ public class TransactionController {
         }
     }
 
+    public static boolean performLogOffTransaction(CounterLogin counterLogin) {
+        logger.debug("performLogInTransaction invoked");
+
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnectionToDB();
+            connection.setAutoCommit(false);
+            logger.debug("Connection setAutoCommit(false)");
+
+            boolean result = UserController.setUserLoginState(counterLogin.getUserName(), false);
+            logger.info("User loged off : " + result);
+
+            result = CounterLoginController.endShift(counterLogin.getShiftId(), counterLogin.getCounterId());
+            logger.info("Shift ended : " + result);
+
+            connection.commit();
+            return true;
+        } catch (Exception err0) {
+            logger.error("Exception occurred " + err0.getMessage());
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    logger.debug("Connection rolledback");
+                } catch (SQLException err1) {
+                    logger.error("SQLException occurred " + err1.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    logger.debug("Connection setAutoCommit(true)");
+                } catch (SQLException err2) {
+                    logger.error("SQLException occurred " + err2.getMessage());
+                }
+            }
+        }
+    }
+
     public static boolean performInvoiceTransaction(Invoice invoice) {
         logger.debug("performInvoiceTransaction invoked");
         //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total

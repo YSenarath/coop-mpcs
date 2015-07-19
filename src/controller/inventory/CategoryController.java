@@ -7,12 +7,36 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.inventory.Category;
 import database.connector.DatabaseInterface;
+import java.util.ArrayList;
 
 public class CategoryController implements DatabaseInterface {
 
+    public static ArrayList<Category> getAllCategorys(int departmentId) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT * FROM " + CATAGORY + " WHERE department_id=? ";
+        Object[] ob = {
+            departmentId
+        };
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+
+        ArrayList<Category> categorys = new ArrayList();
+        while (resultSet.next()) {
+            Category category = new Category(
+                    resultSet.getInt("category_id"),
+                    resultSet.getInt("department_id"),
+                    resultSet.getString("category_name"),
+                    resultSet.getString("description"),
+                    resultSet.getBoolean("discounted")
+            );
+            categorys.add(category);
+        }
+        return categorys;
+    }
+
     public static Category getCategory(int departmentId, int categoryId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + CATAGORY + " WHERE category_id=? AND department_id=?";
+        String query = "SELECT * FROM " + CATAGORY + " WHERE category_id=? AND department_id=? ";
         Object[] ob = {
             categoryId,
             departmentId
@@ -30,4 +54,5 @@ public class CategoryController implements DatabaseInterface {
         }
         return null;
     }
+
 }

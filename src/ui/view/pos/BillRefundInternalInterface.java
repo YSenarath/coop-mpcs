@@ -2,12 +2,18 @@ package ui.view.pos;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import org.apache.log4j.Logger;
 
 public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
@@ -16,6 +22,10 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     private static final Logger logger = Logger.getLogger(BillRefundInternalInterface.class);
     private final POSMDIInterface parent;
     private final JDesktopPane desktopPane;
+
+    //KeyMaps
+    private InputMap inputMap;
+    private ActionMap actionMap;
 
     //Glass pane
     private final JPanel glassPanel;
@@ -56,6 +66,39 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         // make sure the focus won't leave the glass pane
         glassPanel.setFocusCycleRoot(true);
         setGlassPane(glassPanel);
+        performKeyBinding();
+    }
+
+    // </editor-fold>
+    //
+    //
+    //
+// <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
+    private void performKeyBinding() {
+
+        inputMap = interfaceContainerPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        actionMap = interfaceContainerPanel.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
+        actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
+
+    }
+
+    private class keyBindingAction extends AbstractAction {
+
+        private final String cmd;
+
+        public keyBindingAction(String cmd) {
+            this.cmd = cmd;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent tf) {
+            if (cmd.equalsIgnoreCase("Escape")) {
+                logger.debug("BillRefundInternal Interface - Escape Pressed ");
+                cancelRefund();
+            }
+        }
     }
 
     // </editor-fold>
@@ -68,22 +111,28 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         logger.debug("disableGlassPane invoked");
 
         glassPanel.setVisible(false);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
+        actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
     }
 
     //Enable the glassPanel pane
     public void enableGlassPane() {
         logger.debug("enableGlassPane invoked");
+
+        inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
+        actionMap.remove("doEscapeAction");
+        
         glassPanel.setVisible(true);//Disable this UI
         padding.requestFocus();  // required to trap key events
     }
 
     //Create a new bill from refund
-    private void refund_newBill() {
+    private void makeNewBill() {
         logger.warn("refund_newBill not implemented");
     }
 
     //Cancel a refund
-    private void refund_cancel() {
+    private void cancelRefund() {
         logger.debug("refund_cancel invoked");
         parent.setIsMainActivityRunning(false);
         parent.setIsBillRefundRunning(false);
@@ -123,7 +172,6 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         lblRefundCancelNetTotalVal = new javax.swing.JLabel();
         lblBillRefundDateDisplay = new javax.swing.JLabel();
         lblBillDate = new javax.swing.JLabel();
-        btnRefundCancel = new javax.swing.JButton();
         billRefundItemPanel = new javax.swing.JPanel();
         billItemSP1 = new javax.swing.JScrollPane();
         billRefunditemTable = new javax.swing.JTable();
@@ -227,14 +275,6 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         lblBillDate.setText("<date>");
         lblBillDate.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        btnRefundCancel.setText("Cancel");
-        btnRefundCancel.setToolTipText("");
-        btnRefundCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRefundCancelActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout billPaymentSummeryPanel1Layout = new javax.swing.GroupLayout(billPaymentSummeryPanel1);
         billPaymentSummeryPanel1.setLayout(billPaymentSummeryPanel1Layout);
         billPaymentSummeryPanel1Layout.setHorizontalGroup(
@@ -247,8 +287,6 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lblRefundChangeCashVal, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnRefundCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnNewBillFromRefund, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(billPaymentSummeryPanel1Layout.createSequentialGroup()
                         .addGroup(billPaymentSummeryPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -332,8 +370,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(billPaymentSummeryPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRefundChangeCashDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblRefundChangeCashVal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnNewBillFromRefund, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRefundCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnNewBillFromRefund, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -479,13 +516,8 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     private void btnNewBillFromRefundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewBillFromRefundActionPerformed
         // TODO add your handling code here:
         logger.warn("refund_newBill not implemented - show the invoice ui with a (-)ve balance");
-        refund_newBill();
+        makeNewBill();
     }//GEN-LAST:event_btnNewBillFromRefundActionPerformed
-
-    private void btnRefundCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefundCancelActionPerformed
-        // TODO add your handling code here:
-        refund_cancel();
-    }//GEN-LAST:event_btnRefundCancelActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane billItemSP1;
@@ -493,7 +525,6 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel billRefundItemPanel;
     private javax.swing.JTable billRefunditemTable;
     private javax.swing.JButton btnNewBillFromRefund;
-    private javax.swing.JButton btnRefundCancel;
     private javax.swing.JPanel cardPanel;
     private javax.swing.JPanel interfaceContainerPanel;
     private javax.swing.JLabel lblBill3;

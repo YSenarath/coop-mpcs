@@ -1,7 +1,6 @@
 package ui.view.pos;
 
 import controller.pos.CounterController;
-import controller.pos.CounterLoginController;
 import controller.pos.TransactionController;
 import static controller.pos.TransactionController.performLogInTransaction;
 import controller.pos.UserController;
@@ -35,6 +34,7 @@ public class LogIn extends javax.swing.JFrame {
         ((PlainDocument) txtIntialAmount.getDocument()).setDocumentFilter(new DoubleFilter());
         initializePOSSystem();
         setLocationRelativeTo(null);
+        txtUserName.requestFocus();
     }
     // </editor-fold>
     //
@@ -54,9 +54,10 @@ public class LogIn extends javax.swing.JFrame {
             if (counter != null && (counter.equals("1") || counter.equals("2") || counter.equals("3"))) {
                 Utilities.saveProperty("counter", counter);
                 Utilities.saveProperty("firstUse", "1");
+                txtIntialAmount.setText(String.format("%.2f", 0.0));
             } else {
                 Utilities.showMsgBox("Please select a counter to continue", "Error", JOptionPane.ERROR_MESSAGE);
-                this.dispose();
+                System.exit(3);
             }
         } else {
             try {
@@ -105,7 +106,7 @@ public class LogIn extends javax.swing.JFrame {
                 intialAmount
         );
 
-        return performLogInTransaction(counterLogin);
+        return TransactionController.performLogInTransaction(counterLogin);
     }
 
     private void txtUserNameKeyHandler(java.awt.event.KeyEvent evt) {
@@ -134,7 +135,7 @@ public class LogIn extends javax.swing.JFrame {
             return;
         }
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            logInToPOS();
+            btnOK.requestFocus();
         }
     }
 
@@ -181,7 +182,7 @@ public class LogIn extends javax.swing.JFrame {
 
             if (isUserAuthenticated(userName, txtPassword.getPassword(), User.CASHIER)) {
                 if (performCounterLogin(userName, initialAmount)) {
-                    new POSMDIInterface(userName).setVisible(true);
+                    new POSMDIInterface(false).setVisible(true);
                 }
                 exitApp();
             } else {

@@ -1,14 +1,30 @@
 package ui.view.pos;
 
+import controller.inventory.ProductController;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.InputMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.table.DefaultTableModel;
+import model.inventory.Product;
 import org.apache.log4j.Logger;
+import util.KeyValueContainer;
+import util.Utilities;
 
 public class SearchItemInterface extends javax.swing.JInternalFrame {
 
@@ -17,6 +33,12 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
     private final InvoiceInternalInterface invoiceInterface;
     private final CheckStockInterface checkStockInterface;
+
+    //
+    private DefaultComboBoxModel departmentComboBoxModel;
+    private DefaultComboBoxModel categoryComboBoxModel;
+    private ActionListener departmentComboBoxListner;
+    private DefaultTableModel productTableModel;
 
     //Glass pane
     private JPanel glassPanel;
@@ -31,6 +53,7 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         initUI(desktopPane);
         this.invoiceInterface = invoiceInterface;
         this.checkStockInterface = null;
+
         invoiceInterface.enableGlassPane(false);
 
     }
@@ -46,13 +69,54 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
     //
     //
     //
-// <editor-fold defaultstate="collapsed" desc="Methods">
+// <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
+    private void performKeyBinding() {
+
+        InputMap inputMap = containerPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = containerPanel.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
+        actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
+
+    }
+
+    private class keyBindingAction extends AbstractAction {
+
+        private final String cmd;
+
+        public keyBindingAction(String cmd) {
+            this.cmd = cmd;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent tf) {
+            if (cmd.equalsIgnoreCase("Escape")) {
+                logger.debug("CashWithdrawal Dialog - Escape Pressed ");
+                cancelSearch();
+            }
+        }
+    }
+
+    // </editor-fold>
+    //
+    //
+    //
+// <editor-fold defaultstate="collapsed" desc="Helper Methods">
     private void initUI(JDesktopPane desktopPane) {
         initComponents();
         Dimension desktopSize = desktopPane.getSize();
         Dimension jInternalFrameSize = this.getSize();
         this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);
+
+        this.departmentComboBoxModel = new DefaultComboBoxModel();
+        this.categoryComboBoxModel = new DefaultComboBoxModel();
+        this.productTableModel = (DefaultTableModel) productInfoTable.getModel();
+
+        departmentComboBoxListner = (ActionEvent e) -> {
+            getCategories();
+        };
+        departmentComboBox.addActionListener(departmentComboBoxListner);
 
         this.glassPanel = new JPanel(new GridLayout(0, 1));
         this.padding = new JLabel();
@@ -73,6 +137,9 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         // make sure the focus won't leave the glass pane
         glassPanel.setFocusCycleRoot(true);
         setGlassPane(glassPanel);
+
+        performKeyBinding();
+
     }
 
     //Disable the glassPanel pane
@@ -80,23 +147,132 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         logger.debug("disableGlassPane invoked");
 
         glassPanel.setVisible(false);
+
     }
 
     //Enable the glassPanel pane
     public void enableGlassPane() {
         logger.debug("enableGlassPane invoked");
+
         glassPanel.setVisible(true);//Disable this UI
         padding.requestFocus();  // required to trap key events
     }
 
+    //Set the search criteria
+    private void setSearchMethod() {
+        txtProduct.setEnabled(chkBoxProduct.isSelected());
+
+        departmentComboBox.setEnabled(chkBoxDepartment.isSelected());
+        chkBoxCategory.setEnabled(chkBoxDepartment.isSelected());
+        categoryComboBox.setEnabled(chkBoxDepartment.isSelected() && chkBoxCategory.isSelected());
+
+        btnSearch.setEnabled(chkBoxProduct.isSelected() || chkBoxDepartment.isSelected());
+
+    }
+
+    //Get the relevent categories to the category comboBox
+    private void getCategories() {
+        logger.debug("getCategories invoked");
+
+    }
+    // </editor-fold>
+    //
+    //
+    //
+    // <editor-fold defaultstate="collapsed" desc="Main Methods"> 
     //Perform search
+
     private void search() {
-        logger.warn("search not implemented");
+        logger.debug("search invoked");
+
+        try {
+
+            if (chkBoxProduct.isSelected() && chkBoxDepartment.isSelected() && chkBoxCategory.isSelected()) {
+                logger.debug("Product, Department , Category search");
+                ArrayList<Product> searchResults = ProductController.searchProducts("", 0, 0);
+                if (searchResults.isEmpty()) {
+                    Utilities.showMsgBox("No product found", "Empty result", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                productTableModel.setRowCount(0);
+                for (Product product : searchResults) {
+                    Object[] ob = {
+                        new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())),
+                        product.getName(),
+                        product.getDescription(),
+                        product.getBarcode(),
+                        product.getPackSize(),
+                        product.getUnit()
+                    };
+                    productTableModel.addRow(ob);
+                }
+
+            } else if (chkBoxProduct.isSelected() && chkBoxDepartment.isSelected()) {
+                logger.debug(" Product, Department search");
+                ArrayList<Product> searchResults = ProductController.searchProducts("", 0);
+                if (searchResults.isEmpty()) {
+                    Utilities.showMsgBox("No product found", "Empty result", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                productTableModel.setRowCount(0);
+                for (Product product : searchResults) {
+                    Object[] ob = {
+                        new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())),
+                        product.getName(),
+                        product.getDescription(),
+                        product.getBarcode(),
+                        product.getPackSize(),
+                        product.getUnit()
+                    };
+                    productTableModel.addRow(ob);
+                }
+            } else if (chkBoxProduct.isSelected()) {
+                logger.debug(" Product search");
+                String searchQuery = txtProduct.getText();
+
+                if (searchQuery.isEmpty()) {
+                    Utilities.showMsgBox("Please enter a valid query", "No search criteria defined", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                ArrayList<Product> searchResults = ProductController.searchProducts(searchQuery);
+
+                if (searchResults.isEmpty()) {
+                    Utilities.showMsgBox("No product found", "Empty result", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                productTableModel.setRowCount(0);
+                for (Product product : searchResults) {
+                    Object[] ob = {
+                        new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())),
+                        product.getName(),
+                        product.getDescription(),
+                        product.getBarcode(),
+                        product.getPackSize(),
+                        product.getUnit()
+                    };
+                    productTableModel.addRow(ob);
+                }
+            } else {
+                Utilities.showMsgBox("Please select at least one search criteria", "No search criteria defined", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            logger.error("SQL Error : " + ex.getMessage());
+        } catch (Exception ex) {
+            logger.error("Error while searching : " + ex.getMessage(), ex);
+        }
     }
 
     //Clear fields
     private void clear() {
-        logger.warn("clear not implemented");
+        logger.warn("clear invoked");
+        
+        
+        productTableModel.setRowCount(0);
+        txtProduct.setText("");
+        txtProduct.requestFocus();
+        
     }
 
     //Select Item
@@ -131,22 +307,23 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnGroup = new javax.swing.ButtonGroup();
         containerPanel = new javax.swing.JPanel();
-        lblCode = new javax.swing.JLabel();
         lblProduct = new javax.swing.JLabel();
         txtProduct = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
         lblDepartment = new javax.swing.JLabel();
         lblCategory = new javax.swing.JLabel();
-        itemCodeComboBox = new javax.swing.JComboBox();
         departmentComboBox = new javax.swing.JComboBox();
         categoryComboBox = new javax.swing.JComboBox();
         itemInfoPanel = new javax.swing.JPanel();
         itemInfoSP = new javax.swing.JScrollPane();
-        itemInfoTable = new javax.swing.JTable();
+        productInfoTable = new javax.swing.JTable();
         btnClear = new javax.swing.JButton();
         btnSelect = new javax.swing.JButton();
-        btnCancel = new javax.swing.JButton();
+        chkBoxProduct = new javax.swing.JCheckBox();
+        chkBoxDepartment = new javax.swing.JCheckBox();
+        chkBoxCategory = new javax.swing.JCheckBox();
 
         setTitle("Search Item");
 
@@ -155,13 +332,10 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         dropShadowBorder1.setShowTopShadow(true);
         containerPanel.setBorder(dropShadowBorder1);
 
-        lblCode.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        lblCode.setText("Code");
-
         lblProduct.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblProduct.setText("Product");
 
-        txtProduct.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtProduct.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         btnSearch.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnSearch.setText("Search [ F5 ] ");
@@ -178,53 +352,50 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         lblCategory.setText("Category");
         lblCategory.setToolTipText("");
 
-        itemCodeComboBox.setEditable(true);
-        itemCodeComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        itemCodeComboBox.setMaximumRowCount(5);
-
-        departmentComboBox.setEditable(true);
         departmentComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         departmentComboBox.setMaximumRowCount(5);
+        departmentComboBox.setEnabled(false);
 
-        categoryComboBox.setEditable(true);
         categoryComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         categoryComboBox.setMaximumRowCount(5);
+        categoryComboBox.setEnabled(false);
 
-        itemInfoTable.setModel(new javax.swing.table.DefaultTableModel(
+        productInfoTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Batch", "Exp. Date", "Stock", "Unit", "Discount", "Price"
+                "Product Code", "Name", "Description", "Barcode", "Pack Size", "Unit"
             }
         ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Double.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class
-            };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false
             };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        itemInfoTable.getTableHeader().setReorderingAllowed(false);
-        itemInfoSP.setViewportView(itemInfoTable);
+        productInfoTable.getTableHeader().setReorderingAllowed(false);
+        itemInfoSP.setViewportView(productInfoTable);
+        if (productInfoTable.getColumnModel().getColumnCount() > 0) {
+            productInfoTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+            productInfoTable.getColumnModel().getColumn(1).setPreferredWidth(125);
+            productInfoTable.getColumnModel().getColumn(2).setPreferredWidth(200);
+            productInfoTable.getColumnModel().getColumn(3).setPreferredWidth(75);
+            productInfoTable.getColumnModel().getColumn(4).setPreferredWidth(50);
+            productInfoTable.getColumnModel().getColumn(5).setPreferredWidth(50);
+        }
 
         javax.swing.GroupLayout itemInfoPanelLayout = new javax.swing.GroupLayout(itemInfoPanel);
         itemInfoPanel.setLayout(itemInfoPanelLayout);
         itemInfoPanelLayout.setHorizontalGroup(
             itemInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemInfoSP, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
+            .addComponent(itemInfoSP, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
         );
         itemInfoPanelLayout.setVerticalGroup(
             itemInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
         );
 
         btnClear.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -243,12 +414,24 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
             }
         });
 
-        btnCancel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btnCancel.setMnemonic('E');
-        btnCancel.setText("Cancel");
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+        chkBoxProduct.setSelected(true);
+        chkBoxProduct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
+                chkBoxProductActionPerformed(evt);
+            }
+        });
+
+        chkBoxDepartment.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        chkBoxDepartment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkBoxDepartmentActionPerformed(evt);
+            }
+        });
+
+        chkBoxCategory.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        chkBoxCategory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkBoxCategoryActionPerformed(evt);
             }
         });
 
@@ -256,37 +439,39 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         containerPanel.setLayout(containerPanelLayout);
         containerPanelLayout.setHorizontalGroup(
             containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(containerPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(itemInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(containerPanelLayout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lblCategory, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
-                                .addComponent(lblCode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblProduct, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(lblDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(chkBoxProduct)
+                            .addComponent(chkBoxDepartment)
+                            .addComponent(chkBoxCategory, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(18, 18, 18)
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(containerPanelLayout.createSequentialGroup()
-                                .addComponent(txtProduct)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(containerPanelLayout.createSequentialGroup()
-                                .addComponent(categoryComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(containerPanelLayout.createSequentialGroup()
                                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(departmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(containerPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(lblCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblProduct))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(containerPanelLayout.createSequentialGroup()
+                                        .addComponent(txtProduct)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(containerPanelLayout.createSequentialGroup()
+                                        .addComponent(categoryComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(containerPanelLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(btnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(containerPanelLayout.createSequentialGroup()
+                                .addComponent(lblDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(departmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         containerPanelLayout.setVerticalGroup(
@@ -294,28 +479,27 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
             .addGroup(containerPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblCode, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtProduct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(departmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(chkBoxProduct, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtProduct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(chkBoxDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(departmentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(7, 7, 7)
                 .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(categoryComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(categoryComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chkBoxCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(itemInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(btnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -348,27 +532,38 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         selectItem();
     }//GEN-LAST:event_btnSelectActionPerformed
 
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void chkBoxProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkBoxProductActionPerformed
         // TODO add your handling code here:
-        cancelSearch();
-    }//GEN-LAST:event_btnCancelActionPerformed
+        setSearchMethod();
+    }//GEN-LAST:event_chkBoxProductActionPerformed
+
+    private void chkBoxDepartmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkBoxDepartmentActionPerformed
+        // TODO add your handling code here:
+        setSearchMethod();
+    }//GEN-LAST:event_chkBoxDepartmentActionPerformed
+
+    private void chkBoxCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkBoxCategoryActionPerformed
+        // TODO add your handling code here:
+        setSearchMethod();
+    }//GEN-LAST:event_chkBoxCategoryActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnClear;
+    private javax.swing.ButtonGroup btnGroup;
     private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnSelect;
     private javax.swing.JComboBox categoryComboBox;
+    private javax.swing.JCheckBox chkBoxCategory;
+    private javax.swing.JCheckBox chkBoxDepartment;
+    private javax.swing.JCheckBox chkBoxProduct;
     private javax.swing.JPanel containerPanel;
     private javax.swing.JComboBox departmentComboBox;
-    private javax.swing.JComboBox itemCodeComboBox;
     private javax.swing.JPanel itemInfoPanel;
     private javax.swing.JScrollPane itemInfoSP;
-    private javax.swing.JTable itemInfoTable;
     private javax.swing.JLabel lblCategory;
-    private javax.swing.JLabel lblCode;
     private javax.swing.JLabel lblDepartment;
     private javax.swing.JLabel lblProduct;
+    private javax.swing.JTable productInfoTable;
     private javax.swing.JTextField txtProduct;
     // End of variables declaration//GEN-END:variables
 // </editor-fold>

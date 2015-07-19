@@ -24,9 +24,7 @@ public class UserPropertiesTest {
     public static void main(String[] args) {
         try {
             // TODO code application logic here
-            
-            
-            
+
             // Utilities.saveProperty("counter", "1");
             Utilities.clearProperties();
         } catch (BackingStoreException ex) {

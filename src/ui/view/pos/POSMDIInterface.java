@@ -1,7 +1,7 @@
 package ui.view.pos;
 
 import controller.pos.CounterLoginController;
-import controller.pos.UserController;
+import controller.pos.TransactionController;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,8 +9,13 @@ import java.beans.PropertyVetoException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import model.pos.CounterLogin;
 import org.apache.log4j.Logger;
@@ -32,8 +37,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
     private boolean isBillCopyRunning;
     private boolean isbillRefundRunning;
 
-    //Name of the logged on cashier
-    private String userName;
+    //Name of the logged on cashier and the active shift
+    private CounterLogin counterLogin;
 
     //The three main POS UI's
     private InvoiceInternalInterface invoiceInterface;
@@ -46,42 +51,73 @@ public class POSMDIInterface extends javax.swing.JFrame {
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Constructor">
-    public POSMDIInterface() {
+    public POSMDIInterface(boolean isDebugMode) {
         logger.debug("POSMDIInterface constructor invoked");
 
         initComponents();
         initializeGUI();
-        enableDebugMode();
-    }
-
-    public POSMDIInterface(String userName) {
-        logger.debug("POSMDIInterface(String userName) constructor invoked");
-
-        initComponents();
-        initializeGUI();
-        showLoginDetails(userName);
+        if (isDebugMode) {
+            setTitle("MEGA COOP CITY POS : DEBUG MODE");
+            btnCashierLog.setText("Debug Mode");
+        }
+        performKeyBinding();
 
     }
+
+    // </editor-fold>
+    //
+    //
+    //
+// <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
+    private void performKeyBinding() {
+
+        InputMap inputMap = controlPanel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = controlPanel.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke("F2"), "doF2Action");
+        actionMap.put("doF2Action", new keyBindingAction("F2"));
+//
+//        inputMap.put(KeyStroke.getKeyStroke("F7"), "doF7Action");
+//        actionMap.put("doF7Action", new keyBindingAction("F7"));
+
+        inputMap.put(KeyStroke.getKeyStroke("F9"), "doF9Action");
+        actionMap.put("doF9Action", new keyBindingAction("F9"));
+
+        inputMap.put(KeyStroke.getKeyStroke("F10"), "doF10Action");
+        actionMap.put("doF10Action", new keyBindingAction("F10"));
+    }
+
+    private class keyBindingAction extends AbstractAction {
+
+        private final String cmd;
+
+        public keyBindingAction(String cmd) {
+            this.cmd = cmd;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent tf) {
+            if (cmd.equalsIgnoreCase("F2")) {
+                logger.debug("POS MDI Interface - F2 Pressed ");
+                btnCheckStock.doClick();
+            } else if (cmd.equalsIgnoreCase("F7")) {
+                logger.debug("POS MDI Interface - F7 Pressed ");
+                btnNewSale.doClick();
+            } else if (cmd.equalsIgnoreCase("F9")) {
+                logger.debug("POS MDI Interface - F9 Pressed ");
+                btnHoldSale.doClick();
+            } else if (cmd.equalsIgnoreCase("F10")) {
+                logger.debug("POS MDI Interface - F10 Pressed ");
+                btnRestoreSale.doClick();
+            }
+        }
+    }
+
     // </editor-fold>
     //
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Methods">
-
-    private void enableDebugMode() {
-        logger.debug("enableDebugMode invoked");
-
-        setTitle("MEGA COOP CITY POS : DEBUG MODE");
-        isCashierLogedIn = true;
-        this.userName = "msw";
-        lblCashier.setText("DEBUG : msw");
-        btnCashierLog.setText("Debug Mode");
-        btnCashierLog.setEnabled(false);
-        // bill_newSale();
-        //chechStock();
-
-    }
-
     private void initializeGUI() {
         logger.debug("initializeGUI invoked");
 
@@ -105,19 +141,19 @@ public class POSMDIInterface extends javax.swing.JFrame {
         //billTaskPane.setCollapsed(false);
         //otherTaskPane.setCollapsed(true);
         lblCounter.setText(Utilities.loadProperty("counter"));
-
         try {
-            CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
-            if (lastCounterLogin == null || lastCounterLogin.isShiftEnded()) {
+            this.counterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
+            if (this.counterLogin == null || this.counterLogin.isShiftEnded()) {
                 Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(3);
             } else {
-                lblShift.setText(Utilities.formatId("SF", 5, lastCounterLogin.getShiftId()));
+                lblCashier.setText(this.counterLogin.getUserName());
+                lblShift.setText(Utilities.formatId("SF", 5, this.counterLogin.getShiftId()));
+                isCashierLogedIn = true;
             }
         } catch (SQLException ex) {
             logger.error("SQL Error : " + ex.getMessage());
         }
-
         lblTaskLogo.setVisible(false);
 
         isMainActivityRunning = false;
@@ -126,14 +162,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
         isbillRefundRunning = false;
     }
 
-    public String getUserName() {
-        logger.debug("getUserName invoked");
-
-        if (!userName.isEmpty()) {
-            return userName;
-        } else {
-            return "msw";
-        }
+    public CounterLogin getCounterLogin() {
+        return counterLogin;
     }
 
     public void setIsMainActivityRunning(boolean value) {
@@ -146,6 +176,9 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
     public void setIsInvoiceRunning(boolean value) {
         this.isInvoiceRunning = value;
+        btnHoldSale.setEnabled(false);
+        btnRestoreSale.setEnabled(false);
+        btnNewSale.setEnabled(true);
     }
 
     private boolean isInvoiceRunning() {
@@ -154,6 +187,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
     public void setIsBillCopyRunning(boolean value) {
         this.isBillCopyRunning = value;
+        btnBillCopy.setEnabled(true);
     }
 
     private boolean isBillCopyRunning() {
@@ -162,6 +196,11 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
     public void setIsBillRefundRunning(boolean value) {
         this.isbillRefundRunning = value;
+        btnBillRefund.setEnabled(true);
+    }
+
+    public void enableCheckStockBtn() {
+        btnCheckStock.setEnabled(true);
     }
 
     private boolean isBillRefundRunning() {
@@ -180,15 +219,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
             card.show(cardContainerPanel, "welcomeCard");
             lblTaskLogo.setVisible(false);
         }
-    }
-
-    private void showLoginDetails(String userName) {
-        logger.debug("showLoginDetails invoked");
-
-        this.userName = userName;
-        lblCashier.setText(this.getUserName());
-        this.isCashierLogedIn = true;
-
     }
 
     //user log in ui changes
@@ -245,7 +275,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         logger.debug("showNewInvoiceUI invoked");
 
         if (isMainActivityRunning()) {
-            logger.error("A main activity is already running");
+            logger.warn("A main activity is already running");
             return;
         }
         showDesktopPane(true);
@@ -264,6 +294,9 @@ public class POSMDIInterface extends javax.swing.JFrame {
         } catch (PropertyVetoException ex) {
             logger.error("PropertyVetoException : " + ex.getMessage());
         }
+        btnHoldSale.setEnabled(true);
+        btnRestoreSale.setEnabled(true);
+        btnNewSale.setEnabled(false);
     }
 
     //Hold sale
@@ -281,7 +314,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         logger.debug("showBillCopyUI invoked");
 
         if (isMainActivityRunning()) {
-            logger.error("A main activity is already running");
+            logger.warn("A main activity is already running");
             return;
         }
 
@@ -296,7 +329,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         desktopPane.add(billCopyInterface);
         billCopyInterface.setVisible(true);
-
+        btnBillCopy.setEnabled(false);
     }
 
     //Show refund screen
@@ -304,7 +337,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         logger.debug("showRefundUI invoked");
 
         if (isMainActivityRunning()) {
-            logger.error("A main activity is already running");
+            logger.warn("A main activity is already running");
             return;
         }
         if (billRefundInterface != null) {
@@ -318,25 +351,18 @@ public class POSMDIInterface extends javax.swing.JFrame {
         desktopPane.add(billRefundInterface);
         billRefundInterface.setVisible(true);
         showDesktopPane(true);
-
+        btnBillRefund.setEnabled(false);
     }
 
     //Show the cash withdrawal UI
     private void showCashWithdrawalShowUI() {
         logger.debug("showCashWithdrawalShowUI invoked");
 
-        try {
-            CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
-            if (lastCounterLogin == null || lastCounterLogin.isShiftEnded()) {
-                Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                new CashWithdrawalDialog(this, true).setVisible(true);
-            }
-
-        } catch (SQLException ex) {
-            logger.error("SQL error : " + ex.getMessage());
+        if (counterLogin == null || counterLogin.isShiftEnded()) {
+            Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            new CashWithdrawalDialog(this, true).setVisible(true);
         }
-
     }
 
     //Show the check stock UI
@@ -351,6 +377,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         desktopPane.add(checkStockInterface, new Integer(50));//On top of all others
 
         checkStockInterface.setVisible(true);
+        btnCheckStock.setEnabled(false);
     }
 
     //Mange cashier login
@@ -372,23 +399,19 @@ public class POSMDIInterface extends javax.swing.JFrame {
             }
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to log off ?", "Warning", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
-                try {
-                    UserController.setUserLoginState(userName, false);
 
-                    //set the last shift from this machine to eneded
-                    CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
-                    if (lastCounterLogin == null || lastCounterLogin.isShiftEnded()) {
-                        Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        boolean result = CounterLoginController.endShift(lastCounterLogin.getShiftId(), lastCounterLogin.getCounterId());
+                //set the last shift from this machine to eneded
+                if (counterLogin == null || counterLogin.isShiftEnded()) {
+                    Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    boolean result = TransactionController.performLogOffTransaction(counterLogin);
+                    if (result) {
                         logger.info("Shift ended : " + result);
                     }
-
-                    logger.info("User : " + getUserName() + " logged off");
-                } catch (SQLException ex) {
-                    logger.error("User log off error : " + ex.getMessage());
-
                 }
+
+                logger.info("User : " + counterLogin.getUserName() + " logged off");
+
                 isCashierLogedIn = false;
                 logger.info("isCashierLogedIn :" + isCashierLogedIn);
                 setLogOffControls();
@@ -470,7 +493,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
             }
         });
 
-        btnNewSale.setText("New Sale [ F7 ]");
+        btnNewSale.setText("New Sale");
+        btnNewSale.setToolTipText("");
         btnNewSale.setPreferredSize(new java.awt.Dimension(73, 30));
         btnNewSale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -489,6 +513,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         billTaskPane.getContentPane().add(btnCheckStock);
 
         btnHoldSale.setText("Hold Sale [ F9 ]");
+        btnHoldSale.setEnabled(false);
         btnHoldSale.setPreferredSize(new java.awt.Dimension(73, 30));
         btnHoldSale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -498,6 +523,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         billTaskPane.getContentPane().add(btnHoldSale);
 
         btnRestoreSale.setText("Restore Sale [F10 ]");
+        btnRestoreSale.setEnabled(false);
         btnRestoreSale.setPreferredSize(new java.awt.Dimension(73, 30));
         btnRestoreSale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -878,7 +904,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new POSMDIInterface().setVisible(true);
+                new POSMDIInterface(true).setVisible(true);
             }
         });
     }

@@ -129,7 +129,8 @@
           <SubComponents>
             <Component class="javax.swing.JButton" name="btnNewSale">
               <Properties>
-                <Property name="text" type="java.lang.String" value="New Sale [ F7 ]"/>
+                <Property name="text" type="java.lang.String" value="New Sale"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[73, 30]"/>
                 </Property>
@@ -152,6 +153,7 @@
             <Component class="javax.swing.JButton" name="btnHoldSale">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Hold Sale [ F9 ]"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[73, 30]"/>
                 </Property>
@@ -163,6 +165,7 @@
             <Component class="javax.swing.JButton" name="btnRestoreSale">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Restore Sale [F10 ]"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[73, 30]"/>
                 </Property>

@@ -6,9 +6,15 @@ import controller.pos.CounterLoginController;
 import controller.pos.SettingsController;
 import controller.pos.TransactionController;
 import controller.pos.UserController;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.text.PlainDocument;
 import model.pos.CashWithdrawal;
 import model.pos.Counter;
@@ -35,8 +41,41 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         initComponents();
         this.parent = (POSMDIInterface) parent;
         setLocationRelativeTo(null);
+        performKeyBinding();
 
         showInfo();
+    }
+
+    // </editor-fold>
+    //
+    //
+    //
+// <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
+    private void performKeyBinding() {
+
+        InputMap inputMap = cashWithdrawalPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = cashWithdrawalPanel.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
+        actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
+
+    }
+
+    private class keyBindingAction extends AbstractAction {
+
+        private final String cmd;
+
+        public keyBindingAction(String cmd) {
+            this.cmd = cmd;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent tf) {
+            if (cmd.equalsIgnoreCase("Escape")) {
+                logger.debug("CashWithdrawal Dialog - Escape Pressed ");
+                exitDialog();
+            }
+        }
     }
 
     // </editor-fold>
@@ -63,15 +102,16 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
             lblCounter.setText(counterId);
             cashWithdrawal.setCounterId(Integer.parseInt(counterId));
 
-            String userName = parent.getUserName();
+            CounterLogin counterLogin = parent.getCounterLogin();
+
+            String userName = counterLogin.getUserName();
             lblUser.setText(userName);
             cashWithdrawal.setUsername(userName);
 
-            CounterLogin lastCounterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
-            lblShiftVal.setText(Utilities.formatId("SF", 5, lastCounterLogin.getShiftId()));
-            lblSignOnDate.setText(lastCounterLogin.getDate());
-            lblSignOnTime.setText(Utilities.convert24hTo12h(lastCounterLogin.getTime()));
-            lblInitialAmount.setText(String.format("%.2f", lastCounterLogin.getInitialAmount()));
+            lblShiftVal.setText(Utilities.formatId("SF", 5, counterLogin.getShiftId()));
+            lblSignOnDate.setText(counterLogin.getDate());
+            lblSignOnTime.setText(Utilities.convert24hTo12h(counterLogin.getTime()));
+            lblInitialAmount.setText(String.format("%.2f", counterLogin.getInitialAmount()));
 
             lblCWDate.setText(Utilities.getCurrentDate());
             lblCWTime.setText(Utilities.getCurrentTime(false));
@@ -99,6 +139,11 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
             logger.error("Error : " + ex.getMessage());
             btnOk.setEnabled(false);
         }
+    }
+
+    //Exit
+    private void exitDialog() {
+        this.dispose();
     }
 
     //Handle txtWithdrawalAmount key press
@@ -143,13 +188,6 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         }
     }
 
-    //Cancel withdraw
-    private void cancelWithdraw() {
-        logger.debug("cancelWithdraw invoked");
-
-        this.dispose();
-    }
-
     // </editor-fold>
     //
     //
@@ -160,18 +198,21 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         logger.debug("withdrawCash invoked");
 
         if (txtWithdrawalAmount.getText().isEmpty()) {
+            Utilities.showMsgBox("Please enter the withdrawal amount", "Error ", JOptionPane.ERROR_MESSAGE);
             txtWithdrawalAmount.requestFocus();
             txtCashierPassword.setText("");
             txtChiefCashierPassword.setText("");
             return;
         }
         if (new String(txtCashierPassword.getPassword()).isEmpty()) {
+            Utilities.showMsgBox("Please enter user password", "Authorization faliure", JOptionPane.ERROR_MESSAGE);
             txtCashierPassword.requestFocus();
             txtCashierPassword.setText("");
             txtChiefCashierPassword.setText("");
             return;
         }
         if (new String(txtChiefCashierPassword.getPassword()).isEmpty()) {
+            Utilities.showMsgBox("Please enter master password", "Authorization faliure", JOptionPane.ERROR_MESSAGE);
             txtChiefCashierPassword.requestFocus();
             txtCashierPassword.setText("");
             txtChiefCashierPassword.setText("");
@@ -183,7 +224,7 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         if (0 < withdrawalAmount && withdrawalAmount <= maxWithdrawableAmount) {
             String userPassword = new String(txtCashierPassword.getPassword());
             try {
-                if (UserController.isUserAuthenticated(parent.getUserName(), userPassword)) {
+                if (UserController.isUserAuthenticated(parent.getCounterLogin().getUserName(), userPassword)) {
                     String masterPassword = new String(txtChiefCashierPassword.getPassword());
                     if (masterPassword.equals(SettingsController.getSetting("main_cashier_password").getValue())) {
                         cashWithdrawal.setAmount(withdrawalAmount);
@@ -262,7 +303,6 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         lblChiefCashierID = new javax.swing.JLabel();
         lblChiefCashierPasswordDisplay = new javax.swing.JLabel();
         txtChiefCashierPassword = new javax.swing.JPasswordField();
-        btnCancel = new javax.swing.JButton();
         btnOk = new javax.swing.JButton();
         lblCurrentAmountDisplay = new javax.swing.JLabel();
         lblCurrentAmountVal = new javax.swing.JLabel();
@@ -270,7 +310,7 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         lblShiftVal = new javax.swing.JLabel();
         txtWithdrawalAmount = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cash Withdrawal");
         setName("cashWithdrawalDialog"); // NOI18N
         setResizable(false);
@@ -400,13 +440,6 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
             }
         });
 
-        btnCancel.setText("Cancel");
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
-            }
-        });
-
         btnOk.setText("OK");
         btnOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -456,8 +489,6 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                         .addGap(19, 19, 19))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(infoPanelLayout.createSequentialGroup()
                         .addContainerGap()
@@ -560,10 +591,8 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblChiefCashierPasswordDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtChiefCashierPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 53, Short.MAX_VALUE)
-                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 31, Short.MAX_VALUE)
+                .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -590,16 +619,11 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cashWithdrawalPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+            .addComponent(cashWithdrawalPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        // TODO add your handling code here:
-        cancelWithdraw();
-    }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
         // TODO add your handling code here:
@@ -627,7 +651,6 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_txtChiefCashierPasswordKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnOk;
     private javax.swing.JPanel cashWithdrawalInfoPanel;
     private javax.swing.JPanel cashWithdrawalPanel;

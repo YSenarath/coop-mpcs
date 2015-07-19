@@ -3,19 +3,26 @@ package ui.view.pos;
 import controller.inventory.ProductController;
 import controller.pos.CardPaymentController;
 import controller.pos.CashPaymentController;
+import controller.pos.CounterController;
+import controller.pos.CounterLoginController;
 import controller.pos.InvoiceController;
 import controller.pos.InvoiceItemController;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import model.pos.CardPayment;
 import model.pos.CashPayment;
@@ -34,6 +41,10 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
     DefaultTableModel printItemTableModel;
     private boolean billPrintReady;
+
+    //KeyMaps
+    private InputMap inputMap;
+    private ActionMap actionMap;
 
     //Glass pane
     private final JPanel glassPanel;
@@ -78,6 +89,39 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         // make sure the focus won't leave the glass pane
         glassPanel.setFocusCycleRoot(true);
         setGlassPane(glassPanel);
+        performKeyBinding();
+    }
+
+    // </editor-fold>
+    //
+    //
+    //
+// <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
+    private void performKeyBinding() {
+
+        inputMap = billCopyPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        actionMap = billCopyPanel.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
+        actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
+
+    }
+
+    private class keyBindingAction extends AbstractAction {
+
+        private final String cmd;
+
+        public keyBindingAction(String cmd) {
+            this.cmd = cmd;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent tf) {
+            if (cmd.equalsIgnoreCase("Escape")) {
+                logger.debug("BillCopyInternal Interface - Escape Pressed ");
+                cancelPrint();
+            }
+        }
     }
 
     // </editor-fold>
@@ -90,11 +134,17 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         logger.debug("disableGlassPane invoked");
 
         glassPanel.setVisible(false);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
+        actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
     }
 
     //Enable the glassPanel pane
     public void enableGlassPane() {
         logger.debug("enableGlassPane invoked");
+
+        inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
+        actionMap.remove("doEscapeAction");
+
         glassPanel.setVisible(true);//Disable this UI
         padding.requestFocus();  // required to trap key events
     }
@@ -128,6 +178,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         this.billPrintReady = false;
         lblBillDateVal.setText("");
         lblBillTimeVal.setText("");
+        lblShiftVal.setText("");
         lblBillCashierVal.setText("");
 
         printItemTableModel.setRowCount(0);
@@ -164,7 +215,8 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
             lblBillDateVal.setText(invoice.getDate());
             lblBillTimeVal.setText(Utilities.convert24hTo12h(invoice.getTime()));
-            lblBillCashierVal.setText(invoice.getUserName());
+            lblShiftVal.setText(Utilities.formatId("SF", 5, invoice.getShiftId()));
+            lblBillCashierVal.setText(CounterLoginController.getCounterLogin(invoice.getShiftId()).getUserName());
             txtNetAmount.setText(String.format("%.2f", invoice.getNetTotal()));
 
             ArrayList<InvoiceItem> invoiceItems = InvoiceItemController.getInvoiceItems(invoiceNumber);
@@ -217,19 +269,23 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
             this.billPrintReady = true;
         } catch (Exception ex) {
-            util.Utilities.showMsgBox("Invalid bill number : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Utilities.showMsgBox("Invalid bill number : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     //Print a copy of the bill
     private void printBill() {
         logger.debug("printBill invoked");
-        
+
         if (billPrintReady) {
             util.Utilities.showMsgBox("Printing bill ", "Successfull", JOptionPane.INFORMATION_MESSAGE);
-            parent.setIsMainActivityRunning(false);
-            parent.setIsBillCopyRunning(false);
-            this.dispose();
+            cleanUI();
+            txtSearchBillNO.setText("");
+            txtSearchBillNO.requestFocus();
+            billPrintReady = false;
+        } else {
+            Utilities.showMsgBox("Please select a bill first", "Nothing to print", JOptionPane.ERROR_MESSAGE);
+            txtSearchBillNO.requestFocus();
         }
 
     }
@@ -263,11 +319,12 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         lblBillTimeVal = new javax.swing.JLabel();
         lblBillCashierDisplay = new javax.swing.JLabel();
         lblBillCashierVal = new javax.swing.JLabel();
+        lblShiftDisplay = new javax.swing.JLabel();
+        lblShiftVal = new javax.swing.JLabel();
         billItemPanel = new javax.swing.JPanel();
         billItemSP = new javax.swing.JScrollPane();
         printItemTable = new javax.swing.JTable();
         billPaymentSummeryPanel = new javax.swing.JPanel();
-        btnCancelPrint = new javax.swing.JButton();
         btnPrintBill = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         txtCashPayment = new javax.swing.JTextField();
@@ -314,7 +371,6 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
         lblBillDateVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblBillDateVal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblBillDateVal.setText("<date>");
         lblBillDateVal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         lblBillDateDisplay.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -325,16 +381,21 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
         lblBillTimeVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblBillTimeVal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblBillTimeVal.setText("<time>");
         lblBillTimeVal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         lblBillCashierDisplay.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblBillCashierDisplay.setText("Cashier : ");
 
         lblBillCashierVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        lblBillCashierVal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblBillCashierVal.setText("<Cashier name>");
+        lblBillCashierVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblBillCashierVal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        lblShiftDisplay.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblShiftDisplay.setText("Shift : ");
+
+        lblShiftVal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblShiftVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblShiftVal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         javax.swing.GroupLayout billInfoPanelLayout = new javax.swing.GroupLayout(billInfoPanel);
         billInfoPanel.setLayout(billInfoPanelLayout);
@@ -345,7 +406,15 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblBill1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtSearchBillNO, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                .addComponent(lblShiftDisplay)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblShiftVal, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(lblBillCashierDisplay)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblBillCashierVal, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(lblBillDateDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblBillDateVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -353,25 +422,25 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblBillTimeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblBillTimeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(lblBillCashierDisplay)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblBillCashierVal, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         billInfoPanelLayout.setVerticalGroup(
             billInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(billInfoPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(billInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblBill1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtSearchBillNO, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBillCashierVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBillCashierDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBillTimeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBillTimeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBillDateVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBillDateDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(billInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(billInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblShiftVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblShiftDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(billInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblBill1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtSearchBillNO, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblBillCashierVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblBillCashierDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblBillTimeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblBillTimeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblBillDateVal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblBillDateDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -396,14 +465,6 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         billItemSP.setViewportView(printItemTable);
 
         billPaymentSummeryPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        btnCancelPrint.setText("Cancel");
-        btnCancelPrint.setToolTipText("");
-        btnCancelPrint.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelPrintActionPerformed(evt);
-            }
-        });
 
         btnPrintBill.setText("Print");
         btnPrintBill.setToolTipText("");
@@ -504,8 +565,6 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                                 .addComponent(txtVoucher, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel10))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCancelPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnPrintBill, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
                         .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -535,7 +594,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                                 .addComponent(txtCashPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel5)))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 287, Short.MAX_VALUE))
                     .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addGap(58, 58, 58)
@@ -606,9 +665,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                                     .addComponent(txtTotalPayments, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel11))
                                 .addGap(18, 18, 18)))
-                        .addGroup(billPaymentSummeryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnPrintBill, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnCancelPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnPrintBill, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
 
@@ -622,7 +679,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         billItemPanelLayout.setVerticalGroup(
             billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(billItemPanelLayout.createSequentialGroup()
-                .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
+                .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(billPaymentSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -663,24 +720,19 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 910, Short.MAX_VALUE)
+            .addGap(0, 1110, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 713, Short.MAX_VALUE)
+            .addGap(0, 675, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnCancelPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelPrintActionPerformed
-        // TODO add your handling code here:
-        cancelPrint();
-    }//GEN-LAST:event_btnCancelPrintActionPerformed
 
     private void btnPrintBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintBillActionPerformed
         // TODO add your handling code here:
@@ -698,7 +750,6 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel billItemPanel;
     private javax.swing.JScrollPane billItemSP;
     private javax.swing.JPanel billPaymentSummeryPanel;
-    private javax.swing.JButton btnCancelPrint;
     private javax.swing.JButton btnPrintBill;
     private javax.swing.JPanel interfaceContainerPanel;
     private javax.swing.JLabel jLabel1;
@@ -719,6 +770,8 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblBillDateVal;
     private javax.swing.JLabel lblBillTimeDisplay;
     private javax.swing.JLabel lblBillTimeVal;
+    private javax.swing.JLabel lblShiftDisplay;
+    private javax.swing.JLabel lblShiftVal;
     private javax.swing.JTable printItemTable;
     private javax.swing.JTextField txtAmexCardPayment;
     private javax.swing.JTextField txtCashPayment;

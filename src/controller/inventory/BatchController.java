@@ -14,7 +14,7 @@ public class BatchController implements DatabaseInterface {
 
     public static ArrayList<Batch> getAllAvailableBatches(int productId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + BATCH + " b WHERE b.product_id=? AND b.qty>0 AND b.in_stock=true";
+        String query = "SELECT * FROM " + BATCH + " b WHERE b.product_id=? AND b.recieved_qty>0 AND b.in_stock=true";
         Object[] ob = {
             productId
         };
@@ -43,7 +43,7 @@ public class BatchController implements DatabaseInterface {
 
     public static ArrayList<Batch> getAllBatches(int productId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + BATCH + " b WHERE b.product_id=? AND b.qty>0 ";
+        String query = "SELECT * FROM " + BATCH + " b WHERE b.product_id=? AND b.recieved_qty>0 ";
         Object[] ob = {
             productId
         };
@@ -72,19 +72,21 @@ public class BatchController implements DatabaseInterface {
 
     public static boolean reduceBatchQty(InvoiceItem invoiceItem) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "UPDATE " + BATCH + " SET qty=qty-? WHERE batch_id=? AND product_id=? ";
+        String query = "UPDATE " + BATCH + " SET qty=qty-?,recieved_qty=recieved_qty-? WHERE batch_id=? AND product_id=? ";
         Object[] ob = {
+            invoiceItem.getQty(),
             invoiceItem.getQty(),
             invoiceItem.getBatchId(),
             invoiceItem.getProductId()
         };
         return DBHandler.setData(connection, query, ob) == 1;
     }
-    
+
     public static boolean increaseBatchQty(InvoiceItem invoiceItem) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "UPDATE " + BATCH + " SET qty=qty+? WHERE batch_id=? AND product_id=? ";
+        String query = "UPDATE " + BATCH + " SET qty=qty+?,recieved_qty=recieved_qty+? WHERE batch_id=? AND product_id=? ";
         Object[] ob = {
+            invoiceItem.getQty(),
             invoiceItem.getQty(),
             invoiceItem.getBatchId(),
             invoiceItem.getProductId()

@@ -47,12 +47,12 @@ public class CounterLogin {
     /**
      * @return the userName
      */
-    public String getuUserName() {
-        return getUserName();
+    public String getUserName() {
+        return userName;
     }
 
     /**
-     * @param userName
+     * @param userName the userName to set
      */
     public void setUserName(String userName) {
         this.userName = userName;
@@ -112,13 +112,6 @@ public class CounterLogin {
      */
     public void setInitialAmount(double initialAmount) {
         this.initialAmount = initialAmount;
-    }
-
-    /**
-     * @return the userName
-     */
-    public String getUserName() {
-        return userName;
     }
 
     /**

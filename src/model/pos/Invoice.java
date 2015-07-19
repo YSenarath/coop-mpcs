@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Invoice {
 
     private int invoiceNo;
-    private String userName;
+    private int shiftId;
     private int counterId;
     private String date;
     private String time;
@@ -21,7 +21,7 @@ public class Invoice {
 
     public Invoice(int invoiceNo) {
         this.invoiceNo = invoiceNo;
-        this.userName = null;
+        this.shiftId = 0;
         this.counterId = -1;
         this.date = null;
         this.time = null;
@@ -36,23 +36,23 @@ public class Invoice {
         this.payments = null;
     }
 
-    public Invoice(int invoiceNo, String userName, int counterId, String date, String time, int itemCount, double netTotal, double discount, double amountPaid, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
+//    public Invoice(int invoiceNo, String shiftId, int counterId, String date, String time, int itemCount, double netTotal, double discount, double amountPaid, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
+//        this.invoiceNo = invoiceNo;
+//        this.shiftId = shiftId;
+//        this.counterId = counterId;
+//        this.date = date;
+//        this.time = time;
+//        this.itemCount = itemCount;
+//        this.netTotal = netTotal;
+//        this.discount = discount;
+//        this.amountPaid = amountPaid;
+//        this.invoiceItems = invoiceItems;
+//        this.payments = payments;
+//    }
+//
+    public Invoice(int invoiceNo, int shiftId, int counterId, String date, String time, double netTotal) {
         this.invoiceNo = invoiceNo;
-        this.userName = userName;
-        this.counterId = counterId;
-        this.date = date;
-        this.time = time;
-        this.itemCount = itemCount;
-        this.netTotal = netTotal;
-        this.discount = discount;
-        this.amountPaid = amountPaid;
-        this.invoiceItems = invoiceItems;
-        this.payments = payments;
-    }
-
-    public Invoice(int invoiceNo, String userName, int counterId, String date, String time, double netTotal) {
-        this.invoiceNo = invoiceNo;
-        this.userName = userName;
+        this.shiftId = shiftId;
         this.counterId = counterId;
         this.date = date;
         this.time = time;
@@ -79,17 +79,17 @@ public class Invoice {
     }
 
     /**
-     * @return the userName
+     * @return the shiftId
      */
-    public String getUserName() {
-        return userName;
+    public int getShiftId() {
+        return shiftId;
     }
 
     /**
-     * @param userName the userName to set
+     * @param shiftId the shiftId to set
      */
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setShiftId(int shiftId) {
+        this.shiftId = shiftId;
     }
 
     /**

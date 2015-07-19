@@ -104,13 +104,21 @@
                                           </Group>
                                       </Group>
                                       <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
-                                      <Component id="lblCategoryDiscount" min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="lblCategoryDiscount" max="32767" attributes="0"/>
+                                          <Component id="lblUnit" max="32767" attributes="0"/>
+                                      </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="txtCategoryDiscount" min="-2" pref="80" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
-                                      <Component id="lblBarcde" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="txtBarcode" min="-2" pref="80" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <Component id="txtCategoryDiscount" min="-2" pref="80" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                                              <Component id="lblBarcde" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="txtBarcode" min="-2" pref="80" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Component id="txtUnit" min="-2" pref="80" max="-2" attributes="0"/>
+                                      </Group>
                                       <EmptySpace max="32767" attributes="0"/>
                                   </Group>
                               </Group>
@@ -144,6 +152,8 @@
                           <Component id="lblProduct" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           <Component id="txtProductDesc" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnSearch" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                          <Component id="lblUnit" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                          <Component id="txtUnit" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -286,6 +296,23 @@
                 <Property name="text" type="java.lang.String" value="C. Discount"/>
               </Properties>
             </Component>
+            <Component class="javax.swing.JLabel" name="lblUnit">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Tahoma" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Unit "/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtUnit">
+              <Properties>
+                <Property name="editable" type="boolean" value="false"/>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Tahoma" size="12" style="0"/>
+                </Property>
+                <Property name="horizontalAlignment" type="int" value="4"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="itemInfoContainer">
@@ -313,11 +340,10 @@
                 <Component class="javax.swing.JTable" name="itemInfoTable">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="7" rowCount="0">
+                      <Table columnCount="6" rowCount="0">
                         <Column editable="false" title="Batch" type="java.lang.Object"/>
                         <Column editable="false" title="Exp. Date" type="java.lang.Object"/>
-                        <Column editable="false" title="Qty" type="java.lang.Object"/>
-                        <Column editable="false" title="Unit" type="java.lang.Object"/>
+                        <Column editable="false" title="Available Qty" type="java.lang.Object"/>
                         <Column editable="false" title="Batch Discount (%)" type="java.lang.Object"/>
                         <Column editable="false" title="Price (Rs.)" type="java.lang.Object"/>
                         <Column editable="false" title="In stock" type="java.lang.Boolean"/>
@@ -337,6 +363,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="12" style="0"/>
             </Property>
+            <Property name="mnemonic" type="int" value="86"/>
             <Property name="text" type="java.lang.String" value="OK"/>
           </Properties>
           <Events>

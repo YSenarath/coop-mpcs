@@ -153,7 +153,6 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
 
         lblItemCodeVal.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblItemCodeVal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblItemCodeVal.setText("<Code>");
         lblItemCodeVal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         lblItemCode.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
