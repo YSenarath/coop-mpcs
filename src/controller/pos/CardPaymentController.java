@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import model.pos.CardPayment;
+import model.pos.payment.CardPayment;
 
 public class CardPaymentController implements DatabaseInterface {
 

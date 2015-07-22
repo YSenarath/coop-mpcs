@@ -120,8 +120,8 @@ public class ProductController implements DatabaseInterface {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + PRODUCT + " WHERE (product_name LIKE ? OR description LIKE ?) AND department_id=? ";
         Object[] ob = {
-            "'%" + description + "%'",
-            "'%" + description + "%'",
+            "%" + description + "%",
+            "%" + description + "%",
             departmentId
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
@@ -150,8 +150,8 @@ public class ProductController implements DatabaseInterface {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + PRODUCT + " WHERE (product_name LIKE ? OR description LIKE ?) AND department_id=? AND category_id=? ";
         Object[] ob = {
-            "'%" + description + "%'",
-            "'%" + description + "%'",
+            "%" + description + "%",
+            "%" + description + "%",
             departmentId,
             categoryId
         };

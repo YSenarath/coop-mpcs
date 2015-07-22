@@ -1,4 +1,4 @@
-package model.pos;
+package model.pos.payment;
 
 public abstract class VoucherPayment extends Payment {
 

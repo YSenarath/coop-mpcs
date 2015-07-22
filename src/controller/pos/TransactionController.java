@@ -4,17 +4,17 @@ import controller.inventory.BatchController;
 import database.connector.DBConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
-import model.pos.CardPayment;
-import model.pos.CashPayment;
+import model.pos.payment.CardPayment;
+import model.pos.payment.CashPayment;
 import model.pos.CashWithdrawal;
-import model.pos.CoopCreditPayment;
+import model.pos.payment.CoopCreditPayment;
 import model.pos.CounterLogin;
-import model.pos.CustomerVoucherPayment;
-import model.pos.EmployeeVoucherPayment;
-import model.pos.Invoice;
-import model.pos.InvoiceItem;
-import model.pos.Payment;
-import model.pos.PoshanaPayment;
+import model.pos.payment.CustomerVoucherPayment;
+import model.pos.payment.EmployeeVoucherPayment;
+import model.pos.item.Invoice;
+import model.pos.item.InvoiceItem;
+import model.pos.payment.Payment;
+import model.pos.payment.PoshanaPayment;
 import org.apache.log4j.Logger;
 
 public class TransactionController {

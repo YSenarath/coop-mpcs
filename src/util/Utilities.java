@@ -72,7 +72,7 @@ public class Utilities {
     }
 
     //convert a string date to util.date
-    public static Date getDatefromString(String date) {
+    public static Date getDateFromString(String date) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
             return format.parse(date);
@@ -100,9 +100,18 @@ public class Utilities {
         return false;
     }
 
+    //Used to check if product is expired
+    public static boolean isDateBeforeLimit(String date, String upperLimit) {
+
+        if (date != null && upperLimit != null) {
+            return getDateFromString(date).before(getDateFromString(upperLimit));
+        }
+        return false;
+    }
+
     //Check if String date is in given range
     public static boolean isDateBetweenRange(String date, String lowerLimit, String upperLimit) {
-        return isDateBetweenRange(getDatefromString(date), getDatefromString(lowerLimit), getDatefromString(upperLimit));
+        return isDateBetweenRange(getDateFromString(date), getDateFromString(lowerLimit), getDateFromString(upperLimit));
     }
 
     //Show msg boxes

@@ -85,43 +85,51 @@
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="lblCode" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="lblProduct" alignment="1" pref="75" max="32767" attributes="0"/>
+                                  <Component id="lblProductDesc" alignment="1" pref="75" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <Component id="itemCodeComboBox" min="-2" pref="188" max="-2" attributes="0"/>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="156" max="-2" attributes="0"/>
+                                      <Component id="lblCategory" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="txtCategory" min="-2" pref="140" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                                      <Component id="lblCategoryDiscount" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="txtCategoryDiscount" min="-2" pref="80" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="txtProductDesc" alignment="0" max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="txtProductDesc" alignment="1" min="-2" pref="531" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
-                                              <EmptySpace min="-2" pref="156" max="-2" attributes="0"/>
-                                              <Component id="lblCategory" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="txtCategory" min="-2" pref="140" max="-2" attributes="0"/>
+                                              <Component id="itemCodeComboBox" min="-2" pref="188" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+                                              <Component id="lblProductname" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                                              <Component id="txtName" min="-2" pref="264" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="lblCategoryDiscount" max="32767" attributes="0"/>
-                                          <Component id="lblUnit" max="32767" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Component id="txtCategoryDiscount" min="-2" pref="80" max="-2" attributes="0"/>
-                                              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
-                                              <Component id="lblBarcde" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="txtBarcode" min="-2" pref="80" max="-2" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="lblUnit" min="-2" max="-2" attributes="0"/>
+                                                  <Group type="102" attributes="0">
+                                                      <Component id="lblBarcde" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="txtBarcode" min="-2" pref="80" max="-2" attributes="0"/>
+                                                  </Group>
+                                              </Group>
                                           </Group>
-                                          <Component id="txtUnit" min="-2" pref="80" max="-2" attributes="0"/>
+                                          <Group type="102" attributes="0">
+                                              <EmptySpace max="32767" attributes="0"/>
+                                              <Component id="txtUnit" min="-2" pref="80" max="-2" attributes="0"/>
+                                          </Group>
                                       </Group>
-                                      <EmptySpace max="32767" attributes="0"/>
                                   </Group>
                               </Group>
+                              <EmptySpace pref="17" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="lblDepartment" min="-2" pref="75" max="-2" attributes="0"/>
@@ -145,15 +153,20 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="lblCode" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           <Component id="itemCodeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnRefresh" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                          <Component id="lblProductname" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                          <Component id="txtName" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                              <Component id="lblBarcde" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                              <Component id="txtBarcode" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblProduct" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                          <Component id="lblProductDesc" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           <Component id="txtProductDesc" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnSearch" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="lblUnit" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           <Component id="txtUnit" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnRefresh" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -163,8 +176,7 @@
                           <Component id="txtCategory" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lblCategoryDiscount" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           <Component id="txtCategoryDiscount" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblBarcde" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
-                          <Component id="txtBarcode" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnSearch" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="19" max="32767" attributes="0"/>
                   </Group>
@@ -180,12 +192,12 @@
                 <Property name="text" type="java.lang.String" value="Code"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="lblProduct">
+            <Component class="javax.swing.JLabel" name="lblProductDesc">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Product"/>
+                <Property name="text" type="java.lang.String" value="Description"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtProductDesc">
@@ -313,6 +325,22 @@
                 <Property name="horizontalAlignment" type="int" value="4"/>
               </Properties>
             </Component>
+            <Component class="javax.swing.JLabel" name="lblProductname">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Tahoma" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Name"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtName">
+              <Properties>
+                <Property name="editable" type="boolean" value="false"/>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Tahoma" size="12" style="0"/>
+                </Property>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="itemInfoContainer">
@@ -325,7 +353,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="itemInfoSP" alignment="1" pref="394" max="32767" attributes="0"/>
+                  <Component id="itemInfoSP" alignment="1" pref="398" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>

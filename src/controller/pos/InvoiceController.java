@@ -5,7 +5,7 @@ import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import model.pos.Invoice;
+import model.pos.item.Invoice;
 import database.connector.DatabaseInterface;
 import java.util.ArrayList;
 

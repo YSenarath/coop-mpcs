@@ -6,7 +6,7 @@ import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import model.pos.CashPayment;
+import model.pos.payment.CashPayment;
 
 public class CashPaymentController implements DatabaseInterface {
 

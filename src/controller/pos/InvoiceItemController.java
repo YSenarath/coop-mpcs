@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import model.pos.InvoiceItem;
+import model.pos.item.InvoiceItem;
 
 public class InvoiceItemController implements DatabaseInterface {
 

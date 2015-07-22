@@ -1,5 +1,6 @@
-package model.pos;
+package model.pos.item;
 
+import model.pos.payment.Payment;
 import java.util.ArrayList;
 
 public class Invoice {

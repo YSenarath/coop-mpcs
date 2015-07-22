@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import model.inventory.Batch;
 import database.connector.DatabaseInterface;
-import model.pos.InvoiceItem;
+import model.pos.item.InvoiceItem;
 
 public class BatchController implements DatabaseInterface {
 

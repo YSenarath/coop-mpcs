@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import model.pos.User;
+import model.people.User;
 import database.connector.DatabaseInterface;
 
 public class UserController implements DatabaseInterface {

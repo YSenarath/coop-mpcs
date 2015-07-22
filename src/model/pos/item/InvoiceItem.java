@@ -1,4 +1,4 @@
-package model.pos;
+package model.pos.item;
 
 public class InvoiceItem {
 

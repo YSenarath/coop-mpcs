@@ -1,4 +1,4 @@
-package model.pos;
+package model.pos.payment;
 
 public class CardPayment extends Payment {
 

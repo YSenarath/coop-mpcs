@@ -37,11 +37,11 @@ import model.inventory.BatchDiscount;
 import model.inventory.Category;
 import model.inventory.CategoryDiscount;
 import model.inventory.Product;
-import model.pos.CardPayment;
-import model.pos.CashPayment;
-import model.pos.Invoice;
-import model.pos.InvoiceItem;
-import model.pos.Payment;
+import model.pos.payment.CardPayment;
+import model.pos.payment.CashPayment;
+import model.pos.item.Invoice;
+import model.pos.item.InvoiceItem;
+import model.pos.payment.Payment;
 import org.apache.log4j.Logger;
 import util.CharactorLimitDocument;
 import util.DoubleFilter;
@@ -82,8 +82,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private final int BATCH_ID_COLUMN = 1;
     private final int UNIT_PRICE_COLUMN = 4;
     private final int UNIT_QTY_COLUMN = 5;
-    private final int NET_DISCOUNT_COLUMN = 7;
-    private final int NET_TOTAL_COLUMN = 8;
+    private final int NET_DISCOUNT_COLUMN = 6;
+    private final int NET_TOTAL_COLUMN = 7;
 
     private final int PAYMENT_OPTION_COLUMN = 0;
     private final int PAYMENT_AMOUNT_COLUMN = 1;
@@ -107,6 +107,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         this.productComboBoxModel = new DefaultComboBoxModel();
         this.invoiceItemTableModel = (DefaultTableModel) invoiceItemTable.getModel();
         this.invoicePaymentsTableModel = (DefaultTableModel) invoicePaymentsTable.getModel();
+        
+        
 
         this.invoice = null;
         this.processingProduct = null;
@@ -152,7 +154,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         setGlassPane(glassPanel);
         performKeyBinding();
 
-        showNewInvoiceId();
+        initializeInvoice();
         loadSellebleProducts();
     }
 
@@ -266,9 +268,26 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     public void setProductBatch(Batch selectedBatch) {
         logger.debug("setProductBatch invoked");
 
-        processingProduct.setSelectedBatch(selectedBatch);
-        setPropFromBatch();
-        txtQty.requestFocus();
+        //See if product expired if so give prompt to accept or reject
+        if (isExpired(selectedBatch.getExpDate())) {
+            logger.warn("Item Expired");
+
+            int response = JOptionPane.showConfirmDialog(this, "This batch expired on " + selectedBatch.getExpDate() + ".\n Do you want to still add it ?", "Batch expired", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.YES_OPTION) {
+                processingProduct.setSelectedBatch(selectedBatch);
+                setPropFromBatch();
+                txtQty.requestFocus();
+            } else {
+                invoiceClearProductinfo();
+                itemCodeComboBox.requestFocus();
+            }
+
+        } else {
+            processingProduct.setSelectedBatch(selectedBatch);
+            setPropFromBatch();
+            txtQty.requestFocus();
+        }
+
     }
 
     //Disable the glassPanel pane
@@ -335,6 +354,97 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtQty.setEnabled(false);
         lblUnit.setText("");
 
+    }
+
+    //Check if produce expired
+    private boolean isExpired(String expDate) {
+        return !Utilities.isDateBeforeLimit(Utilities.getCurrentDate(), expDate);
+    }
+
+    //Get Category Discount
+    private double getCategoryDiscount(double unitPrice, double qty) throws SQLException {
+        logger.debug("getCategoryDiscount invoked");
+
+        //get category and check if discount available ,if so get the category discount
+        Category category = CategoryController.getCategory(processingProduct.getDepartmentId(), processingProduct.getCategoryId());
+        if (category.isDiscounted()) {
+            CategoryDiscount categoryDiscount = CategoryDiscountController.getCategoryDiscount(category.getDepartmentId(), category.getCategoryId());
+
+            //if today is in discount date range
+            if (categoryDiscount != null && (util.Utilities.isDateBetweenRange(util.Utilities.getCurrentDate(), categoryDiscount.getStartDate(), categoryDiscount.getEndDate()))) {
+                //check if it is members only 
+                if ((categoryDiscount.isMembersOnly() && chkMember.isSelected()) || (!categoryDiscount.isMembersOnly())) {
+                    try {
+                        double categoryDiscountPercent = categoryDiscount.getDiscount() / 100;
+                        double discountEligibleQty;
+                        if (categoryDiscount.isPromotional()) {
+                            discountEligibleQty = qty;
+                        } else {
+                            double discountQtyDivider = categoryDiscount.getQuantity();
+                            discountEligibleQty = Math.floor(qty / discountQtyDivider) * discountQtyDivider;
+
+                        }
+                        double totalCategoryDiscount = discountEligibleQty * unitPrice * categoryDiscountPercent;
+                        logger.info("Category discount: " + totalCategoryDiscount);
+                        return totalCategoryDiscount;
+
+                    } catch (Exception ex) {
+                        logger.error("Category Discount Exception : " + ex.getMessage(), ex);
+                    }
+
+                } else {
+                    logger.info("Category discount only for member");
+                }
+
+            } else {
+                logger.info("No category discounts found");
+            }
+        } else {
+            logger.info("Category discount disabled");
+        }
+        return 0;
+    }
+
+    //Get Batch Discount
+    private double getBatchDiscount(double unitPrice, double qty) throws SQLException {
+        logger.debug("getBatchDiscount invoked");
+
+        Batch selectedBatch = processingProduct.getSelectedBatch();
+        if (selectedBatch.isDiscounted()) {
+            BatchDiscount batchDiscount = BatchDiscountController.getBatchDiscount(selectedBatch.getProductId(), selectedBatch.getBatchId());
+            if (batchDiscount != null
+                    && (util.Utilities.isDateBetweenRange(util.Utilities.getCurrentDate(), batchDiscount.getStartDate(), batchDiscount.getEndDate()))) {
+
+                processingProduct.getSelectedBatch().setBatchDiscount(batchDiscount);
+                //check if it is members only 
+                if ((batchDiscount.isMembersOnly() && chkMember.isSelected()) || (!batchDiscount.isMembersOnly())) {
+                    try {
+                        double batchDiscountPercent = batchDiscount.getDiscount() / 100;
+                        double discountEligibleQty;
+                        if (batchDiscount.isPromotional()) {
+                            discountEligibleQty = qty;
+                        } else {
+                            double discountQtyDivider = batchDiscount.getQuantity();
+                            discountEligibleQty = Math.floor(qty / discountQtyDivider) * discountQtyDivider;
+                        }
+                        double totlalBatchDiscount = discountEligibleQty * unitPrice * batchDiscountPercent;
+                        logger.info("Batch discount: " + totlalBatchDiscount);
+                        return totlalBatchDiscount;
+
+                    } catch (Exception ex) {
+                        logger.error("Batch Discount Exception : " + ex.getMessage(), ex);
+                    }
+                } else {
+                    logger.info("Bath discount only for member");
+                }
+
+            } else {
+                logger.info("No batch discounts found");
+            }
+        } else {
+            logger.info("Batch discount disabled");
+        }
+        return 0;
     }
 
     //Clean item add card
@@ -491,6 +601,16 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     }
 
+    //Private make a Member invoice
+    private void convertToMemberInvoice() {
+        logger.debug("convertToMemberInvoice invoked");
+        
+        logger.warn("To convert to normal invoice, reset the invoice");
+        if (chkMember.isSelected()) {
+            chkMember.setEnabled(false);
+        }
+    }
+
     //Clear items card as well as payments card
     private void resetInvoice() {
         logger.debug("resetInvoice invoked");
@@ -499,8 +619,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         cleanItemAddUI();
         cleanPaymentsUI();
-        showNewInvoiceId();
+        initializeInvoice();
         loadSellebleProducts();
+        chkMember.setSelected(false);
+        chkMember.setEnabled(true);
     }
 
     //Cancel current bill and show welocme screen
@@ -530,7 +652,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //
 // <editor-fold defaultstate="collapsed" desc="Add item System">
     //Method to get next invoice Id
-    private void showNewInvoiceId() {
+    private void initializeInvoice() {
         logger.debug("showNextInvoiceId invoked");
 
         try {
@@ -566,7 +688,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             itemCodeComboBox.getModel().setSelectedItem(null);
 
             itemCodeComboBox.setModel(productComboBoxModel);
-            // AutoCompleteDecorator.decorate(itemCodeComboBox);
 
             itemCodeComboBox.addActionListener(productCodeListner);
             invoiceClearProductinfo();
@@ -574,6 +695,18 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         } catch (SQLException ex) {
             logger.error("Product load error : " + ex.getMessage());
         }
+    }
+
+    public void setSelectedProduct(int productId) {
+
+        for (int i = 0; i < productComboBoxModel.getSize(); i++) {
+            KeyValueContainer keyValueContainer = (KeyValueContainer) productComboBoxModel.getElementAt(i);
+            if (keyValueContainer.getKey() == productId) {
+                itemCodeComboBox.setSelectedIndex(i);// can cause a recursive malfunction
+                break;
+            }
+        }
+
     }
 
     //Display selected product details
@@ -623,7 +756,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         try {
             // <editor-fold defaultstate="collapsed" desc="Validations">      
-            if (invoice == null || processingProduct == null || txtQty.getText().isEmpty()) {
+            if (invoice == null || processingProduct == null || processingProduct.getSelectedBatch() == null || txtQty.getText().isEmpty()) {
                 logger.warn("Empty invoice or processingProduct or Qty");
                 return;
             }
@@ -656,102 +789,54 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 txtQty.requestFocus();
                 return;
             }
-            // </editor-fold>
-            //
-            // <editor-fold defaultstate="collapsed" desc="Category Discount">  
-            //get the category discount
-            double categorydDis = 0;
-            //get category and check if discount available ,if so get the category discount
-            Category category = CategoryController.getCategory(processingProduct.getDepartmentId(), processingProduct.getCategoryId());
-            if (category.isDiscounted()) {
-                CategoryDiscount categoryDiscount = CategoryDiscountController.getCategoryDiscount(processingProduct.getDepartmentId(), processingProduct.getCategoryId());
-
-                if (categoryDiscount != null
-                        && (util.Utilities.isDateBetweenRange(util.Utilities.getCurrentDate(), categoryDiscount.getStartDate(), categoryDiscount.getEndDate()))) {
-
-                    categorydDis = categoryDiscount.getDiscount() / 100;
-                    logger.info("Category discount :" + categorydDis);
-                    //Check discount validity
-                } else {
-                    logger.info("No category discounts found");
-                }
-            } else {
-                logger.info("Category discount disabled");
-            }
-            // </editor-fold>
-            //
-            // <editor-fold defaultstate="collapsed" desc="Batch Discount">  
-            //get the batch discount
-            double batchDis = 0;
-            if (processingProduct.getSelectedBatch().isDiscounted()) {
-                BatchDiscount batchDiscount = BatchDiscountController.getBatchDiscount(processingProduct.getProductId(), processingProduct.getSelectedBatch().getBatchId());
-                if (batchDiscount != null
-                        && (util.Utilities.isDateBetweenRange(util.Utilities.getCurrentDate(), batchDiscount.getStartDate(), batchDiscount.getEndDate()))) {
-
-                    processingProduct.getSelectedBatch().setBatchDiscount(batchDiscount);
-                    batchDis = batchDiscount.getDiscount() / 100;
-                    logger.info("batch discount :" + batchDis);
-                } else {
-                    logger.info("No batch discounts found");
-                }
-            } else {
-                logger.info("batch discount disabled");
-            }
-            // </editor-fold>
-            //
-            // <editor-fold defaultstate="collapsed" desc="Prepare product parameters">  
-            double totalDiscount = categorydDis + batchDis;
 
             int productId = processingProduct.getProductId();
             int batchId = processingProduct.getSelectedBatch().getBatchId();
 
-            double itemDiscount = unitPrice * qty * totalDiscount;
-            double subTotal = unitPrice * qty * (1 - totalDiscount);
-            // </editor-fold>
-            //
-            // <editor-fold defaultstate="collapsed" desc="Add item to the table">  
-
-            //if item is already in the table update it
-            boolean itemInTable = false;
+            int rowNumber = -1;
+            double qtyInTable = 0;
             for (int row = 0; row < invoiceItemTableModel.getRowCount(); row++) {
                 if (((KeyValueContainer) invoiceItemTable.getValueAt(row, PRODUCT_ID_COLUMN)).getKey() == productId
                         && Integer.parseInt(invoiceItemTable.getValueAt(row, BATCH_ID_COLUMN).toString()) == batchId) {
 
-                    itemInTable = true;
+                    rowNumber = row;
+                    qtyInTable = Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_QTY_COLUMN).toString());
 
-                    double qtyInTable = Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_QTY_COLUMN).toString());
-                    double discountInTable = Double.parseDouble(invoiceItemTable.getValueAt(row, NET_DISCOUNT_COLUMN).toString());
-                    double subTotalInTable = Double.parseDouble(invoiceItemTable.getValueAt(row, NET_TOTAL_COLUMN).toString());
-
-                    double newQty = qtyInTable + qty;
-
-                    //Total should be less than or equal to recieved qty
-                    if (newQty > processingProduct.getSelectedBatch().getRecievedQty()) {
+                    if (qty + qtyInTable > processingProduct.getSelectedBatch().getRecievedQty()) {
                         Utilities.showMsgBox("Total item quantity exceeds what is in the stock !", "Incorrect quantity", JOptionPane.WARNING_MESSAGE);
                         txtQty.requestFocus();
                         return;
                     }
-                    double newTotalDiscount = discountInTable + itemDiscount;
-                    double newSubTotal = subTotalInTable + subTotal;
 
-                    invoiceItemTable.setValueAt(String.format("%.2f", newQty), row, UNIT_QTY_COLUMN);//Qty
-                    invoiceItemTable.setValueAt(String.format("%.2f", newTotalDiscount), row, NET_DISCOUNT_COLUMN);//Discount value
-                    invoiceItemTable.setValueAt(String.format("%.2f", newSubTotal), row, NET_TOTAL_COLUMN);//Sub total
                     break;
                 }
             }
 
-            if (!itemInTable) {
+            // </editor-fold>
+            //
+            // <editor-fold defaultstate="collapsed" desc="Prepare product parameters">  
+            double totalQty = qty + qtyInTable;
+            double categorydDiscount = getCategoryDiscount(unitPrice, totalQty);
+            double batchDiscount = getBatchDiscount(unitPrice, totalQty);
+            double totalDiscount = categorydDiscount + batchDiscount;
+            double subTotal = totalQty * unitPrice - totalDiscount;
+            // </editor-fold>
+            //
+            // <editor-fold defaultstate="collapsed" desc="Add item to the table">  
 
+            if (rowNumber > -1) {//item is already in table 
+                invoiceItemTable.setValueAt(String.format("%.2f", totalQty), rowNumber, UNIT_QTY_COLUMN);//Qty
+                invoiceItemTable.setValueAt(String.format("%.2f", totalDiscount), rowNumber, NET_DISCOUNT_COLUMN);//Discount value
+                invoiceItemTable.setValueAt(String.format("%.2f", subTotal), rowNumber, NET_TOTAL_COLUMN);//Sub total
+            } else {//add as a new item
                 Object[] ob = {
                     new KeyValueContainer(productId, util.Utilities.formatId("P", 4, productId)),
                     batchId,
                     processingProduct.getName(),
                     processingProduct.getDescription(),
                     String.format("%.2f", unitPrice),
-                    String.format("%.2f", qty),
-                    String.format("%.2f", totalDiscount * 100) + "%",
-                    String.format("%.2f", itemDiscount),
+                    String.format("%.2f", totalQty),
+                    String.format("%.2f", totalDiscount),
                     String.format("%.2f", subTotal)
                 };
                 invoiceItemTableModel.addRow(ob);
@@ -1217,8 +1302,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         lblNetTotal = new javax.swing.JLabel();
         lblItemDiscountDisplay = new javax.swing.JLabel();
         lblItemDiscounts = new javax.swing.JLabel();
-        lblBill = new javax.swing.JLabel();
-        txtBillNumber = new javax.swing.JTextField();
         btnReset = new javax.swing.JButton();
         billButtonPanel = new javax.swing.JPanel();
         btnAddItem = new javax.swing.JButton();
@@ -1256,6 +1339,9 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         btnAddPayment = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
         btnConfirm = new javax.swing.JButton();
+        lblBill = new javax.swing.JLabel();
+        txtBillNumber = new javax.swing.JTextField();
+        chkMember = new javax.swing.JCheckBox();
 
         setMaximizable(true);
         setResizable(true);
@@ -1279,11 +1365,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Code", "Batch", "Name", "Description", "Unit Price (Rs.)", "Qty", "Discount %", "Discount value (Rs.)", "Sub total (Rs.)"
+                "Code", "Batch", "Name", "Description", "Unit Price (Rs.)", "Qty", "Discount value (Rs.)", "Sub total (Rs.)"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -1528,13 +1614,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        lblBill.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        lblBill.setText("Bill Number : ");
-
-        txtBillNumber.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        txtBillNumber.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        txtBillNumber.setEnabled(false);
-
         btnReset.setText("Reset");
         btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1612,12 +1691,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                         .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(itemAddPanelLayout.createSequentialGroup()
-                        .addComponent(lblBill)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(itemAddPanelLayout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, itemAddPanelLayout.createSequentialGroup()
                         .addComponent(productPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(billButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -1627,15 +1701,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             itemAddPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(itemAddPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(itemAddPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblBill)
-                    .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(itemAddPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(billButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(productPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
+                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(billSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1691,7 +1761,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         );
         paymentOptionsPanelLayout.setVerticalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(ivoicePaymentsSP)
+            .addComponent(ivoicePaymentsSP, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder4 = new org.jdesktop.swingx.border.DropShadowBorder();
@@ -1834,7 +1904,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(333, Short.MAX_VALUE))
+                .addContainerGap(321, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cashPaymentPanel, "cashCard");
@@ -1916,7 +1986,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCardPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(251, Short.MAX_VALUE))
+                .addContainerGap(239, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cardPaymentPanel, "bankCard");
@@ -1929,7 +1999,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         );
         coopCreditpaymentPanelLayout.setVerticalGroup(
             coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 376, Short.MAX_VALUE)
+            .addGap(0, 364, Short.MAX_VALUE)
         );
 
         paymentDetailsPanel.add(coopCreditpaymentPanel, "coopCreditCard");
@@ -1942,7 +2012,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         );
         PoshanaPaymentLayout.setVerticalGroup(
             PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 376, Short.MAX_VALUE)
+            .addGap(0, 364, Short.MAX_VALUE)
         );
 
         paymentDetailsPanel.add(PoshanaPayment, "poshanaCard");
@@ -1955,7 +2025,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         );
         VoucherPaymentLayout.setVerticalGroup(
             VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 376, Short.MAX_VALUE)
+            .addGap(0, 364, Short.MAX_VALUE)
         );
 
         paymentDetailsPanel.add(VoucherPayment, "voucherCard");
@@ -2016,7 +2086,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addGroup(paymentPanelLayout.createSequentialGroup()
                         .addComponent(paymentSelectorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(paymentDetailsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(paymentDetailsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
                     .addComponent(paymentOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -2035,15 +2105,45 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         cardPanel.add(invoicePanel, "invoiceCard");
 
+        lblBill.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblBill.setText("Bill Number : ");
+
+        txtBillNumber.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtBillNumber.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtBillNumber.setEnabled(false);
+
+        chkMember.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        chkMember.setText("Member");
+        chkMember.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkMemberActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout interfaceContainerPanelLayout = new javax.swing.GroupLayout(interfaceContainerPanel);
         interfaceContainerPanel.setLayout(interfaceContainerPanelLayout);
         interfaceContainerPanelLayout.setHorizontalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 968, Short.MAX_VALUE)
+            .addGroup(interfaceContainerPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblBill)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(chkMember)
+                .addContainerGap())
         );
         interfaceContainerPanelLayout.setVerticalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 743, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, interfaceContainerPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblBill)
+                    .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chkMember))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 703, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jLayeredPaneLayout = new javax.swing.GroupLayout(jLayeredPane);
@@ -2186,6 +2286,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtCardNoKeyPressHandler(evt);
     }//GEN-LAST:event_txtcardNoKeyReleased
 
+    private void chkMemberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkMemberActionPerformed
+        // TODO add your handling code here:
+        convertToMemberInvoice();
+    }//GEN-LAST:event_chkMemberActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PoshanaPayment;
     private javax.swing.JPanel VoucherPayment;
@@ -2207,6 +2312,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel cardPaymentPanel;
     private javax.swing.JComboBox cardTypeComboBox;
     private javax.swing.JPanel cashPaymentPanel;
+    private javax.swing.JCheckBox chkMember;
     private javax.swing.JPanel coopCreditpaymentPanel;
     private javax.swing.JPanel interfaceContainerPanel;
     private javax.swing.JTable invoiceItemTable;

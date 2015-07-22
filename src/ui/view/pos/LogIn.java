@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
 import model.pos.Counter;
 import model.pos.CounterLogin;
-import model.pos.User;
+import model.people.User;
 import org.apache.log4j.Logger;
 import util.DoubleFilter;
 import util.Utilities;
