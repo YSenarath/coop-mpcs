@@ -1,11 +1,13 @@
 package util;
 
-public class KeyValueContainer {
+import java.io.Serializable;
 
-    private final int key;
+ public class KeyValueContainer implements Serializable {
+
+    private final String key;
     private final String value;
 
-    public KeyValueContainer(int key, String value) {
+    public KeyValueContainer(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -15,7 +17,7 @@ public class KeyValueContainer {
         return value;
     }
 
-    public int getKey() {
+    public String getKey() {
         return key;
     }
 

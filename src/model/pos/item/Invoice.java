@@ -37,20 +37,6 @@ public class Invoice {
         this.payments = null;
     }
 
-//    public Invoice(int invoiceNo, String shiftId, int counterId, String date, String time, int itemCount, double netTotal, double discount, double amountPaid, ArrayList<InvoiceItem> invoiceItems, ArrayList<Payment> payments) {
-//        this.invoiceNo = invoiceNo;
-//        this.shiftId = shiftId;
-//        this.counterId = counterId;
-//        this.date = date;
-//        this.time = time;
-//        this.itemCount = itemCount;
-//        this.netTotal = netTotal;
-//        this.discount = discount;
-//        this.amountPaid = amountPaid;
-//        this.invoiceItems = invoiceItems;
-//        this.payments = payments;
-//    }
-//
     public Invoice(int invoiceNo, int shiftId, int counterId, String date, String time, double netTotal) {
         this.invoiceNo = invoiceNo;
         this.shiftId = shiftId;

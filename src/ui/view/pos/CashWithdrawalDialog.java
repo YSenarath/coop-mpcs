@@ -2,13 +2,14 @@ package ui.view.pos;
 
 import controller.pos.CashWithdrawalController;
 import controller.pos.CounterController;
-import controller.pos.CounterLoginController;
 import controller.pos.SettingsController;
 import controller.pos.TransactionController;
 import controller.pos.UserController;
+import database.connector.DatabaseInterface;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -29,17 +30,18 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(CashWithdrawalDialog.class);
-    private final POSMDIInterface parent;
+    private final CounterLogin counterLogin;
     private CashWithdrawal cashWithdrawal;
 
     // </editor-fold>
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Constructor">
-    public CashWithdrawalDialog(java.awt.Frame parent, boolean modal) {
+    public CashWithdrawalDialog(POSMDIInterface parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        this.parent = (POSMDIInterface) parent;
+        this.counterLogin = parent.getCounterLogin();
+
         setLocationRelativeTo(null);
         performKeyBinding();
 
@@ -86,41 +88,45 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
     private void showInfo() {
         logger.debug("showInfo invoked");
 
-        CashWithdrawal lastCashWithdrawal;
         try {
 
-            lastCashWithdrawal = CashWithdrawalController.getLastWithdrawalId();
-            if (lastCashWithdrawal != null) {
-                cashWithdrawal = new CashWithdrawal(lastCashWithdrawal.getWithdrawalId() + 1);
-                lblCashWithrawalNoVal.setText(Utilities.formatId("CW", 5, lastCashWithdrawal.getWithdrawalId() + 1));
+            int lastCashWithdrawalId = CashWithdrawalController.getLastWithdrawalId();
+            if (lastCashWithdrawalId > 0) {
+                cashWithdrawal = new CashWithdrawal(lastCashWithdrawalId + 1);
+                lblCashWithrawalNoVal.setText(Utilities.convertKeyToString(lastCashWithdrawalId + 1, DatabaseInterface.CASH_WITHDRAWAL));
             } else {
                 cashWithdrawal = new CashWithdrawal(1);
-                lblCashWithrawalNoVal.setText(Utilities.formatId("CW", 5, 1));
+                lblCashWithrawalNoVal.setText(Utilities.convertKeyToString(1, DatabaseInterface.CASH_WITHDRAWAL));
             }
 
             String counterId = Utilities.loadProperty("counter");
             lblCounter.setText(counterId);
-            cashWithdrawal.setCounterId(Integer.parseInt(counterId));
-
-            CounterLogin counterLogin = parent.getCounterLogin();
 
             String userName = counterLogin.getUserName();
             lblUser.setText(userName);
-            cashWithdrawal.setUsername(userName);
+            cashWithdrawal.setShiftId(counterLogin.getShiftId());
 
-            lblShiftVal.setText(Utilities.formatId("SF", 5, counterLogin.getShiftId()));
-            lblSignOnDate.setText(counterLogin.getDate());
-            lblSignOnTime.setText(Utilities.convert24hTo12h(counterLogin.getTime()));
+            lblShiftVal.setText(Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
+            lblSignOnDate.setText(counterLogin.getLogInDate());
+            lblSignOnTime.setText(Utilities.convert24hTo12h(counterLogin.getLogInTime()));
             lblInitialAmount.setText(String.format("%.2f", counterLogin.getInitialAmount()));
 
-            lblCWDate.setText(Utilities.getCurrentDate());
+            lblCWDate.setText(Utilities.getStringDate(Utilities.getCurrentDate()));
             lblCWTime.setText(Utilities.getCurrentTime(false));
 
-            cashWithdrawal.setDate(Utilities.getCurrentDate());
+            cashWithdrawal.setDate(Utilities.getStringDate(Utilities.getCurrentDate()));
             cashWithdrawal.setTime(Utilities.getCurrentTime(true));
 
             Counter counter = CounterController.getCounter(Integer.parseInt(Utilities.loadProperty("counter")));
-            lblCurrentAmountVal.setText(String.format("%.2f", counter.getCurrentAmount()));
+
+            ArrayList<CashWithdrawal> cashWithdrawals = CashWithdrawalController.getCashWithdrawals(counterLogin.getShiftId());
+            double totalWithdrawalsAmount = 0;
+            for (int itr = 0; itr < cashWithdrawals.size(); itr++) {
+                totalWithdrawalsAmount += cashWithdrawals.get(itr).getAmount();
+            }
+
+            double currentWithdrawalbleAmount = counter.getCurrentAmount() - totalWithdrawalsAmount;
+            lblCurrentAmountVal.setText(String.format("%.2f", currentWithdrawalbleAmount));
 
             Setting mainCashierSetting = SettingsController.getSetting("main_cashier_name");
             if (mainCashierSetting != null) {
@@ -224,7 +230,7 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         if (0 < withdrawalAmount && withdrawalAmount <= maxWithdrawableAmount) {
             String userPassword = new String(txtCashierPassword.getPassword());
             try {
-                if (UserController.isUserAuthenticated(parent.getCounterLogin().getUserName(), userPassword)) {
+                if (UserController.isUserAuthenticated(counterLogin.getUserName(), userPassword)) {
                     String masterPassword = new String(txtChiefCashierPassword.getPassword());
                     if (masterPassword.equals(SettingsController.getSetting("main_cashier_password").getValue())) {
                         cashWithdrawal.setAmount(withdrawalAmount);
@@ -601,14 +607,14 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         cashWithdrawalPanelLayout.setHorizontalGroup(
             cashWithdrawalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(cashWithdrawalInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(infoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(infoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         cashWithdrawalPanelLayout.setVerticalGroup(
             cashWithdrawalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cashWithdrawalPanelLayout.createSequentialGroup()
                 .addComponent(cashWithdrawalInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(infoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(infoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

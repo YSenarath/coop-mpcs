@@ -1,53 +1,69 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package controller.inventory;
 
 import database.connector.DBConnection;
+import database.connector.DatabaseInterface;
 import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import model.inventory.Category;
-import database.connector.DatabaseInterface;
 import java.util.ArrayList;
+import model.inventory.Category;
+import util.Utilities;
 
-public class CategoryController implements DatabaseInterface {
+/**
+ *
+ * @author Nadheesh
+ */
+public class CategoryController {
 
-    public static ArrayList<Category> getAllCategorys(int departmentId) throws SQLException {
-
+    public static ArrayList<Category> getCategories(String departmentId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + CATAGORY + " WHERE department_id=? ";
+        String query = "SELECT category_id, category_name, description , discounted FROM " + DatabaseInterface.CATEGORY + " WHERE department_id=?";
+
         Object[] ob = {
-            departmentId
+            Utilities.convertKeyToInteger(departmentId)
         };
+
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
 
-        ArrayList<Category> categorys = new ArrayList();
+        ArrayList<Category> categories = new ArrayList();
+
         while (resultSet.next()) {
-            Category category = new Category(
-                    resultSet.getInt("category_id"),
-                    resultSet.getInt("department_id"),
+
+            categories.add(new Category(
+                    Utilities.convertKeyToString(resultSet.getInt("category_id"),
+                            DatabaseInterface.CATEGORY),
                     resultSet.getString("category_name"),
+                    departmentId,
                     resultSet.getString("description"),
                     resultSet.getBoolean("discounted")
-            );
-            categorys.add(category);
+            ));
+
         }
-        return categorys;
+        return categories;
     }
 
-    public static Category getCategory(int departmentId, int categoryId) throws SQLException {
-        Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + CATAGORY + " WHERE category_id=? AND department_id=? ";
-        Object[] ob = {
-            categoryId,
-            departmentId
-        };
-        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+    public static Category getCategory(String departmentId, String categoryId) throws SQLException {
 
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT category_id, category_name, description , discounted FROM " + DatabaseInterface.CATEGORY + " WHERE department_id=? AND category_id = ?";
+
+        Object[] ob = {
+            Utilities.convertKeyToInteger(departmentId),
+            Utilities.convertKeyToInteger(categoryId)
+        };
+
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
         if (resultSet.next()) {
             return new Category(
-                    resultSet.getInt("category_id"),
-                    resultSet.getInt("department_id"),
+                    categoryId,
                     resultSet.getString("category_name"),
+                    departmentId,
                     resultSet.getString("description"),
                     resultSet.getBoolean("discounted")
             );
@@ -55,4 +71,42 @@ public class CategoryController implements DatabaseInterface {
         return null;
     }
 
+    public static boolean addCateogry(Category category) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        int id = Utilities.convertKeyToInteger(category.getCategoryId());
+
+        Integer idObj;
+
+        if (id == 0 || id == -1) {
+            idObj = null;
+        } else {
+            idObj = new Integer(id);
+        };
+
+        String query = "INSERT INTO " + DatabaseInterface.CATEGORY + " (category_id, category_name, description, department_id ) VALUES (?,?,?,?)";
+        int depAdded = -1;
+        Object[] objs = {
+            idObj,
+            category.getCategoryName(),
+            category.getDescription(),
+            Utilities.convertKeyToInteger(category.getDepartmentId())
+        };
+        depAdded = DBHandler.setData(connection, query, objs);
+        return depAdded == 1;
+    }
+
+    public static boolean setDiscounted(Connection connection, int cid, int did) throws SQLException {
+
+        String query = "UPDATE " + DatabaseInterface.CATEGORY + " SET discounted= TRUE WHERE category_id=? AND department_id=?";
+        int depAdded = -1;
+        Object[] objs = {
+            cid,
+            did
+        };
+
+        depAdded = DBHandler.setData(connection, query, objs);
+        return depAdded == 1;
+    }
 }

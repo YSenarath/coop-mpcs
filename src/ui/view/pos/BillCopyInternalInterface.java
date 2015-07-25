@@ -7,6 +7,7 @@ import controller.pos.CounterController;
 import controller.pos.CounterLoginController;
 import controller.pos.InvoiceController;
 import controller.pos.InvoiceItemController;
+import database.connector.DatabaseInterface;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -29,7 +30,6 @@ import model.pos.payment.CashPayment;
 import model.pos.item.Invoice;
 import model.pos.item.InvoiceItem;
 import org.apache.log4j.Logger;
-import util.KeyValueContainer;
 import util.Utilities;
 
 public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
@@ -160,7 +160,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     //validate invoice number
     private boolean isValidInvoiceNumber(String invoiceNo) {
         invoiceNo = invoiceNo.toUpperCase();
-        if (invoiceNo.startsWith("B")) {
+        if (invoiceNo.startsWith("I")) {
             invoiceNo = invoiceNo.substring(1);
             try {
                 int no = Integer.parseInt(invoiceNo);
@@ -215,7 +215,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
             lblBillDateVal.setText(invoice.getDate());
             lblBillTimeVal.setText(Utilities.convert24hTo12h(invoice.getTime()));
-            lblShiftVal.setText(Utilities.formatId("SF", 5, invoice.getShiftId()));
+            lblShiftVal.setText(Utilities.convertKeyToString(invoice.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
             lblBillCashierVal.setText(CounterLoginController.getCounterLogin(invoice.getShiftId()).getUserName());
             txtNetAmount.setText(String.format("%.2f", invoice.getNetTotal()));
 
@@ -223,8 +223,8 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             double netDiscount = 0;
             for (InvoiceItem InvoiceItem : invoiceItems) {
                 Object[] ob = {
-                    new KeyValueContainer(InvoiceItem.getProductId(), util.Utilities.formatId("P", 4, InvoiceItem.getProductId())),
-                    ProductController.getProduct(InvoiceItem.getProductId()).getDescription(),
+                    Utilities.convertKeyToString(InvoiceItem.getProductId(), DatabaseInterface.PRODUCT),
+                    ProductController.getProduct(Utilities.convertKeyToString(InvoiceItem.getProductId(), DatabaseInterface.PRODUCT)).getDescription(),
                     String.format("%.2f", InvoiceItem.getUnitPrice()),
                     String.format("%.2f", InvoiceItem.getQty()),
                     String.format("%.2f", InvoiceItem.getDiscount()),
@@ -406,22 +406,22 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblBill1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtSearchBillNO, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
                 .addComponent(lblShiftDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblShiftVal, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblShiftVal, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(lblBillCashierDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblBillCashierVal, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblBillCashierVal, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(lblBillDateDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblBillDateVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblBillDateVal, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(lblBillTimeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblBillTimeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblBillTimeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         billInfoPanelLayout.setVerticalGroup(
@@ -594,7 +594,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                                 .addComponent(txtCashPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel5)))
-                        .addGap(0, 287, Short.MAX_VALUE))
+                        .addGap(0, 122, Short.MAX_VALUE))
                     .addGroup(billPaymentSummeryPanelLayout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addGap(58, 58, 58)
@@ -679,7 +679,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         billItemPanelLayout.setVerticalGroup(
             billItemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(billItemPanelLayout.createSequentialGroup()
-                .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
+                .addComponent(billItemSP, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(billPaymentSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -720,13 +720,13 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1110, Short.MAX_VALUE)
+            .addGap(0, 945, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 675, Short.MAX_VALUE)
+            .addGap(0, 600, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );

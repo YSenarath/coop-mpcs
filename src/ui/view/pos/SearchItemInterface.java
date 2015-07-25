@@ -123,7 +123,7 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
         departmentComboBoxListner = (ActionEvent e) -> {
             if (departmentComboBox.getSelectedIndex() > -1) {
-                setCategories(((KeyValueContainer) departmentComboBox.getSelectedItem()).getKey());
+                setCategories(((KeyValueContainer)departmentComboBox.getSelectedItem()).getKey());
             }
         };
         departmentComboBox.addActionListener(departmentComboBoxListner);
@@ -172,9 +172,9 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         try {
             departmentComboBox.removeActionListener(departmentComboBoxListner);
             departmentComboBoxModel.removeAllElements();
-            ArrayList<Department> departments = DepartmentController.getAllDepartments();
+            ArrayList<Department> departments = DepartmentController.getDepartments();
             departments.stream().forEach((department) -> {
-                departmentComboBoxModel.addElement(new KeyValueContainer(department.getDepartmentId(), department.getName()));
+                departmentComboBoxModel.addElement(new KeyValueContainer(department.getDepartmentId(), department.getDepartmentName()));
             });
 
             departmentComboBox.setModel(departmentComboBoxModel);
@@ -187,14 +187,14 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
     }
 
     //load categories to 
-    private void setCategories(int departmentId) {
+    private void setCategories(String departmentId) {
         logger.debug("setCategories invoked");
 
         try {
             categoryComboBoxModel.removeAllElements();
-            ArrayList<Category> categories = CategoryController.getAllCategorys(departmentId);
+            ArrayList<Category> categories = CategoryController.getCategories(departmentId);
             categories.stream().forEach((category) -> {
-                categoryComboBoxModel.addElement(new KeyValueContainer(category.getCategoryId(), category.getName()));
+                categoryComboBoxModel.addElement(new KeyValueContainer(category.getCategoryId(), category.getCategoryName()));
             });
 
             categoryComboBox.setModel(categoryComboBoxModel);
@@ -252,8 +252,8 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
             btnSelect.setEnabled(false);
             //Validations
             String searchQuery = txtProduct.getText();
-            int departmentId;
-            int categoryId;
+            String departmentId;
+            String categoryId;
 
             if (chkBoxProduct.isSelected() && searchQuery.isEmpty()) {
                 Utilities.showMsgBox("Please enter a valid query", "Not enough data", JOptionPane.INFORMATION_MESSAGE);
@@ -286,10 +286,10 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
                 for (Product product : searchResults) {
                     Object[] ob = {
-                        new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())),
-                        product.getName(),
+                        product.getProductId(),
+                        product.getProductName(),
                         product.getDescription(),
-                        product.getBarcode(),
+                        product.getProductBarCode(),
                         product.getPackSize(),
                         product.getUnit()
                     };
@@ -311,10 +311,10 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
                 for (Product product : searchResults) {
                     Object[] ob = {
-                        new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())),
-                        product.getName(),
+                        product.getProductId(),
+                        product.getProductName(),
                         product.getDescription(),
-                        product.getBarcode(),
+                        product.getProductBarCode(),
                         product.getPackSize(),
                         product.getUnit()
                     };
@@ -335,10 +335,10 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
                 for (Product product : searchResults) {
                     Object[] ob = {
-                        new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())),
-                        product.getName(),
+                         product.getProductId(),
+                        product.getProductName(),
                         product.getDescription(),
-                        product.getBarcode(),
+                        product.getProductBarCode(),
                         product.getPackSize(),
                         product.getUnit()
                     };
@@ -357,10 +357,10 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
                 for (Product product : searchResults) {
                     Object[] ob = {
-                        new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())),
-                        product.getName(),
+                        product.getProductId(),
+                        product.getProductName(),
                         product.getDescription(),
-                        product.getBarcode(),
+                        product.getProductBarCode(),
                         product.getPackSize(),
                         product.getUnit()
                     };
@@ -381,10 +381,10 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
                 for (Product product : searchResults) {
                     Object[] ob = {
-                        new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())),
-                        product.getName(),
+                        product.getProductId(),
+                        product.getProductName(),
                         product.getDescription(),
-                        product.getBarcode(),
+                        product.getProductBarCode(),
                         product.getPackSize(),
                         product.getUnit()
                     };
@@ -416,7 +416,7 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
     //Select Item
     private void selectItem() {
-        logger.warn("selectItem not implemented");
+        logger.debug("selectItem Invoked");
 
         //get selected item from table
         int row = productInfoTable.getSelectedRow();
@@ -425,7 +425,7 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
             Utilities.showMsgBox("Please select a product first", "no product selected", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        int productId = ((KeyValueContainer) productInfoTable.getValueAt(row, column)).getKey();
+        String productId =  productInfoTable.getValueAt(row, column).toString();
 
         if (invoiceInterface != null) {
 
@@ -545,11 +545,11 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         itemInfoPanel.setLayout(itemInfoPanelLayout);
         itemInfoPanelLayout.setHorizontalGroup(
             itemInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemInfoSP, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+            .addComponent(itemInfoSP, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
         );
         itemInfoPanelLayout.setVerticalGroup(
             itemInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
         );
 
         btnClear.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -667,7 +667,6 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
                         .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(20, 20, 20)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(itemInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)

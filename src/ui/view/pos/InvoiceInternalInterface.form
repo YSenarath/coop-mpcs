@@ -45,7 +45,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="1034" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="958" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Component id="interfaceContainerPanel" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -53,7 +53,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="753" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="569" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Component id="interfaceContainerPanel" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -75,14 +75,18 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="cardPanel" alignment="0" pref="968" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lblBill" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="txtBillNumber" min="-2" pref="165" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="chkMember" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="lblBill" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="txtBillNumber" min="-2" pref="165" max="-2" attributes="0"/>
+                              <EmptySpace pref="664" max="32767" attributes="0"/>
+                              <Component id="chkMember" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="cardPanel" alignment="0" pref="1006" max="32767" attributes="0"/>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -97,7 +101,7 @@
                           <Component id="chkMember" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="cardPanel" pref="703" max="32767" attributes="0"/>
+                      <Component id="cardPanel" pref="572" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -129,20 +133,20 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="itemTableSP" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="billSummeryPanel" alignment="1" max="32767" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
+                                          <Component id="productPanel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="billButtonPanel" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" attributes="0">
                                           <Component id="btnInvoiceExit" min="-2" pref="125" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="btnReset" min="-2" pref="125" max="-2" attributes="0"/>
                                           <EmptySpace max="32767" attributes="0"/>
                                           <Component id="btnPayment" min="-2" pref="130" max="-2" attributes="0"/>
                                       </Group>
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <Component id="productPanel" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="32767" attributes="0"/>
-                                          <Component id="billButtonPanel" min="-2" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="itemTableSP" max="32767" attributes="0"/>
+                                      <Component id="billSummeryPanel" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -157,7 +161,7 @@
                                       <Component id="productPanel" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="itemTableSP" pref="352" max="32767" attributes="0"/>
+                                  <Component id="itemTableSP" pref="168" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="billSummeryPanel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -541,11 +545,11 @@
                                       <Component id="lblItemNoDisplay" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Component id="lblItemCount" min="-2" pref="147" max="-2" attributes="0"/>
-                                      <EmptySpace pref="44" max="32767" attributes="0"/>
+                                      <EmptySpace pref="43" max="32767" attributes="0"/>
                                       <Component id="lblItemDiscountDisplay" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="lblItemDiscounts" min="-2" pref="147" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="99" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="lblNetDisplay" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="lblNetTotal" min="-2" pref="147" max="-2" attributes="0"/>
@@ -557,13 +561,15 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace max="32767" attributes="0"/>
-                                      <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="lblNetTotal" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                          <Component id="lblNetDisplay" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                          <Component id="lblItemDiscounts" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                          <Component id="lblItemDiscountDisplay" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                          <Component id="lblItemCount" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                          <Component id="lblItemNoDisplay" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="lblNetTotal" alignment="0" min="-2" pref="37" max="-2" attributes="0"/>
+                                          <Component id="lblNetDisplay" alignment="0" min="-2" pref="37" max="-2" attributes="0"/>
+                                          <Component id="lblItemDiscounts" alignment="0" min="-2" pref="37" max="-2" attributes="0"/>
+                                          <Component id="lblItemDiscountDisplay" alignment="0" min="-2" pref="37" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="lblItemCount" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
+                                              <Component id="lblItemNoDisplay" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
+                                          </Group>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -741,12 +747,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="paymentInfoPanel" alignment="0" max="32767" attributes="0"/>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="btnConfirm" min="-2" pref="125" max="-2" attributes="0"/>
-                                          <EmptySpace max="32767" attributes="0"/>
-                                          <Component id="btnPrevious" min="-2" pref="125" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="paymentInfoPanel" max="32767" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                               <Group type="102" alignment="0" attributes="0">
@@ -754,14 +755,19 @@
                                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                                   <Component id="btnRemove" min="-2" pref="125" max="-2" attributes="0"/>
                                               </Group>
-                                              <Component id="paymentDetailsPanel" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="paymentDetailsPanel" max="32767" attributes="0"/>
                                               <Component id="paymentSelectorPanel" alignment="0" max="32767" attributes="0"/>
                                           </Group>
-                                          <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
                                           <Component id="paymentOptionsPanel" max="32767" attributes="0"/>
                                       </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="btnConfirm" min="-2" pref="125" max="-2" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="btnPrevious" min="-2" pref="125" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -773,7 +779,7 @@
                                       <Group type="102" attributes="0">
                                           <Component id="paymentSelectorPanel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="paymentDetailsPanel" pref="374" max="32767" attributes="0"/>
+                                          <Component id="paymentDetailsPanel" pref="337" max="32767" attributes="0"/>
                                       </Group>
                                       <Component id="paymentOptionsPanel" max="32767" attributes="0"/>
                                   </Group>
@@ -782,7 +788,7 @@
                                       <Component id="btnAddPayment" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                       <Component id="btnRemove" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="87" max="-2" attributes="0"/>
                                   <Component id="paymentInfoPanel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
@@ -811,12 +817,12 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="ivoicePaymentsSP" alignment="1" pref="0" max="32767" attributes="0"/>
+                                  <Component id="ivoicePaymentsSP" alignment="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="ivoicePaymentsSP" alignment="0" pref="0" max="32767" attributes="0"/>
+                                  <Component id="ivoicePaymentsSP" alignment="1" pref="0" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>
                           </Layout>
@@ -884,16 +890,16 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="lblBillValueDisplay" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="57" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="lblBillValueVal" min="-2" pref="147" max="-2" attributes="0"/>
-                                      <EmptySpace pref="55" max="32767" attributes="0"/>
+                                      <EmptySpace pref="12" max="32767" attributes="0"/>
                                       <Component id="lblChangeDisplay" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="lblChangeVal" min="-2" pref="147" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
                                       <Component id="lblTotalDisplay" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="lblTotalVal" min="-2" pref="147" max="-2" attributes="0"/>
@@ -903,21 +909,28 @@
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <EmptySpace pref="43" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                                              <Component id="lblChangeVal" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                              <Component id="lblChangeDisplay" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                              <Component id="lblBillValueVal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="lblBillValueDisplay" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Group type="102" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="lblChangeDisplay" min="-2" pref="37" max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="1" attributes="0">
+                                                      <Component id="lblBillValueDisplay" min="-2" pref="30" max="-2" attributes="0"/>
+                                                      <Component id="lblBillValueVal" min="-2" pref="30" max="-2" attributes="0"/>
+                                                  </Group>
+                                              </Group>
+                                              <EmptySpace min="40" max="32767" attributes="0"/>
                                           </Group>
-                                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                                              <Component id="lblTotalVal" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                              <Component id="lblTotalDisplay" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
+                                          <Group type="102" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="lblTotalDisplay" min="-2" pref="37" max="-2" attributes="0"/>
+                                                  <Component id="lblTotalVal" min="-2" pref="37" max="-2" attributes="0"/>
+                                                  <Component id="lblChangeVal" min="-2" pref="37" max="-2" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -1083,10 +1096,10 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="lblCashPaymentAmountDisplay" pref="150" max="32767" attributes="0"/>
+                                          <Component id="lblCashPaymentAmountDisplay" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="txtCashPaymentAmount" min="-2" pref="186" max="-2" attributes="0"/>
-                                          <EmptySpace pref="279" max="32767" attributes="0"/>
+                                          <EmptySpace pref="166" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1098,7 +1111,7 @@
                                               <Component id="lblCashPaymentAmountDisplay" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                                               <Component id="txtCashPaymentAmount" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="321" max="32767" attributes="0"/>
+                                          <EmptySpace pref="133" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1155,7 +1168,7 @@
                                                   <Component id="txtCardPaymentAmount" min="-2" pref="186" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
-                                          <EmptySpace pref="220" max="32767" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1177,7 +1190,7 @@
                                               <Component id="lblCashPaymentAmountDisplay1" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                                               <Component id="txtCardPaymentAmount" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="239" max="32767" attributes="0"/>
+                                          <EmptySpace pref="51" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1262,12 +1275,12 @@
                               <Layout>
                                 <DimensionLayout dim="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="629" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="464" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                                 <DimensionLayout dim="1">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="364" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="176" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                               </Layout>
@@ -1282,12 +1295,12 @@
                               <Layout>
                                 <DimensionLayout dim="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="629" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="464" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                                 <DimensionLayout dim="1">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="364" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="176" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                               </Layout>
@@ -1302,12 +1315,12 @@
                               <Layout>
                                 <DimensionLayout dim="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="629" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="464" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                                 <DimensionLayout dim="1">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="364" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="176" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                               </Layout>

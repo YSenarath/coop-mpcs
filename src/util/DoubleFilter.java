@@ -1,12 +1,13 @@
 package util;
 
 import java.awt.Toolkit;
+import java.io.Serializable;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
-public class DoubleFilter extends DocumentFilter {
+public class DoubleFilter extends DocumentFilter implements Serializable{
 
     private boolean isPositiveDouble(String text) {
         try {

@@ -21,10 +21,10 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
     private static final Logger logger = Logger.getLogger(SelectPriceInterface.class);
     private final InvoiceInternalInterface parent;
 
-    private final int productCode;
+    private final String productCode;
     private final ArrayList<Batch> batches;
 
-    private Map<Integer, Batch> batchMap;
+    private Map<String, Batch> batchMap;
 
     private boolean batchSelected = false;
 
@@ -33,7 +33,7 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Constructor">
-    public SelectPriceInterface(InvoiceInternalInterface parent, JDesktopPane desktopPane, int productCode, ArrayList<Batch> batches) {
+    public SelectPriceInterface(InvoiceInternalInterface parent, JDesktopPane desktopPane, String productCode, ArrayList<Batch> batches) {
         logger.debug("SelectPriceInterfa constructor invoked");
         initComponents();
 
@@ -54,7 +54,7 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2) {
-                    setSelectedBatch((int) itemPriceTable.getValueAt(row, 0));
+                    setSelectedBatch(itemPriceTable.getValueAt(row, 0).toString());
                 }
             }
         });
@@ -70,7 +70,7 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
 
     private void initiateBatchView() {
         logger.debug("initiateBatchView invoked");
-        lblItemCodeVal.setText(util.Utilities.formatId("P", 4, productCode));
+        lblItemCodeVal.setText(productCode);
 
         DefaultTableModel itemTableModel = (DefaultTableModel) itemPriceTable.getModel();
         itemTableModel.setRowCount(0);
@@ -80,15 +80,15 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
             batchMap.put(batch.getBatchId(), batch);
             Object[] ob = {
                 batch.getBatchId(),
-                batch.getExpDate(),
-                batch.getQuantity(),
-                batch.getUnitPrice()
+                batch.getExpirationDate(),
+                batch.getRecievedQuantity()-batch.getSoldQty(),
+                batch.getUnit_price()
             };
             itemTableModel.addRow(ob);
         }
     }
 
-    private void setSelectedBatch(int batchId) {
+    private void setSelectedBatch(String batchId) {
         logger.debug("setSelectedBatch invoked");
         parent.setProductBatch(batchMap.get(batchId));
         batchSelected = true;

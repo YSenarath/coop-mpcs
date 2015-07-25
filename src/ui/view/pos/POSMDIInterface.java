@@ -2,6 +2,7 @@ package ui.view.pos;
 
 import controller.pos.CounterLoginController;
 import controller.pos.TransactionController;
+import database.connector.DatabaseInterface;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,6 +60,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
         if (isDebugMode) {
             setTitle("MEGA COOP CITY POS : DEBUG MODE");
             btnCashierLog.setText("Debug Mode");
+
         }
         performKeyBinding();
 
@@ -123,6 +125,34 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         setLocationRelativeTo(null);
         setIconImage(new ImageIcon(getClass().getResource("/images/pos/pos_icon.png")).getImage());
+        showTime();
+        //billTaskPane.setCollapsed(true);
+        //billTaskPane.setCollapsed(false);
+        //otherTaskPane.setCollapsed(true);
+        lblCounter.setText(Utilities.loadProperty("counter"));
+
+        try {
+            this.counterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
+        } catch (SQLException ex) {
+            logger.error("SQL Error : " + ex.getMessage());
+        }
+        if (this.counterLogin == null || this.counterLogin.isShiftEnded()) {
+            Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(3);
+        } else {
+            lblCashier.setText(this.counterLogin.getUserName());
+            lblShift.setText(Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
+            isCashierLogedIn = true;
+        }
+        lblTaskLogo.setVisible(false);
+
+        isMainActivityRunning = false;
+        isInvoiceRunning = false;
+        isBillCopyRunning = false;
+        isbillRefundRunning = false;
+    }
+
+    private void showTime() {
         ActionListener timerListener = (ActionEvent e) -> {
             Date currentDate = new Date();
 
@@ -137,29 +167,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
         timer.setInitialDelay(0);
         timer.start();
 
-        //billTaskPane.setCollapsed(true);
-        //billTaskPane.setCollapsed(false);
-        //otherTaskPane.setCollapsed(true);
-        lblCounter.setText(Utilities.loadProperty("counter"));
-        try {
-            this.counterLogin = CounterLoginController.getLastCounterLogin(Integer.parseInt(Utilities.loadProperty("counter")));
-            if (this.counterLogin == null || this.counterLogin.isShiftEnded()) {
-                Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
-                System.exit(3);
-            } else {
-                lblCashier.setText(this.counterLogin.getUserName());
-                lblShift.setText(Utilities.formatId("SF", 5, this.counterLogin.getShiftId()));
-                isCashierLogedIn = true;
-            }
-        } catch (SQLException ex) {
-            logger.error("SQL Error : " + ex.getMessage());
-        }
-        lblTaskLogo.setVisible(false);
-
-        isMainActivityRunning = false;
-        isInvoiceRunning = false;
-        isBillCopyRunning = false;
-        isbillRefundRunning = false;
     }
 
     public CounterLogin getCounterLogin() {
@@ -179,6 +186,9 @@ public class POSMDIInterface extends javax.swing.JFrame {
         btnHoldSale.setEnabled(false);
         btnRestoreSale.setEnabled(false);
         btnNewSale.setEnabled(true);
+        if (!value) {
+            this.invoiceInterface = null;
+        }
     }
 
     private boolean isInvoiceRunning() {
@@ -188,6 +198,9 @@ public class POSMDIInterface extends javax.swing.JFrame {
     public void setIsBillCopyRunning(boolean value) {
         this.isBillCopyRunning = value;
         btnBillCopy.setEnabled(true);
+        if (!value) {
+            this.billCopyInterface = null;
+        }
     }
 
     private boolean isBillCopyRunning() {
@@ -197,6 +210,9 @@ public class POSMDIInterface extends javax.swing.JFrame {
     public void setIsBillRefundRunning(boolean value) {
         this.isbillRefundRunning = value;
         btnBillRefund.setEnabled(true);
+        if (!value) {
+            this.billRefundInterface = null;
+        }
     }
 
     public void enableCheckStockBtn() {
@@ -389,9 +405,9 @@ public class POSMDIInterface extends javax.swing.JFrame {
          Important :
          1.NOT IMPLEMENTED - Show log of UI to print the summery for cashier - 
          */
-        logger.warn("NOT IMPLEMENTED - Show log of UI to print the summery for cashier");
-        logger.warn("Check for unfinished business");
-
+//        logger.warn("NOT IMPLEMENTED - Show log of UI to print the summery for cashier");
+//        logger.warn("Check for unfinished business");
+//
         if (isCashierLogedIn) {
             if (isInvoiceRunning() || isBillRefundRunning() || isBillCopyRunning()) {
                 Utilities.showMsgBox("Please exit all the POS interfaces.", "Cannot Log off", JOptionPane.ERROR_MESSAGE);
@@ -400,21 +416,32 @@ public class POSMDIInterface extends javax.swing.JFrame {
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to log off ?", "Warning", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
 
-                //set the last shift from this machine to eneded
+                //set the last shift from this machine to ended
+                //Update counter amount
+                //Ui to show expected amount ,enter actual amount
                 if (counterLogin == null || counterLogin.isShiftEnded()) {
                     Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
+
+                    //Interface to show expected current amount and actual amount
+                    new CashierLogOff(this, true).setVisible(true);
+
+                    //Set log off time and date
+                    counterLogin.setLogOffTime(Utilities.getCurrentTime(true));
+                    counterLogin.setLogOffDate(Utilities.getStringDate(Utilities.getCurrentDate()));
                     boolean result = TransactionController.performLogOffTransaction(counterLogin);
                     if (result) {
                         logger.info("Shift ended : " + result);
+                        logger.info("User : " + counterLogin.getUserName() + " logged off");
+
+                        isCashierLogedIn = false;
+                        logger.info("isCashierLogedIn :" + isCashierLogedIn);
+                        setLogOffControls();
+                    } else {
+                        logger.warn("Sign off failure");
                     }
                 }
 
-                logger.info("User : " + counterLogin.getUserName() + " logged off");
-
-                isCashierLogedIn = false;
-                logger.info("isCashierLogedIn :" + isCashierLogedIn);
-                setLogOffControls();
             }
 
         }
@@ -423,6 +450,8 @@ public class POSMDIInterface extends javax.swing.JFrame {
     //Manager features
     private void manager() {
         logger.warn("manager not implemented");
+
+        //Give manager the report of daily transactions
         if (isCashierLogedIn) {
             logger.warn("User still logged in ");
         }
@@ -606,8 +635,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addComponent(otherTaskPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(logoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(logoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder2 = new org.jdesktop.swingx.border.DropShadowBorder();
@@ -728,7 +756,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
-                        .addGap(0, 444, Short.MAX_VALUE)
+                        .addGap(0, 349, Short.MAX_VALUE)
                         .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 586, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -737,7 +765,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
+                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 597, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblWelcome)
                 .addContainerGap())
@@ -757,11 +785,11 @@ public class POSMDIInterface extends javax.swing.JFrame {
         desktopContainerPanel.setLayout(desktopContainerPanelLayout);
         desktopContainerPanelLayout.setHorizontalGroup(
             desktopContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1050, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
         );
         desktopContainerPanelLayout.setVerticalGroup(
             desktopContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 669, Short.MAX_VALUE)
         );
 
         cardContainerPanel.add(desktopContainerPanel, "desktopCard");
@@ -822,24 +850,23 @@ public class POSMDIInterface extends javax.swing.JFrame {
                         .addComponent(jxTaskPaneContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cardContainerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 955, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(counterInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jxTaskPaneContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap()
+                .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cardContainerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(counterInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jxTaskPaneContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 541, Short.MAX_VALUE))
         );
 
         pack();

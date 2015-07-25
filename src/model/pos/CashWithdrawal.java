@@ -3,32 +3,29 @@ package model.pos;
 public class CashWithdrawal {
 
     private int withdrawalId;
-    private String username;
-    private int counterId;
+    private int shiftId;
     private String time;
     private String date;
     private double amount;
 
     public CashWithdrawal(int withdrawalId) {
         this.withdrawalId = withdrawalId;
-        this.username = "";
-        this.counterId = 0;
-        this.time = "";
-        this.date = "";
-        this.amount = 0;
+        this.shiftId = -1;
+        this.time = null;
+        this.date = null;
+        this.amount = -1;
     }
 
-    public CashWithdrawal(int withdrawalId, String username, int counterId, String time, String date, double amount) {
+    public CashWithdrawal(int withdrawalId, int shiftId, String time, String date, double amount) {
         this.withdrawalId = withdrawalId;
-        this.username = username;
-        this.counterId = counterId;
+        this.shiftId = shiftId;
         this.time = time;
         this.date = date;
         this.amount = amount;
     }
 
     public boolean isValidWithdrawal() {
-        return withdrawalId > 0 && !username.equals("") && counterId > 0 && !time.equals("") && !date.equals("") && amount > 0;
+        return getWithdrawalId() > 0 && getShiftId() > 0 && !time.equals("") && !date.equals("") && getAmount() > 0;
     }
 
     /**
@@ -46,31 +43,17 @@ public class CashWithdrawal {
     }
 
     /**
-     * @return the username
+     * @return the shiftId
      */
-    public String getUsername() {
-        return username;
+    public int getShiftId() {
+        return shiftId;
     }
 
     /**
-     * @param username the username to set
+     * @param shiftId the shiftId to set
      */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * @return the counterId
-     */
-    public int getCounterId() {
-        return counterId;
-    }
-
-    /**
-     * @param counterId the counterId to set
-     */
-    public void setCounterId(int counterId) {
-        this.counterId = counterId;
+    public void setShiftId(int shiftId) {
+        this.shiftId = shiftId;
     }
 
     /**

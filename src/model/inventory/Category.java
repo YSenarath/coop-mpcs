@@ -1,107 +1,108 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package model.inventory;
 
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Nadheesh
+ */
 public class Category {
 
-    private int categoryId;
-    private int departmentId;
-
-    private String name;
+    private String categoryId;
+    private String categoryName;
+    private String departmentId;
     private String description;
-
     private boolean discounted;
-    private CategoryDiscount categoryDiscount;
+    private ArrayList<Product> products;
 
-    public Category(int categoryId, int departmentId, String name, String description, boolean discounted) {
+    public Category(String categoryId, String departmentId) {
         this.categoryId = categoryId;
         this.departmentId = departmentId;
-        this.name = name;
+    }
+
+    public Category(String categoryId, String categoryName, String departmentId, String description, boolean discounted, ArrayList<Product> products) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.departmentId = departmentId;
         this.description = description;
         this.discounted = discounted;
-        this.categoryDiscount = null;
+        this.products = products;
     }
 
-    /**
-     * @return the categoryId
-     */
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    /**
-     * @param categoryId the categoryId to set
-     */
-    public void setCategoryId(int categoryId) {
+    public Category(String categoryId, String categoryName, String departmentId, String description, boolean discounted) {
         this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.departmentId = departmentId;
+        this.description = description;
+        this.discounted = discounted;
     }
 
-    /**
-     * @return the departmentId
-     */
-    public int getDepartmentId() {
+    public Category(String categoryId, String categoryName, String departmentId, String description, ArrayList<Product> products) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.departmentId = departmentId;
+        this.description = description;
+        this.products = products;
+    }
+
+    public Category(String categoryId, String categoryName, String departmentId, String description) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.departmentId = departmentId;
+        this.description = description;
+    }
+
+    public String getDepartmentId() {
         return departmentId;
     }
 
-    /**
-     * @param departmentId the departmentId to set
-     */
-    public void setDepartmentId(int departmentId) {
+    public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return the discounted
-     */
     public boolean isDiscounted() {
         return discounted;
     }
 
-    /**
-     * @param discounted the discounted to set
-     */
     public void setDiscounted(boolean discounted) {
         this.discounted = discounted;
     }
 
-    /**
-     * @return the categoryDiscount
-     */
-    public CategoryDiscount getCategoryDiscount() {
-        return categoryDiscount;
+    public ArrayList<Product> getProducts() {
+        return products;
     }
 
-    /**
-     * @param categoryDiscount the categoryDiscount to set
-     */
-    public void setCategoryDiscount(CategoryDiscount categoryDiscount) {
-        this.categoryDiscount = categoryDiscount;
+    public void setProducts(ArrayList<Product> products) {
+        this.products = products;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

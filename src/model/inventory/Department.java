@@ -1,41 +1,56 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package model.inventory;
 
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Nadheesh
+ */
 public class Department {
+    private String departmentId;
+    private String departmentName;
+    private ArrayList<Category> categories;
 
-    private int departmentId;
-    private String name;
-
-    public Department(int departmentId, String name) {
-        this.departmentId = departmentId;
-        this.name = name;
+    public Department() {
     }
 
-    /**
-     * @return the departmentId
-     */
-    public int getDepartmentId() {
+    public Department(String departmentId, String departmentName) {
+        this.departmentId = departmentId;
+        this.departmentName = departmentName;
+    }
+
+    public Department(String departmentId, String departmentName, ArrayList<Category> categories) {
+        this.departmentId = departmentId;
+        this.departmentName = departmentName;
+        this.categories = categories;
+    }
+
+    public String getDepartmentId() {
         return departmentId;
     }
 
-    /**
-     * @param departmentId the departmentId to set
-     */
-    public void setDepartmentId(int departmentId) {
+    public void setDepartmentId(String departmentId) {
         this.departmentId = departmentId;
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
+    public String getDepartmentName() {
+        return departmentName;
     }
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
     }
 
+    public ArrayList<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(ArrayList<Category> categories) {
+        this.categories = categories;
+    }
 }

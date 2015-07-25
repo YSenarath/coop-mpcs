@@ -1,9 +1,11 @@
 package controller.pos;
 
+//import controller.inventory.BatchController;
 import controller.inventory.BatchController;
 import database.connector.DBConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
+import model.inventory.Batch;
 import model.pos.payment.CardPayment;
 import model.pos.payment.CashPayment;
 import model.pos.CashWithdrawal;
@@ -79,8 +81,12 @@ public class TransactionController {
             boolean result = UserController.setUserLoginState(counterLogin.getUserName(), false);
             logger.info("User loged off : " + result);
 
-            result = CounterLoginController.endShift(counterLogin.getShiftId(), counterLogin.getCounterId());
+            result = CounterLoginController.endShift(counterLogin);
             logger.info("Shift ended : " + result);
+
+            //Reset counter amount to 0
+            result = CounterController.setCounterAmount(counterLogin.getCounterId(), 0);
+            logger.info("Rest counter amount to 0 : " + result);
 
             connection.commit();
             return true;
@@ -126,9 +132,20 @@ public class TransactionController {
                 result = InvoiceItemController.addInvoiceItem(invoiceItem);
                 logger.info("Add invoice item : " + result);
 
+                boolean inStock = true;
+                Batch batch = BatchController.getBatch(invoiceItem.getProductId(), invoiceItem.getBatchId());
+                if (invoiceItem.getQty() + batch.getSoldQty() >= batch.getRecievedQuantity()) {
+                    inStock = false;
+                }
                 //Update batch item
-                result = BatchController.reduceBatchQty(invoiceItem);
-                logger.info("Update batch : " + result);
+                result = BatchController.setSoldQty(invoiceItem);
+                logger.info("Update batch sold amount: " + result);
+
+                //Set batch enabled or disabled
+                if (!inStock) {
+                    result = BatchController.setBatchInStock(inStock, invoiceItem.getBatchId(), invoiceItem.getProductId());
+                    logger.info("Set batch in stock: " + result);
+                }
             }
 
             for (Payment payment : invoice.getPayments()) {
@@ -199,10 +216,6 @@ public class TransactionController {
             //Perform withdrawal
             boolean result = CashWithdrawalController.addCashWithdrawal(cashWithdrawal);
             logger.info("Cash withdrawal : " + result);
-
-            //Update counter balance
-            result = CounterController.removeFromCounterAmount(cashWithdrawal.getCounterId(), cashWithdrawal.getAmount());
-            logger.info("Counter amount updated : " + result);
 
             connection.commit();
             return true;

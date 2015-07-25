@@ -33,13 +33,13 @@ import model.inventory.CategoryDiscount;
 import model.inventory.Department;
 import model.inventory.Product;
 import org.apache.log4j.Logger;
-import util.KeyValueContainer;
+import util.Utilities;
 
 public class CheckStockInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(CheckStockInterface.class);
-    
+
     private final POSMDIInterface parent;
     private final JDesktopPane desktopPane;
     private SearchItemInterface searchItemInterface;
@@ -56,12 +56,12 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     private final InvoiceInternalInterface invoiceInterface;
     private final BillRefundInternalInterface billRefundInterface;
     private final BillCopyInternalInterface billCopyInterface;
-    
+
     ActionListener productCodeListner;
-    
+
     DefaultComboBoxModel itemComboBoxModel;
     DefaultTableModel itemTableModel;
-    private HashMap<Integer, Product> availableProductMap;
+    private HashMap<String, Product> availableProductMap;
 
     // </editor-fold>
     //
@@ -71,7 +71,7 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     public CheckStockInterface(POSMDIInterface parent, InvoiceInternalInterface invoiceInterface,
             BillRefundInternalInterface billRefundInterface, BillCopyInternalInterface billCopyInterface, JDesktopPane desktopPane) {
         logger.debug("CheckStockInterface constructor invoked");
-        
+
         initComponents();
         this.parent = parent;
         this.invoiceInterface = invoiceInterface;
@@ -79,7 +79,7 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
         this.billCopyInterface = billCopyInterface;
         this.searchItemInterface = null;
         this.desktopPane = desktopPane;
-        
+
         Dimension desktopSize = desktopPane.getSize();
         Dimension jInternalFrameSize = this.getSize();
         this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
@@ -95,21 +95,21 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
         if (billCopyInterface != null) {
             billCopyInterface.enableGlassPane();
         }
-        
+
         productCodeListner = (ActionEvent e) -> {
             showInfo();
         };
         itemCodeComboBox.addActionListener(productCodeListner);
-        
+
         this.itemComboBoxModel = new DefaultComboBoxModel();
         this.itemTableModel = (DefaultTableModel) itemInfoTable.getModel();
-        
+
         this.glassPanel = new JPanel(new GridLayout(0, 1));
         this.padding = new JLabel();
-        
+
         glassPanel.setOpaque(false);
         glassPanel.add(padding);
-        
+
         glassPanel.addMouseListener(
                 new MouseAdapter() {
                 });
@@ -124,7 +124,7 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
         glassPanel.setFocusCycleRoot(true);
         setGlassPane(glassPanel);
         performKeyBinding();
-        
+
         loadSellebleProducts();
         itemCodeComboBox.requestFocus();
     }
@@ -135,26 +135,26 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     //
 // <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
     private void performKeyBinding() {
-        
+
         inputMap = stockInfoPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         actionMap = stockInfoPanel.getActionMap();
-        
+
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "doF5Action");
         actionMap.put("doF5Action", new keyBindingAction("F5"));
-        
+
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
         actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
-        
+
     }
-    
+
     private class keyBindingAction extends AbstractAction {
-        
+
         private final String cmd;
-        
+
         public keyBindingAction(String cmd) {
             this.cmd = cmd;
         }
-        
+
         @Override
         public void actionPerformed(ActionEvent tf) {
             if (cmd.equalsIgnoreCase("F5")) {
@@ -175,11 +175,11 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     //Disable the glassPanel pane
     public void disableGlassPane() {
         logger.debug("disableGlassPane invoked");
-        
+
         glassPanel.setVisible(false);
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "doF5Action");
         actionMap.put("doF5Action", new keyBindingAction("F5"));
-        
+
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
         actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
         itemCodeComboBox.requestFocus();
@@ -188,13 +188,13 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     //Enable the glassPanel pane
     public void enableGlassPane() {
         logger.debug("enableGlassPane invoked");
-        
+
         inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
         actionMap.remove("doF5Action");
-        
+
         inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
         actionMap.remove("doEscapeAction");
-        
+
         glassPanel.setVisible(true);//Disable this UI
 
         padding.requestFocus();  // required to trap key events
@@ -203,26 +203,26 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     //Load the products to the temporory object array and show on combo box
     private void loadSellebleProducts() {
         logger.debug("loadSellebleProducts invoked");
-        
+
         try {
             clearUI();
             ArrayList<Product> availableProducts = ProductController.getAllProducts();
             availableProductMap = new HashMap<>();
-            
+
             itemCodeComboBox.removeActionListener(productCodeListner);
-            
+
             itemComboBoxModel.removeAllElements();
-            
+
             availableProducts.stream().forEach((product) -> {
                 availableProductMap.put(product.getProductId(), product);
-                itemComboBoxModel.addElement(new KeyValueContainer(product.getProductId(), util.Utilities.formatId("P", 4, product.getProductId())));
+                itemComboBoxModel.addElement(product.getProductId());
             });
             itemCodeComboBox.getModel().setSelectedItem(null);
-            
+
             itemCodeComboBox.setModel(itemComboBoxModel);
-            
+
             itemCodeComboBox.setSelectedIndex(-1);
-            
+
             itemCodeComboBox.addActionListener(productCodeListner);
         } catch (SQLException ex) {
             logger.error("Product load error : " + ex.getMessage());
@@ -230,101 +230,77 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     }
 
     //get the information related to the product selected from search ui
-    public void setSelectedProduct(int productId) {
+    public void setSelectedProduct(String productId) {
         logger.debug("showInfo(int productId) invoked");
 
         //item from search , update the combo box
         for (int i = 0; i < itemComboBoxModel.getSize(); i++) {
-            KeyValueContainer keyValueContainer = (KeyValueContainer) itemComboBoxModel.getElementAt(i);
-            if (keyValueContainer.getKey() == productId) {
+            if (itemComboBoxModel.getElementAt(i).toString().equals(productId)) {
                 itemCodeComboBox.setSelectedIndex(i);// can cause a recursive malfunction
                 break;
             }
         }
-        
+
     }
 
     //get the information related to the product selected
     private void showInfo() {
         logger.debug("showInfo invoked");
-        
+
         if (itemCodeComboBox.getSelectedIndex() > -1) {
-            
-            KeyValueContainer productComboItem = (KeyValueContainer) itemCodeComboBox.getSelectedItem();
-            int productId = productComboItem.getKey();
+
+            String productId = itemCodeComboBox.getSelectedItem().toString();
             itemTableModel.setRowCount(0);
-            
+
             try {
-                
+
                 Product product = availableProductMap.get(productId);
-                txtName.setText(product.getName());
+                txtName.setText(product.getProductName());
                 txtProductDesc.setText(product.getDescription());
                 txtUnit.setText(product.getUnit());
-                txtBarcode.setText((String.valueOf(product.getBarcode())));
-                
+                txtBarcode.setText((String.valueOf(product.getProductBarCode())));
                 Department department = DepartmentController.getDepartment(product.getDepartmentId());
                 Category category = CategoryController.getCategory(product.getDepartmentId(), product.getCategoryId());
-                txtDepartment.setText(department.getName());
-                txtCategory.setText(category.getName());
-                
-                if (category.isDiscounted()) {
-                    CategoryDiscount categoryDiscount = CategoryDiscountController.getCategoryDiscount(product.getDepartmentId(), product.getCategoryId());
-                    if (util.Utilities.isDateBetweenRange(util.Utilities.getCurrentDate(), categoryDiscount.getStartDate(), categoryDiscount.getEndDate())) {
-                        txtCategoryDiscount.setText(String.format("%.2f", categoryDiscount.getDiscount()) + "%");
-                    } else {
-                        txtCategoryDiscount.setText("0.00%");
-                    }
-                } else {
-                    txtCategoryDiscount.setText("0.00%");
-                }
-                
+                txtDepartment.setText(department.getDepartmentName());
+                txtCategory.setText(category.getCategoryName());
+
                 ArrayList<Batch> batches = BatchController.getAllBatches(productId);
                 for (Batch batch : batches) {
-                    double batchDiscountAmount = 0;
-                    if (batch.isDiscounted()) {
-                        BatchDiscount batchDiscount = BatchDiscountController.getBatchDiscount(productId, batch.getBatchId());
-                        if (util.Utilities.isDateBetweenRange(util.Utilities.getCurrentDate(), batchDiscount.getStartDate(), batchDiscount.getEndDate())) {
-                            batchDiscountAmount = batchDiscount.getDiscount();
-                        }
-                    }
-                    
                     Object[] ob = {
                         batch.getBatchId(),
-                        batch.getExpDate(),
-                        batch.getRecievedQty(),
-                        String.format("%.2f", batchDiscountAmount),
-                        String.format("%.2f", batch.getUnitPrice()),
+                        batch.getExpirationDate(),
+                        batch.getRecievedQuantity()-batch.getSoldQty(),
+                        String.format("%.2f", batch.getUnit_price()),
                         batch.isInStock()
                     };
                     itemTableModel.addRow(ob);
                 }
-                
+
             } catch (SQLException ex) {
-                logger.error(ex.getMessage());
+                logger.error(ex.getMessage(),ex);
             }
-            
+
         }
-        
+
     }
 
     //Clear UI
     private void clearUI() {
         logger.debug("clearUI invoked");
-        
+
         itemTableModel.setRowCount(0);
         txtName.setText("");
         txtProductDesc.setText("");
         txtUnit.setText("");
         txtDepartment.setText("");
         txtCategory.setText("");
-        txtCategoryDiscount.setText("");
         txtBarcode.setText("");
     }
 
 //Show search item 
     private void searchItem() {
         logger.debug("searchItem invoked");
-        
+
         if (searchItemInterface != null) {
             desktopPane.remove(searchItemInterface);
         }
@@ -336,7 +312,7 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     //Cancel check
     private void exitCheck() {
         logger.debug("exitCheck invoked");
-        
+
         if (invoiceInterface != null) {
             invoiceInterface.disableGlassPane(true);
         }
@@ -373,8 +349,6 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
         txtDepartment = new javax.swing.JTextField();
         lblCategory = new javax.swing.JLabel();
         txtCategory = new javax.swing.JTextField();
-        txtCategoryDiscount = new javax.swing.JTextField();
-        lblCategoryDiscount = new javax.swing.JLabel();
         lblUnit = new javax.swing.JLabel();
         txtUnit = new javax.swing.JTextField();
         lblProductname = new javax.swing.JLabel();
@@ -439,13 +413,6 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
         txtCategory.setEditable(false);
         txtCategory.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
-        txtCategoryDiscount.setEditable(false);
-        txtCategoryDiscount.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        txtCategoryDiscount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
-        lblCategoryDiscount.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        lblCategoryDiscount.setText("C. Discount");
-
         lblUnit.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         lblUnit.setText("Unit ");
 
@@ -471,16 +438,12 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
                             .addComponent(lblCode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lblProductDesc, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(stockInfoPanelLayout.createSequentialGroup()
                                 .addGap(156, 156, 156)
                                 .addComponent(lblCategory)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(24, 24, 24)
-                                .addComponent(lblCategoryDiscount)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtCategoryDiscount, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(stockInfoPanelLayout.createSequentialGroup()
                                 .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(txtProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 531, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -490,18 +453,14 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
                                         .addComponent(lblProductname)
                                         .addGap(18, 18, 18)
                                         .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(lblUnit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(lblBarcde, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(stockInfoPanelLayout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lblUnit)
-                                            .addGroup(stockInfoPanelLayout.createSequentialGroup()
-                                                .addComponent(lblBarcde)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txtBarcode, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                    .addGroup(stockInfoPanelLayout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(txtUnit, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(txtBarcode, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtUnit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE))
                     .addGroup(stockInfoPanelLayout.createSequentialGroup()
                         .addComponent(lblDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -509,22 +468,23 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
                         .addComponent(txtDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRefresh, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnRefresh, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         stockInfoPanelLayout.setVerticalGroup(
             stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(stockInfoPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCode, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblProductname, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblBarcde, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtBarcode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtBarcode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblCode, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(itemCodeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblProductname, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(stockInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -538,8 +498,6 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
                     .addComponent(txtDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCategoryDiscount, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtCategoryDiscount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
@@ -549,14 +507,14 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Batch", "Exp. Date", "Available Qty", "Batch Discount (%)", "Price (Rs.)", "In stock"
+                "Batch", "Exp. Date", "Available Qty", "Price (Rs.)", "In stock"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -578,7 +536,7 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
         );
         itemInfoContainerLayout.setVerticalGroup(
             itemInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+            .addComponent(itemInfoSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
         );
 
         btnOk.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -656,7 +614,6 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     private javax.swing.JTable itemInfoTable;
     private javax.swing.JLabel lblBarcde;
     private javax.swing.JLabel lblCategory;
-    private javax.swing.JLabel lblCategoryDiscount;
     private javax.swing.JLabel lblCode;
     private javax.swing.JLabel lblDepartment;
     private javax.swing.JLabel lblProductDesc;
@@ -665,7 +622,6 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel stockInfoPanel;
     private javax.swing.JTextField txtBarcode;
     private javax.swing.JTextField txtCategory;
-    private javax.swing.JTextField txtCategoryDiscount;
     private javax.swing.JTextField txtDepartment;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtProductDesc;

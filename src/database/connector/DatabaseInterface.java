@@ -22,7 +22,7 @@ public interface DatabaseInterface {
     public static final String COUNTER_LOGIN = "counter_login";
 
     public static final String DEPARTMENT = "department";
-    public static final String CATAGORY = "category";
+    public static final String CATEGORY = "category";
     public static final String CATEGORY_DISCOUNT = "category_discount";
     public static final String PRODUCT = "product";
     public static final String GRN = "grn";
