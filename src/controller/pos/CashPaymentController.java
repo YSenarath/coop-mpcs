@@ -12,7 +12,7 @@ public class CashPaymentController implements DatabaseInterface {
 
     public static boolean addCashPayment(CashPayment cashPayment) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + CASH_PAYMENT + " (bill_id,cash_payment_id,amount,change_amount) VALUES (?,?,?,?) ";
+        String query = "INSERT INTO " + CASH_PAYMENT + " (bill_id,cash_payment_id,amount,change_amount) VALUES (?,?,?,?)";
         Object[] ob = {
             cashPayment.getInvoiceId(),
             cashPayment.getPaymentId(),
@@ -24,7 +24,7 @@ public class CashPaymentController implements DatabaseInterface {
 
     public static CashPayment getCashpayment(int invoiceNo) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + CASH_PAYMENT + " WHERE bill_id=? ";
+        String query = "SELECT * FROM " + CASH_PAYMENT + " WHERE bill_id=?";
         Object[] ob = {
             invoiceNo
         };

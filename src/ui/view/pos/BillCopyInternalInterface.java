@@ -213,6 +213,10 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
             Invoice invoice = InvoiceController.getInvoice(invoiceNumber);
 
+            if (invoice == null) {
+                 throw new Exception("No such bill found");
+            }
+
             lblBillDateVal.setText(invoice.getDate());
             lblBillTimeVal.setText(Utilities.convert24hTo12h(invoice.getTime()));
             lblShiftVal.setText(Utilities.convertKeyToString(invoice.getShiftId(), DatabaseInterface.COUNTER_LOGIN));

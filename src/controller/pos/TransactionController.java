@@ -113,7 +113,7 @@ public class TransactionController {
         }
     }
 
-    public static boolean performInvoiceTransaction(Invoice invoice) {
+    public static boolean performInvoiceTransaction(Invoice invoice,int counterId) {
         logger.debug("performInvoiceTransaction invoked");
         //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total
         Connection connection = null;
@@ -158,7 +158,7 @@ public class TransactionController {
 
                     //Update counter amount
                     double amountAddedToCounter = cashPayment.getAmount() - cashPayment.getChangeAmount();
-                    result = CounterController.addToCounterAmount(invoice.getCounterId(), amountAddedToCounter);
+                    result = CounterController.addToCounterAmount(counterId, amountAddedToCounter);
                     logger.info("Update counter amount : " + result);
 
                 } else if (payment instanceof CardPayment) {

@@ -1,7 +1,6 @@
 package ui.view.pos;
 
 import controller.inventory.BatchController;
-import util.KeyValueContainer;
 import controller.inventory.BatchDiscountController;
 import controller.inventory.CategoryController;
 import controller.inventory.CategoryDiscountController;
@@ -22,7 +21,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
@@ -31,6 +29,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -93,6 +92,12 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private final int PAYMENT_OFFSET_0_COLUMN = 2;
     private final int PAYMENT_OFFSET_1_COLUMN = 3;
 
+    //Hold ,restore sale
+    boolean saleOnHold;
+    boolean isMember;
+    Object[][] itemData;
+    Object[][] paymentData;
+
     // </editor-fold>
     //
     //
@@ -106,6 +111,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         this.desktopPane = desktopPane;
         this.selectPriceInterface = null;
         this.searchItemInterface = null;
+        this.itemData = null;
+        this.paymentData = null;
 
         this.productComboBoxModel = new DefaultComboBoxModel();
         this.invoiceItemTableModel = (DefaultTableModel) invoiceItemTable.getModel();
@@ -113,7 +120,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         this.invoice = null;
         this.processingProduct = null;
-
+        this.saleOnHold = false;
+        this.isMember = false;
         productCodeListner = (ActionEvent e) -> {
             showProductDetails();
         };
@@ -124,7 +132,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         ((PlainDocument) txtCardPaymentAmount.getDocument()).setDocumentFilter(new DoubleFilter());
 
-       ((PlainDocument) txtCashPaymentAmount.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) txtCashPaymentAmount.getDocument()).setDocumentFilter(new DoubleFilter());
 
         ((DefaultTableCellRenderer) invoiceItemTable.getDefaultRenderer(Object.class)).setHorizontalAlignment(JLabel.RIGHT);
         ((DefaultTableCellRenderer) invoicePaymentsTable.getDefaultRenderer(Object.class)).setHorizontalAlignment(JLabel.RIGHT);
@@ -165,6 +173,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //
 // <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
     private void performKeyBinding() {
+        logger.debug("performKeyBinding invoked");
 
         itemAddPanelInputMap = itemAddPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         itemAddPanelActionMap = itemAddPanel.getActionMap();
@@ -176,6 +185,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     }
 
     private void putKeyBinds() {
+        logger.debug("putKeyBinds invoked");
 
         itemAddPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "doEnterItemAction");
         itemAddPanelActionMap.put("doEnterItemAction", new keyBindingAction("EnterItem"));
@@ -195,8 +205,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         paymentPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), "doF3Action");
         paymentPanelActionMap.put("doF3Action", new keyBindingAction("F3"));
 
-       // paymentPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "doConfirmAction");
-       // paymentPanelActionMap.put("doConfirmAction", new keyBindingAction("Confirm"));
+        // paymentPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "doConfirmAction");
+        // paymentPanelActionMap.put("doConfirmAction", new keyBindingAction("Confirm"));
     }
 
     private class keyBindingAction extends AbstractAction {
@@ -303,9 +313,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         paymentPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
         paymentPanelActionMap.remove("doF3Action");
 
-      //  paymentPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
-       // paymentPanelActionMap.remove("doConfirmAction");
-
+        //  paymentPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
+        // paymentPanelActionMap.remove("doConfirmAction");
         if (enableSearchInterface && searchItemInterface != null) {
             searchItemInterface.enableGlassPane();
         }
@@ -332,15 +341,108 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     }
 
+    //Get table data to hold sale
+    public void holdSale() {
+        logger.debug("holdSale invoked");
+
+        //Get info from item ,and payment table
+        //Get is member status
+        if (invoiceItemTableModel.getRowCount() > 0) {
+            logger.info("Saving started");
+
+            itemData = getTableData(invoiceItemTable);
+            paymentData = getTableData(invoicePaymentsTable);
+            isMember = chkMember.isSelected();
+            saleOnHold = true;
+            resetInvoice();
+            showAddItemPanel();
+            logger.info("Saving ended");
+            parent.setHoldBtn(false);
+            parent.setRestoreBtn(true);
+        } else {
+            Utilities.showMsgBox("Empty sale cannot be put on hold", "Warning", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    }
+
+    //Reset the invoice
+    public void restoreSale() {
+        logger.debug("restoreSale invoked");
+
+        if (saleOnHold) {
+            logger.info("Restore started");
+            //If in middle of transaction ask to finish or cancel current one and restore
+
+            if (invoiceItemTableModel.getRowCount() > 0) {
+                int dialogResult = JOptionPane.showConfirmDialog(null, "Clear current transaction and restore sale ?", "Warning", JOptionPane.YES_NO_OPTION);
+                if (dialogResult != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
+            resetInvoice();
+            showAddItemPanel();
+
+            if (isMember) {
+                chkMember.setSelected(true);
+                convertToMemberInvoice();
+            }
+
+            setTableData(invoiceItemTable, itemData);
+            setTableData(invoicePaymentsTable, paymentData);
+
+            calculateItemParameters();
+            calculatePaymentParameters();
+
+            isMember = false;
+            itemData = null;
+            paymentData = null;
+            saleOnHold = false;
+            parent.setHoldBtn(true);
+            parent.setRestoreBtn(false);
+            logger.info("Restore ended");
+        } else {
+            Utilities.showMsgBox("There is no sale on hold", "Warning", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    }
+
+    private Object[][] getTableData(JTable table) {
+        logger.debug("getTableData invoked");
+
+        DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+        int nRow = dtm.getRowCount(), nCol = dtm.getColumnCount();
+        Object[][] tableData = new Object[nRow][nCol];
+        for (int i = 0; i < nRow; i++) {
+            for (int j = 0; j < nCol; j++) {
+                tableData[i][j] = dtm.getValueAt(i, j);
+            }
+        }
+        return tableData;
+    }
+
+    private void setTableData(JTable table, Object[][] data) {
+        logger.debug("getTableData invoked");
+
+        DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+        int nRow = data.length;
+        for (int i = 0; i < nRow; i++) {
+            dtm.addRow(data[i]);
+        }
+    }
+
     private int getLastInvoicelId() throws SQLException {
-        Invoice lastInvoice = InvoiceController.getLastInvoiceId();
-        if (lastInvoice != null) {
-            return lastInvoice.getInvoiceNo();
+        logger.debug("getLastInvoicelId invoked");
+
+        int lastInvoice = InvoiceController.getLastInvoiceId();
+        if (lastInvoice > 0) {
+            return lastInvoice;
         }
         return 0;
     }
 
     private static ArrayList<Product> getAllSellebleProducts() throws SQLException {
+        logger.debug("getAllSellebleProducts invoked");
+
         ArrayList<Product> products = ProductController.getAllAvailableProducts();
         ArrayList<Product> availableProducts = new ArrayList();
 
@@ -355,6 +457,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     //Check if produce expired
     private boolean isExpired(Date expDate) {
+        logger.debug("isExpired invoked");
+
         return !Utilities.isDateBeforeLimit(Utilities.getCurrentDate(), expDate);
     }
 
@@ -572,8 +676,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private void showAddItemPanel() {
         logger.debug("showAddItemPanel invoked");
 
-        CardLayout card = (CardLayout) invoicePanel.getLayout();
-        card.previous(invoicePanel);
+        CardLayout invoiceCard = (CardLayout) invoicePanel.getLayout();
+        invoiceCard.show(invoicePanel, "itemCard");
         itemCodeComboBox.requestFocus();
     }
 
@@ -594,7 +698,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         lblBillValueVal.setText(String.format("%.2f", invoice.getNetTotal()));
 
         CardLayout invoiceCard = (CardLayout) invoicePanel.getLayout();
-        invoiceCard.next(invoicePanel);
+        invoiceCard.show(invoicePanel, "paymentCard");
 
     }
 
@@ -654,9 +758,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         try {
             //Setup a new invoice to work with
-            invoice = new Invoice(getLastInvoicelId() + 1);
-            invoice.setShiftId(parent.getCounterLogin().getShiftId());
-            invoice.setCounterId(Integer.valueOf(Utilities.loadProperty("counter")));
+            invoice = new Invoice(getLastInvoicelId() + 1, parent.getCounterLogin().getShiftId());
             invoice.setDate(Utilities.getStringDate(Utilities.getCurrentDate()));
             invoice.setTime(Utilities.getCurrentTime(true));
             txtBillNumber.setText(Utilities.convertKeyToString(invoice.getInvoiceNo(), DatabaseInterface.INVOICE));
@@ -695,6 +797,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     }
 
     public void setSelectedProduct(String productId) {
+        logger.debug("setSelectedProduct invoked");
 
         for (int i = 0; i < productComboBoxModel.getSize(); i++) {
             if (productComboBoxModel.getElementAt(i).equals(productId)) {
@@ -1243,7 +1346,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         //
         // <editor-fold defaultstate="collapsed" desc="Perform Transaction">  
         //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total
-        boolean result = TransactionController.performInvoiceTransaction(invoice);
+        boolean result = TransactionController.performInvoiceTransaction(invoice, Integer.valueOf(Utilities.loadProperty("counter")));
         if (result) {
             //Reset invoice arraylists
             resetInvoice();
@@ -1354,7 +1457,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         invoicePanel.setLayout(new java.awt.CardLayout());
 
-        invoiceItemTable.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder2 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder2.setShowLeftShadow(true);
+        dropShadowBorder2.setShowTopShadow(true);
+        itemTableSP.setBorder(dropShadowBorder2);
+
         invoiceItemTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1396,12 +1503,12 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             }
         });
 
-        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder2 = new org.jdesktop.swingx.border.DropShadowBorder();
-        dropShadowBorder2.setShadowColor(new java.awt.Color(204, 204, 204));
-        dropShadowBorder2.setShadowSize(6);
-        dropShadowBorder2.setShowLeftShadow(true);
-        dropShadowBorder2.setShowTopShadow(true);
-        productPanel.setBorder(dropShadowBorder2);
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder3 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder3.setShadowColor(new java.awt.Color(204, 204, 204));
+        dropShadowBorder3.setShadowSize(6);
+        dropShadowBorder3.setShowLeftShadow(true);
+        dropShadowBorder3.setShowTopShadow(true);
+        productPanel.setBorder(dropShadowBorder3);
 
         lblCode.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblCode.setText("Code");
@@ -1551,7 +1658,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         );
 
         billSummeryPanel.setBackground(new java.awt.Color(204, 204, 204));
-        billSummeryPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder4 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder4.setShowLeftShadow(true);
+        dropShadowBorder4.setShowTopShadow(true);
+        billSummeryPanel.setBorder(dropShadowBorder4);
 
         lblItemNoDisplay.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblItemNoDisplay.setText("Item(s)");
@@ -1585,7 +1695,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblItemNoDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblItemCount, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
                 .addComponent(lblItemDiscountDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblItemDiscounts, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1617,12 +1727,12 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             }
         });
 
-        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder3 = new org.jdesktop.swingx.border.DropShadowBorder();
-        dropShadowBorder3.setShadowColor(new java.awt.Color(204, 204, 204));
-        dropShadowBorder3.setShadowSize(6);
-        dropShadowBorder3.setShowLeftShadow(true);
-        dropShadowBorder3.setShowTopShadow(true);
-        billButtonPanel.setBorder(dropShadowBorder3);
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder5 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder5.setShadowColor(new java.awt.Color(204, 204, 204));
+        dropShadowBorder5.setShadowSize(6);
+        dropShadowBorder5.setShowLeftShadow(true);
+        dropShadowBorder5.setShowTopShadow(true);
+        billButtonPanel.setBorder(dropShadowBorder5);
 
         btnAddItem.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnAddItem.setText("Add [Enter]");
@@ -1701,7 +1811,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addComponent(billButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(productPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(billSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1721,6 +1831,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 btnPreviousActionPerformed(evt);
             }
         });
+
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder6 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder6.setShowLeftShadow(true);
+        dropShadowBorder6.setShowTopShadow(true);
+        ivoicePaymentsSP.setBorder(dropShadowBorder6);
 
         invoicePaymentsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -1760,10 +1875,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             .addComponent(ivoicePaymentsSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
-        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder4 = new org.jdesktop.swingx.border.DropShadowBorder();
-        dropShadowBorder4.setShowLeftShadow(true);
-        dropShadowBorder4.setShowTopShadow(true);
-        paymentInfoPanel.setBorder(dropShadowBorder4);
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder7 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder7.setShowLeftShadow(true);
+        dropShadowBorder7.setShowTopShadow(true);
+        paymentInfoPanel.setBorder(dropShadowBorder7);
 
         lblBillValueDisplay.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblBillValueDisplay.setText("Bill Value (Rs.)");
@@ -1797,7 +1912,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblBillValueDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblBillValueVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
                 .addComponent(lblChangeDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblChangeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1827,10 +1942,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
 
-        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder5 = new org.jdesktop.swingx.border.DropShadowBorder();
-        dropShadowBorder5.setShowLeftShadow(true);
-        dropShadowBorder5.setShowTopShadow(true);
-        paymentSelectorPanel.setBorder(dropShadowBorder5);
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder8 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder8.setShowLeftShadow(true);
+        dropShadowBorder8.setShowTopShadow(true);
+        paymentSelectorPanel.setBorder(dropShadowBorder8);
 
         lblPaymentOption.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblPaymentOption.setText("Payment Type");
@@ -1864,10 +1979,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder6 = new org.jdesktop.swingx.border.DropShadowBorder();
-        dropShadowBorder6.setShowLeftShadow(true);
-        dropShadowBorder6.setShowTopShadow(true);
-        paymentDetailsPanel.setBorder(dropShadowBorder6);
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder9 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder9.setShowLeftShadow(true);
+        dropShadowBorder9.setShowTopShadow(true);
+        paymentDetailsPanel.setBorder(dropShadowBorder9);
         paymentDetailsPanel.setLayout(new java.awt.CardLayout());
 
         lblCashPaymentAmountDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -1892,10 +2007,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cashPaymentPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(166, Short.MAX_VALUE))
+                .addContainerGap(122, Short.MAX_VALUE))
         );
         cashPaymentPanelLayout.setVerticalGroup(
             cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1904,7 +2019,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(133, Short.MAX_VALUE))
+                .addContainerGap(291, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cashPaymentPanel, "cashCard");
@@ -1986,7 +2101,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCardPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(209, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cardPaymentPanel, "bankCard");
@@ -1995,11 +2110,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         coopCreditpaymentPanel.setLayout(coopCreditpaymentPanelLayout);
         coopCreditpaymentPanelLayout.setHorizontalGroup(
             coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 464, Short.MAX_VALUE)
+            .addGap(0, 472, Short.MAX_VALUE)
         );
         coopCreditpaymentPanelLayout.setVerticalGroup(
             coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 176, Short.MAX_VALUE)
+            .addGap(0, 334, Short.MAX_VALUE)
         );
 
         paymentDetailsPanel.add(coopCreditpaymentPanel, "coopCreditCard");
@@ -2008,11 +2123,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         PoshanaPayment.setLayout(PoshanaPaymentLayout);
         PoshanaPaymentLayout.setHorizontalGroup(
             PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 464, Short.MAX_VALUE)
+            .addGap(0, 472, Short.MAX_VALUE)
         );
         PoshanaPaymentLayout.setVerticalGroup(
             PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 176, Short.MAX_VALUE)
+            .addGap(0, 334, Short.MAX_VALUE)
         );
 
         paymentDetailsPanel.add(PoshanaPayment, "poshanaCard");
@@ -2021,11 +2136,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         VoucherPayment.setLayout(VoucherPaymentLayout);
         VoucherPaymentLayout.setHorizontalGroup(
             VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 464, Short.MAX_VALUE)
+            .addGap(0, 472, Short.MAX_VALUE)
         );
         VoucherPaymentLayout.setVerticalGroup(
             VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 176, Short.MAX_VALUE)
+            .addGap(0, 334, Short.MAX_VALUE)
         );
 
         paymentDetailsPanel.add(VoucherPayment, "voucherCard");
@@ -2086,7 +2201,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addGroup(paymentPanelLayout.createSequentialGroup()
                         .addComponent(paymentSelectorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(paymentDetailsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE))
+                        .addComponent(paymentDetailsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(paymentOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -2110,6 +2225,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         txtBillNumber.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         txtBillNumber.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtBillNumber.setToolTipText("");
         txtBillNumber.setEnabled(false);
 
         chkMember.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -2125,16 +2241,14 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         interfaceContainerPanelLayout.setHorizontalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(interfaceContainerPanelLayout.createSequentialGroup()
-                .addGroup(interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(interfaceContainerPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblBill)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 664, Short.MAX_VALUE)
-                        .addComponent(chkMember))
-                    .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1006, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(lblBill)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 664, Short.MAX_VALUE)
+                .addComponent(chkMember)
                 .addContainerGap())
+            .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1020, Short.MAX_VALUE)
         );
         interfaceContainerPanelLayout.setVerticalGroup(
             interfaceContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2145,20 +2259,20 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(chkMember))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE))
+                .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jLayeredPaneLayout = new javax.swing.GroupLayout(jLayeredPane);
         jLayeredPane.setLayout(jLayeredPaneLayout);
         jLayeredPaneLayout.setHorizontalGroup(
             jLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 958, Short.MAX_VALUE)
+            .addGap(0, 1030, Short.MAX_VALUE)
             .addGroup(jLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jLayeredPaneLayout.setVerticalGroup(
             jLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 569, Short.MAX_VALUE)
+            .addGap(0, 724, Short.MAX_VALUE)
             .addGroup(jLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );

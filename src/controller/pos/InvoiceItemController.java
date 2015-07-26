@@ -14,7 +14,7 @@ public class InvoiceItemController implements DatabaseInterface {
 
     public static boolean addInvoiceItem(InvoiceItem invoiceItem) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + INVOICE_ITEMS + " (bill_id,batch_id,product_id,discount,unit_price,qty) VALUES (?,?,?,?,?,?) ";
+        String query = "INSERT INTO " + INVOICE_ITEMS + " (bill_id,batch_id,product_id,discount,unit_price,qty) VALUES (?,?,?,?,?,?)";
         Object[] ob = {
             invoiceItem.getInvoiceId(),
             invoiceItem.getBatchId(),

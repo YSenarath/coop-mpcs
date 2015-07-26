@@ -2,9 +2,9 @@ package model.pos;
 
 public class CounterLogin {
 
-    private int shiftId;
-    private String userName;
-    private int counterId;
+    private final int shiftId;
+    private final String userName;
+    private final int counterId;
     private String logInTime;
     private String logInDate;
     private String logOffTime;
@@ -51,13 +51,6 @@ public class CounterLogin {
     }
 
     /**
-     * @param shiftId the shiftId to set
-     */
-    public void setShiftId(int shiftId) {
-        this.shiftId = shiftId;
-    }
-
-    /**
      * @return the userName
      */
     public String getUserName() {
@@ -65,24 +58,10 @@ public class CounterLogin {
     }
 
     /**
-     * @param userName the userName to set
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    /**
      * @return the counterId
      */
     public int getCounterId() {
         return counterId;
-    }
-
-    /**
-     * @param counterId the counterId to set
-     */
-    public void setCounterId(int counterId) {
-        this.counterId = counterId;
     }
 
     /**
@@ -211,5 +190,4 @@ public class CounterLogin {
         this.shiftEnded = shiftEnded;
     }
 
-    
 }

@@ -45,7 +45,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="958" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="1030" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Component id="interfaceContainerPanel" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -53,7 +53,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="569" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="724" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Component id="interfaceContainerPanel" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -76,19 +76,15 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="lblBill" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="txtBillNumber" min="-2" pref="165" max="-2" attributes="0"/>
-                              <EmptySpace pref="664" max="32767" attributes="0"/>
-                              <Component id="chkMember" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="cardPanel" alignment="0" pref="1006" max="32767" attributes="0"/>
-                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="lblBill" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="txtBillNumber" min="-2" pref="165" max="-2" attributes="0"/>
+                      <EmptySpace pref="664" max="32767" attributes="0"/>
+                      <Component id="chkMember" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
+                  <Component id="cardPanel" alignment="0" pref="1020" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -101,7 +97,7 @@
                           <Component id="chkMember" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="cardPanel" pref="572" max="32767" attributes="0"/>
+                      <Component id="cardPanel" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -161,7 +157,7 @@
                                       <Component id="productPanel" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="itemTableSP" pref="168" max="32767" attributes="0"/>
+                                  <Component id="itemTableSP" pref="317" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="billSummeryPanel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -177,6 +173,14 @@
                       </Layout>
                       <SubComponents>
                         <Container class="javax.swing.JScrollPane" name="itemTableSP">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <PropertyBean type="org.jdesktop.swingx.border.DropShadowBorder">
+                                <Property name="showLeftShadow" type="boolean" value="true"/>
+                                <Property name="showTopShadow" type="boolean" value="true"/>
+                              </PropertyBean>
+                            </Property>
+                          </Properties>
                           <AuxValues>
                             <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
                           </AuxValues>
@@ -185,11 +189,6 @@
                           <SubComponents>
                             <Component class="javax.swing.JTable" name="invoiceItemTable">
                               <Properties>
-                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                                  <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                                    <EtchetBorder/>
-                                  </Border>
-                                </Property>
                                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                                   <Table columnCount="8" rowCount="0">
                                     <Column editable="false" title="Code" type="java.lang.Object"/>
@@ -531,9 +530,10 @@
                               <Color blue="cc" green="cc" red="cc" type="rgb"/>
                             </Property>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                              <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
-                                <EtchetBorder/>
-                              </Border>
+                              <PropertyBean type="org.jdesktop.swingx.border.DropShadowBorder">
+                                <Property name="showLeftShadow" type="boolean" value="true"/>
+                                <Property name="showTopShadow" type="boolean" value="true"/>
+                              </PropertyBean>
                             </Property>
                           </Properties>
 
@@ -545,7 +545,7 @@
                                       <Component id="lblItemNoDisplay" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Component id="lblItemCount" min="-2" pref="147" max="-2" attributes="0"/>
-                                      <EmptySpace pref="43" max="32767" attributes="0"/>
+                                      <EmptySpace pref="119" max="32767" attributes="0"/>
                                       <Component id="lblItemDiscountDisplay" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="lblItemDiscounts" min="-2" pref="147" max="-2" attributes="0"/>
@@ -779,7 +779,7 @@
                                       <Group type="102" attributes="0">
                                           <Component id="paymentSelectorPanel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="paymentDetailsPanel" pref="337" max="32767" attributes="0"/>
+                                          <Component id="paymentDetailsPanel" max="32767" attributes="0"/>
                                       </Group>
                                       <Component id="paymentOptionsPanel" max="32767" attributes="0"/>
                                   </Group>
@@ -828,6 +828,14 @@
                           </Layout>
                           <SubComponents>
                             <Container class="javax.swing.JScrollPane" name="ivoicePaymentsSP">
+                              <Properties>
+                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                                  <PropertyBean type="org.jdesktop.swingx.border.DropShadowBorder">
+                                    <Property name="showLeftShadow" type="boolean" value="true"/>
+                                    <Property name="showTopShadow" type="boolean" value="true"/>
+                                  </PropertyBean>
+                                </Property>
+                              </Properties>
                               <AuxValues>
                                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
                               </AuxValues>
@@ -895,7 +903,7 @@
                                       <Component id="lblBillValueDisplay" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="lblBillValueVal" min="-2" pref="147" max="-2" attributes="0"/>
-                                      <EmptySpace pref="12" max="32767" attributes="0"/>
+                                      <EmptySpace pref="94" max="32767" attributes="0"/>
                                       <Component id="lblChangeDisplay" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="lblChangeVal" min="-2" pref="147" max="-2" attributes="0"/>
@@ -1096,10 +1104,10 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="lblCashPaymentAmountDisplay" max="32767" attributes="0"/>
+                                          <Component id="lblCashPaymentAmountDisplay" min="-2" pref="150" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="txtCashPaymentAmount" min="-2" pref="186" max="-2" attributes="0"/>
-                                          <EmptySpace pref="166" max="32767" attributes="0"/>
+                                          <EmptySpace pref="122" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1111,7 +1119,7 @@
                                               <Component id="lblCashPaymentAmountDisplay" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                                               <Component id="txtCashPaymentAmount" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="133" max="32767" attributes="0"/>
+                                          <EmptySpace pref="291" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1190,7 +1198,7 @@
                                               <Component id="lblCashPaymentAmountDisplay1" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                                               <Component id="txtCardPaymentAmount" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="51" max="32767" attributes="0"/>
+                                          <EmptySpace pref="209" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1275,12 +1283,12 @@
                               <Layout>
                                 <DimensionLayout dim="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="464" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="472" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                                 <DimensionLayout dim="1">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="176" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="334" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                               </Layout>
@@ -1295,12 +1303,12 @@
                               <Layout>
                                 <DimensionLayout dim="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="464" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="472" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                                 <DimensionLayout dim="1">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="176" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="334" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                               </Layout>
@@ -1315,12 +1323,12 @@
                               <Layout>
                                 <DimensionLayout dim="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="464" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="472" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                                 <DimensionLayout dim="1">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="176" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="334" max="32767" attributes="0"/>
                                   </Group>
                                 </DimensionLayout>
                               </Layout>
@@ -1380,6 +1388,7 @@
                   <Font name="Tahoma" size="14" style="1"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="4"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>

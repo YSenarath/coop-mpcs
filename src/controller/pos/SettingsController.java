@@ -26,7 +26,7 @@ public class SettingsController implements DatabaseInterface {
     public static boolean deleteSetting(String key) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "DELETE FROM " + SETTINGS + " WHERE prop_key=? ";
+        String query = "DELETE FROM " + SETTINGS + " WHERE prop_key=?";
 
         Object[] ob = {
             key
@@ -53,7 +53,7 @@ public class SettingsController implements DatabaseInterface {
 
     public static boolean setSetting(Setting setting) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "UPDATE  " + SETTINGS + " SET prop_value=? WHERE prop_key=? ";
+        String query = "UPDATE  " + SETTINGS + " SET prop_value=? WHERE prop_key=?";
 
         Object[] ob = {
             setting.getValue(),

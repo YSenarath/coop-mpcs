@@ -13,19 +13,20 @@ public class CardPaymentController implements DatabaseInterface {
 
     public static boolean addCardPayment(CardPayment cardPayment) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + CARD_PAYMENT + " (bill_id,card_payment_id,card_type,card_no,amount) VALUES (?,?,?,?,?) ";
+        String query = "INSERT INTO " + CARD_PAYMENT + " (bill_id,card_payment_id,card_type,card_no,amount) VALUES (?,?,?,?,?)";
         Object[] ob = {
             cardPayment.getInvoiceId(),
             cardPayment.getPaymentId(),
             cardPayment.getCardType(),
             cardPayment.getCardNo(),
-            cardPayment.getAmount(),};
+            cardPayment.getAmount()
+        };
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
     public static ArrayList<CardPayment> getCardPayments(int invoiceNo) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + CARD_PAYMENT + " WHERE bill_id=? ";
+        String query = "SELECT * FROM " + CARD_PAYMENT + " WHERE bill_id=?";
         Object[] ob = {
             invoiceNo
         };

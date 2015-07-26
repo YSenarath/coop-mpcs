@@ -25,7 +25,7 @@ public class CashWithdrawalController implements DatabaseInterface {
 
     public static boolean addCashWithdrawal(CashWithdrawal cashWithdrawal) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + CASH_WITHDRAWAL + " (cash_withdrawal_id,shift_id,withdrawal_time,withdrawal_date,amount) VALUES (?,?,?,?,?) ";
+        String query = "INSERT INTO " + CASH_WITHDRAWAL + " (cash_withdrawal_id,shift_id,withdrawal_time,withdrawal_date,amount) VALUES (?,?,?,?,?)";
         Object[] ob = {
             cashWithdrawal.getWithdrawalId(),
             cashWithdrawal.getShiftId(),

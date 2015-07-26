@@ -5,9 +5,8 @@ import java.util.ArrayList;
 
 public class Invoice {
 
-    private int invoiceNo;
-    private int shiftId;
-    private int counterId;
+    private final int invoiceNo;
+    private final int shiftId;
     private String date;
     private String time;
 
@@ -20,10 +19,9 @@ public class Invoice {
     private ArrayList<InvoiceItem> invoiceItems;//invoice has items
     private ArrayList<Payment> payments;//Invoice has payments
 
-    public Invoice(int invoiceNo) {
+    public Invoice(int invoiceNo,int shiftId) {
         this.invoiceNo = invoiceNo;
-        this.shiftId = 0;
-        this.counterId = -1;
+        this.shiftId = shiftId;
         this.date = null;
         this.time = null;
 
@@ -37,10 +35,9 @@ public class Invoice {
         this.payments = null;
     }
 
-    public Invoice(int invoiceNo, int shiftId, int counterId, String date, String time, double netTotal) {
+    public Invoice(int invoiceNo, int shiftId, String date, String time, double netTotal) {
         this.invoiceNo = invoiceNo;
         this.shiftId = shiftId;
-        this.counterId = counterId;
         this.date = date;
         this.time = time;
         this.itemCount = 0;
@@ -58,12 +55,7 @@ public class Invoice {
         return invoiceNo;
     }
 
-    /**
-     * @param invoiceNo the invoiceNo to set
-     */
-    public void setInvoiceNo(int invoiceNo) {
-        this.invoiceNo = invoiceNo;
-    }
+  
 
     /**
      * @return the shiftId
@@ -72,26 +64,6 @@ public class Invoice {
         return shiftId;
     }
 
-    /**
-     * @param shiftId the shiftId to set
-     */
-    public void setShiftId(int shiftId) {
-        this.shiftId = shiftId;
-    }
-
-    /**
-     * @return the counterId
-     */
-    public int getCounterId() {
-        return counterId;
-    }
-
-    /**
-     * @param counterId the counterId to set
-     */
-    public void setCounterId(int counterId) {
-        this.counterId = counterId;
-    }
 
     /**
      * @return the date

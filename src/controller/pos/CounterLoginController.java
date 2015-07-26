@@ -25,7 +25,7 @@ public class CounterLoginController implements DatabaseInterface {
 
     public static boolean endShift(CounterLogin counterLogin) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "UPDATE " + COUNTER_LOGIN + " SET log_off_time=?,log_off_date=?,cash_withdrawals=?,log_off_amount_expected=?,log_off_amount_actual=?,shift_ended=true WHERE shift_id=? AND counter_id=? ";
+        String query = "UPDATE " + COUNTER_LOGIN + " SET log_off_time=?,log_off_date=?,cash_withdrawals=?,log_off_amount_expected=?,log_off_amount_actual=?,shift_ended=true WHERE shift_id=? AND counter_id=?";
         Object[] ob = {
             counterLogin.getLogOffTime(),
             counterLogin.getLogOffDate(),
@@ -66,7 +66,7 @@ public class CounterLoginController implements DatabaseInterface {
 
     public static CounterLogin getLastCounterLogin(int counter) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + COUNTER_LOGIN + " WHERE counter_id=? ORDER BY shift_id DESC LIMIT 1 ";
+        String query = "SELECT * FROM " + COUNTER_LOGIN + " WHERE counter_id=? ORDER BY shift_id DESC LIMIT 1";
         Object[] ob = {
             counter
         };
