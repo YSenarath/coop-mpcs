@@ -6,13 +6,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
-import util.definitions.AppConstants;
 
-/**
- *
- * @author Shehan
- */
-public class DBConnection {
+public class DBConnection implements DatabaseInterface {
 
     private static final Logger logger = Logger.getLogger(DBConnection.class);
 
@@ -23,13 +18,13 @@ public class DBConnection {
         DriverManager.registerDriver(new Driver());
         try {
             Properties connectionProps = new Properties();
-            connectionProps.put("user", AppConstants.MYSQL_USER_NAME);
-            connectionProps.put("password", AppConstants.MYSQL_PASSWORD);
-            logger.debug("MYSQL connection = jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
+            connectionProps.put("user", MYSQL_USER_NAME);
+            connectionProps.put("password", MYSQL_PASSWORD);
+            logger.info("MYSQL connection = jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
 
-            connection = DriverManager.getConnection("jdbc:mysql://" + AppConstants.SERVER + ":" + AppConstants.PORT + "/" + AppConstants.DATABASE, connectionProps);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            connection = DriverManager.getConnection("jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE, connectionProps);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(),ex);
         }
     }
 

@@ -280,7 +280,6 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
         cancelSearch();
     }//GEN-LAST:event_btnCancelActionPerformed
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnClear;

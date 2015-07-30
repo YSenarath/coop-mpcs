@@ -6,7 +6,7 @@
 package testSuite.dbTest;
 
 import database.connector.DBConnection;
-import util.definitions.AppConstants;
+import database.connector.DatabaseInterface;
 import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
