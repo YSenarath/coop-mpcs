@@ -2,12 +2,11 @@ package model.people;
 
 public class User {
 
-    public static final String MANAGER = "MANAGER";
-    public static final String CASHIER = "CASHIER";
-    public static final String INVENTORY = "INVENTORY";
+    public static String MANAGER = "MANAGER";
+    public static String CASHIER = "CASHIER";
+    public static String INVENTORY = "INVENTORY";
 
     private String userName;
-    private String employeeId;
     private String password;
     private String userType;
     private boolean loggedin;
@@ -43,19 +42,7 @@ public class User {
         this.userName = userName;
     }
 
-    /**
-     * @return the employeeId
-     */
-    public String getEmployeeId() {
-        return employeeId;
-    }
 
-    /**
-     * @param employeeId the employeeId to set
-     */
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
-    }
 
     /**
      * @return the password

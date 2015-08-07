@@ -113,7 +113,7 @@ public class TransactionController {
         }
     }
 
-    public static boolean performInvoiceTransaction(Invoice invoice,int counterId) {
+    public static boolean performInvoiceTransaction(Invoice invoice, int counterId) {
         logger.debug("performInvoiceTransaction invoked");
         //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total
         Connection connection = null;
@@ -168,13 +168,21 @@ public class TransactionController {
                     logger.info("Add card payment : " + result);
 
                 } else if (payment instanceof CoopCreditPayment) {
-                    throw new Exception("Not implemented");
+                    CoopCreditPayment coopPayment = (CoopCreditPayment) payment;
+                    result = CoopCreditPaymentController.addCoopPayment(coopPayment);
+                    logger.info("Add coop credit payment : " + result);
                 } else if (payment instanceof PoshanaPayment) {
-                    throw new Exception("Not implemented");
+                    PoshanaPayment poshanaPayment = (PoshanaPayment) payment;
+                    result = PoshanaPaymentController.addPoshanaPayment(poshanaPayment);
+                    logger.info("Add poshana payment : " + result);
                 } else if (payment instanceof CustomerVoucherPayment) {
-                    throw new Exception("Not implemented");
+                    CustomerVoucherPayment customerVoucherPayment = (CustomerVoucherPayment) payment;
+                    result = CustomerVoucherPaymentController.addCustomerVoucherPayment(customerVoucherPayment);
+                    logger.info("Add customer voucher payment : " + result);
                 } else if (payment instanceof EmployeeVoucherPayment) {
-                    throw new Exception("Not implemented");
+                    EmployeeVoucherPayment employeeVoucherPayment = (EmployeeVoucherPayment) payment;
+                    result = EmployeeVoucherPaymentController.addEmployeeVoucherPayment(employeeVoucherPayment);
+                    logger.info("Add employee voucher payment : " + result);
                 }
             }
 

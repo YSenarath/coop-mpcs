@@ -64,7 +64,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         }
         performKeyBinding();
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //setExtendedState(JFrame.MAXIMIZED_BOTH);
 
     }
 
