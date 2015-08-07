@@ -31,7 +31,6 @@ public class Batch implements Serializable {
     private double soldQty;
 
     public Batch(BatchBuilder builder) {
-
         this.batchId = builder.getBatchId();
         this.productId = builder.getProductId();
         this.grnNumber = builder.getGrnNumber();

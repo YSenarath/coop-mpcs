@@ -152,19 +152,37 @@ public class Utilities {
                 suffix = "B";
                 size = 3;
                 break;
+                
             case DatabaseInterface.COUNTER_LOGIN:
                 suffix = "L";
                 size = 6;
                 break;
+                
             case DatabaseInterface.CASH_WITHDRAWAL:
                 suffix = "W";
                 size = 5;
                 break;
+                
             case DatabaseInterface.INVOICE:
                 suffix = "I";
                 size = 5;
                 break;
 
+            case DatabaseInterface.GRN:
+                suffix = "G";
+                size = 5;
+                break;
+                
+            case DatabaseInterface.SUPPLIER:
+                suffix = "S";
+                size = 3;
+                break;
+                
+            case DatabaseInterface.SRN:
+                suffix = "R";
+                size = 5;
+                break;
+                
             default:
                 return null;
         }

@@ -780,10 +780,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             itemCodeComboBox.removeActionListener(productCodeListner);
             productComboBoxModel.removeAllElements();
 
-            availableProducts.stream().forEach((product) -> {
+            for (Product product : availableProducts) {
                 availableProductMap.put(product.getProductId(), product);
                 productComboBoxModel.addElement(product.getProductId());
-            });
+            }
             itemCodeComboBox.getModel().setSelectedItem(null);
 
             itemCodeComboBox.setModel(productComboBoxModel);
@@ -994,6 +994,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     paymentMethodCard.show(paymentDetailsPanel, "bankCard");
                     break;
                 case Payment.COOP_CRDIT:
+                    
                     paymentMethodCard.show(paymentDetailsPanel, "coopCreditCard");
                     break;
                 case Payment.POSHANA:
@@ -2101,7 +2102,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCardPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(209, Short.MAX_VALUE))
+                .addContainerGap(205, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cardPaymentPanel, "bankCard");

@@ -8,7 +8,7 @@ public interface DatabaseInterface {
     public static final String DATABASE = "COOP";//Default , must be a setting
 
     public static final String MYSQL_USER_NAME = "admin";//Default , must be a setting
-    public static final String MYSQL_PASSWORD = "admin"; //Default , must be a setting
+    public static final String MYSQL_PASSWORD = "password"; //Default , must be a setting
 
     //Database table names
     public static final String USER = "user_credentials";
@@ -25,7 +25,6 @@ public interface DatabaseInterface {
     public static final String CATEGORY = "category";
     public static final String CATEGORY_DISCOUNT = "category_discount";
     public static final String PRODUCT = "product";
-    public static final String GRN = "grn";
     public static final String BATCH = "batch";
     public static final String BATCH_DISCOUNT = "batch_discount";
 
@@ -40,5 +39,10 @@ public interface DatabaseInterface {
     public static final String EMPLOYEE_VOUCHER_PAYMENT = "employee_voucher_payment";
     public static final String CUSTOMER_VOUCHER_PAYMENT = "customer_voucher_payment";
     public static final String COOP_CREDIT_PAYMENT = "coop_credit_payment";
+    
+    public static final String SUPPLIER = "supplier";
+    
+    public static final String GRN = "grn";
+    public static final String SRN = "srn";
 
 }

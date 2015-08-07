@@ -82,4 +82,33 @@ public class DepartmentController {
         return null;
 
     }
+    
+     public static boolean updateDepartment(Department department) throws SQLException{
+        
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "UPDATE " + DatabaseInterface.DEPARTMENT + " SET department_name = ? WHERE department_id = ?  " ;
+        
+        Object[] obj  = {
+            department.getDepartmentName(),
+            Utilities.convertKeyToInteger(department.getDepartmentId())
+        };
+        int added = -1;
+        added = DBHandler.setData(connection, query, obj);
+        
+        return  added == 1 ;
+    }
+    
+    public static boolean removeDepartment(String depID) throws SQLException{
+        
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "DELETE FROM " + DatabaseInterface.DEPARTMENT + " WHERE department_id=?  " ;
+        
+        Object[] obj  = {
+            Utilities.convertKeyToInteger(depID)
+        };
+        int added = -1;
+        added = DBHandler.setData(connection, query, obj);
+        
+        return  added == 1 ;
+    }
 }

@@ -5,6 +5,9 @@
  */
 package controller.inventory;
 
+import controller.pos.CounterController;
+import controller.pos.CounterLoginController;
+import controller.pos.UserController;
 import database.connector.DBConnection;
 import database.connector.DatabaseInterface;
 import database.handler.DBHandler;
@@ -66,47 +69,59 @@ public class BatchDiscountController {
 
     public static boolean addBatchDiscount(BatchDiscount batchDiscount, boolean isReplacing) throws SQLException {
 
-        Connection connection = DBConnection.getConnectionToDB();
-        connection.setAutoCommit(false);
+        Connection connection = null;
 
-        int cid = Utilities.convertKeyToInteger(batchDiscount.getBatchId());
-        int did = Utilities.convertKeyToInteger(batchDiscount.getProductId());
+        try {
+            connection = DBConnection.getConnectionToDB();
+            connection.setAutoCommit(false);
 
-        int depAdded = -1;
-        Object[] objs = {
-            batchDiscount.getDiscount(),
-            batchDiscount.getStartDate(),
-            batchDiscount.getEndDate(),
-            batchDiscount.isPromotional(),
-            batchDiscount.getQuantity(),
-            batchDiscount.isMembersOnly(),
-            cid,
-            did
-        };
+            //Add your code here 
+            int cid = Utilities.convertKeyToInteger(batchDiscount.getBatchId());
+            int did = Utilities.convertKeyToInteger(batchDiscount.getProductId());
 
-        boolean set;
+            Object[] objs = {
+                batchDiscount.getDiscount(),
+                batchDiscount.getStartDate(),
+                batchDiscount.getEndDate(),
+                batchDiscount.isPromotional(),
+                batchDiscount.getQuantity(),
+                batchDiscount.isMembersOnly(),
+                cid,
+                did
+            };
 
-        if (isReplacing) {
+            if (isReplacing) {
+                String query2 = "UPDATE " + DatabaseInterface.BATCH_DISCOUNT + " SET discount = ? , start_date = ? , end_date = ? , promotional = ? , qty = ? , members_only = ? WHERE batch_id = ? AND product_id = ? ";
+                DBHandler.setData(connection, query2, objs);
+            } else {
+                String query = "INSERT INTO " + DatabaseInterface.BATCH_DISCOUNT + " (discount, start_date, end_date ,promotional ,qty , members_only,batch_id, product_id ) VALUES (?,?,?,?,?,?,?,?)";
+                DBHandler.setData(connection, query, objs);
+                CategoryController.setDiscounted(connection, cid, did);
+            }
 
-            String query2 = "UPDATE " + DatabaseInterface.BATCH_DISCOUNT + " SET discount = ? , start_date = ? , end_date = ? , promotional = ? , qty = ? , members_only = ? WHERE batch_id = ? AND product_id = ? ";
-            depAdded = DBHandler.setData(connection, query2, objs);
-            set = true;
-
-        } else {
-            String query = "INSERT INTO " + DatabaseInterface.BATCH_DISCOUNT + " (discount, start_date, end_date ,promotional ,qty , members_only,batch_id, product_id ) VALUES (?,?,?,?,?,?,?,?)";
-            depAdded = DBHandler.setData(connection, query, objs);
-            set = CategoryController.setDiscounted(connection, cid, did);
-        }
-
-        if (set && depAdded == 1) {
             connection.commit();
-            connection.setAutoCommit(true);
             return true;
+        } catch (Exception err0) {
+            //logger.error("Exception occurred " + err0.getMessage());
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    // logger.debug("Connection rolledback");
+                } catch (SQLException err1) {
+                    // logger.error("SQLException occurred " + err1.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    //  logger.debug("Connection setAutoCommit(true)");
+                } catch (SQLException err2) {
+                    //  logger.error("SQLException occurred " + err2.getMessage());
+                }
+            }
         }
-
-        connection.rollback();
-        connection.setAutoCommit(true);
-        return false;
     }
 
 }

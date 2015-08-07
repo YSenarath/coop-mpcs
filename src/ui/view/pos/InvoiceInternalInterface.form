@@ -1198,7 +1198,7 @@
                                               <Component id="lblCashPaymentAmountDisplay1" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                                               <Component id="txtCardPaymentAmount" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="209" max="32767" attributes="0"/>
+                                          <EmptySpace pref="205" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>

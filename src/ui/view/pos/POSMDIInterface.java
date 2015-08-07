@@ -14,6 +14,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
@@ -63,6 +64,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
 
         }
         performKeyBinding();
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
     }
 

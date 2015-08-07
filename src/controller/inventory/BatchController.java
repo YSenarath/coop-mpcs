@@ -194,4 +194,41 @@ public class BatchController {
 
         return DBHandler.setData(connection, query, ob) == 1;
     }
+
+    // GRN
+    public static ArrayList<Batch> getAllAvailableBatchesOfGrn(String grnNumber) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT batch_id, unit_cost, product_id, unit_price, qty, exp_date, notify_date, recieved_qty, sold_qty, in_stock, discounted FROM " + DatabaseInterface.BATCH + " WHERE grn_number=?";
+
+        Object[] ob = {
+            Utilities.convertKeyToInteger(grnNumber)
+        };
+
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+
+        ArrayList<Batch> batches = new ArrayList();
+        String id;
+
+        while (resultSet.next()) {
+            id = Utilities.convertKeyToString(resultSet.getInt("batch_id"), DatabaseInterface.BATCH);
+
+            batches.add(
+                    (BatchBuilder.Batch())
+                    .withBatchId(id)
+                    .withGRNNumber(grnNumber)
+                    .withProductId(resultSet.getString("product_id"))
+                    .withUnitCost(resultSet.getDouble("unit_cost"))
+                    .withUnitPrice(resultSet.getDouble("unit_price"))
+                    .withQuantity(resultSet.getDouble("qty"))
+                    .withExpirationDate(resultSet.getDate("exp_date"))
+                    .withNotificationDate(resultSet.getDate("notify_date"))
+                    .withRecievedQuantity(resultSet.getDouble("recieved_qty"))
+                    .withSoldQty(resultSet.getDouble("sold_qty"))
+                    .withDiscounted(resultSet.getBoolean("discounted"))
+                    .withInStock(resultSet.getBoolean("in_stock"))
+                    .build()
+            );
+        }
+        return batches;
+    }
 }
