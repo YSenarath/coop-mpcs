@@ -31,7 +31,7 @@ public class CustomerVoucherPaymentController implements DatabaseInterface {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
-    public static CustomerVoucherPayment getCustomerVoucherpayment(int invoiceNo) throws SQLException {
+    public static CustomerVoucherPayment getCustomerVoucherPayment(int invoiceNo) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + CUSTOMER_VOUCHER_PAYMENT + " WHERE bill_id=? ";
         Object[] ob = {

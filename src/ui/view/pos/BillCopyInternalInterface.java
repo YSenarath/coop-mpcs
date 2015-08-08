@@ -1,12 +1,16 @@
 package ui.view.pos;
 
+import controller.credit.CoopCreditPaymentController;
 import controller.inventory.ProductController;
 import controller.pos.CardPaymentController;
 import controller.pos.CashPaymentController;
 import controller.pos.CounterController;
 import controller.pos.CounterLoginController;
+import controller.pos.CustomerVoucherPaymentController;
+import controller.pos.EmployeeVoucherPaymentController;
 import controller.pos.InvoiceController;
 import controller.pos.InvoiceItemController;
+import controller.pos.PoshanaPaymentController;
 import database.connector.DatabaseInterface;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -29,6 +33,10 @@ import model.pos.payment.CardPayment;
 import model.pos.payment.CashPayment;
 import model.pos.item.Invoice;
 import model.pos.item.InvoiceItem;
+import model.pos.payment.CoopCreditPayment;
+import model.pos.payment.CustomerVoucherPayment;
+import model.pos.payment.EmployeeVoucherPayment;
+import model.pos.payment.PoshanaPayment;
 import org.apache.log4j.Logger;
 import util.Utilities;
 
@@ -214,7 +222,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             Invoice invoice = InvoiceController.getInvoice(invoiceNumber);
 
             if (invoice == null) {
-                 throw new Exception("No such bill found");
+                throw new Exception("No such bill found");
             }
 
             lblBillDateVal.setText(invoice.getDate());
@@ -240,6 +248,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             txtDiscounts.setText(String.format("%.2f", netDiscount));
 
             double totalPayments = 0;
+            //Cash Payments            
             CashPayment cashPayment = CashPaymentController.getCashpayment(invoiceNumber);
             if (cashPayment != null) {
                 txtCashPayment.setText(String.format("%.2f", cashPayment.getAmount()));
@@ -247,6 +256,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                 totalPayments += cashPayment.getAmount();
             }
 
+            //Card payments
             ArrayList<CardPayment> cardPayments = CardPaymentController.getCardPayments(invoiceNumber);
             double amexAmount = 0;
             double masterAmount = 0;
@@ -267,6 +277,38 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             txtAmexCardPayment.setText(String.format("%.2f", amexAmount));
             txtMasterCardPayment.setText(String.format("%.2f", masterAmount));
             txtVisaCardPayment.setText(String.format("%.2f", visaAmount));
+
+            //Coop credit
+            CoopCreditPayment coopCreditPayment = CoopCreditPaymentController.getCoopCreditPayment(invoiceNumber);
+            if (coopCreditPayment != null) {
+                txtCoopCreditPayment.setText(String.format("%.2f", coopCreditPayment.getAmount()));
+            } else {
+                txtCoopCreditPayment.setText("0.00");
+            }
+
+            //Poshana payment
+            PoshanaPayment poshanaPayment = PoshanaPaymentController.getPoshanaPayment(invoiceNumber);
+            if (poshanaPayment != null) {
+                txtPoshana.setText(String.format("%.2f", poshanaPayment.getAmount()));
+            } else {
+                txtPoshana.setText("0.00");
+            }
+
+            //customer Voucher
+            CustomerVoucherPayment customerVoucherPayment = CustomerVoucherPaymentController.getCustomerVoucherPayment(invoiceNumber);
+            if (customerVoucherPayment != null) {
+                txtVoucher.setText(String.format("%.2f", customerVoucherPayment.getAmount()));
+            } else {
+                txtVoucher.setText("0.00");
+            }
+
+            //Employee voucher
+            EmployeeVoucherPayment employeeVoucherPayment = EmployeeVoucherPaymentController.getEmployeeVoucherPayment(invoiceNumber);
+            if (employeeVoucherPayment != null) {
+                txtVoucher.setText(String.format("%.2f", employeeVoucherPayment.getAmount()));
+            } else {
+                txtVoucher.setText("0.00");
+            }
 
             totalPayments = totalPayments + amexAmount + masterAmount + visaAmount;
             txtTotalPayments.setText(String.format("%.2f", totalPayments));

@@ -1,6 +1,7 @@
 package controller.pos;
 
 //import controller.inventory.BatchController;
+import controller.credit.CoopCreditPaymentController;
 import controller.inventory.BatchController;
 import database.connector.DBConnection;
 import java.sql.Connection;

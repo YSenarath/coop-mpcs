@@ -14,7 +14,7 @@ public class Employee {
     
     private String employeeName;
     private int employeeId;
-    private boolean voucherIssued=false;
+    private boolean voucherIssued;
     private String position;
     public Employee(int employeeId,String employeeName,String position,boolean voucherIssued){
         this.employeeId = employeeId;
