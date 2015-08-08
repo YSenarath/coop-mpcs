@@ -27,7 +27,6 @@ public class ManageDepartmentHandler {
     private ArrayList<Category> categories;
 
     private boolean initiating;
-    
 
     public ManageDepartmentHandler(ManageDepartment gui) {
         this.gui = gui;
@@ -134,9 +133,12 @@ public class ManageDepartmentHandler {
     public boolean removeDepartment() throws SQLException {
         int selectedIndex = gui.getDepIdCombo().getSelectedIndex();
 
-        DepartmentController.removeDepartment(gui.getDepIdCombo().getSelectedItem().toString().trim());
-        loadDepartmentCombo();
-        gui.getDepIdCombo().setSelectedIndex(selectedIndex - 1);
+        if (DepartmentController.removeDepartment(gui.getDepIdCombo().getSelectedItem().toString().trim())) {
+            loadDepartmentCombo();
+            gui.getDepIdCombo().setSelectedIndex(selectedIndex - 1);
+
+            return true;
+        }
 
         return false;
     }
@@ -148,17 +150,14 @@ public class ManageDepartmentHandler {
         String cDesc = gui.getDescText().getText().trim();
         String depId = departments.get(index - 1).getDepartmentId();
 
-        if (!cId.matches("^C[0-9]{4}$") && !cId.isEmpty()) {
-            gui.setIdComment("Invalid ID");
-            return false;
-        }
+        
         if (cName.equals("") || cDesc.equals("")) {
-            gui.setIdComment("Emtpy Field");
+            Utilities.ShowErrorMsg(gui, "Emtpy Field");
             return false;
         }
         for (Category c : categories) {
-            if (c.getCategoryId().equals(cId)) {
-                gui.setIdComment("Duplicate ID");
+            if (c.getCategoryName().equals(cName)) {
+                Utilities.ShowErrorMsg(gui, "Duplicate Name : " + cName);
                 return false;
             }
         }
@@ -171,7 +170,49 @@ public class ManageDepartmentHandler {
         return false;
     }
 
-    private void setSelectedDepartment(String depName) {
+
+
+   public boolean editCategory(int index) throws SQLException {
+
+        String cId = gui.getIdText().getText().trim();
+        String cName = gui.getNameText().getText().trim();
+        String cDesc = gui.getDescText().getText().trim();
+        String depId = departments.get(index - 1).getDepartmentId();
+
+        if (cName.equals("") || cDesc.equals("")) {
+            Utilities.ShowErrorMsg(gui, "Emtpy Field");
+            return false;
+        }
+        for (Category c : categories) {
+            if (c.getCategoryName().equals(cName)) {
+                Utilities.ShowErrorMsg(gui, "Duplicate Category : " + cName);
+                return false;
+            }
+        }
+        
+        Category category = new Category(cId, cName, depId, cDesc);
+
+        if (CategoryController.updateCategory(category)) {
+            loadCategories(index);
+            return true;
+        }
+        return false;
+    
+    }
+
+    
+    public boolean removeCategory() throws SQLException {
+        int selectedIndex = gui.getCategoryTable().getSelectedRow();
+
+        if (CategoryController.removeCategory(categories.get(selectedIndex))) {
+            loadCategories(gui.getDepIdCombo().getSelectedIndex());
+            return true;
+        }
+        return false;
+    }
+    
+    
+     private void setSelectedDepartment(String depName) {
         gui.getDepNameCombo().setSelectedItem(depName);
     }
 
@@ -186,7 +227,7 @@ public class ManageDepartmentHandler {
 
     public String getCategoryNextId() {
         if (!categories.isEmpty()) {
-            System.out.println(categories.isEmpty() + "  " +categories.size());
+
             int id = Utilities.convertKeyToInteger(categories.get(categories.size() - 1).getCategoryId());
             return Utilities.convertKeyToString((id + 1), DatabaseInterface.CATEGORY);
 

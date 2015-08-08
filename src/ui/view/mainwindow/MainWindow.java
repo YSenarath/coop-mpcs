@@ -5,7 +5,6 @@
  */
 package ui.view.mainwindow;
 
-import controller.inventory.DepartmentController;
 import java.awt.Dimension;
 import java.sql.SQLException;
 import java.util.logging.Level;
