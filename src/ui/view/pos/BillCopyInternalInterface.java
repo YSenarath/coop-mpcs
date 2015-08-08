@@ -167,6 +167,8 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
     //validate invoice number
     private boolean isValidInvoiceNumber(String invoiceNo) {
+        logger.debug("isValidInvoiceNumber invoked");
+        
         invoiceNo = invoiceNo.toUpperCase();
         if (invoiceNo.startsWith("I")) {
             invoiceNo = invoiceNo.substring(1);
@@ -211,6 +213,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     private void getInvoiceInformation() {
         logger.debug("getInvoiceInformation invoked");
         cleanUI();
+        
         String billNumber = txtSearchBillNO.getText();
         try {
             if (!isValidInvoiceNumber(billNumber)) {
@@ -254,6 +257,9 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                 txtCashPayment.setText(String.format("%.2f", cashPayment.getAmount()));
                 txtChange.setText(String.format("%.2f", cashPayment.getChangeAmount()));
                 totalPayments += cashPayment.getAmount();
+            }else{
+                txtCashPayment.setText("0.00");
+                txtChange.setText("0.00");
             }
 
             //Card payments

@@ -25,11 +25,11 @@ public class RefundItemController implements DatabaseInterface {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
-    public static ArrayList<RefundItem> getInvoiceItems(int invoiceNo) throws SQLException {
+    public static ArrayList<RefundItem> getRefundItems(int refundId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + REFUND_ITEMS + " WHERE bill_id=?";
+        String query = "SELECT * FROM " + REFUND_ITEMS + " WHERE refund_id=?";
         Object[] ob = {
-            invoiceNo
+            refundId
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
         ArrayList<RefundItem> refundItems = new ArrayList();
