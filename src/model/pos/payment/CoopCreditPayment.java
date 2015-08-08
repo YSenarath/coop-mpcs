@@ -11,6 +11,11 @@ public class CoopCreditPayment extends Payment {
         this.amountSettled = amountSettled;
     }
 
+    public CoopCreditPayment(int invoiceId, int paymentId, int customerId, double amount) {
+        super(invoiceId, paymentId, amount);
+        this.customerId = customerId;
+        this.amountSettled = 0;
+    }
     /**
      * @return the customerId
      */

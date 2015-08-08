@@ -22,18 +22,17 @@ public class EmployeeVoucherPaymentController implements DatabaseInterface {
 
     public static boolean addEmployeeVoucherPayment(EmployeeVoucherPayment employeeVoucherPayment) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + EMPLOYEE_VOUCHER_PAYMENT + " (bill_id,voucher_payment_id,employee_id,voucher_id,amount) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO " + EMPLOYEE_VOUCHER_PAYMENT + " (bill_id,voucher_payment_id,employee_id,amount) VALUES (?,?,?,?)";
         Object[] ob = {
             employeeVoucherPayment.getInvoiceId(),
             employeeVoucherPayment.getPaymentId(),
             employeeVoucherPayment.getEmployeeId(),
-            employeeVoucherPayment.getVoucherId(),
             employeeVoucherPayment.getAmount()
         };
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
-    public static EmployeeVoucherPayment getEmployeeVoucherpayment(int invoiceNo) throws SQLException {
+    public static EmployeeVoucherPayment getEmployeeVoucherPayment(int invoiceNo) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + EMPLOYEE_VOUCHER_PAYMENT + " WHERE bill_id=? ";
         Object[] ob = {
@@ -44,24 +43,6 @@ public class EmployeeVoucherPaymentController implements DatabaseInterface {
             return new EmployeeVoucherPayment(
                     resultSet.getInt("bill_id"),
                     resultSet.getInt("voucher_payment_id"),
-                    resultSet.getString("voucher_id"),
-                    resultSet.getInt("employee_id"),
-                    resultSet.getDouble("amount")
-            );
-        }
-        return null;
-    }
-
-    public static EmployeeVoucherPayment getEmployeeVoucherpayment() throws SQLException {
-        Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + EMPLOYEE_VOUCHER_PAYMENT;
-
-        ResultSet resultSet = DBHandler.getData(connection, query);
-        if (resultSet.next()) {
-            return new EmployeeVoucherPayment(
-                    resultSet.getInt("bill_id"),
-                    resultSet.getInt("voucher_payment_id"),
-                    resultSet.getString("voucher_id"),
                     resultSet.getInt("employee_id"),
                     resultSet.getDouble("amount")
             );
@@ -81,7 +62,6 @@ public class EmployeeVoucherPaymentController implements DatabaseInterface {
             EmployeeVoucherPayment voucherPayment = new EmployeeVoucherPayment(
                     resultSet.getInt("bill_id"),
                     resultSet.getInt("voucher_payment_id"),
-                    resultSet.getString("voucher_id"),
                     resultSet.getInt("employee_id"),
                     resultSet.getDouble("amount")
             );

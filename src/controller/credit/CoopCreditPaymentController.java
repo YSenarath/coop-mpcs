@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller.pos;
+package controller.credit;
 
 import database.connector.DBConnection;
 import database.connector.DatabaseInterface;
@@ -20,7 +20,7 @@ import model.pos.payment.CoopCreditPayment;
  */
 public class CoopCreditPaymentController implements DatabaseInterface {
 
-    public static CoopCreditPayment getCoopCreditpayment(int invoiceNo) throws SQLException {
+    public static CoopCreditPayment getCoopCreditPayment(int invoiceNo) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + COOP_CREDIT_PAYMENT + " WHERE bill_id=? ";
         Object[] ob = {
@@ -42,16 +42,17 @@ public class CoopCreditPaymentController implements DatabaseInterface {
 
     public static boolean addCoopPayment(CoopCreditPayment coopPayment) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + COOP_CREDIT_PAYMENT + " (bill_id,coop_credit_payment_id,amount,amount_settled) VALUES (?,?,?,?)";
+        String query = "INSERT INTO " + COOP_CREDIT_PAYMENT + " (bill_id,coop_credit_payment_id,customer_id,amount) VALUES (?,?,?,?)";
         Object[] ob = {
             coopPayment.getInvoiceId(),
             coopPayment.getPaymentId(),
-            coopPayment.getAmount(),
-            coopPayment.getAmountSettled()
+            coopPayment.getCustomerId(),
+            coopPayment.getAmount()
         };
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
+    //Add method to settle payment
     public static CoopCreditPayment getCoopCreditPaymentDetails(int customerId) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + COOP_CREDIT_PAYMENT + " WHERE customer_id=? ";

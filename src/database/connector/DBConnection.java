@@ -23,8 +23,19 @@ public class DBConnection implements DatabaseInterface {
             logger.info("MYSQL connection = jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
 
             connection = DriverManager.getConnection("jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE, connectionProps);
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(),ex);
+        } catch (Exception e) {
+            logger.warn("Ops trying differnt password");
+            try {
+                Properties connectionProps = new Properties();
+                connectionProps.put("user", "admin");
+                connectionProps.put("password", "admin");
+                logger.info("MYSQL connection = jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
+
+                connection = DriverManager.getConnection("jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE, connectionProps);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage(), ex);
+            }
+
         }
     }
 
