@@ -1,10 +1,14 @@
 package ui.view.pos;
 
+import controller.credit.CreditCustomerController;
+import controller.credit.EmployeeController;
 import controller.inventory.BatchController;
 import controller.inventory.BatchDiscountController;
 import controller.inventory.CategoryController;
 import controller.inventory.CategoryDiscountController;
 import controller.inventory.ProductController;
+import controller.pos.CoopCreditPaymentController;
+import controller.pos.EmployeeVoucherPaymentController;
 import controller.pos.InvoiceController;
 import controller.pos.TransactionController;
 import database.connector.DatabaseInterface;
@@ -21,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
@@ -34,6 +39,8 @@ import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.PlainDocument;
+import model.creditManagement.CreditCustomer;
+import model.creditManagement.Employee;
 import model.inventory.Batch;
 import model.inventory.BatchDiscount;
 import model.inventory.Category;
@@ -43,7 +50,11 @@ import model.pos.payment.CardPayment;
 import model.pos.payment.CashPayment;
 import model.pos.item.Invoice;
 import model.pos.item.InvoiceItem;
+import model.pos.payment.CoopCreditPayment;
+import model.pos.payment.CustomerVoucherPayment;
+import model.pos.payment.EmployeeVoucherPayment;
 import model.pos.payment.Payment;
+import model.pos.payment.PoshanaPayment;
 import org.apache.log4j.Logger;
 import util.CharactorLimitDocument;
 import util.DoubleFilter;
@@ -62,6 +73,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private SelectPriceInterface selectPriceInterface;
 
     DefaultComboBoxModel productComboBoxModel;
+
+    //Yasara
+    DefaultComboBoxModel employeeComboBoxModel;
+    DefaultComboBoxModel coopCusComboBoxModel;
+
     ActionListener productCodeListner;
     DefaultTableModel invoiceItemTableModel;
     DefaultTableModel invoicePaymentsTableModel;
@@ -79,6 +95,12 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private Invoice invoice;
     private Product processingProduct;
     private HashMap<String, Product> availableProductMap;
+
+    //Yasara-Credit
+    private HashMap<Integer, CoopCreditPayment> coopCredits;
+    private HashMap<Integer, EmployeeVoucherPayment> employeeVoucherPayments;
+    private HashMap<Integer, Employee> employees;
+    private HashMap<Integer, CreditCustomer> customers;
 
     private final int PRODUCT_ID_COLUMN = 0;
     private final int BATCH_ID_COLUMN = 1;
@@ -117,6 +139,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         this.productComboBoxModel = new DefaultComboBoxModel();
         this.invoiceItemTableModel = (DefaultTableModel) invoiceItemTable.getModel();
         this.invoicePaymentsTableModel = (DefaultTableModel) invoicePaymentsTable.getModel();
+
+        //yasara
+        this.employeeComboBoxModel = (DefaultComboBoxModel) (voucherEmployeeNameComboBox.getModel());
+        this.coopCusComboBoxModel = (DefaultComboBoxModel) coopCustomerNameComboBox.getModel();
 
         this.invoice = null;
         this.processingProduct = null;
@@ -165,6 +191,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         initializeInvoice();
         loadSellebleProducts();
+        loadAllDetails();
     }
 
     // </editor-fold>
@@ -627,6 +654,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         txtCashPaymentAmount.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
         txtCardPaymentAmount.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
+
+        //Yasara
+        coopCreditAmountTxt.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
+        VoucherEmployeeVoucherAmount.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
+        voucherCustomerAmountTxt.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
     }
 
     //Handle txt Qty key press
@@ -972,35 +1004,70 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //
 // <editor-fold defaultstate="collapsed" desc="Payment System">
     //Toggle payment options in payment screen
+    public void loadAllDetails() {
+        logger.debug("loadAllDetails invoked");
+
+        try {
+            employeeComboBoxModel.removeAllElements();
+            ArrayList<Employee> employeeDetails = EmployeeController.loadEmployees();
+
+            for (Employee employee : employeeDetails) {
+                employees.put(employee.getEmployeeId(), employee);
+                employeeComboBoxModel.addElement(employee.getEmployeeName());
+            }
+
+            coopCusComboBoxModel.removeAllElements();
+            ArrayList<CreditCustomer> customerDetails = CreditCustomerController.loadCustomers();
+            for (CreditCustomer customer : customerDetails) {
+                customers.put(customer.getCustomerId(), customer);
+                coopCusComboBoxModel.addElement(customer.getCustomerName());
+            }
+
+            ArrayList<CoopCreditPayment> coopDetails = CoopCreditPaymentController.loadDetails();
+            for (CoopCreditPayment coopCredit : coopDetails) {
+                coopCredits.put(coopCredit.getCustomerId(), coopCredit);
+            }
+
+            ArrayList<EmployeeVoucherPayment> voucherDetails = EmployeeVoucherPaymentController.loadPayments();
+            for (EmployeeVoucherPayment employeeVoucher : voucherDetails) {
+                employeeVoucherPayments.put(employeeVoucher.getEmployeeId(), employeeVoucher);
+            }
+        } catch (SQLException ex) {
+            logger.error("SQL error : " + ex.getMessage(), ex);
+            System.exit(3);
+        }
+
+    }
+
     private void togglePaymentOptions() {
         logger.debug("togglePaymentOptions invoked");
 
         //
         // When showing payment option remaining amount should be shown automatically
         //
-        double remainingAmount = invoice.getNetTotal() - invoice.getAmountPaid();
-
         CardLayout paymentMethodCard = (CardLayout) paymentDetailsPanel.getLayout();
         String selectedOption = (String) paymentOptionComboBox.getSelectedItem();
         if (selectedOption != null && !selectedOption.isEmpty()) {
             switch (selectedOption) {
                 case Payment.CASH:
                     calculatePaymentParameters();
-
                     paymentMethodCard.show(paymentDetailsPanel, "cashCard");
                     break;
                 case Payment.CREDIT_CARD:
                     calculatePaymentParameters();
                     paymentMethodCard.show(paymentDetailsPanel, "bankCard");
                     break;
-                case Payment.COOP_CRDIT:
-                    
+                case Payment.COOP_CREDIT:
                     paymentMethodCard.show(paymentDetailsPanel, "coopCreditCard");
+
+                    //yasara 
+                    //setRedeamableAmount();
                     break;
                 case Payment.POSHANA:
                     paymentMethodCard.show(paymentDetailsPanel, "poshanaCard");
                     break;
                 case Payment.VOUCHER:
+                    calculatePaymentParameters();
                     paymentMethodCard.show(paymentDetailsPanel, "voucherCard");
                     break;
             }
@@ -1033,6 +1100,17 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         }
     }
 
+    //Toggle voucher payment type
+    private void toggleVoucherType() {
+        logger.debug("toggleVoucherType invoked");
+        CardLayout voucherPaymentCard = (CardLayout) voucherCard.getLayout();
+        if (employeeRadioButton.isSelected()) {
+            voucherPaymentCard.show(voucherCard, "employeeCard");
+        } else if (customerRadioButton.isSelected()) {
+            voucherPaymentCard.show(voucherCard, "customerCard");
+        }
+    }
+
     //Add a payment option
     private void addPaymentOption() {
         logger.debug("addPaymentOption invoked");
@@ -1042,6 +1120,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             return;
         }
 
+        int coopAmount = 0;
+        int remainingCredit = 0;
         String selectedOption = (String) paymentOptionComboBox.getSelectedItem();
         if (selectedOption != null && !selectedOption.isEmpty()) {
             switch (selectedOption) {
@@ -1051,9 +1131,25 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 case Payment.CREDIT_CARD:
                     handleCardPayment();
                     break;
-                case Payment.COOP_CRDIT:
-                    handleCoopCreditPayment();
-                    break;
+                case Payment.COOP_CREDIT:
+                    logger.error("Yasara - not checked");
+//                    try {
+//                        coopAmount = Integer.parseInt(coopCreditAmountTxt.getText());
+//                    } catch (NumberFormatException x) {
+//                        Utilities.showMsgBox("Invalid payment amount", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+//                    }
+//                    try {
+//                        remainingCredit = Integer.parseInt(redeamableAmountTxt.getText());
+//                    } catch (NumberFormatException x) {
+//                        Utilities.showMsgBox("System Error", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+//                    }
+//
+//                    if ((coopAmount <= remainingCredit) && (remainingCredit != 0)) {
+//                        handleCoopCreditPayment();
+//                    } else {
+//                        paymentSelectorPanel.requestFocus();
+//                        return;
+//                    }
                 case Payment.POSHANA:
                     handlePoshanaPayment();
                     break;
@@ -1233,15 +1329,210 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     }
 
     private void handleCoopCreditPayment() {
-        logger.warn("handleCoopCreditPayment not implemented");
+        logger.error("Yasara - not checked");
+//        logger.debug("handleCoopCreditPayment invoked");
+//
+//        if (invoice == null) {
+//            logger.error("null invoice");
+//            return;
+//        }
+//        int customerIdNum = customers.get(coopCustomerNameComboBox.getSelectedItem().toString()).getCustomerId();
+//        String redeamableAmount = redeamableAmountTxt.getText();
+//
+//        try {
+//            int redeamableAmountTxt = Integer.parseInt(redeamableAmount);
+//            if (redeamableAmountTxt == 0) {
+//                throw new NumberFormatException("Zero number");
+//            }
+//        } catch (NumberFormatException ex) {
+//            Utilities.showMsgBox("Invalid number", "Incorrect card number", JOptionPane.WARNING_MESSAGE);
+//            coopCustomerNameComboBox.requestFocus();
+//            return;
+//        }
+//
+//        //Validate coop credit payment
+//        double coopCreditPaymentAmount = 0;
+//        try {
+//            coopCreditPaymentAmount = Double.parseDouble(coopCreditAmountTxt.getText());
+//            if (coopCreditPaymentAmount == 0.00) {
+//                throw new NumberFormatException("Zero payment");
+//            }
+//        } catch (NumberFormatException ex) {
+//            Utilities.showMsgBox("Invalid coop credit payment amount", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+//            coopCreditAmountTxt.requestFocus();
+//            return;
+//        }
+//        double remainingAmount = invoice.getNetTotal() - invoice.getAmountPaid();
+//
+//        if (coopCreditPaymentAmount > remainingAmount) {
+//            Utilities.showMsgBox("Coop credit payment should be less than or equal to the remaining amount to be paid", "Invalid amount", JOptionPane.WARNING_MESSAGE);
+//            coopCreditAmountTxt.requestFocus();
+//            return;
+//        }
+//
+//        //if payment option already in the table update it
+//        boolean itemInTable = false;
+//        for (int row = 0; row < invoicePaymentsTable.getRowCount(); row++) {
+//            if (invoicePaymentsTable.getValueAt(row, PAYMENT_OPTION_COLUMN).toString().equals(Payment.COOP_CREDIT)) {
+//                itemInTable = true;
+//                double coopCreditPaymentInTable = Double.parseDouble(invoicePaymentsTable.getValueAt(row, PAYMENT_AMOUNT_COLUMN).toString());
+//                double newCoopCreditPaymentAmount = coopCreditPaymentInTable + coopCreditPaymentAmount;
+//
+//                invoicePaymentsTable.setValueAt(String.format("%.2f", newCoopCreditPaymentAmount), row, PAYMENT_AMOUNT_COLUMN);//Coop credit Payment coopAmount
+//                break;
+//            }
+//        }
+//
+//        //Can enter any coopAmount with no restriction
+//        if (!itemInTable) {
+//            Object[] ob = {
+//                Payment.COOP_CREDIT,
+//                String.format("%.2f", coopCreditPaymentAmount),
+//                "",
+//                ""
+//            };
+//            invoicePaymentsTableModel.addRow(ob);
+//        }
+//        //
+//        logger.info("Coop credit payment added");
+//
+//        calculatePaymentParameters();
     }
 
     private void handlePoshanaPayment() {
-        logger.warn("handlePoshanaPayment not implemented");
+        logger.error("Yasara - not checked");
+//        logger.debug("handle Poshana Payment invoked");
+//
+//        if (invoice == null) {
+//            logger.error("null invoice");
+//            return;
+//        }
+//        String poshanaId = poshanaIdTxt.getText();
+//        try {
+//            int poshanaIdVal = Integer.parseInt(poshanaId);
+//            if (poshanaIdVal == 0) {
+//                throw new NumberFormatException("Zero number");
+//            }
+//        } catch (NumberFormatException ex) {
+//            Utilities.showMsgBox("Invalid number", "Incorrect poshanaId number", JOptionPane.WARNING_MESSAGE);
+//            poshanaIdTxt.requestFocus();
+//            return;
+//        }
+//        //Validate poshana payment
+//        double poshanaPaymentAmount = 2000;
+//
+//        double remainingAmount = invoice.getNetTotal() - invoice.getAmountPaid();
+//
+//        if (poshanaPaymentAmount > remainingAmount) {
+//            Utilities.showMsgBox("Poshana payment should be less than or equal to the remaining amount to be paid", "Invalid amount", JOptionPane.WARNING_MESSAGE);
+//           amountTxt1.requestFocus();
+//            return;
+//        }
+//
+//        Object[] ob = {
+//            Payment.POSHANA,
+//            String.format("%.2f", 2000),
+//            "",
+//            ""
+//        };
+//        invoicePaymentsTableModel.addRow(ob);
     }
 
     private void handleVoucherPayment() {
-        logger.warn("handleVoucherPayment not implemented");
+        logger.error("Yasara - not checked");
+//        logger.debug("handle Voucher Payment invoked");
+//
+//        if (invoice == null) {
+//            logger.error("null invoice");
+//            return;
+//        }
+//        if (customerRadioButton.isEnabled()) {
+//
+//            //Validate voucher payment
+//            double customerVoucherPaymentAmount = 0;
+//            try {
+//                customerVoucherPaymentAmount = Double.parseDouble(amountTxt1.getText());
+//                if (customerVoucherPaymentAmount == 0.00) {
+//                    throw new NumberFormatException("Zero payment");
+//                }
+//            } catch (NumberFormatException ex) {
+//                Utilities.showMsgBox("Invalid voucher payment amount", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+//                // amountTxt1.requestFocus();
+//                return;
+//            }
+//            double remainingAmount = invoice.getNetTotal() - invoice.getAmountPaid();
+//
+//            if (customerVoucherPaymentAmount > remainingAmount) {
+//                Utilities.showMsgBox("Voucher payment should be less than or equal to the remaining amount to be paid", "Invalid amount", JOptionPane.WARNING_MESSAGE);
+//                amountTxt1.requestFocus();
+//                return;
+//            }
+//
+//            //if payment option already in the table update it
+//            boolean itemInTable = false;
+//            for (int row = 0; row < invoicePaymentsTable.getRowCount(); row++) {
+//                if (invoicePaymentsTable.getValueAt(row, PAYMENT_OPTION_COLUMN).toString().equals(Payment.VOUCHER)) {
+//                    itemInTable = true;
+//                    double voucherPaymentInTable = Double.parseDouble(invoicePaymentsTable.getValueAt(row, PAYMENT_AMOUNT_COLUMN).toString());
+//                    double newVoucherPaymentAmount = voucherPaymentInTable + customerVoucherPaymentAmount;
+//
+//                    invoicePaymentsTable.setValueAt(String.format("%.2f", newVoucherPaymentAmount), row, PAYMENT_AMOUNT_COLUMN);//Cash Payment coopAmount
+//                    break;
+//                }
+//            }
+//
+//            //Can enter any coopAmount with no restriction
+//            if (!itemInTable) {
+//                Object[] ob = {
+//                    Payment.VOUCHER,
+//                    String.format("%.2f", customerVoucherPaymentAmount),
+//                    "",
+//                    ""
+//                };
+//                invoicePaymentsTableModel.addRow(ob);
+//            }
+//            //
+//
+//        }
+//        if (employeeRadioButton.isEnabled()) {
+//            double employeeVoucherPaymentAmount = 0;
+//            String employeeName = employeeComboBox.getSelectedIndex() > -1 ? employeeComboBox.getSelectedItem().toString() : "";
+//
+//            try {
+//                employeeVoucherPaymentAmount = Double.parseDouble(amountEmpTxt.getText());
+//                if (employeeVoucherPaymentAmount == 0.00) {
+//                    throw new NumberFormatException("Zero payment");
+//                }
+//            } catch (NumberFormatException ex) {
+//                Utilities.showMsgBox("Invalid voucher payment amount", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+//                amountEmpTxt.requestFocus();
+//                return;
+//            }
+//            double remainingAmount = invoice.getNetTotal() - invoice.getAmountPaid();
+//
+//            if (employeeVoucherPaymentAmount > remainingAmount) {
+//                Utilities.showMsgBox("Voucher payment should be less than or equal to the remaining amount to be paid", "Invalid amount", JOptionPane.WARNING_MESSAGE);
+//                amountEmpTxt.requestFocus();
+//                return;
+//            }
+//
+//            //
+//            //  if (!itemInTable) {
+//            Object[] ob = {
+//                Payment.VOUCHER,
+//                String.format("%.2f", employeeVoucherPaymentAmount),
+//                "",
+//                ""
+//            };
+//            invoicePaymentsTableModel.addRow(ob);
+//            amountEmpTxt.setText("0.00");
+//            //  }
+//
+//            //}
+//        }
+//        logger.info("Voucher payment added");
+//
+//        calculatePaymentParameters();
     }
 
     //Remove a payment option
@@ -1334,12 +1625,41 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 CardPayment cardPayment = new CardPayment(invoice.getInvoiceNo(), row + 1, cardType, cardNO, paymentAmount);
                 invoicePaymntsList.add(cardPayment);
 
-            } else if (paymentOption.contains(Payment.COOP_CRDIT)) {//Credit Payment
-                logger.error("COOP_CRDIT Not implemented yet");
+            } else if (paymentOption.contains(Payment.COOP_CREDIT)) {//Credit Payment
+                logger.error("Yasara - not checked");
+//                logger.info("Payment.COOP_CREDIT selected");
+//                String customerId = off_set_0;
+//                int customerIdVal = 0;
+//                try {
+//                    customerIdVal = Integer.parseInt(customerId);
+//                } catch (NumberFormatException x) {
+//                    Utilities.showMsgBox("System Error", "Error", JOptionPane.WARNING_MESSAGE);
+//                }
+//
+////                CoopCreditPayment cardPayment = new CoopCreditPayment(invoice.getInvoiceNo(), row + 1, customerIdVal, paymentAmount);
+//                //  invoicePaymntsList.add(cardPayment);
             } else if (paymentOption.contains(Payment.POSHANA)) {//poshana payment
-                logger.error("POSHANA Not implemented yet");
+                logger.error("Yasara - not checked");
+//                logger.info("Payment.POSHANA selected");
+//                String stampId = off_set_0;
+//                String customerName = off_set_1;
+//                PoshanaPayment cardPayment = new PoshanaPayment(invoice.getInvoiceNo(), row + 1, stampId, customerName, paymentAmount);
+//                invoicePaymntsList.add(cardPayment);
             } else if (paymentOption.contains(Payment.VOUCHER)) {//Voucher payment
-                logger.error("VOUCHER Not implemented yet");
+                logger.error("Yasara - not checked");
+//                logger.error("VOUCHER Not implemented yet");
+//                if (customerRadioButton.isEnabled()) {
+//                    String voucherId = off_set_0;
+//                    String customerName = off_set_1;
+//                    CustomerVoucherPayment voucherPayment = new CustomerVoucherPayment(invoice.getInvoiceNo(), row + 1, voucherId, paymentAmount);
+//                    invoicePaymntsList.add(voucherPayment);
+//                }
+//                if (employeeRadioButton.isEnabled()) {
+//                    String voucherId = off_set_0;
+//                    String employeeId = off_set_1;
+//                    //EmployeeVoucherPayment voucherPayment = new EmployeeVoucherPayment(invoice.getInvoiceNo(), row + 1, voucherId, employeeId, paymentAmount);
+//                    //invoicePaymntsList.add(voucherPayment);
+//                }
             }
         }
         invoice.setPayments(invoicePaymntsList);
@@ -1369,6 +1689,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        voucherPaymentBtnGroup = new javax.swing.ButtonGroup();
         jLayeredPane = new javax.swing.JLayeredPane();
         interfaceContainerPanel = new javax.swing.JPanel();
         cardPanel = new javax.swing.JPanel();
@@ -1433,8 +1754,36 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtCardPaymentAmount = new javax.swing.JTextField();
         txtcardNo = new javax.swing.JTextField();
         coopCreditpaymentPanel = new javax.swing.JPanel();
+        coopCreditCustomerIdLbl = new javax.swing.JLabel();
+        coopCustomerNameComboBox = new javax.swing.JComboBox();
+        coopCreditAmountLbl = new javax.swing.JLabel();
+        coopCreditAmountTxt = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
+        redeamableAmountLbl = new javax.swing.JLabel();
+        redeamableAmountTxt = new javax.swing.JLabel();
         PoshanaPayment = new javax.swing.JPanel();
+        poshanaPaymentAmountLbl = new javax.swing.JLabel();
+        poshanaPaymentAmountTxt = new javax.swing.JTextField();
+        poshanaIdLbl = new javax.swing.JLabel();
+        poshanaCustomerNameLbl = new javax.swing.JLabel();
+        poshanaCustomerNameTxt = new javax.swing.JTextField();
+        poshanaIdTxt = new javax.swing.JTextField();
         VoucherPayment = new javax.swing.JPanel();
+        employeeRadioButton = new javax.swing.JRadioButton();
+        customerRadioButton = new javax.swing.JRadioButton();
+        voucherCard = new javax.swing.JPanel();
+        employeeCard = new javax.swing.JPanel();
+        employeeNameLbl = new javax.swing.JLabel();
+        voucherEmployeeNameComboBox = new javax.swing.JComboBox();
+        amountEmpLbl = new javax.swing.JLabel();
+        VoucherEmployeeVoucherAmount = new javax.swing.JTextField();
+        customerCard = new javax.swing.JPanel();
+        customerNameLbl = new javax.swing.JLabel();
+        voucherCustomerNameTxt = new javax.swing.JTextField();
+        voucherIdLbl = new javax.swing.JLabel();
+        VoucherCustomerIdTxt = new javax.swing.JTextField();
+        amountLbl = new javax.swing.JLabel();
+        voucherCustomerAmountTxt = new javax.swing.JTextField();
         btnAddPayment = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
         btnConfirm = new javax.swing.JButton();
@@ -2011,16 +2360,16 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(122, Short.MAX_VALUE))
+                .addContainerGap(298, Short.MAX_VALUE))
         );
         cashPaymentPanelLayout.setVerticalGroup(
             cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cashPaymentPanelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addContainerGap()
                 .addGroup(cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(291, Short.MAX_VALUE))
+                .addContainerGap(300, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cashPaymentPanel, "cashCard");
@@ -2090,7 +2439,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         cardPaymentPanelLayout.setVerticalGroup(
             cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(cardPaymentPanelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addContainerGap()
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCardType)
                     .addComponent(cardTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -2102,46 +2451,391 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCardPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(205, Short.MAX_VALUE))
+                .addContainerGap(218, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cardPaymentPanel, "bankCard");
+
+        coopCreditCustomerIdLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        coopCreditCustomerIdLbl.setText("Customer Id");
+
+        coopCustomerNameComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        coopCustomerNameComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                coopCustomerNameComboBoxActionPerformed(evt);
+            }
+        });
+
+        coopCreditAmountLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        coopCreditAmountLbl.setText("Amount  (Rs.)");
+
+        coopCreditAmountTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        coopCreditAmountTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        coopCreditAmountTxt.setEnabled(false);
+        coopCreditAmountTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                coopCreditAmountTxtFocusLost(evt);
+            }
+        });
+        coopCreditAmountTxt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                coopCreditAmountTxtKeyReleased(evt);
+            }
+        });
+
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+
+        redeamableAmountLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        redeamableAmountLbl.setText("Maximum Redeamable Amount ");
+
+        redeamableAmountTxt.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        redeamableAmountTxt.setText("12345");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(redeamableAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(redeamableAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(238, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(redeamableAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(redeamableAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout coopCreditpaymentPanelLayout = new javax.swing.GroupLayout(coopCreditpaymentPanel);
         coopCreditpaymentPanel.setLayout(coopCreditpaymentPanelLayout);
         coopCreditpaymentPanelLayout.setHorizontalGroup(
             coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
+            .addGroup(coopCreditpaymentPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(coopCreditpaymentPanelLayout.createSequentialGroup()
+                        .addComponent(coopCreditCustomerIdLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(coopCustomerNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(coopCreditpaymentPanelLayout.createSequentialGroup()
+                        .addComponent(coopCreditAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(coopCreditAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         coopCreditpaymentPanelLayout.setVerticalGroup(
             coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 334, Short.MAX_VALUE)
+            .addGroup(coopCreditpaymentPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(coopCreditCustomerIdLbl)
+                    .addComponent(coopCustomerNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(coopCreditpaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(coopCreditAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(coopCreditAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 209, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         paymentDetailsPanel.add(coopCreditpaymentPanel, "coopCreditCard");
+
+        poshanaPaymentAmountLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        poshanaPaymentAmountLbl.setText("Amount  (Rs.)");
+
+        poshanaPaymentAmountTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        poshanaPaymentAmountTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        poshanaPaymentAmountTxt.setEnabled(false);
+        poshanaPaymentAmountTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                poshanaPaymentAmountTxtFocusLost(evt);
+            }
+        });
+        poshanaPaymentAmountTxt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                poshanaPaymentAmountTxtKeyReleased(evt);
+            }
+        });
+
+        poshanaIdLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        poshanaIdLbl.setText("Poshana Id");
+
+        poshanaCustomerNameLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        poshanaCustomerNameLbl.setText("Customer Name");
+
+        poshanaCustomerNameTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        poshanaCustomerNameTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        poshanaCustomerNameTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                poshanaCustomerNameTxtFocusLost(evt);
+            }
+        });
+        poshanaCustomerNameTxt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                poshanaCustomerNameTxtKeyReleased(evt);
+            }
+        });
+
+        poshanaIdTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        poshanaIdTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        poshanaIdTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                poshanaIdTxtFocusLost(evt);
+            }
+        });
+        poshanaIdTxt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                poshanaIdTxtKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout PoshanaPaymentLayout = new javax.swing.GroupLayout(PoshanaPayment);
         PoshanaPayment.setLayout(PoshanaPaymentLayout);
         PoshanaPaymentLayout.setHorizontalGroup(
             PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
+            .addGroup(PoshanaPaymentLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(PoshanaPaymentLayout.createSequentialGroup()
+                        .addComponent(poshanaCustomerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(poshanaCustomerNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(PoshanaPaymentLayout.createSequentialGroup()
+                        .addComponent(poshanaIdLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(poshanaIdTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(PoshanaPaymentLayout.createSequentialGroup()
+                        .addComponent(poshanaPaymentAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(poshanaPaymentAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(298, Short.MAX_VALUE))
         );
         PoshanaPaymentLayout.setVerticalGroup(
             PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 334, Short.MAX_VALUE)
+            .addGroup(PoshanaPaymentLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(poshanaCustomerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(poshanaCustomerNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(poshanaIdLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(poshanaIdTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(poshanaPaymentAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(poshanaPaymentAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(218, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(PoshanaPayment, "poshanaCard");
+
+        voucherPaymentBtnGroup.add(employeeRadioButton);
+        employeeRadioButton.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        employeeRadioButton.setSelected(true);
+        employeeRadioButton.setText("Employee");
+        employeeRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                employeeRadioButtonActionPerformed(evt);
+            }
+        });
+
+        voucherPaymentBtnGroup.add(customerRadioButton);
+        customerRadioButton.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        customerRadioButton.setText("Customer");
+        customerRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customerRadioButtonActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder10 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder10.setShadowColor(new java.awt.Color(102, 102, 102));
+        dropShadowBorder10.setShowLeftShadow(true);
+        dropShadowBorder10.setShowTopShadow(true);
+        voucherCard.setBorder(dropShadowBorder10);
+        voucherCard.setLayout(new java.awt.CardLayout());
+
+        employeeNameLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        employeeNameLbl.setText("Employee Name");
+
+        voucherEmployeeNameComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        voucherEmployeeNameComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                voucherEmployeeNameComboBoxActionPerformed(evt);
+            }
+        });
+
+        amountEmpLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        amountEmpLbl.setText("Amount  (Rs.)");
+
+        VoucherEmployeeVoucherAmount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        VoucherEmployeeVoucherAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        VoucherEmployeeVoucherAmount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                VoucherEmployeeVoucherAmountFocusLost(evt);
+            }
+        });
+        VoucherEmployeeVoucherAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                VoucherEmployeeVoucherAmountKeyReleased(evt);
+            }
+        });
+
+        javax.swing.GroupLayout employeeCardLayout = new javax.swing.GroupLayout(employeeCard);
+        employeeCard.setLayout(employeeCardLayout);
+        employeeCardLayout.setHorizontalGroup(
+            employeeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(employeeCardLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(employeeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(employeeCardLayout.createSequentialGroup()
+                        .addComponent(employeeNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(voucherEmployeeNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(employeeCardLayout.createSequentialGroup()
+                        .addComponent(amountEmpLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(VoucherEmployeeVoucherAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(209, Short.MAX_VALUE))
+        );
+        employeeCardLayout.setVerticalGroup(
+            employeeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(employeeCardLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(employeeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(employeeNameLbl)
+                    .addComponent(voucherEmployeeNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(employeeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(amountEmpLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(VoucherEmployeeVoucherAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(195, Short.MAX_VALUE))
+        );
+
+        voucherCard.add(employeeCard, "employeeCard");
+
+        customerNameLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        customerNameLbl.setText("Customer Name");
+
+        voucherCustomerNameTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        voucherCustomerNameTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        voucherCustomerNameTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                voucherCustomerNameTxtFocusLost(evt);
+            }
+        });
+        voucherCustomerNameTxt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                voucherCustomerNameTxtKeyReleased(evt);
+            }
+        });
+
+        voucherIdLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        voucherIdLbl.setText("Poshana Id");
+
+        VoucherCustomerIdTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        VoucherCustomerIdTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        VoucherCustomerIdTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                VoucherCustomerIdTxtFocusLost(evt);
+            }
+        });
+        VoucherCustomerIdTxt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                VoucherCustomerIdTxtKeyReleased(evt);
+            }
+        });
+
+        amountLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        amountLbl.setText("Amount  (Rs.)");
+
+        voucherCustomerAmountTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        voucherCustomerAmountTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        voucherCustomerAmountTxt.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                voucherCustomerAmountTxtFocusLost(evt);
+            }
+        });
+        voucherCustomerAmountTxt.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                voucherCustomerAmountTxtKeyReleased(evt);
+            }
+        });
+
+        javax.swing.GroupLayout customerCardLayout = new javax.swing.GroupLayout(customerCard);
+        customerCard.setLayout(customerCardLayout);
+        customerCardLayout.setHorizontalGroup(
+            customerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(customerCardLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(customerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(customerCardLayout.createSequentialGroup()
+                        .addComponent(customerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(voucherCustomerNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(customerCardLayout.createSequentialGroup()
+                        .addComponent(voucherIdLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(VoucherCustomerIdTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(customerCardLayout.createSequentialGroup()
+                        .addComponent(amountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(voucherCustomerAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(268, Short.MAX_VALUE))
+        );
+        customerCardLayout.setVerticalGroup(
+            customerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(customerCardLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(customerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(customerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(voucherCustomerNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(customerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(voucherIdLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(VoucherCustomerIdTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(customerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(amountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(voucherCustomerAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(154, Short.MAX_VALUE))
+        );
+
+        voucherCard.add(customerCard, "customerCard");
 
         javax.swing.GroupLayout VoucherPaymentLayout = new javax.swing.GroupLayout(VoucherPayment);
         VoucherPayment.setLayout(VoucherPaymentLayout);
         VoucherPaymentLayout.setHorizontalGroup(
             VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
+            .addGroup(VoucherPaymentLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(voucherCard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(VoucherPaymentLayout.createSequentialGroup()
+                        .addComponent(employeeRadioButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(customerRadioButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         VoucherPaymentLayout.setVerticalGroup(
             VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 334, Short.MAX_VALUE)
+            .addGroup(VoucherPaymentLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(VoucherPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(employeeRadioButton)
+                    .addComponent(customerRadioButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(voucherCard, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         paymentDetailsPanel.add(VoucherPayment, "voucherCard");
@@ -2408,9 +3102,95 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         convertToMemberInvoice();
     }//GEN-LAST:event_chkMemberActionPerformed
 
+    private void poshanaPaymentAmountTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_poshanaPaymentAmountTxtFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_poshanaPaymentAmountTxtFocusLost
+
+    private void poshanaPaymentAmountTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaPaymentAmountTxtKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_poshanaPaymentAmountTxtKeyReleased
+
+    private void poshanaCustomerNameTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_poshanaCustomerNameTxtFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_poshanaCustomerNameTxtFocusLost
+
+    private void poshanaCustomerNameTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaCustomerNameTxtKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_poshanaCustomerNameTxtKeyReleased
+
+    private void poshanaIdTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_poshanaIdTxtFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_poshanaIdTxtFocusLost
+
+    private void poshanaIdTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaIdTxtKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_poshanaIdTxtKeyReleased
+
+    private void coopCustomerNameComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_coopCustomerNameComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_coopCustomerNameComboBoxActionPerformed
+
+    private void coopCreditAmountTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_coopCreditAmountTxtFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_coopCreditAmountTxtFocusLost
+
+    private void coopCreditAmountTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_coopCreditAmountTxtKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_coopCreditAmountTxtKeyReleased
+
+    private void voucherEmployeeNameComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_voucherEmployeeNameComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_voucherEmployeeNameComboBoxActionPerformed
+
+    private void VoucherEmployeeVoucherAmountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_VoucherEmployeeVoucherAmountFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_VoucherEmployeeVoucherAmountFocusLost
+
+    private void VoucherEmployeeVoucherAmountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_VoucherEmployeeVoucherAmountKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_VoucherEmployeeVoucherAmountKeyReleased
+
+    private void employeeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeRadioButtonActionPerformed
+        // TODO add your handling code here:
+        toggleVoucherType();
+    }//GEN-LAST:event_employeeRadioButtonActionPerformed
+
+    private void customerRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerRadioButtonActionPerformed
+        // TODO add your handling code here:
+        toggleVoucherType();
+    }//GEN-LAST:event_customerRadioButtonActionPerformed
+
+    private void voucherCustomerNameTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_voucherCustomerNameTxtFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_voucherCustomerNameTxtFocusLost
+
+    private void voucherCustomerNameTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_voucherCustomerNameTxtKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_voucherCustomerNameTxtKeyReleased
+
+    private void VoucherCustomerIdTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_VoucherCustomerIdTxtFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_VoucherCustomerIdTxtFocusLost
+
+    private void VoucherCustomerIdTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_VoucherCustomerIdTxtKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_VoucherCustomerIdTxtKeyReleased
+
+    private void voucherCustomerAmountTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_voucherCustomerAmountTxtFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_voucherCustomerAmountTxtFocusLost
+
+    private void voucherCustomerAmountTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_voucherCustomerAmountTxtKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_voucherCustomerAmountTxtKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PoshanaPayment;
+    private javax.swing.JTextField VoucherCustomerIdTxt;
+    private javax.swing.JTextField VoucherEmployeeVoucherAmount;
     private javax.swing.JPanel VoucherPayment;
+    private javax.swing.JLabel amountEmpLbl;
+    private javax.swing.JLabel amountLbl;
     private javax.swing.JPanel billButtonPanel;
     private javax.swing.JPanel billSummeryPanel;
     private javax.swing.JButton btnAddItem;
@@ -2430,7 +3210,17 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox cardTypeComboBox;
     private javax.swing.JPanel cashPaymentPanel;
     private javax.swing.JCheckBox chkMember;
+    private javax.swing.JLabel coopCreditAmountLbl;
+    private javax.swing.JTextField coopCreditAmountTxt;
+    private javax.swing.JLabel coopCreditCustomerIdLbl;
     private javax.swing.JPanel coopCreditpaymentPanel;
+    private javax.swing.JComboBox coopCustomerNameComboBox;
+    private javax.swing.JPanel customerCard;
+    private javax.swing.JLabel customerNameLbl;
+    private javax.swing.JRadioButton customerRadioButton;
+    private javax.swing.JPanel employeeCard;
+    private javax.swing.JLabel employeeNameLbl;
+    private javax.swing.JRadioButton employeeRadioButton;
     private javax.swing.JPanel interfaceContainerPanel;
     private javax.swing.JTable invoiceItemTable;
     private javax.swing.JPanel invoicePanel;
@@ -2440,6 +3230,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane itemTableSP;
     private javax.swing.JScrollPane ivoicePaymentsSP;
     private javax.swing.JLayeredPane jLayeredPane;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblAvailableQtydisplay;
     private javax.swing.JLabel lblBill;
     private javax.swing.JLabel lblBillValueDisplay;
@@ -2471,7 +3262,15 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel paymentOptionsPanel;
     private javax.swing.JPanel paymentPanel;
     private javax.swing.JPanel paymentSelectorPanel;
+    private javax.swing.JLabel poshanaCustomerNameLbl;
+    private javax.swing.JTextField poshanaCustomerNameTxt;
+    private javax.swing.JLabel poshanaIdLbl;
+    private javax.swing.JTextField poshanaIdTxt;
+    private javax.swing.JLabel poshanaPaymentAmountLbl;
+    private javax.swing.JTextField poshanaPaymentAmountTxt;
     private javax.swing.JPanel productPanel;
+    private javax.swing.JLabel redeamableAmountLbl;
+    private javax.swing.JLabel redeamableAmountTxt;
     private javax.swing.JTextField txtAvailableQty;
     private javax.swing.JTextField txtBillNumber;
     private javax.swing.JTextField txtCardPaymentAmount;
@@ -2481,6 +3280,12 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtProductName;
     private javax.swing.JTextField txtQty;
     private javax.swing.JTextField txtcardNo;
+    private javax.swing.JPanel voucherCard;
+    private javax.swing.JTextField voucherCustomerAmountTxt;
+    private javax.swing.JTextField voucherCustomerNameTxt;
+    private javax.swing.JComboBox voucherEmployeeNameComboBox;
+    private javax.swing.JLabel voucherIdLbl;
+    private javax.swing.ButtonGroup voucherPaymentBtnGroup;
     // End of variables declaration//GEN-END:variables
  // </editor-fold>
 }
