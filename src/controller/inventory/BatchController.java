@@ -121,6 +121,27 @@ public class BatchController {
         return isAdded == 1;
     }
 
+    public static boolean addNewBatch(Batch batch) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "INSERT INTO " + DatabaseInterface.BATCH + " (grn_number, unit_cost, unit_price, qty, exp_date, notify_date, recieved_qty ,  discounted ) VALUES (?,?,?,?,?,?,?,?,?)";
+        int isAdded = -1;
+        Object[] objs = {
+            batch.getGrnNumber(),
+            batch.getUnit_cost(),
+            batch.getUnit_price(),
+            batch.getQuantity(),
+            batch.getExpirationDate(),
+            batch.getNotificationDate(),
+            batch.getRecievedQuantity(),
+            batch.isDiscounted()
+        };
+
+        isAdded = DBHandler.setData(connection, query, objs);
+        return isAdded == 1;
+    }
+
     public static boolean setDiscounted(Connection connection, int bid, int pid) throws SQLException {
 
         String query = "UPDATE " + DatabaseInterface.BATCH + " SET discounted= TRUE WHERE batch_id=? AND product_id=?";

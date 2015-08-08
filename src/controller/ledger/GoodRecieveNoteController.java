@@ -72,7 +72,7 @@ public class GoodRecieveNoteController {
         boolean retVal = DBHandler.setData(connection, query, ob) == 1;
 
         for (Batch b : grn.getBatches()) {
-            BatchController.addBatch(b);
+            BatchController.addNewBatch(b);
         }
 
         return retVal;
