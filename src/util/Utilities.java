@@ -1,6 +1,7 @@
 package util;
 
 import database.connector.DatabaseInterface;
+import java.awt.Component;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,6 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.IllegalFormatConversionException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
@@ -298,4 +301,29 @@ public class Utilities {
             System.exit(3);
         }
     }
+    
+    
+    
+    //nadheesh
+    public static Date getTody() {
+        String date = getStringDate((Calendar.getInstance().getTime()));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            return sdf.parse(date);
+        } catch (ParseException ex) {
+            Logger.getLogger(Utilities.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    
+    public static void ShowErrorMsg (Component component, String msg ){
+        JOptionPane.showMessageDialog(component, msg , "Error"  , 0);
+    }
+    
+    public static void ShowWarningMsg (Component component, String msg ){
+        JOptionPane.showMessageDialog(component, msg , "Warning"  , 2);
+    }
+    //nadheesh//end
 }
