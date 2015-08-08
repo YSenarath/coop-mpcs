@@ -216,7 +216,8 @@ public class TransactionController {
     }
 
     public static boolean performRefundTransaction(Refund refund) {
-        logger.debug("performInvoiceTransaction invoked");
+        logger.debug("performRefundTransaction invoked");
+        
         //Update database- batches, refund,refund items
         Connection connection = null;
         try {

@@ -24,6 +24,7 @@ public class RefundVarification extends javax.swing.JDialog {
         super(parent, modal);
         this.refund = refund;
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     // </editor-fold>
@@ -79,6 +80,8 @@ public class RefundVarification extends javax.swing.JDialog {
                     Utilities.showMsgBox("Refund not successfull", "POS", JOptionPane.ERROR);
                 }
                 this.dispose();
+            }else{
+                Utilities.showMsgBox("User varification error ", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception ex) {
             Utilities.showMsgBox("User varification error : " + ex, "Error", JOptionPane.ERROR_MESSAGE);
@@ -92,7 +95,10 @@ public class RefundVarification extends javax.swing.JDialog {
             txtUserName.requestFocus();
             return;
         }
-        txtPassword.requestFocus();
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtPassword.requestFocus();
+        }
+
     }
 
     private void txtPasswordKeyPressHandler(KeyEvent evt) {
@@ -102,7 +108,9 @@ public class RefundVarification extends javax.swing.JDialog {
             txtPassword.requestFocus();
             return;
         }
-        btnConfirm.requestFocus();
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnConfirm.requestFocus();
+        }
     }
 
     // </editor-fold>
@@ -227,12 +235,13 @@ public class RefundVarification extends javax.swing.JDialog {
 
     private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmActionPerformed
         // TODO add your handling code here:
-        cancelRefund();
+        confirmRefund();
     }//GEN-LAST:event_btnConfirmActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
-        confirmRefund();
+
+        cancelRefund();
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void txtUserNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUserNameKeyReleased

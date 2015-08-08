@@ -481,7 +481,7 @@
                                 <Column editable="false" title="Refundable Qty" type="java.lang.Object"/>
                                 <Column editable="false" title="Disc" type="java.lang.Object"/>
                                 <Column editable="false" title="Value" type="java.lang.Object"/>
-                                <Column editable="true" title="Change Qty" type="java.lang.Object"/>
+                                <Column editable="true" title="Change Qty" type="java.lang.Double"/>
                                 <Column editable="false" title="Change value" type="java.lang.Object"/>
                                 <Column editable="false" title="Change Dis" type="java.lang.Object"/>
                                 <Column editable="false" title="Sub total" type="java.lang.Object"/>
@@ -557,7 +557,7 @@
                             </Property>
                           </Properties>
                           <AuxValues>
-                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(){&#xa;    //  Place cell in edit mode when it &apos;gains focus&apos;&#xa; &#xa;    public void changeSelection(&#xa;        int row, int column, boolean toggle, boolean extend)&#xa;    {&#xa;        super.changeSelection(row, column, toggle, extend);&#xa; &#xa;        if (editCellAt(row, column))&#xa;        {&#xa;            Component editor = getEditorComponent();&#xa;            editor.requestFocusInWindow();&#xa;//          ((JTextComponent)editor).selectAll();&#xa;        }&#xa;    }&#xa;}"/>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(){&#xa;    //  Place cell in edit mode when it &apos;gains focus&apos;&#xa;&#xa;    public void changeSelection(&#xa;        int row, int column, boolean toggle, boolean extend)&#xa;    {&#xa;        super.changeSelection(row, column, toggle, extend);&#xa;&#xa;        if (editCellAt(row, column))&#xa;        {&#xa;            Component editor = getEditorComponent();&#xa;            editor.requestFocusInWindow();&#xa;            //          ((JTextComponent)editor).selectAll();&#xa;        }&#xa;    }&#xa;    @Override&#xa;    public Component prepareEditor(TableCellEditor editor, int row, int col) {&#xa;        Component c = super.prepareEditor(editor, row, col);&#xa;        c.setBackground(new Color(204,255,204));&#xa;        return c;&#xa;    }&#xa;&#xa;}"/>
                           </AuxValues>
                         </Component>
                       </SubComponents>
