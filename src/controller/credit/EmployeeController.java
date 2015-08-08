@@ -145,7 +145,7 @@ public class EmployeeController {
         while (resultSet.next()) {
             Employee employee = new Employee(
                     resultSet.getInt("employee_id"),
-                    resultSet.getString("employee_name"),
+                    resultSet.getString("name"),
                     resultSet.getString("position"),
                     resultSet.getBoolean("voucher_issued")
             );

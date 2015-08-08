@@ -1033,6 +1033,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 employees.put(employee.getEmployeeId(), employee);
                 employeeComboBoxModel.addElement(new KeyValueContainer(String.valueOf(employee.getEmployeeId()), employee.getEmployeeName()));
             }
+            voucherEmployeeNameComboBox.getModel().setSelectedItem(null);
 
             coopCustomerComboBoxModel.removeAllElements();
             ArrayList<CreditCustomer> customerDetails = CreditCustomerController.loadCustomers();
@@ -1042,6 +1043,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 customers.put(customer.getCustomerId(), customer);
                 coopCustomerComboBoxModel.addElement(new KeyValueContainer(String.valueOf(customer.getCustomerId()), customer.getCustomerName()));
             }
+            coopCustomerNameComboBox.getModel().setSelectedItem(null);
+            
         } catch (SQLException ex) {
             logger.error("SQL error : " + ex.getMessage(), ex);
             System.exit(3);
@@ -1111,7 +1114,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //Toggle voucher payment type
     private void toggleVoucherType() {
         logger.debug("toggleVoucherType invoked");
-        
+
         CardLayout voucherPaymentCard = (CardLayout) voucherCard.getLayout();
         calculatePaymentParameters();
         if (employeeRadioButton.isSelected()) {
