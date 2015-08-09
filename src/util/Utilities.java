@@ -155,37 +155,41 @@ public class Utilities {
                 suffix = "B";
                 size = 3;
                 break;
-                
+
             case DatabaseInterface.COUNTER_LOGIN:
                 suffix = "L";
                 size = 6;
                 break;
-                
+
             case DatabaseInterface.CASH_WITHDRAWAL:
                 suffix = "W";
                 size = 5;
                 break;
-                
+
             case DatabaseInterface.INVOICE:
                 suffix = "I";
                 size = 5;
                 break;
-
+                
+            case DatabaseInterface.REFUND:
+                suffix = "U";
+                size = 5;
+                break;
             case DatabaseInterface.GRN:
                 suffix = "G";
                 size = 5;
                 break;
-                
+
             case DatabaseInterface.SUPPLIER:
                 suffix = "S";
                 size = 3;
                 break;
-                
+
             case DatabaseInterface.SRN:
                 suffix = "R";
                 size = 5;
                 break;
-                
+
             default:
                 return null;
         }
@@ -301,9 +305,7 @@ public class Utilities {
             System.exit(3);
         }
     }
-    
-    
-    
+
     //nadheesh
     public static Date getTody() {
         String date = getStringDate((Calendar.getInstance().getTime()));
@@ -317,13 +319,12 @@ public class Utilities {
         return null;
     }
 
-    
-    public static void ShowErrorMsg (Component component, String msg ){
-        JOptionPane.showMessageDialog(component, msg , "Error"  , 0);
+    public static void ShowErrorMsg(Component component, String msg) {
+        JOptionPane.showMessageDialog(component, msg, "Error", 0);
     }
-    
-    public static void ShowWarningMsg (Component component, String msg ){
-        JOptionPane.showMessageDialog(component, msg , "Warning"  , 2);
+
+    public static void ShowWarningMsg(Component component, String msg) {
+        JOptionPane.showMessageDialog(component, msg, "Warning", 2);
     }
     //nadheesh//end
 }

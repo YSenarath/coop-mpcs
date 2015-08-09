@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import model.inventory.Batch;
 import model.inventory.BatchBuilder;
 import model.pos.item.InvoiceItem;
+import model.pos.item.RefundItem;
 import util.Utilities;
 
 /**
@@ -200,6 +201,21 @@ public class BatchController {
             invoiceItem.getQty(),
             invoiceItem.getBatchId(),
             invoiceItem.getProductId()
+        };
+
+        return DBHandler.setData(connection, query, ob) == 1;
+    }
+
+    public static boolean setRefundQty(RefundItem refundItem) throws SQLException {
+        //update sold amount,if sold amount = recieved amount ,in_stock is disabled
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "UPDATE " + DatabaseInterface.BATCH + " SET sold_qty=sold_qty-? WHERE batch_id=? AND product_id=?";
+        Object[] ob = {
+            refundItem.getQty(),
+            refundItem.getBatchId(),
+            refundItem.getProductId()
         };
 
         return DBHandler.setData(connection, query, ob) == 1;

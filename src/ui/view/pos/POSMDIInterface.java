@@ -758,10 +758,6 @@ public class POSMDIInterface extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder3 = new org.jdesktop.swingx.border.DropShadowBorder();
-        dropShadowBorder3.setShowLeftShadow(true);
-        dropShadowBorder3.setShowTopShadow(true);
-        cardContainerPanel.setBorder(dropShadowBorder3);
         cardContainerPanel.setLayout(new java.awt.CardLayout());
 
         welcomePanel.setBackground(new java.awt.Color(153, 153, 153));
@@ -782,7 +778,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
-                        .addGap(0, 339, Short.MAX_VALUE)
+                        .addGap(0, 349, Short.MAX_VALUE)
                         .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 586, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -791,7 +787,7 @@ public class POSMDIInterface extends javax.swing.JFrame {
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE)
+                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblWelcome)
                 .addContainerGap())
@@ -802,28 +798,28 @@ public class POSMDIInterface extends javax.swing.JFrame {
         desktopContainerPanel.setMinimumSize(new java.awt.Dimension(1050, 750));
         desktopContainerPanel.setPreferredSize(new java.awt.Dimension(1050, 750));
 
-        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder4 = new org.jdesktop.swingx.border.DropShadowBorder();
-        dropShadowBorder4.setShowLeftShadow(true);
-        dropShadowBorder4.setShowTopShadow(true);
-        desktopPane.setBorder(dropShadowBorder4);
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder3 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder3.setShowLeftShadow(true);
+        dropShadowBorder3.setShowTopShadow(true);
+        desktopPane.setBorder(dropShadowBorder3);
 
         javax.swing.GroupLayout desktopContainerPanelLayout = new javax.swing.GroupLayout(desktopContainerPanel);
         desktopContainerPanel.setLayout(desktopContainerPanelLayout);
         desktopContainerPanelLayout.setHorizontalGroup(
             desktopContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 945, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
         );
         desktopContainerPanelLayout.setVerticalGroup(
             desktopContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
         );
 
         cardContainerPanel.add(desktopContainerPanel, "desktopCard");
 
-        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder5 = new org.jdesktop.swingx.border.DropShadowBorder();
-        dropShadowBorder5.setShowLeftShadow(true);
-        dropShadowBorder5.setShowTopShadow(true);
-        controlPanel.setBorder(dropShadowBorder5);
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder4 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder4.setShowLeftShadow(true);
+        dropShadowBorder4.setShowTopShadow(true);
+        controlPanel.setBorder(dropShadowBorder4);
 
         btnCashierLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnCashierLog.setText("Cashier Log Off");
