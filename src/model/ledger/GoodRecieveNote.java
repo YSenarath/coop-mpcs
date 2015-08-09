@@ -16,7 +16,7 @@ import model.supplier.Supplier;
  */
 public class GoodRecieveNote {
 
-    private int f16bNumber;
+    private String f16bNumber;
     private String invoiceNo;
     private Date invoiceDate;
     private Supplier supplier;
@@ -28,7 +28,7 @@ public class GoodRecieveNote {
 
     private ArrayList<Batch> batches;
 
-    public GoodRecieveNote(int f16bNumber, String invoiceNo, Date invoiceDate, Supplier supplier, String location, String paymentMethod, double loadingFee, double purchasingBillDiscount, double sellingBillDiscount) {
+    public GoodRecieveNote(String f16bNumber, String invoiceNo, Date invoiceDate, Supplier supplier, String location, String paymentMethod, double loadingFee, double purchasingBillDiscount, double sellingBillDiscount) {
         this.f16bNumber = f16bNumber;
         this.invoiceNo = invoiceNo;
         this.invoiceDate = invoiceDate;
@@ -42,7 +42,7 @@ public class GoodRecieveNote {
     }
     
     
-    public GoodRecieveNote(int f16bNumber, String invoiceNo, Date invoiceDate, Supplier supplier, String location, String paymentMethod, double loadingFee, double purchasingBillDiscount, double sellingBillDiscount, ArrayList<Batch> batces) {
+    public GoodRecieveNote(String f16bNumber, String invoiceNo, Date invoiceDate, Supplier supplier, String location, String paymentMethod, double loadingFee, double purchasingBillDiscount, double sellingBillDiscount, ArrayList<Batch> batces) {
         this.f16bNumber = f16bNumber;
         this.invoiceNo = invoiceNo;
         this.invoiceDate = invoiceDate;
@@ -55,11 +55,11 @@ public class GoodRecieveNote {
         this.batches = batces;
     }
 
-    public int getF16bNumber() {
+    public String getF16bNumber() {
         return f16bNumber;
     }
 
-    public void setF16bNumber(int f16bNumber) {
+    public void setF16bNumber(String f16bNumber) {
         this.f16bNumber = f16bNumber;
     }
     

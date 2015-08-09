@@ -438,7 +438,6 @@ public class GRNInterface extends javax.swing.JFrame {
 
     private void btnAddGrnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddGrnActionPerformed
         recordGoodRecieveNote();
-        this.dispose();
     }//GEN-LAST:event_btnAddGrnActionPerformed
 
     /**
@@ -511,7 +510,7 @@ public class GRNInterface extends javax.swing.JFrame {
          double purchasingBillDiscount, double sellingBillDiscount)
          */
         GoodRecieveNote grn = new GoodRecieveNote(
-                Integer.parseInt(txtF16aNumber.getText()),
+                txtF16aNumber.getText(),
                 txtInvoiceNo.getText(),
                 datePickInvoiceDate.getDate(),
                 (Supplier) comboSupplier.getSelectedItem(),

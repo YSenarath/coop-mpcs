@@ -106,7 +106,7 @@ public class BatchController {
         int isAdded = -1;
         Object[] objs = {
             Utilities.convertKeyToInteger(batch.getBatchId()),
-            batch.getGrnNumber(),
+            Utilities.convertKeyToInteger(batch.getGrnNumber()),
             batch.getUnit_cost(),
             batch.getUnit_price(),
             batch.getQuantity(),
@@ -124,10 +124,12 @@ public class BatchController {
 
         Connection connection = DBConnection.getConnectionToDB();
 
-        String query = "INSERT INTO " + DatabaseInterface.BATCH + " (grn_number, unit_cost, unit_price, qty, exp_date, notify_date, recieved_qty ,  discounted ) VALUES (?,?,?,?,?,?,?,?,?)";
+        String query = "INSERT INTO " + DatabaseInterface.BATCH + " (product_id, grn_number, unit_cost, unit_price, qty, exp_date, notify_date, recieved_qty ,  discounted ) VALUES (?,?,?,?,?,?,?,?,?)";
         int isAdded = -1;
+        
         Object[] objs = {
-            batch.getGrnNumber(),
+            util.Utilities.convertKeyToInteger(batch.getProductId()),
+            util.Utilities.convertKeyToInteger(batch.getGrnNumber()),
             batch.getUnit_cost(),
             batch.getUnit_price(),
             batch.getQuantity(),

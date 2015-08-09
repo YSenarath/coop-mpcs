@@ -37,7 +37,7 @@ public class GoodRecieveNoteController {
             // int f16bNumber, String invoiceNo, Date invoiceDate,
             // Supplier supplier, String location, String paymentMethod
             return new GoodRecieveNote(
-                    resultSet.getInt("grn_number"),
+                    util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), GRN),
                     resultSet.getString("invoice_no"),
                     resultSet.getDate("invoice_date"),
                     SupplierController.getSupplier(resultSet.getString("supplier_id")),
@@ -58,10 +58,10 @@ public class GoodRecieveNoteController {
         String query = "INSERT INTO " + GRN + " (grn_number, invoice_no, invoice_date, supplier_id, location, payment_method, loading_fee, PurchasingBill_discount, sellingBill_discount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Object[] ob = {
-            grn.getF16bNumber(),
+            util.Utilities.convertKeyToInteger(grn.getF16bNumber()),
             grn.getInvoiceNo(),
             grn.getInvoiceDate(),
-            grn.getSupplierId(),
+            util.Utilities.convertKeyToInteger(grn.getSupplierId()),
             grn.getLocation(),
             grn.getPaymentMethod(),
             grn.getLoadingFee(),
@@ -78,7 +78,7 @@ public class GoodRecieveNoteController {
         return retVal;
     }
 
-    public static int getNextGrnID() throws SQLException {
+    public static String getNextGrnID() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
 
         String query = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = '" + GRN + "' AND table_schema = DATABASE( )";
@@ -88,10 +88,10 @@ public class GoodRecieveNoteController {
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
 
         while (resultSet.next()) {
-            return resultSet.getInt("AUTO_INCREMENT");
+            return util.Utilities.convertKeyToString(resultSet.getInt("AUTO_INCREMENT"), GRN);
         }
 
-        return 0;
+        return util.Utilities.convertKeyToString(0, GRN);
     }
 
 }

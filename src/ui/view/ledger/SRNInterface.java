@@ -5,15 +5,21 @@
  */
 package ui.view.ledger;
 
-import controller.inventory.ProductController;
-import database.connector.DBConnection;
+import controller.ledger.GoodRecieveNoteController;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import model.inventory.BatchBuilder;
 import model.inventory.Product;
+import model.ledger.SupplierReturnNote;
+import model.ledger.item.SRNItem;
+import model.ledger.item.SRNItemBuilder;
+import model.supplier.Supplier;
 
 /**
  *
@@ -55,8 +61,8 @@ public class SRNInterface extends javax.swing.JFrame {
         itemDataTable = new javax.swing.JTable();
         btnNewItem = new javax.swing.JButton();
         btnDeleteItem = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jXDatePicker1 = new org.jdesktop.swingx.JXDatePicker();
+        btnRecordSRN = new javax.swing.JButton();
+        dateView = new org.jdesktop.swingx.JXDatePicker();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         txtTotalSales = new javax.swing.JTextField();
@@ -77,6 +83,8 @@ public class SRNInterface extends javax.swing.JFrame {
         jLabel6.setText("Location");
 
         jLabel8.setText("GRN No");
+
+        comboLocation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Stores" }));
 
         itemDataTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -134,7 +142,12 @@ public class SRNInterface extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Finish");
+        btnRecordSRN.setText("Finish");
+        btnRecordSRN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRecordSRNActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Total Sales");
 
@@ -157,7 +170,7 @@ public class SRNInterface extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(comboSupplier, 0, 161, Short.MAX_VALUE)
-                                    .addComponent(jXDatePicker1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(dateView, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -172,7 +185,7 @@ public class SRNInterface extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnRecordSRN, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGap(137, 137, 137)
                         .addComponent(jLabel4)
@@ -191,7 +204,7 @@ public class SRNInterface extends javax.swing.JFrame {
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {txtTotalCost, txtTotalSales});
 
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {comboLocation, comboSupplier, jXDatePicker1, txtF19Number, txtGRNNo});
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {comboLocation, comboSupplier, dateView, txtF19Number, txtGRNNo});
 
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -206,7 +219,7 @@ public class SRNInterface extends javax.swing.JFrame {
                     .addComponent(jLabel6)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jXDatePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dateView, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -225,7 +238,7 @@ public class SRNInterface extends javax.swing.JFrame {
                     .addComponent(txtTotalSales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTotalCost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3)
+                .addComponent(btnRecordSRN)
                 .addContainerGap())
         );
 
@@ -266,6 +279,10 @@ public class SRNInterface extends javax.swing.JFrame {
         deleteItem();
     }//GEN-LAST:event_btnDeleteItemActionPerformed
 
+    private void btnRecordSRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecordSRNActionPerformed
+        recordSRN();
+    }//GEN-LAST:event_btnRecordSRNActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -300,10 +317,11 @@ public class SRNInterface extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDeleteItem;
     private javax.swing.JButton btnNewItem;
+    private javax.swing.JButton btnRecordSRN;
     private javax.swing.JComboBox comboLocation;
     private javax.swing.JComboBox comboSupplier;
+    private org.jdesktop.swingx.JXDatePicker dateView;
     private javax.swing.JTable itemDataTable;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -313,7 +331,6 @@ public class SRNInterface extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private org.jdesktop.swingx.JXDatePicker jXDatePicker1;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JTextField txtF19Number;
     private javax.swing.JTextField txtGRNNo;
@@ -353,6 +370,44 @@ public class SRNInterface extends javax.swing.JFrame {
             for (int i = 0; i < model.getRowCount(); i++) {
                 model.setValueAt(i + 1, i, 0);
             }
+        }
+    }
+
+    private void recordSRN() {
+        
+        SupplierReturnNote srn = new SupplierReturnNote(
+                txtF19Number.getText(),
+                txtGRNNo.getText(),
+                dateView.getDate(),
+                (Supplier) comboSupplier.getSelectedItem(),
+                (String) comboLocation.getSelectedItem()
+        );
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            SRNItem itm
+                    = (SRNItemBuilder.Item())
+                    .withItemId("B0")
+                    .withGRNNumber(txtF19Number.getText())
+                            
+                    .withProductId(model.getValueAt(i, 1).toString())
+                    .withQuantity(Double.parseDouble(model.getValueAt(i, 3).toString()))
+                    .withCostDiscount(Double.parseDouble(model.getValueAt(i, 4).toString()))
+                    .withUnitPrice(Double.parseDouble(model.getValueAt(i, 6).toString()))
+                    .withQuantity(Double.parseDouble(model.getValueAt(i, 7).toString()))
+                    .withExpirationDate(util.Utilities.getDateFromString(model.getValueAt(i, 5).toString()))
+                    .withNotificationDate(null)
+                    .withRecievedQuantity(Double.parseDouble(model.getValueAt(i, 8).toString()))
+                    .withSoldQty(0.0)
+                    .withDiscounted(true)
+                    .withInStock(true)
+                    .build();
+            srn.addItem(itm);
+        }
+
+        try {
+            GoodRecieveNoteController.addGrn(grn);
+        } catch (SQLException ex) {
+            Logger.getLogger(GRNInterface.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
