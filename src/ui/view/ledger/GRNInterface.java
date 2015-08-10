@@ -23,7 +23,7 @@ import util.DoubleFilter;
 
 // </editor-fold>
 // 
-public class GRNInterface extends javax.swing.JFrame {
+public class GRNInterface extends javax.swing.JInternalFrame {
     //
     // <editor-fold defaultstate="collapsed" desc="Variables">
 

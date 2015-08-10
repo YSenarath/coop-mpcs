@@ -156,4 +156,8 @@ public class Batch implements Serializable {
         this.soldQty = soldQty;
     }
 
+    @Override
+    public String toString() {
+        return getBatchId();//To change body of generated methods, choose Tools | Templates.
+    }
 }

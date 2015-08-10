@@ -7,7 +7,9 @@ package ui.view.supplier;
 
 import controller.supplier.SupplierController;
 import database.connector.DBConnection;
+import java.awt.Dimension;
 import java.sql.SQLException;
+import javax.swing.JDesktopPane;
 import javax.swing.UIManager;
 import model.supplier.Supplier;
 import ui.view.ledger.PurchaseOrderInterface;
@@ -16,7 +18,7 @@ import ui.view.ledger.PurchaseOrderInterface;
  *
  * @author Yasas
  */
-public class SupplierInterface extends javax.swing.JFrame {
+public class SupplierInterface extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form SupplierInterface
@@ -57,7 +59,7 @@ public class SupplierInterface extends javax.swing.JFrame {
         txtContactPerson = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBorder(null);
 
         jLabel1.setText("Supplier ID");
 
@@ -161,7 +163,6 @@ public class SupplierInterface extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -313,9 +314,10 @@ public class SupplierInterface extends javax.swing.JFrame {
     }
 
     private void findSupplier() {
-        SelectSupplierDialogue s = new SelectSupplierDialogue(this, false);
+        SelectSupplier s = new SelectSupplier(this);
+        setEnabled(false);
+        ((JDesktopPane) this.getParent()).add(s);
         s.setVisible(true);
-        this.setEnabled(false);
     }
 
     private void newSupplier() {

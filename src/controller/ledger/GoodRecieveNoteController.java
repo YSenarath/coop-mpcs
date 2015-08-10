@@ -27,7 +27,7 @@ public class GoodRecieveNoteController {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + GRN + " WHERE grn_number=? ";
         Object[] ob = {
-            grnNumber
+            util.Utilities.convertKeyToInteger(grnNumber)
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
 

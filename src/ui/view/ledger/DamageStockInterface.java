@@ -69,14 +69,14 @@ public class DamageStockInterface extends javax.swing.JFrame {
 
             },
             new String [] {
-                "", "Product Id", "Description", "Damaged Quantity", "Price", "Quantity", "Value", "Loss"
+                "", "Product Id", "Description", "Damaged Quantity", "Unit Price", "Quantity", "Value", "Loss"
             }
         ) {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, true, false, false
+                false, true, false, true, true, true, false, false
             };
 
             public Class getColumnClass(int columnIndex) {

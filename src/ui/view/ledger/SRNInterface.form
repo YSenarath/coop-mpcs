@@ -31,7 +31,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="lblTitle" pref="72" max="32767" attributes="0"/>
+              <Component id="lblTitle" pref="67" max="32767" attributes="0"/>
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
           </Group>
@@ -60,26 +60,26 @@
                           </Group>
                           <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                       <Component id="comboSupplier" linkSize="2" alignment="0" pref="161" max="32767" attributes="0"/>
-                                      <Component id="dateView" linkSize="2" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="datePicker" linkSize="2" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel6" alignment="1" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel8" alignment="1" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                      <Component id="comboLocation" linkSize="2" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="txtGRNNo" linkSize="2" alignment="1" min="-2" pref="264" max="-2" attributes="0"/>
-                                  </Group>
                               </Group>
-                              <Group type="102" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
                                   <Component id="txtF19Number" linkSize="2" min="-2" pref="193" max="-2" attributes="0"/>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
+                          </Group>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="comboLocation" linkSize="2" max="32767" attributes="0"/>
+                              <Component id="txtGRNNo" min="-2" pref="264" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="jScrollPane1" alignment="1" max="32767" attributes="0"/>
@@ -120,15 +120,15 @@
                       <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="dateView" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="datePicker" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel2" alignment="3" min="-2" pref="14" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="comboSupplier" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="txtGRNNo" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtGRNNo" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jScrollPane1" min="-2" pref="339" max="-2" attributes="0"/>
@@ -143,7 +143,7 @@
                       <Component id="txtTotalSales" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="txtTotalCost" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace type="unrelated" max="32767" attributes="0"/>
                   <Component id="btnRecordSRN" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -177,15 +177,15 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtF19Number">
-        </Component>
-        <Component class="javax.swing.JTextField" name="txtGRNNo">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="text" type="java.lang.String" value="R000001"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="comboLocation">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="1">
-                <StringItem index="0" value="Stores"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
         </Component>
@@ -298,7 +298,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRecordSRNActionPerformed"/>
           </Events>
         </Component>
-        <Component class="org.jdesktop.swingx.JXDatePicker" name="dateView">
+        <Component class="org.jdesktop.swingx.JXDatePicker" name="datePicker">
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
           <Properties>
@@ -313,6 +313,13 @@
         <Component class="javax.swing.JTextField" name="txtTotalSales">
         </Component>
         <Component class="javax.swing.JTextField" name="txtTotalCost">
+        </Component>
+        <Component class="javax.swing.JFormattedTextField" name="txtGRNNo">
+          <Properties>
+            <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
+              <Format format="D#0" subtype="-1" type="0"/>
+            </Property>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

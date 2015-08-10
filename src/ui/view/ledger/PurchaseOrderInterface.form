@@ -165,7 +165,7 @@
                     <Column editable="false" title="" type="java.lang.Integer"/>
                     <Column editable="true" title="Item Code" type="java.lang.String"/>
                     <Column editable="true" title="Description" type="java.lang.String"/>
-                    <Column editable="true" title="Stock" type="java.lang.String"/>
+                    <Column editable="true" title="Avalable Quantity" type="java.lang.String"/>
                     <Column editable="true" title="Quantity" type="java.lang.String"/>
                     <Column editable="true" title="Cost Price" type="java.lang.String"/>
                     <Column editable="false" title="Value" type="java.lang.String"/>

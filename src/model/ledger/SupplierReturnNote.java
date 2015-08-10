@@ -2,12 +2,9 @@ package model.ledger;
 
 import java.util.ArrayList;
 import java.util.Date;
+import model.ledger.item.Item;
 import model.supplier.Supplier;
 
-/**
- *
- * @author Yasas
- */
 public class SupplierReturnNote {
 
     private String f19Number;

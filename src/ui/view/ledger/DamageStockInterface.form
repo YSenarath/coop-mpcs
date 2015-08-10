@@ -157,9 +157,9 @@
                   <Table columnCount="8" rowCount="0">
                     <Column editable="false" title="" type="java.lang.Integer"/>
                     <Column editable="true" title="Product Id" type="java.lang.String"/>
-                    <Column editable="true" title="Description" type="java.lang.String"/>
+                    <Column editable="false" title="Description" type="java.lang.String"/>
                     <Column editable="true" title="Damaged Quantity" type="java.lang.String"/>
-                    <Column editable="true" title="Price" type="java.lang.String"/>
+                    <Column editable="true" title="Unit Price" type="java.lang.String"/>
                     <Column editable="true" title="Quantity" type="java.lang.String"/>
                     <Column editable="false" title="Value" type="java.lang.String"/>
                     <Column editable="false" title="Loss" type="java.lang.String"/>

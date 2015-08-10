@@ -12,7 +12,10 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import model.supplier.Supplier;
 import ui.view.inventory.ManageDepartment;
+import ui.view.ledger.GRNInterface;
+import ui.view.supplier.SupplierInterface;
 
 /**
  *
@@ -25,10 +28,12 @@ public class MainWindow extends javax.swing.JFrame {
      */
     private ManageDepartment winManageDep;
 
+    Dimension desktopSize;
+
     public MainWindow() {
         initComponents();
-
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.desktopSize = jDesktopPane1.getSize();
 
         try {
             winManageDep = new ManageDepartment();
@@ -38,11 +43,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         jDesktopPane1.add(winManageDep);
 
-        Dimension desktopSize = jDesktopPane1.getSize();
         Dimension jInternalFrameSize = winManageDep.getSize();
-        
+
         winManageDep.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);
+
     }
 
     /**
@@ -64,9 +69,9 @@ public class MainWindow extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        mnuManageSupplier = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        mnuNewGRN = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
         jMenu6 = new javax.swing.JMenu();
@@ -155,20 +160,25 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem2);
 
-        jMenuItem3.setText("Manage Suppliers");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        mnuManageSupplier.setText("Manage Suppliers");
+        mnuManageSupplier.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                mnuManageSupplierActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem3);
+        jMenu2.add(mnuManageSupplier);
 
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Transactions");
 
-        jMenuItem4.setText("GoodRecieveNote");
-        jMenu3.add(jMenuItem4);
+        mnuNewGRN.setText("GoodRecieveNote");
+        mnuNewGRN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuNewGRNActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnuNewGRN);
 
         jMenuBar1.add(jMenu3);
 
@@ -209,9 +219,13 @@ public class MainWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    private void mnuManageSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuManageSupplierActionPerformed
+        createNewSupplier();
+    }//GEN-LAST:event_mnuManageSupplierActionPerformed
+
+    private void mnuNewGRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewGRNActionPerformed
+        createNewGRN();
+    }//GEN-LAST:event_mnuNewGRNActionPerformed
 
     /**
      * @param args the command line arguments
@@ -249,7 +263,7 @@ public class MainWindow extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new MainWindow().setVisible(true);
-               
+
             }
         });
     }
@@ -265,11 +279,39 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JMenuItem mnuExit;
+    private javax.swing.JMenuItem mnuManageSupplier;
+    private javax.swing.JMenuItem mnuNewGRN;
     private javax.swing.JPanel welcomePanel;
     // End of variables declaration//GEN-END:variables
+
+    private void createNewGRN() {
+
+        GRNInterface grnInterface = new GRNInterface();
+
+        jDesktopPane1.add(grnInterface);
+
+        Dimension jInternalFrameSize = grnInterface.getSize();
+
+        grnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+        
+        grnInterface.show();
+    }
+
+    private void createNewSupplier() {
+    
+        SupplierInterface supplierInterface = new SupplierInterface();
+
+        jDesktopPane1.add(supplierInterface);
+
+        Dimension jInternalFrameSize = supplierInterface.getSize();
+
+        supplierInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+        
+        supplierInterface.show();
+    }
 }

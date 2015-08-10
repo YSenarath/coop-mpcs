@@ -40,12 +40,12 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem2ActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
+            <MenuItem class="javax.swing.JMenuItem" name="mnuManageSupplier">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Manage Suppliers"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem3ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuManageSupplierActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -55,10 +55,13 @@
             <Property name="text" type="java.lang.String" value="Transactions"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
+            <MenuItem class="javax.swing.JMenuItem" name="mnuNewGRN">
               <Properties>
                 <Property name="text" type="java.lang.String" value="GoodRecieveNote"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuNewGRNActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
