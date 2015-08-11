@@ -48,31 +48,24 @@ public class LogIn extends javax.swing.JFrame {
 
         //Configure the counter for 1st time
         String isFirstUse = Utilities.loadProperty("firstUse");
+
         if (isFirstUse.equals("NULL")) {
             logger.info("First time ");
-            Object[] counters = {"1", "2", "3"};
-            String counter = (String) JOptionPane.showInputDialog(this, "Select the counter number ", "First time configuration", JOptionPane.OK_OPTION, null, counters, "1");
-            if (counter != null && (counter.equals("1") || counter.equals("2") || counter.equals("3"))) {
-                Utilities.saveProperty("counter", counter);
-                Utilities.saveProperty("firstUse", "1");
-                txtIntialAmount.setText(String.format("%.2f", 0.0));
-            } else {
-                Utilities.showMsgBox("Please select a counter to continue", "Error", JOptionPane.ERROR_MESSAGE);
-                System.exit(3);
-            }
+            new ConfigureDialog(this, true).setVisible(true);
         }
-//        else {
-//            try {
-//                Counter counter = CounterController.getCounter(Integer.parseInt(Utilities.loadProperty("counter")));
-//                if (counter != null) {
-//                    txtIntialAmount.setText(String.format("%.2f", counter.getCurrentAmount()));
-//                } else {
-//                    Utilities.showMsgBox("Error occured while retrieving remaining counter amount", "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } catch (SQLException ex) {
-//                logger.error("SQL error : " + ex.getMessage());
-//            }
-//        }
+
+        String counterId = Utilities.loadProperty("counter");
+        String serverIp = Utilities.loadProperty("SERVER_IP");
+
+        if (counterId.equals("NULL") || serverIp.equals("NULL")) {
+            Utilities.showMsgBox("Please set initial Configuration", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(3);
+        } else {
+            if (isFirstUse.equals("NULL")) {
+                Utilities.saveProperty("firstUse", "1");
+            }
+            txtIntialAmount.setText(String.format("%.2f", 0.0));
+        }
 
     }
 

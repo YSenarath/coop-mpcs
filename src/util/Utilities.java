@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -48,10 +49,19 @@ public class Utilities {
     }
 
     //Test equality of two hashes
-    //hash - get it from database
-    //passwoed- char array from text box
+    //dbhash - dbhash from database
+    //password- char array from text box
     public static boolean isHashSame(char[] dbHash, char[] password) {
         return Arrays.equals(dbHash, getSHA1(password).toCharArray());
+    }
+
+    //Validate a given IP address
+    public static boolean isValidIPv4Address(final String ip) {
+        if(ip.toLowerCase().equals("localhost")){
+            return true;
+        }
+        Pattern PATTERN = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+        return PATTERN.matcher(ip).matches();
     }
 
     //Convert 24hour time to 12 hour time
