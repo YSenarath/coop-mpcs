@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import util.Utilities;
 
-public class DBConnection implements DatabaseInterface {
+public final class DBConnection implements DatabaseInterface {
 
     private static final Logger logger = Logger.getLogger(DBConnection.class);
 
@@ -30,7 +30,7 @@ public class DBConnection implements DatabaseInterface {
                 serverIp = serverProperty;
             }
             logger.info("MYSQL connection = jdbc:mysql://" + serverIp + ":" + PORT + "/" + DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
-            connection = DriverManager.getConnection("jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE, connectionProps);
+            connection = DriverManager.getConnection("jdbc:mysql://" + serverIp + ":" + PORT + "/" + DATABASE, connectionProps);
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
         }
