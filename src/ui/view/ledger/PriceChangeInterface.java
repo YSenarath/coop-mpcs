@@ -70,14 +70,14 @@ public class PriceChangeInterface extends javax.swing.JFrame {
 
             },
             new String [] {
-                "", "Product Id", "Description", "Avalable Quantity", "Quantity", "Sales Price", "Value", "Decreased Price", "Increaded Price", "Decerase Price (Diffrence)", "Increased Price (Diffrence)", "Loss", "Profit"
+                "", "Product Id", "Description", "Avalable Quantity", "Quantity", "Sales Price", "Sales Value", "Changed Price", "Changed Price (Diffrence)", "Loss", "Profit"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, true, true, true, true, true, true, true, true
+                false, true, false, false, false, false, false, true, false, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -111,9 +111,7 @@ public class PriceChangeInterface extends javax.swing.JFrame {
             itemDataTable.getColumnModel().getColumn(5).setPreferredWidth(100);
             itemDataTable.getColumnModel().getColumn(6).setPreferredWidth(80);
             itemDataTable.getColumnModel().getColumn(7).setPreferredWidth(100);
-            itemDataTable.getColumnModel().getColumn(8).setPreferredWidth(100);
-            itemDataTable.getColumnModel().getColumn(9).setPreferredWidth(150);
-            itemDataTable.getColumnModel().getColumn(10).setPreferredWidth(150);
+            itemDataTable.getColumnModel().getColumn(8).setPreferredWidth(150);
         }
 
         btnNewItem.setText("Add (F2)");
@@ -135,6 +133,12 @@ public class PriceChangeInterface extends javax.swing.JFrame {
         jLabel3.setText("Net Loss");
 
         jLabel4.setText("Net Profit");
+
+        jXDatePicker1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jXDatePicker1ActionPerformed(evt);
+            }
+        });
 
         lblTitle.setBackground(java.awt.SystemColor.textHighlight);
         lblTitle.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
@@ -260,15 +264,14 @@ public class PriceChangeInterface extends javax.swing.JFrame {
 
     }//GEN-LAST:event_itemDataTableInputMethodTextChanged
 
+    private void jXDatePicker1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXDatePicker1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jXDatePicker1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="coxllapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -280,16 +283,6 @@ public class PriceChangeInterface extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(PriceChangeInterface.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

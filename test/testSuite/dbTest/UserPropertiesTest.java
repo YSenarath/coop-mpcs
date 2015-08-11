@@ -22,17 +22,22 @@ public class UserPropertiesTest {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        try {
-//            // TODO code application logic here
-//
-//            // Utilities.saveProperty("counter", "1");
-//            Utilities.clearProperties();
-//        } catch (BackingStoreException ex) {
-//            java.util.logging.Logger.getLogger(UserPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        try {
+            // TODO code application logic here
+
+            // Utilities.saveProperty("counter", "1");
+            Utilities.clearProperties();
+        } catch (BackingStoreException ex) {
+            java.util.logging.Logger.getLogger(UserPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         //logger.info("Counter : " + Utilities.loadProperty("counter"));
-        System.out.println(7.0 / 3);
-        System.out.println(Math.floor(7.0 / 3)*3);
+       // System.out.println(7.0 / 3);
+        //System.out.println(Math.floor(7.0 / 3)*3);
+        
+        System.out.println(Utilities.getSHA1("123".toCharArray()));
+        System.out.println(Utilities.getSHA1("1234".toCharArray()));
+        System.out.println(Utilities.getSHA1("159".toCharArray()));
+                
     }
 
 }

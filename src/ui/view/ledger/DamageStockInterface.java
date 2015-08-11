@@ -1,29 +1,45 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ui.view.ledger;
+//
+// <editor-fold defaultstate="collapsed" desc="Imports">
 
+import controller.inventory.ProductController;
+import controller.ledger.DamagedStockController;
+import controller.ledger.SupplierReturnNoteController;
+import database.connector.DBConnection;
+import java.sql.SQLException;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import model.inventory.Product;
+import model.ledger.DamageStock;
+import model.ledger.SupplierReturnNote;
+import model.ledger.item.DamagedItem;
+import model.ledger.item.DamagedItemBuilder;
+import model.ledger.item.SRNItem;
+import model.ledger.item.SRNItemBuilder;
+import model.supplier.Supplier;
 
-/**
- *
- * @author Yasas
- */
-public class DamageStockInterface extends javax.swing.JFrame {
+// </editor-fold>
+// 
+public class DamageStockInterface extends javax.swing.JInternalFrame {
+    //
+    // <editor-fold defaultstate="collapsed" desc="Variables">
+
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DamageStockInterface.class);
 
     private final DefaultTableModel model;
 
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Netbeans generated">
     /**
      * Creates new form GRNInterface
      */
     public DamageStockInterface() {
         initComponents();
+        initInterface();
         model = (DefaultTableModel) itemDataTable.getModel();
         model.addTableModelListener(new TableModelListenerImpl(model, txtTotal));
     }
@@ -41,20 +57,20 @@ public class DamageStockInterface extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        txtF16aNumber = new javax.swing.JTextField();
+        txtf17Number = new javax.swing.JTextField();
         comboLocation = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         itemDataTable = new javax.swing.JTable();
         btnNewItem = new javax.swing.JButton();
         btnDeleteItem = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jXDatePicker1 = new org.jdesktop.swingx.JXDatePicker();
+        btnAddDamagedStock = new javax.swing.JButton();
+        datePicker = new org.jdesktop.swingx.JXDatePicker();
         lblTitle = new javax.swing.JLabel();
         txtTotal = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
+        setClosable(true);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -69,14 +85,14 @@ public class DamageStockInterface extends javax.swing.JFrame {
 
             },
             new String [] {
-                "", "Product Id", "Description", "Damaged Quantity", "Price", "Quantity", "Value", "Loss"
+                "", "Product Id", "Description", "Damaged Quantity", "Unit Price", "Quantity", "Value", "Loss"
             }
         ) {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, true, false, false
+                false, true, false, true, true, true, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -127,7 +143,12 @@ public class DamageStockInterface extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Finish");
+        btnAddDamagedStock.setText("Finish");
+        btnAddDamagedStock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddDamagedStockActionPerformed(evt);
+            }
+        });
 
         lblTitle.setBackground(java.awt.SystemColor.textHighlight);
         lblTitle.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
@@ -155,8 +176,8 @@ public class DamageStockInterface extends javax.swing.JFrame {
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addGap(10, 10, 10)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jXDatePicker1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtF16aNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE))
+                    .addComponent(datePicker, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtf17Number, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -176,7 +197,7 @@ public class DamageStockInterface extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnNewItem, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnAddDamagedStock, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
             .addComponent(lblTitle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -188,18 +209,18 @@ public class DamageStockInterface extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel1)
-                        .addComponent(txtF16aNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtf17Number, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(comboLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jXDatePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(datePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
+                    .addComponent(btnAddDamagedStock)
                     .addComponent(btnDeleteItem)
                     .addComponent(btnNewItem)
                     .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -224,10 +245,88 @@ public class DamageStockInterface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewItemActionPerformed
+        addItem();
+    }//GEN-LAST:event_btnNewItemActionPerformed
+
+    private void btnDeleteItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteItemActionPerformed
+        deleteItem();
+    }//GEN-LAST:event_btnDeleteItemActionPerformed
+
+    private void itemDataTableInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_itemDataTableInputMethodTextChanged
+
+    }//GEN-LAST:event_itemDataTableInputMethodTextChanged
+
+    private void btnAddDamagedStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddDamagedStockActionPerformed
+        recordDamagedGoods();
+    }//GEN-LAST:event_btnAddDamagedStockActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(DamageStockInterface.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new DamageStockInterface().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddDamagedStock;
+    private javax.swing.JButton btnDeleteItem;
+    private javax.swing.JButton btnNewItem;
+    private javax.swing.JComboBox comboLocation;
+    private org.jdesktop.swingx.JXDatePicker datePicker;
+    private javax.swing.JTable itemDataTable;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblTitle;
+    private javax.swing.JTextField txtTotal;
+    private javax.swing.JTextField txtf17Number;
+    // End of variables declaration//GEN-END:variables
+        // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Interface Management">
+
+    private void initInterface() {
+        // Add stores here
+        comboLocation.addItem("stores");
+
+        try {
+            txtf17Number.setText(DamagedStockController.getNextDamagedStockID());
+        } catch (SQLException ex) {
+            logger.error("Error: " + ex.getMessage());
+            util.Utilities.showMsgBox("Error: Cannot connect to database!", "Database Connection Error", 0);
+            this.dispose();
+        }
+
+        datePicker.setDate(util.Utilities.getTody());
+    }
+
+    // </editor-fold>
+    //
+    // <editor-fold defaultstate="collapsed" desc="Item Management">
+    private void addItem() {
         if (model.getRowCount() == 0 || isItemValid(model.getRowCount() - 1)) {
             model.addRow(new Object[]{model.getRowCount() + 1, "", "", "", "", "", ""});
         }
-    }//GEN-LAST:event_btnNewItemActionPerformed
+    }
 
     private boolean isItemValid(int row) {
         if (row >= 0 && row < model.getRowCount()) {
@@ -241,76 +340,36 @@ public class DamageStockInterface extends javax.swing.JFrame {
         return false;
     }
 
-    private void btnDeleteItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteItemActionPerformed
+    private void deleteItem() {
         if (itemDataTable.getSelectedRow() >= 0 && itemDataTable.getSelectedRow() < model.getRowCount()) {
             model.removeRow(itemDataTable.getSelectedRow());
             for (int i = 0; i < model.getRowCount(); i++) {
                 model.setValueAt(i + 1, i, 0);
             }
         }
-    }//GEN-LAST:event_btnDeleteItemActionPerformed
-
-    private void itemDataTableInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_itemDataTableInputMethodTextChanged
-
-    }//GEN-LAST:event_itemDataTableInputMethodTextChanged
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="coxllapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DamageStockInterface.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new DamageStockInterface().setVisible(true);
-            }
-        });
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnDeleteItem;
-    private javax.swing.JButton btnNewItem;
-    private javax.swing.JComboBox comboLocation;
-    private javax.swing.JTable itemDataTable;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private org.jdesktop.swingx.JXDatePicker jXDatePicker1;
-    private javax.swing.JLabel lblTitle;
-    private javax.swing.JTextField txtF16aNumber;
-    private javax.swing.JTextField txtTotal;
-    // End of variables declaration//GEN-END:variables
 
     private static class TableModelListenerImpl implements TableModelListener {
 
-        private final DefaultTableModel model;
+        private void fillProductDetails(int row, String productId) {
+            Product result;
+            try {
+                result = ProductController.getProduct(productId);
+                model.setValueAt(result.getProductName(), row, 2);
+            } catch (SQLException ex) {
+                logger.error(ex.getMessage());
+                model.setValueAt("", row, 2);
+            } finally {
+                try {
+                    DBConnection.closeConnectionToDB();
+                } catch (SQLException ex) {
+                    logger.error(ex.getMessage());
+                }
+            }
+        }
         
+        private final DefaultTableModel model;
+
         private final JTextField textBox;
 
         public TableModelListenerImpl(DefaultTableModel model, JTextField textBox) {
@@ -323,12 +382,17 @@ public class DamageStockInterface extends javax.swing.JFrame {
             Double totalLoss = 0.0;
             for (int row = 0; row < model.getRowCount(); row++) {
                 try {
-                    if (e.getColumn() != 7 && e.getColumn() != 6) {
+                    if (e.getColumn() == 1) {
+
+                        // Auto generated Column
+                        String productId = model.getValueAt(row, 1).toString();
+                        fillProductDetails(row, productId);
+                    } else if (e.getColumn() != 7 && e.getColumn() != 6) {
                         // Auto generated Column
                         // Auto generated Column
                         Double result = Double.parseDouble(model.getValueAt(row, 4).toString()) * Integer.parseInt(model.getValueAt(row, 5).toString());
                         model.setValueAt(result.toString(), row, 6);
-                        
+
                         result = Double.parseDouble(model.getValueAt(row, 3).toString()) * Integer.parseInt(model.getValueAt(row, 4).toString());
                         model.setValueAt(result.toString(), row, 7);
                         totalLoss += result;
@@ -342,4 +406,43 @@ public class DamageStockInterface extends javax.swing.JFrame {
             }
         }
     }
+
+    // </editor-fold>
+    //    
+    // <editor-fold defaultstate="collapsed" desc="Damaged Goods Managament">
+    private void recordDamagedGoods() {
+
+        DamageStock damagedGood = new DamageStock(
+                txtf17Number.getText(),
+                datePicker.getDate(),
+                (String) comboLocation.getSelectedItem()
+        );
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            DamagedItem itm;
+            try {
+                itm = new DamagedItemBuilder()
+                        .setProductID(model.getValueAt(i, 1).toString())
+                        .setQuantity(Double.parseDouble(model.getValueAt(i, 5).toString()))
+                        .setDamagedItemID(txtf17Number.getText())
+                        .setQuantityDamaged(Double.parseDouble(model.getValueAt(i, 3).toString()))
+                        .setSellingPrice(Double.parseDouble(model.getValueAt(i, 4).toString()))
+                        .createDamagedItem();
+                damagedGood.addItem(itm);
+            } catch (Exception ex) {
+                util.Utilities.showMsgBox("Unable to add Damaged Good item, Invalid item", "Damaged Good Error", 0);
+                return;
+            }
+        }
+
+        try {
+            DamagedStockController.addDamagedStock(damagedGood);
+            util.Utilities.showMsgBox("Damaged Good added successfully", "Damaged Good record Success", 1);
+            this.dispose();
+        } catch (SQLException ex) {
+            util.Utilities.showMsgBox("Unable to add Dmaged goods to database", "Damaged Good record Error", 0);
+            logger.error(ex.getMessage());
+        }
+    }
+    // </editor-fold>
 }

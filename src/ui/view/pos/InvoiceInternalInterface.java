@@ -61,7 +61,7 @@ import util.KeyValueContainer;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
 
-public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
+class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(InvoiceInternalInterface.class);
@@ -72,15 +72,15 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private SearchItemInterface searchItemInterface;
     private SelectPriceInterface selectPriceInterface;
 
-    DefaultComboBoxModel productComboBoxModel;
+    private final DefaultComboBoxModel productComboBoxModel;
 
     //Yasara
-    DefaultComboBoxModel employeeComboBoxModel;
-    DefaultComboBoxModel coopCustomerComboBoxModel;
+    private final DefaultComboBoxModel employeeComboBoxModel;
+    private final DefaultComboBoxModel coopCustomerComboBoxModel;
 
-    ActionListener productCodeListner;
-    DefaultTableModel invoiceItemTableModel;
-    DefaultTableModel invoicePaymentsTableModel;
+    private final ActionListener productCodeListner;
+    private final DefaultTableModel invoiceItemTableModel;
+    private final DefaultTableModel invoicePaymentsTableModel;
 
     //Key binding
     private InputMap itemAddPanelInputMap;
@@ -113,10 +113,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private final int PAYMENT_OFFSET_1_COLUMN = 3;
 
     //Hold ,restore sale
-    boolean saleOnHold;
-    boolean isMember;
-    Object[][] itemData;
-    Object[][] paymentData;
+    private boolean saleOnHold;
+    private boolean isMember;
+    private Object[][] itemData;
+    private Object[][] paymentData;
 
     // </editor-fold>
     //
@@ -736,7 +736,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         calculateItemParameters();
         if (invoice == null || invoice.getItemCount() < 1 || invoice.getNetTotal() < 0) {
             logger.warn("invoice must have at least one item and total must be >=0");
-            // return;
+            return;
         }
 
         calculatePaymentParameters();
@@ -1044,7 +1044,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 coopCustomerComboBoxModel.addElement(new KeyValueContainer(String.valueOf(customer.getCustomerId()), customer.getCustomerName()));
             }
             coopCustomerNameComboBox.getModel().setSelectedItem(null);
-            
+
         } catch (SQLException ex) {
             logger.error("SQL error : " + ex.getMessage(), ex);
             System.exit(3);
@@ -1797,8 +1797,8 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         setMaximizable(true);
         setResizable(true);
         setTitle("Invoice");
-        setMinimumSize(new java.awt.Dimension(1050, 750));
-        setPreferredSize(new java.awt.Dimension(1050, 750));
+        setMinimumSize(new java.awt.Dimension(1031, 610));
+        setPreferredSize(new java.awt.Dimension(1031, 610));
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -2048,7 +2048,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblItemNoDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblItemCount, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
                 .addComponent(lblItemDiscountDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblItemDiscounts, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2164,13 +2164,13 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addComponent(billButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(productPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
+                .addComponent(itemTableSP, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(billSummeryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(itemAddPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnInvoiceExit, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnInvoiceExit, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -2221,7 +2221,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         paymentOptionsPanel.setLayout(paymentOptionsPanelLayout);
         paymentOptionsPanelLayout.setHorizontalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(ivoicePaymentsSP, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(ivoicePaymentsSP, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
         );
         paymentOptionsPanelLayout.setVerticalGroup(
             paymentOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2265,7 +2265,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblBillValueDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblBillValueVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblChangeDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblChangeVal, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2363,7 +2363,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(298, Short.MAX_VALUE))
+                .addContainerGap(182, Short.MAX_VALUE))
         );
         cashPaymentPanelLayout.setVerticalGroup(
             cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2372,7 +2372,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(cashPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCashPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(300, Short.MAX_VALUE))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cashPaymentPanel, "cashCard");
@@ -2454,7 +2454,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(cardPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCashPaymentAmountDisplay1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCardPaymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(218, Short.MAX_VALUE))
+                .addContainerGap(167, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(cardPaymentPanel, "bankCard");
@@ -2463,11 +2463,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         coopCreditCustomernameLbl.setText("Customer Name");
 
         coopCustomerNameComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        coopCustomerNameComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                coopCustomerNameComboBoxActionPerformed(evt);
-            }
-        });
 
         coopCreditAmountLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         coopCreditAmountLbl.setText("Amount  (Rs.)");
@@ -2503,7 +2498,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addComponent(redeemableAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(redeemableAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(238, Short.MAX_VALUE))
+                .addContainerGap(122, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2544,7 +2539,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(coopCreditPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(coopCreditAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(coopCreditAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 209, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 158, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -2618,7 +2613,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                         .addComponent(poshanaPaymentAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(poshanaPaymentAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(298, Short.MAX_VALUE))
+                .addContainerGap(182, Short.MAX_VALUE))
         );
         PoshanaPaymentLayout.setVerticalGroup(
             PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2635,7 +2630,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(poshanaPaymentAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(poshanaPaymentAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(218, Short.MAX_VALUE))
+                .addContainerGap(167, Short.MAX_VALUE))
         );
 
         paymentDetailsPanel.add(PoshanaPayment, "poshanaCard");
@@ -2707,7 +2702,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                         .addComponent(amountEmpLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(VoucherEmployeeVoucherAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(209, Short.MAX_VALUE))
+                .addContainerGap(93, Short.MAX_VALUE))
         );
         employeeCardLayout.setVerticalGroup(
             employeeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2720,7 +2715,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(employeeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(amountEmpLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(VoucherEmployeeVoucherAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(195, Short.MAX_VALUE))
+                .addContainerGap(148, Short.MAX_VALUE))
         );
 
         voucherCard.add(employeeCard, "employeeCard");
@@ -2772,7 +2767,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                         .addComponent(amountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(voucherCustomerAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(268, Short.MAX_VALUE))
+                .addContainerGap(152, Short.MAX_VALUE))
         );
         customerCardLayout.setVerticalGroup(
             customerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2785,7 +2780,7 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGroup(customerCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(amountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(voucherCustomerAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(195, Short.MAX_VALUE))
+                .addContainerGap(148, Short.MAX_VALUE))
         );
 
         voucherCard.add(customerCard, "customerCard");
@@ -2851,20 +2846,21 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(paymentInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(paymentPanelLayout.createSequentialGroup()
-                        .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(paymentPanelLayout.createSequentialGroup()
-                                .addComponent(btnAddPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(paymentDetailsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(paymentSelectorPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(paymentOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, paymentPanelLayout.createSequentialGroup()
                         .addComponent(btnConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnPrevious, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnPrevious, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(paymentPanelLayout.createSequentialGroup()
+                        .addComponent(btnAddPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(paymentPanelLayout.createSequentialGroup()
+                        .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(paymentDetailsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(paymentSelectorPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(paymentOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         paymentPanelLayout.setVerticalGroup(
@@ -2877,11 +2873,11 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(paymentDetailsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(paymentOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(87, 87, 87)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paymentInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -2933,20 +2929,20 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addComponent(txtBillNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(chkMember))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jLayeredPaneLayout = new javax.swing.GroupLayout(jLayeredPane);
         jLayeredPane.setLayout(jLayeredPaneLayout);
         jLayeredPaneLayout.setHorizontalGroup(
             jLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1030, Short.MAX_VALUE)
+            .addGap(0, 1015, Short.MAX_VALUE)
             .addGroup(jLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jLayeredPaneLayout.setVerticalGroup(
             jLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 724, Short.MAX_VALUE)
+            .addGap(0, 580, Short.MAX_VALUE)
             .addGroup(jLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(interfaceContainerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -3104,11 +3100,6 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private void poshanaIdTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaIdTxtKeyReleased
         // TODO add your handling code here:
     }//GEN-LAST:event_poshanaIdTxtKeyReleased
-
-    private void coopCustomerNameComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_coopCustomerNameComboBoxActionPerformed
-        // TODO add your handling code here:
-        setMaxCoopCreditRedeemableAmount();
-    }//GEN-LAST:event_coopCustomerNameComboBoxActionPerformed
 
     private void coopCreditAmountTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_coopCreditAmountTxtFocusLost
         // TODO add your handling code here:

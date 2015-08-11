@@ -31,7 +31,7 @@ public class SupplierController {
 
         while (resultSet.next()) {
             return new Supplier(
-                    resultSet.getString("supplier_id"),
+                    util.Utilities.convertKeyToString(resultSet.getInt("supplier_id"), SUPPLIER),
                     resultSet.getString("sup_name"),
                     resultSet.getString("contact_person"),
                     resultSet.getString("address"),
@@ -52,7 +52,7 @@ public class SupplierController {
         ArrayList<Supplier> suppliers = new ArrayList<>();
         while (resultSet.next()) {
             Supplier s = new Supplier(
-                    resultSet.getString("supplier_id"),
+                    util.Utilities.convertKeyToString(resultSet.getInt("supplier_id"), SUPPLIER),
                     resultSet.getString("sup_name"),
                     resultSet.getString("contact_person"),
                     resultSet.getString("address"),
@@ -73,7 +73,7 @@ public class SupplierController {
         String query = "INSERT INTO " + SUPPLIER + " (supplier_id, sup_name, contact_person, address, tel_number, fax_number, e_mail, reg_date, cancel_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         Object[] ob = {
-            supplier.getSupplerID(),
+            util.Utilities.convertKeyToInteger(supplier.getSupplerID()),
             supplier.getName(),
             supplier.getContactPerson(),
             supplier.getAddress(),

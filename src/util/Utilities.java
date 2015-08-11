@@ -7,9 +7,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.IllegalFormatConversionException;
@@ -18,16 +22,46 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.xml.bind.DatatypeConverter;
 
 public class Utilities {
 
     //Do not instantiate this class
     private Utilities() {
 
+    }
+
+    //generate sha256 hash of a char sequence
+    public static String getSHA1(char[] password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            digest.reset();
+            byte[] hash = digest.digest(new String(password).getBytes("UTF-8"));
+            return DatatypeConverter.printHexBinary(hash);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+        }
+        return null;
+    }
+
+    //Test equality of two hashes
+    //dbhash - dbhash from database
+    //password- char array from text box
+    public static boolean isHashSame(char[] dbHash, char[] password) {
+        return Arrays.equals(dbHash, getSHA1(password).toCharArray());
+    }
+
+    //Validate a given IP address
+    public static boolean isValidIPv4Address(final String ip) {
+        if(ip.toLowerCase().equals("localhost")){
+            return true;
+        }
+        Pattern PATTERN = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+        return PATTERN.matcher(ip).matches();
     }
 
     //Convert 24hour time to 12 hour time
@@ -155,19 +189,24 @@ public class Utilities {
                 suffix = "B";
                 size = 3;
                 break;
-                
+
             case DatabaseInterface.COUNTER_LOGIN:
                 suffix = "L";
                 size = 6;
                 break;
-                
+
             case DatabaseInterface.CASH_WITHDRAWAL:
                 suffix = "W";
                 size = 5;
                 break;
-                
+
             case DatabaseInterface.INVOICE:
                 suffix = "I";
+                size = 5;
+                break;
+
+            case DatabaseInterface.REFUND:
+                suffix = "U";
                 size = 5;
                 break;
 
@@ -175,17 +214,22 @@ public class Utilities {
                 suffix = "G";
                 size = 5;
                 break;
-                
+
             case DatabaseInterface.SUPPLIER:
                 suffix = "S";
                 size = 3;
                 break;
-                
+
             case DatabaseInterface.SRN:
                 suffix = "R";
                 size = 5;
                 break;
-                
+
+            case DatabaseInterface.DAMAGED_STOCK:
+                suffix = "T";
+                size = 5;
+                break;
+
             default:
                 return null;
         }
@@ -301,9 +345,7 @@ public class Utilities {
             System.exit(3);
         }
     }
-    
-    
-    
+
     //nadheesh
     public static Date getToday() {
         String date = getStringDate((Calendar.getInstance().getTime()));
@@ -317,13 +359,12 @@ public class Utilities {
         return null;
     }
 
-    
-    public static void ShowErrorMsg (Component component, String msg ){
-        JOptionPane.showMessageDialog(component, msg , "Error"  , 0);
+    public static void ShowErrorMsg(Component component, String msg) {
+        JOptionPane.showMessageDialog(component, msg, "Error", 0);
     }
-    
-    public static void ShowWarningMsg (Component component, String msg ){
-        JOptionPane.showMessageDialog(component, msg , "Warning"  , 2);
+
+    public static void ShowWarningMsg(Component component, String msg) {
+        JOptionPane.showMessageDialog(component, msg, "Warning", 2);
     }
     //nadheesh//end
 }

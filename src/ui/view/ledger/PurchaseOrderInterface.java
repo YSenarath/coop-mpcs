@@ -75,7 +75,7 @@ public class PurchaseOrderInterface extends javax.swing.JFrame {
 
             },
             new String [] {
-                "", "Item Code", "Description", "Stock", "Quantity", "Cost Price", "Value"
+                "", "Item Code", "Description", "Avalable Quantity", "Quantity", "Cost Price", "Value"
             }
         ) {
             Class[] types = new Class [] {

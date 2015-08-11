@@ -69,7 +69,7 @@ public class RefundController implements DatabaseInterface {
         };
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
         ArrayList<Refund> refunds = new ArrayList();
-        if (resultSet.next()) {
+        while (resultSet.next()) {
 
             Refund refund = new Refund(
                     resultSet.getInt("refund_id"),

@@ -8,7 +8,7 @@ package ui.view.supplier;
 import controller.supplier.SupplierController;
 import database.connector.DBConnection;
 import java.sql.SQLException;
-import javax.swing.UIManager;
+import javax.swing.JInternalFrame;
 import javax.swing.table.DefaultTableModel;
 import model.supplier.Supplier;
 
@@ -16,21 +16,21 @@ import model.supplier.Supplier;
  *
  * @author Yasas
  */
-public class SelectSupplierDialogue extends javax.swing.JDialog {
+public class SelectSupplier extends javax.swing.JInternalFrame {
 
-    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SelectSupplierDialogue.class);
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SelectSupplier.class);
 
-    DefaultTableModel tableModel;
-
+    private DefaultTableModel tableModel;
+    
+    private final JInternalFrame parent;
+    
     /**
-     * Creates new form SelectSupplierInterface
-     *
+     * Creates new form selectSupplier
      * @param parent
-     * @param modal
      */
-    public SelectSupplierDialogue(SupplierInterface parent, boolean modal) {
-        super(parent, modal);
+    public SelectSupplier(JInternalFrame parent) {
         initComponents();
+        this.parent = parent;
         initTable();
     }
 
@@ -45,15 +45,10 @@ public class SelectSupplierDialogue extends javax.swing.JDialog {
 
         jScrollPane3 = new javax.swing.JScrollPane();
         tblSupplier = new javax.swing.JTable();
-        btnSelectSupplier = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
+        btnSelectSupplier = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
-            }
-        });
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         tblSupplier.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -75,17 +70,17 @@ public class SelectSupplierDialogue extends javax.swing.JDialog {
         tblSupplier.setRowHeight(30);
         jScrollPane3.setViewportView(tblSupplier);
 
-        btnSelectSupplier.setText("Select");
-        btnSelectSupplier.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSelectSupplierActionPerformed(evt);
-            }
-        });
-
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelActionPerformed(evt);
+            }
+        });
+
+        btnSelectSupplier.setText("Select");
+        btnSelectSupplier.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSelectSupplierActionPerformed(evt);
             }
         });
 
@@ -96,77 +91,44 @@ public class SelectSupplierDialogue extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnSelectSupplier)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCancel)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancel)
                     .addComponent(btnSelectSupplier))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSelectSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectSupplierActionPerformed
-        SelectSupplier();
-    }//GEN-LAST:event_btnSelectSupplierActionPerformed
-
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         close();
     }//GEN-LAST:event_btnCancelActionPerformed
 
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        getParent().setEnabled(true);
-    }//GEN-LAST:event_formWindowClosed
+    private void btnSelectSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectSupplierActionPerformed
+        selectSupplier();
+    }//GEN-LAST:event_btnSelectSupplierActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    break;
-                }
+        /*
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new selectSupplier().setVisible(true);
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SelectSupplierDialogue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-            //</editor-fold>
-        //</editor-fold>
-            //</editor-fold>
-        //</editor-fold>
-
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(() -> {
-            SelectSupplierDialogue dialog = new SelectSupplierDialogue((SupplierInterface) new javax.swing.JFrame(), true);
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
         });
+        */
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -175,6 +137,7 @@ public class SelectSupplierDialogue extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable tblSupplier;
     // End of variables declaration//GEN-END:variables
+
 
     private void initTable() {
         try {
@@ -188,19 +151,18 @@ public class SelectSupplierDialogue extends javax.swing.JDialog {
         }
     }
 
-    private void SelectSupplier() {
+    private void selectSupplier() {
         if (tblSupplier.getSelectedRow()  >= 0  && tblSupplier.getSelectedColumn() >= 0) {
             Supplier selectedSupplier = (Supplier) tableModel.getValueAt(tblSupplier.getSelectedRow(), tblSupplier.getSelectedColumn());
-            getParent().setEnabled(true);
-            ((SupplierInterface) getParent()).setSupplier(selectedSupplier);
+            ((SupplierInterface) parent).setSupplier(selectedSupplier);
             close();
         } else {
             util.Utilities.showMsgBox("Select a supplier to continue", "Supplier Selection", 0);
         }
     }
 
-    private void close() {
+    private void close() { 
+        parent.setEnabled(true);
         this.dispose();
     }
-
 }

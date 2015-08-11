@@ -14,8 +14,13 @@ import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import model.ledger.SupplierReturnNote;
+import model.supplier.Supplier;
 import ui.view.inventory.ManageDepartment;
-import ui.view.inventory.ManageProduct;
+import ui.view.ledger.DamageStockInterface;
+import ui.view.ledger.GRNInterface;
+import ui.view.ledger.SupplierReturnNoteInterface;
+import ui.view.supplier.SupplierInterface;
 
 /**
  *
@@ -29,10 +34,12 @@ public class MainWindow extends javax.swing.JFrame {
     private ManageDepartment winManageDep;
     private ManageProduct winManagePro;
 
+    Dimension desktopSize;
+
     public MainWindow() {
         initComponents();
-
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.desktopSize = jDesktopPane1.getSize();
 
         //--------------------------------Internal Frames-----------------------
         try {
@@ -73,8 +80,11 @@ public class MainWindow extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        mnuManageSupplier = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
+        mnuNewGRN = new javax.swing.JMenuItem();
+        mnuNewSRN = new javax.swing.JMenuItem();
+        mnuAddDamagedStock = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
         jMenu6 = new javax.swing.JMenu();
@@ -163,17 +173,42 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem2);
 
-        jMenuItem3.setText("Manage Suppliers");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        mnuManageSupplier.setText("Manage Suppliers");
+        mnuManageSupplier.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                mnuManageSupplierActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem3);
+        jMenu2.add(mnuManageSupplier);
 
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Transactions");
+
+        mnuNewGRN.setText("GoodRecieveNote");
+        mnuNewGRN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuNewGRNActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnuNewGRN);
+
+        mnuNewSRN.setText("SupplierReturnNote");
+        mnuNewSRN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuNewSRNActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnuNewSRN);
+
+        mnuAddDamagedStock.setText("DamagedStock");
+        mnuAddDamagedStock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuAddDamagedStockActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnuAddDamagedStock);
+
         jMenuBar1.add(jMenu3);
 
         jMenu4.setText("Reports");
@@ -214,9 +249,21 @@ public class MainWindow extends javax.swing.JFrame {
         winManagePro.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    private void mnuManageSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuManageSupplierActionPerformed
+        createNewSupplier();
+    }//GEN-LAST:event_mnuManageSupplierActionPerformed
+
+    private void mnuNewGRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewGRNActionPerformed
+        createNewGRN();
+    }//GEN-LAST:event_mnuNewGRNActionPerformed
+
+    private void mnuNewSRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewSRNActionPerformed
+        createNewSRN();
+    }//GEN-LAST:event_mnuNewSRNActionPerformed
+
+    private void mnuAddDamagedStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuAddDamagedStockActionPerformed
+        createNewDamagedStock();
+    }//GEN-LAST:event_mnuAddDamagedStockActionPerformed
 
     /**
      * @param args the command line arguments
@@ -264,7 +311,7 @@ public class MainWindow extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new MainWindow().setVisible(true);
-               
+
             }
         });
     }
@@ -280,22 +327,67 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblWelcome;
+    private javax.swing.JMenuItem mnuAddDamagedStock;
     private javax.swing.JMenuItem mnuExit;
+    private javax.swing.JMenuItem mnuManageSupplier;
+    private javax.swing.JMenuItem mnuNewGRN;
+    private javax.swing.JMenuItem mnuNewSRN;
     private javax.swing.JPanel welcomePanel;
     // End of variables declaration//GEN-END:variables
 
+    private void createNewGRN() {
 
-    private void setInternalFrameLocation(JInternalFrame frame){
-        Dimension desktopSize = jDesktopPane1.getSize();
-        Dimension frameSize = frame.getSize();
-        
+        GRNInterface grnInterface = new GRNInterface();
 
-        frame.setLocation((desktopSize.width - frameSize.width) / 2,
-                (desktopSize.height - frameSize.height) / 2);
-        
+        jDesktopPane1.add(grnInterface);
+
+        Dimension jInternalFrameSize = grnInterface.getSize();
+
+        grnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+
+        grnInterface.show();
     }
 
+    private void createNewSupplier() {
+
+        SupplierInterface supplierInterface = new SupplierInterface();
+
+        jDesktopPane1.add(supplierInterface);
+
+        Dimension jInternalFrameSize = supplierInterface.getSize();
+
+        supplierInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+
+        supplierInterface.show();
+    }
+
+    private void createNewSRN() {
+        SupplierReturnNoteInterface srnInterface = new SupplierReturnNoteInterface();
+
+        jDesktopPane1.add(srnInterface);
+
+        Dimension jInternalFrameSize = srnInterface.getSize();
+
+        srnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+
+        srnInterface.show();
+    }
+
+    private void createNewDamagedStock() {
+        DamageStockInterface i = new DamageStockInterface();
+
+        jDesktopPane1.add(i);
+
+        Dimension jInternalFrameSize = i.getSize();
+
+        i.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+
+        i.show();
+    }
 }

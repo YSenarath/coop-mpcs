@@ -44,5 +44,8 @@ public interface DatabaseInterface {
     
     public static final String GRN = "grn";
     public static final String SRN = "srn";
+    public static final String SRN_ITEM = "srn_item";
+    public static final String DAMAGED_STOCK = "damaged_stock";
+    public static final String DAMAGED_STOCK_ITEM = "damaged_stock_item";
 
 }

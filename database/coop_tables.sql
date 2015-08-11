@@ -19,7 +19,7 @@ CREATE TABLE employee(
 CREATE TABLE user_credentials(
 
 	user_name VARCHAR(32) NOT NULL UNIQUE,
-	password VARCHAR(10) NOT NULL,
+	password blob NOT NULL,
 	access_level enum('manager','cashier','inventory_manager') NOT NULL,
 	isLoggedIn BOOLEAN NOT NULL DEFAULT FALSE,
 

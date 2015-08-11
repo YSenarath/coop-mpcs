@@ -23,7 +23,7 @@ import util.DoubleFilter;
 
 // </editor-fold>
 // 
-public class GRNInterface extends javax.swing.JFrame {
+public class GRNInterface extends javax.swing.JInternalFrame {
     //
     // <editor-fold defaultstate="collapsed" desc="Variables">
 
@@ -89,8 +89,8 @@ public class GRNInterface extends javax.swing.JFrame {
         txtF16aNumber = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
+        setClosable(true);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         lblTitle.setBackground(java.awt.SystemColor.textHighlight);
         lblTitle.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
@@ -281,26 +281,21 @@ public class GRNInterface extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(103, 103, 103)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(comboLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(comboPaymentType, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtInvoiceNo, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(comboLocation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(comboPaymentType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtInvoiceNo))))
+                        .addGap(10, 10, 10))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(38, 38, 38)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtF16aNumber)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(comboSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(datePickInvoiceDate, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(comboSupplier, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(datePickInvoiceDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jTextField7, jTextField8, txtSellingBillDiscount});
-
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {comboLocation, comboPaymentType, comboSupplier, datePickInvoiceDate, txtInvoiceNo});
 
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -438,7 +433,6 @@ public class GRNInterface extends javax.swing.JFrame {
 
     private void btnAddGrnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddGrnActionPerformed
         recordGoodRecieveNote();
-        this.dispose();
     }//GEN-LAST:event_btnAddGrnActionPerformed
 
     /**
@@ -511,7 +505,7 @@ public class GRNInterface extends javax.swing.JFrame {
          double purchasingBillDiscount, double sellingBillDiscount)
          */
         GoodRecieveNote grn = new GoodRecieveNote(
-                Integer.parseInt(txtF16aNumber.getText()),
+                txtF16aNumber.getText(),
                 txtInvoiceNo.getText(),
                 datePickInvoiceDate.getDate(),
                 (Supplier) comboSupplier.getSelectedItem(),
@@ -523,30 +517,38 @@ public class GRNInterface extends javax.swing.JFrame {
         );
 
         for (int i = 0; i < model.getRowCount(); i++) {
-            Batch b
-                    = (BatchBuilder.Batch())
-                    .withBatchId("B0")
-                    .withGRNNumber(txtF16aNumber.getText())
-                    .withProductId(model.getValueAt(i, 1).toString())
-                    .withUnitCost(Double.parseDouble(model.getValueAt(i, 3).toString()))
-                    .withCostDiscount(Double.parseDouble(model.getValueAt(i, 4).toString()))
-                    .withUnitPrice(Double.parseDouble(model.getValueAt(i, 6).toString()))
-                    .withQuantity(Double.parseDouble(model.getValueAt(i, 7).toString()))
-                    .withExpirationDate(util.Utilities.getDateFromString(model.getValueAt(i, 5).toString()))
-                    .withNotificationDate(null)
-                    .withRecievedQuantity(Double.parseDouble(model.getValueAt(i, 8).toString()))
-                    .withSoldQty(0.0)
-                    .withDiscounted(true)
-                    .withInStock(true)
-                    .build();
+            try {
+                Batch b
+                        = (BatchBuilder.Batch())
+                        .withBatchId("B0")
+                        .withGRNNumber(txtF16aNumber.getText())
+                        .withProductId(model.getValueAt(i, 1).toString())
+                        .withUnitCost(Double.parseDouble(model.getValueAt(i, 3).toString()))
+                        .withCostDiscount(Double.parseDouble(model.getValueAt(i, 4).toString()))
+                        .withUnitPrice(Double.parseDouble(model.getValueAt(i, 6).toString()))
+                        .withQuantity(Double.parseDouble(model.getValueAt(i, 7).toString()))
+                        .withExpirationDate(util.Utilities.getDateFromString(model.getValueAt(i, 5).toString()))
+                        .withNotificationDate(null)
+                        .withRecievedQuantity(Double.parseDouble(model.getValueAt(i, 8).toString()))
+                        .withSoldQty(0.0)
+                        .withDiscounted(true)
+                        .withInStock(true)
+                        .build();
 
-            grn.addBatch(b);
+                grn.addBatch(b);
+            } catch (Exception ex) {
+                util.Utilities.showMsgBox("Unable to add grn, Invalid batch", "Grn Error", 0);
+                return;
+            }
         }
 
         try {
             GoodRecieveNoteController.addGrn(grn);
+            util.Utilities.showMsgBox("GRN added successfully", "Grn Success", 0);
+            this.dispose();
         } catch (SQLException ex) {
-            Logger.getLogger(GRNInterface.class.getName()).log(Level.SEVERE, null, ex);
+            util.Utilities.showMsgBox("Unable to add grn", "Grn Error", 0);
+            logger.error(ex.getMessage());
         }
     }
 
@@ -571,10 +573,12 @@ public class GRNInterface extends javax.swing.JFrame {
         comboPaymentType.addItem("credit");
 
         try {
-            txtF16aNumber.setText(String.valueOf(GoodRecieveNoteController.getNextGrnID()));
+            txtF16aNumber.setText(GoodRecieveNoteController.getNextGrnID());
         } catch (SQLException ex) {
             logger.error("Error: " + ex.getMessage());
         }
+
+        datePickInvoiceDate.setDate(util.Utilities.getTody());
 
         ((PlainDocument) txtLoadingFee.getDocument()).setDocumentFilter(new DoubleFilter());
         ((PlainDocument) txtPurchasingBillDiscount.getDocument()).setDocumentFilter(new DoubleFilter());

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import model.inventory.Batch;
 import model.inventory.BatchBuilder;
 import model.pos.item.InvoiceItem;
+import model.pos.item.RefundItem;
 import util.Utilities;
 
 /**
@@ -106,7 +107,7 @@ public class BatchController {
         int isAdded = -1;
         Object[] objs = {
             Utilities.convertKeyToInteger(batch.getBatchId()),
-            batch.getGrnNumber(),
+            Utilities.convertKeyToInteger(batch.getGrnNumber()),
             batch.getUnit_cost(),
             batch.getUnit_price(),
             batch.getQuantity(),
@@ -124,10 +125,12 @@ public class BatchController {
 
         Connection connection = DBConnection.getConnectionToDB();
 
-        String query = "INSERT INTO " + DatabaseInterface.BATCH + " (grn_number, unit_cost, unit_price, qty, exp_date, notify_date, recieved_qty ,  discounted ) VALUES (?,?,?,?,?,?,?,?,?)";
+        String query = "INSERT INTO " + DatabaseInterface.BATCH + " (product_id, grn_number, unit_cost, unit_price, qty, exp_date, notify_date, recieved_qty ,  discounted ) VALUES (?,?,?,?,?,?,?,?,?)";
         int isAdded = -1;
+        
         Object[] objs = {
-            batch.getGrnNumber(),
+            util.Utilities.convertKeyToInteger(batch.getProductId()),
+            util.Utilities.convertKeyToInteger(batch.getGrnNumber()),
             batch.getUnit_cost(),
             batch.getUnit_price(),
             batch.getQuantity(),
@@ -198,6 +201,21 @@ public class BatchController {
             invoiceItem.getQty(),
             invoiceItem.getBatchId(),
             invoiceItem.getProductId()
+        };
+
+        return DBHandler.setData(connection, query, ob) == 1;
+    }
+
+    public static boolean setRefundQty(RefundItem refundItem) throws SQLException {
+        //update sold amount,if sold amount = recieved amount ,in_stock is disabled
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "UPDATE " + DatabaseInterface.BATCH + " SET sold_qty=sold_qty-? WHERE batch_id=? AND product_id=?";
+        Object[] ob = {
+            refundItem.getQty(),
+            refundItem.getBatchId(),
+            refundItem.getProductId()
         };
 
         return DBHandler.setData(connection, query, ob) == 1;

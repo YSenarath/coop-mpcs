@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import util.Utilities;
 
 public class DBConnection implements DatabaseInterface {
 
@@ -16,26 +17,22 @@ public class DBConnection implements DatabaseInterface {
 
     private DBConnection() throws SQLException {
         DriverManager.registerDriver(new Driver());
+
+        Properties connectionProps = new Properties();
+        connectionProps.put("user", MYSQL_USER_NAME);
+        connectionProps.put("password", MYSQL_PASSWORD);
         try {
-            Properties connectionProps = new Properties();
-            connectionProps.put("user", MYSQL_USER_NAME);
-            connectionProps.put("password", MYSQL_PASSWORD);
-            logger.info("MYSQL connection = jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
-
-            connection = DriverManager.getConnection("jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE, connectionProps);
-        } catch (Exception e) {
-            logger.warn("Ops trying differnt password");
-            try {
-                Properties connectionProps = new Properties();
-                connectionProps.put("user", "admin");
-                connectionProps.put("password", "admin");
-                logger.info("MYSQL connection = jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
-
-                connection = DriverManager.getConnection("jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE, connectionProps);
-            } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
+            //Default login
+            String serverIp = SERVER;
+            String serverProperty = Utilities.loadProperty("SERVER_IP");
+            if (!serverProperty.equals("NULL")) {
+                logger.info("Connecting from counter");
+                serverIp = serverProperty;
             }
-
+            logger.info("MYSQL connection = jdbc:mysql://" + serverIp + ":" + PORT + "/" + DATABASE + "," + connectionProps.getProperty("user") + "," + connectionProps.getProperty("password"));
+            connection = DriverManager.getConnection("jdbc:mysql://" + SERVER + ":" + PORT + "/" + DATABASE, connectionProps);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
         }
     }
 

@@ -4,7 +4,6 @@ import controller.credit.CoopCreditPaymentController;
 import controller.inventory.ProductController;
 import controller.pos.CardPaymentController;
 import controller.pos.CashPaymentController;
-import controller.pos.CounterController;
 import controller.pos.CounterLoginController;
 import controller.pos.CustomerVoucherPaymentController;
 import controller.pos.EmployeeVoucherPaymentController;
@@ -40,14 +39,14 @@ import model.pos.payment.PoshanaPayment;
 import org.apache.log4j.Logger;
 import util.Utilities;
 
-public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
+ class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(BillCopyInternalInterface.class);
     private final POSMDIInterface parent;
     private final JDesktopPane desktopPane;
 
-    DefaultTableModel printItemTableModel;
+    private final DefaultTableModel printItemTableModel;
     private boolean billPrintReady;
 
     //KeyMaps
@@ -167,6 +166,8 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
     //validate invoice number
     private boolean isValidInvoiceNumber(String invoiceNo) {
+        logger.debug("isValidInvoiceNumber invoked");
+        
         invoiceNo = invoiceNo.toUpperCase();
         if (invoiceNo.startsWith("I")) {
             invoiceNo = invoiceNo.substring(1);
@@ -211,6 +212,7 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
     private void getInvoiceInformation() {
         logger.debug("getInvoiceInformation invoked");
         cleanUI();
+        
         String billNumber = txtSearchBillNO.getText();
         try {
             if (!isValidInvoiceNumber(billNumber)) {
@@ -254,6 +256,9 @@ public class BillCopyInternalInterface extends javax.swing.JInternalFrame {
                 txtCashPayment.setText(String.format("%.2f", cashPayment.getAmount()));
                 txtChange.setText(String.format("%.2f", cashPayment.getChangeAmount()));
                 totalPayments += cashPayment.getAmount();
+            }else{
+                txtCashPayment.setText("0.00");
+                txtChange.setText("0.00");
             }
 
             //Card payments

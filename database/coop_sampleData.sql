@@ -11,9 +11,9 @@ INSERT INTO employee (name,position) VALUES ('Shehan','manager');
 INSERT INTO employee (name,position) VALUES ('Yasas','cashier');
 
 
-INSERT INTO user_credentials (user_name,password,access_level) VALUES ('msw','123','manager');
-INSERT INTO user_credentials (user_name,password,access_level) VALUES ('Jack','1234','cashier');
-INSERT INTO user_credentials (user_name,password,access_level) VALUES ('yps','159','cashier');
+INSERT INTO user_credentials (user_name,password,access_level) VALUES ('msw','40BD001563085FC35165329EA1FF5C5ECBDBBEEF','manager');
+INSERT INTO user_credentials (user_name,password,access_level) VALUES ('Jack','7110EDA4D09E062AA5E4A390B0A572AC0D2C0220','cashier');
+INSERT INTO user_credentials (user_name,password,access_level) VALUES ('yps','6B6277AFCB65D33525545904E95C2FA240632660','cashier');
 
 
 INSERT INTO counter (counter_id, current_amount) VALUES (1,0);
