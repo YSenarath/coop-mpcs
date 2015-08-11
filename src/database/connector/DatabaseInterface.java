@@ -8,7 +8,7 @@ public interface DatabaseInterface {
     public static final String DATABASE = "COOP";//Default , must be a setting
 
     public static final String MYSQL_USER_NAME = "admin";//Default , must be a setting
-    public static final String MYSQL_PASSWORD = "password"; //Default , must be a setting
+    public static final String MYSQL_PASSWORD = "admin"; //Default , must be a setting
 
     //Database table names
     public static final String USER = "user_credentials";

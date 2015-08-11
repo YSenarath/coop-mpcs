@@ -114,7 +114,7 @@ public class DiscountInterfaceHandler {
 
                 if (discount < 100 && discount > 0) {
 
-                    Date today = Utilities.getTody();
+                    Date today = Utilities.getToday();
                     Date startDate = gui.getStartDate().getDate();
 
                     if (startDate != null && startDate.compareTo(today) >= 0) {
