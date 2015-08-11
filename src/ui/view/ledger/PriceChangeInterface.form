@@ -163,7 +163,7 @@
                     <Column editable="false" title="Avalable Quantity" type="java.lang.String"/>
                     <Column editable="false" title="Quantity" type="java.lang.String"/>
                     <Column editable="false" title="Sales Price" type="java.lang.String"/>
-                    <Column editable="false" title="Value" type="java.lang.String"/>
+                    <Column editable="false" title="Sales Value" type="java.lang.String"/>
                     <Column editable="true" title="Changed Price" type="java.lang.String"/>
                     <Column editable="false" title="Changed Price (Diffrence)" type="java.lang.String"/>
                     <Column editable="true" title="Loss" type="java.lang.String"/>

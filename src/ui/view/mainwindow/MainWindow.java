@@ -12,9 +12,12 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import model.ledger.SupplierReturnNote;
 import model.supplier.Supplier;
 import ui.view.inventory.ManageDepartment;
+import ui.view.ledger.DamageStockInterface;
 import ui.view.ledger.GRNInterface;
+import ui.view.ledger.SupplierReturnNoteInterface;
 import ui.view.supplier.SupplierInterface;
 
 /**
@@ -72,6 +75,8 @@ public class MainWindow extends javax.swing.JFrame {
         mnuManageSupplier = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         mnuNewGRN = new javax.swing.JMenuItem();
+        mnuNewSRN = new javax.swing.JMenuItem();
+        mnuAddDamagedStock = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
         jMenu6 = new javax.swing.JMenu();
@@ -180,6 +185,22 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jMenu3.add(mnuNewGRN);
 
+        mnuNewSRN.setText("SupplierReturnNote");
+        mnuNewSRN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuNewSRNActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnuNewSRN);
+
+        mnuAddDamagedStock.setText("DamagedStock");
+        mnuAddDamagedStock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuAddDamagedStockActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnuAddDamagedStock);
+
         jMenuBar1.add(jMenu3);
 
         jMenu4.setText("Reports");
@@ -226,6 +247,14 @@ public class MainWindow extends javax.swing.JFrame {
     private void mnuNewGRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewGRNActionPerformed
         createNewGRN();
     }//GEN-LAST:event_mnuNewGRNActionPerformed
+
+    private void mnuNewSRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewSRNActionPerformed
+        createNewSRN();
+    }//GEN-LAST:event_mnuNewSRNActionPerformed
+
+    private void mnuAddDamagedStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuAddDamagedStockActionPerformed
+        createNewDamagedStock();
+    }//GEN-LAST:event_mnuAddDamagedStockActionPerformed
 
     /**
      * @param args the command line arguments
@@ -281,9 +310,11 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblWelcome;
+    private javax.swing.JMenuItem mnuAddDamagedStock;
     private javax.swing.JMenuItem mnuExit;
     private javax.swing.JMenuItem mnuManageSupplier;
     private javax.swing.JMenuItem mnuNewGRN;
+    private javax.swing.JMenuItem mnuNewSRN;
     private javax.swing.JPanel welcomePanel;
     // End of variables declaration//GEN-END:variables
 
@@ -297,12 +328,12 @@ public class MainWindow extends javax.swing.JFrame {
 
         grnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);
-        
+
         grnInterface.show();
     }
 
     private void createNewSupplier() {
-    
+
         SupplierInterface supplierInterface = new SupplierInterface();
 
         jDesktopPane1.add(supplierInterface);
@@ -311,7 +342,33 @@ public class MainWindow extends javax.swing.JFrame {
 
         supplierInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);
-        
+
         supplierInterface.show();
+    }
+
+    private void createNewSRN() {
+        SupplierReturnNoteInterface srnInterface = new SupplierReturnNoteInterface();
+
+        jDesktopPane1.add(srnInterface);
+
+        Dimension jInternalFrameSize = srnInterface.getSize();
+
+        srnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+
+        srnInterface.show();
+    }
+
+    private void createNewDamagedStock() {
+        DamageStockInterface i = new DamageStockInterface();
+
+        jDesktopPane1.add(i);
+
+        Dimension jInternalFrameSize = i.getSize();
+
+        i.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
+                (desktopSize.height - jInternalFrameSize.height) / 2);
+
+        i.show();
     }
 }
