@@ -229,14 +229,14 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
             txtChiefCashierPassword.setText("");
             return;
         }
-        if (new String(txtCashierPassword.getPassword()).isEmpty()) {
+        if (txtCashierPassword.getPassword().length == 0) {
             Utilities.showMsgBox("Please enter user password", "Authorization faliure", JOptionPane.ERROR_MESSAGE);
             txtCashierPassword.requestFocus();
             txtCashierPassword.setText("");
             txtChiefCashierPassword.setText("");
             return;
         }
-        if (new String(txtChiefCashierPassword.getPassword()).isEmpty()) {
+        if (txtChiefCashierPassword.getPassword().length == 0) {
             Utilities.showMsgBox("Please enter master password", "Authorization faliure", JOptionPane.ERROR_MESSAGE);
             txtChiefCashierPassword.requestFocus();
             txtCashierPassword.setText("");

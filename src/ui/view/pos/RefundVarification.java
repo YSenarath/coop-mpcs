@@ -74,7 +74,7 @@ class RefundVarification extends javax.swing.JDialog {
             txtUserName.requestFocus();
             return;
         }
-        if (new String(txtPassword.getPassword()).trim().isEmpty()) {
+        if (txtPassword.getPassword().length == 0) {
             txtPassword.requestFocus();
             return;
         }
