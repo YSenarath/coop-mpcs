@@ -45,6 +45,7 @@ import model.inventory.BatchDiscount;
 import model.inventory.Category;
 import model.inventory.CategoryDiscount;
 import model.inventory.Product;
+import model.pos.Memento;
 import model.pos.payment.CardPayment;
 import model.pos.payment.CashPayment;
 import model.pos.item.Invoice;
@@ -112,12 +113,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private final int PAYMENT_OFFSET_0_COLUMN = 2;
     private final int PAYMENT_OFFSET_1_COLUMN = 3;
 
-    //Hold ,restore sale
-    private boolean saleOnHold;
-    private boolean isMember;
-    private Object[][] itemData;
-    private Object[][] paymentData;
-
     // </editor-fold>
     //
     //
@@ -131,8 +126,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         this.desktopPane = desktopPane;
         this.selectPriceInterface = null;
         this.searchItemInterface = null;
-        this.itemData = null;
-        this.paymentData = null;
 
         this.productComboBoxModel = new DefaultComboBoxModel();
         this.invoiceItemTableModel = (DefaultTableModel) invoiceItemTable.getModel();
@@ -144,8 +137,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         this.invoice = null;
         this.processingProduct = null;
-        this.saleOnHold = false;
-        this.isMember = false;
         productCodeListner = (ActionEvent e) -> {
             showProductDetails();
         };
@@ -374,68 +365,58 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     }
 
     //Get table data to hold sale
-    public void holdSale() {
-        logger.debug("holdSale invoked");
+    public Memento saveToMemento() {
+        logger.debug("saveToMemento invoked");
 
         //Get info from item ,and payment table
         //Get is member status
         if (invoiceItemTableModel.getRowCount() > 0) {
             logger.info("Saving started");
 
-            itemData = getTableData(invoiceItemTable);
-            paymentData = getTableData(invoicePaymentsTable);
-            isMember = chkMember.isSelected();
-            saleOnHold = true;
+            Memento memento = new Memento(chkMember.isSelected(), getTableData(invoiceItemTable), getTableData(invoicePaymentsTable));
             resetInvoice();
             showAddItemPanel();
             logger.info("Saving ended");
-            parent.setHoldBtn(false);
-            parent.setRestoreBtn(true);
+            // parent.setHoldBtn(false);
+            //parent.setRestoreBtn(true);
+            return memento;
         } else {
             Utilities.showMsgBox("Empty sale cannot be put on hold", "Warning", JOptionPane.INFORMATION_MESSAGE);
         }
-
+        return null;
     }
 
     //Reset the invoice
-    public void restoreSale() {
-        logger.debug("restoreSale invoked");
+    public boolean restoreFromMemento(Memento memento) {
+        logger.debug("restoreFromMemento invoked");
 
-        if (saleOnHold) {
-            logger.info("Restore started");
-            //If in middle of transaction ask to finish or cancel current one and restore
+        logger.info("Restore started");
+        //If in middle of transaction ask to finish or cancel current one and restore
 
-            if (invoiceItemTableModel.getRowCount() > 0) {
-                int dialogResult = JOptionPane.showConfirmDialog(null, "Clear current transaction and restore sale ?", "Warning", JOptionPane.YES_NO_OPTION);
-                if (dialogResult != JOptionPane.YES_OPTION) {
-                    return;
-                }
+        if (invoiceItemTableModel.getRowCount() > 0) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Clear current transaction and restore sale ?", "Warning", JOptionPane.YES_NO_OPTION);
+            if (dialogResult != JOptionPane.YES_OPTION) {
+                return false;
             }
-            resetInvoice();
-            showAddItemPanel();
+        }
+        resetInvoice();
+        showAddItemPanel();
 
-            if (isMember) {
-                chkMember.setSelected(true);
-                convertToMemberInvoice();
-            }
-
-            setTableData(invoiceItemTable, itemData);
-            setTableData(invoicePaymentsTable, paymentData);
-
-            calculateItemParameters();
-            calculatePaymentParameters();
-
-            isMember = false;
-            itemData = null;
-            paymentData = null;
-            saleOnHold = false;
-            parent.setHoldBtn(true);
-            parent.setRestoreBtn(false);
-            logger.info("Restore ended");
-        } else {
-            Utilities.showMsgBox("There is no sale on hold", "Warning", JOptionPane.INFORMATION_MESSAGE);
+        if (memento.isMember()) {
+            chkMember.setSelected(true);
+            convertToMemberInvoice();
         }
 
+        setTableData(invoiceItemTable, memento.getItemData());
+        setTableData(invoicePaymentsTable, memento.getPaymentData());
+
+        calculateItemParameters();
+        calculatePaymentParameters();
+
+        // parent.setHoldBtn(true);
+        // parent.setRestoreBtn(false);
+        logger.info("Restore ended");
+        return true;
     }
 
     private Object[][] getTableData(JTable table) {
