@@ -5,7 +5,6 @@ import controller.pos.CounterController;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
 import model.pos.CashWithdrawal;
@@ -15,7 +14,7 @@ import org.apache.log4j.Logger;
 import util.DoubleFilter;
 import util.Utilities;
 
-public class CashierLogOff extends javax.swing.JDialog {
+class CashierLogOff extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(CashierLogOff.class);
@@ -42,7 +41,7 @@ public class CashierLogOff extends javax.swing.JDialog {
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Methods">
-    
+
     private void txtInitialAmountKeyHandler(java.awt.event.KeyEvent evt) {
         if (txtActualAmount.getText().equals("")) {
             txtActualAmount.requestFocus();

@@ -2,12 +2,11 @@ package ui.view.pos;
 
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
-import util.DoubleFilter;
 import util.IntegerFilter;
 import util.Utilities;
 import static util.Utilities.setupUI;
 
-public class ConfigureDialog extends javax.swing.JDialog {
+class ConfigureDialog extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     // </editor-fold>
@@ -197,28 +196,28 @@ public class ConfigureDialog extends javax.swing.JDialog {
         saveSettings();
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
+     /**
+      * @param args the command line arguments
+      */
+     public static void main(String args[]) {
 
-        setupUI();
+         setupUI();
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+         /* Create and display the dialog */
+         java.awt.EventQueue.invokeLater(new Runnable() {
 
-            public void run() {
-                ConfigureDialog dialog = new ConfigureDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+             public void run() {
+                 ConfigureDialog dialog = new ConfigureDialog(new javax.swing.JFrame(), true);
+                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                     @Override
+                     public void windowClosing(java.awt.event.WindowEvent e) {
+                         System.exit(0);
+                     }
+                 });
+                 dialog.setVisible(true);
+             }
+         });
+     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel ContainerPanel;

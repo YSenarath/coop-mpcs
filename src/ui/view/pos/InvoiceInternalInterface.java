@@ -61,7 +61,7 @@ import util.KeyValueContainer;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
 
-public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
+class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(InvoiceInternalInterface.class);
@@ -72,15 +72,15 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private SearchItemInterface searchItemInterface;
     private SelectPriceInterface selectPriceInterface;
 
-    DefaultComboBoxModel productComboBoxModel;
+    private final DefaultComboBoxModel productComboBoxModel;
 
     //Yasara
-    DefaultComboBoxModel employeeComboBoxModel;
-    DefaultComboBoxModel coopCustomerComboBoxModel;
+    private final DefaultComboBoxModel employeeComboBoxModel;
+    private final DefaultComboBoxModel coopCustomerComboBoxModel;
 
-    ActionListener productCodeListner;
-    DefaultTableModel invoiceItemTableModel;
-    DefaultTableModel invoicePaymentsTableModel;
+    private final ActionListener productCodeListner;
+    private final DefaultTableModel invoiceItemTableModel;
+    private final DefaultTableModel invoicePaymentsTableModel;
 
     //Key binding
     private InputMap itemAddPanelInputMap;
@@ -113,10 +113,10 @@ public class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private final int PAYMENT_OFFSET_1_COLUMN = 3;
 
     //Hold ,restore sale
-    boolean saleOnHold;
-    boolean isMember;
-    Object[][] itemData;
-    Object[][] paymentData;
+    private boolean saleOnHold;
+    private boolean isMember;
+    private Object[][] itemData;
+    private Object[][] paymentData;
 
     // </editor-fold>
     //

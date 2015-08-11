@@ -1,9 +1,7 @@
 package ui.view.pos;
 
 import controller.inventory.BatchController;
-import controller.inventory.BatchDiscountController;
 import controller.inventory.CategoryController;
-import controller.inventory.CategoryDiscountController;
 import controller.inventory.DepartmentController;
 import controller.inventory.ProductController;
 import java.awt.Dimension;
@@ -27,15 +25,12 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import model.inventory.Batch;
-import model.inventory.BatchDiscount;
 import model.inventory.Category;
-import model.inventory.CategoryDiscount;
 import model.inventory.Department;
 import model.inventory.Product;
 import org.apache.log4j.Logger;
-import util.Utilities;
 
-public class CheckStockInterface extends javax.swing.JInternalFrame {
+class CheckStockInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(CheckStockInterface.class);
@@ -57,10 +52,10 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
     private final BillRefundInternalInterface billRefundInterface;
     private final BillCopyInternalInterface billCopyInterface;
 
-    ActionListener productCodeListner;
+    private final ActionListener productCodeListner;
 
-    DefaultComboBoxModel itemComboBoxModel;
-    DefaultTableModel itemTableModel;
+    private final DefaultComboBoxModel itemComboBoxModel;
+    private final DefaultTableModel itemTableModel;
     private HashMap<String, Product> availableProductMap;
 
     // </editor-fold>
@@ -269,7 +264,7 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
                     Object[] ob = {
                         batch.getBatchId(),
                         batch.getExpirationDate(),
-                        batch.getRecievedQuantity()-batch.getSoldQty(),
+                        batch.getRecievedQuantity() - batch.getSoldQty(),
                         String.format("%.2f", batch.getUnit_price()),
                         batch.isInStock()
                     };
@@ -277,7 +272,7 @@ public class CheckStockInterface extends javax.swing.JInternalFrame {
                 }
 
             } catch (SQLException ex) {
-                logger.error(ex.getMessage(),ex);
+                logger.error(ex.getMessage(), ex);
             }
 
         }

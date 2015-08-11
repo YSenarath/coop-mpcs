@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -28,7 +27,7 @@ import util.DoubleFilter;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
 
-public class CashWithdrawalDialog extends javax.swing.JDialog {
+class CashWithdrawalDialog extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(CashWithdrawalDialog.class);

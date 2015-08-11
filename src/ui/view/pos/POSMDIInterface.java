@@ -14,7 +14,6 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
@@ -24,7 +23,7 @@ import org.apache.log4j.Logger;
 import util.Utilities;
 import static util.Utilities.setupUI;
 
-public class POSMDIInterface extends javax.swing.JFrame {
+class POSMDIInterface extends javax.swing.JFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(POSMDIInterface.class);

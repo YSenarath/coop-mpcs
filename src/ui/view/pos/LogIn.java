@@ -1,15 +1,11 @@
 package ui.view.pos;
 
-import controller.pos.CounterController;
 import controller.pos.TransactionController;
-import static controller.pos.TransactionController.performLogInTransaction;
 import controller.pos.UserController;
-import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
-import model.pos.Counter;
 import model.pos.CounterLogin;
 import model.people.User;
 import org.apache.log4j.Logger;
@@ -18,7 +14,7 @@ import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
 import static util.Utilities.setupUI;
 
-public class LogIn extends javax.swing.JFrame {
+class LogIn extends javax.swing.JFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(LogIn.class);

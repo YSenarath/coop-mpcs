@@ -9,7 +9,7 @@ import model.pos.item.Refund;
 import org.apache.log4j.Logger;
 import util.Utilities;
 
-public class RefundVarification extends javax.swing.JDialog {
+class RefundVarification extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(RefundVarification.class);

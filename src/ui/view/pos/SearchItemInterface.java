@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
@@ -34,7 +33,7 @@ import org.apache.log4j.Logger;
 import util.KeyValueContainer;
 import util.Utilities;
 
-public class SearchItemInterface extends javax.swing.JInternalFrame {
+class SearchItemInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(SearchItemInterface.class);
@@ -123,7 +122,7 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
         departmentComboBoxListner = (ActionEvent e) -> {
             if (departmentComboBox.getSelectedIndex() > -1) {
-                setCategories(((KeyValueContainer)departmentComboBox.getSelectedItem()).getKey());
+                setCategories(((KeyValueContainer) departmentComboBox.getSelectedItem()).getKey());
             }
         };
         departmentComboBox.addActionListener(departmentComboBoxListner);
@@ -335,7 +334,7 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
 
                 for (Product product : searchResults) {
                     Object[] ob = {
-                         product.getProductId(),
+                        product.getProductId(),
                         product.getProductName(),
                         product.getDescription(),
                         product.getProductBarCode(),
@@ -425,7 +424,7 @@ public class SearchItemInterface extends javax.swing.JInternalFrame {
             Utilities.showMsgBox("Please select a product first", "no product selected", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        String productId =  productInfoTable.getValueAt(row, column).toString();
+        String productId = productInfoTable.getValueAt(row, column).toString();
 
         if (invoiceInterface != null) {
 

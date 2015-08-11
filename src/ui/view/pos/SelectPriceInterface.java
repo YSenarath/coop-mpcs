@@ -2,7 +2,6 @@ package ui.view.pos;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -10,12 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JDesktopPane;
 import javax.swing.JTable;
-import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import model.inventory.Batch;
 import org.apache.log4j.Logger;
 
-public class SelectPriceInterface extends javax.swing.JInternalFrame {
+class SelectPriceInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(SelectPriceInterface.class);
@@ -81,7 +79,7 @@ public class SelectPriceInterface extends javax.swing.JInternalFrame {
             Object[] ob = {
                 batch.getBatchId(),
                 batch.getExpirationDate(),
-                batch.getRecievedQuantity()-batch.getSoldQty(),
+                batch.getRecievedQuantity() - batch.getSoldQty(),
                 batch.getUnit_price()
             };
             itemTableModel.addRow(ob);

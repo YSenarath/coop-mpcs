@@ -24,24 +24,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.DocumentFilter.FilterBypass;
-import javax.swing.text.PlainDocument;
 import model.pos.item.Invoice;
 import model.pos.item.InvoiceItem;
 import model.pos.item.Refund;
@@ -52,11 +44,10 @@ import model.pos.payment.CoopCreditPayment;
 import model.pos.payment.CustomerVoucherPayment;
 import model.pos.payment.EmployeeVoucherPayment;
 import org.apache.log4j.Logger;
-import util.DoubleFilter;
 import util.KeyValueContainer;
 import util.Utilities;
 
-public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
+class BillRefundInternalInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(BillRefundInternalInterface.class);
@@ -99,12 +90,12 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         initComponents();
         this.parent = parent;
         this.desktopPane = desktopPane;
-        
+
         Dimension desktopSize = desktopPane.getSize();
         Dimension jInternalFrameSize = this.getSize();
         this.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);
-        
+
         this.invoiceId = -1;
 //        JTextField field = new JTextField();
 //        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
@@ -126,12 +117,12 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         billRefundItemTable.setCellSelectionEnabled(true);
         ((DefaultTableCellRenderer) billRefundItemTable.getDefaultRenderer(Object.class)).setHorizontalAlignment(JLabel.RIGHT);
         this.refundTableModel.addTableModelListener(this::updateTableRow);
-        
+
         this.glassPanel = new JPanel(new GridLayout(0, 1));
         this.padding = new JLabel();
         glassPanel.setOpaque(false);
         glassPanel.add(padding);
-        
+
         glassPanel.addMouseListener(
                 new MouseAdapter() {
                 });
@@ -146,7 +137,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         glassPanel.setFocusCycleRoot(true);
         setGlassPane(glassPanel);
         performKeyBinding();
-        
+
         initializeRefund();
     }
 
@@ -156,23 +147,23 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //
 // <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
     private void performKeyBinding() {
-        
+
         inputMap = interfaceContainerPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         actionMap = interfaceContainerPanel.getActionMap();
-        
+
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
         actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
-        
+
     }
-    
+
     private class keyBindingAction extends AbstractAction {
-        
+
         private final String cmd;
-        
+
         public keyBindingAction(String cmd) {
             this.cmd = cmd;
         }
-        
+
         @Override
         public void actionPerformed(ActionEvent tf) {
             if (cmd.equalsIgnoreCase("Escape")) {
@@ -190,7 +181,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //Disable the glassPanel pane
     public void disableGlassPane() {
         logger.debug("disableGlassPane invoked");
-        
+
         glassPanel.setVisible(false);
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
         actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
@@ -199,10 +190,10 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //Enable the glassPanel pane
     public void enableGlassPane() {
         logger.debug("enableGlassPane invoked");
-        
+
         inputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
         actionMap.remove("doEscapeAction");
-        
+
         glassPanel.setVisible(true);//Disable this UI
         padding.requestFocus();  // required to trap key events
     }
@@ -210,7 +201,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //validate invoice number
     private boolean isValidInvoiceNumber(String invoiceNo) {
         logger.debug("isValidInvoiceNumber invoked");
-        
+
         invoiceNo = invoiceNo.toUpperCase();
         if (invoiceNo.startsWith("I")) {
             invoiceNo = invoiceNo.substring(1);
@@ -218,7 +209,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
                 int no = Integer.parseInt(invoiceNo);
                 return true;
             } catch (NumberFormatException ex) {
-                
+
             }
         }
         return false;
@@ -227,7 +218,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //When user presses the enter key process the bill no and show the details
     private void txtLoadBillHandler(java.awt.event.KeyEvent evt) {
         logger.debug("txtLoadBillHandler invoked");
-        
+
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             getInvoiceInformation();
         }
@@ -236,7 +227,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //clear UI
     private void cleanUI() {
         logger.debug("cleanUI invoked");
-        
+
         invoiceId = -1;
         refundTableModel.setRowCount(0);
         lblBillDate.setText("");
@@ -253,7 +244,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //Fill data to the table
     private void loadRefundInfo(int invoiceNumber) throws SQLException {
         logger.debug("loadRefundInfo invoked");
-        
+
         ArrayList<InvoiceItem> invoiceItems = InvoiceItemController.getInvoiceItems(invoiceNumber);
         double netDiscount = 0;
         lblRefundDiscountAmountVal.setText(String.format("%.2f",
@@ -284,7 +275,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             for (Refund refund : refunds) {
                 refund.setRefundItems(RefundItemController.getRefundItems(refund.getRefundId()));
             }
-            logger.info("No of previous refunds : " + refunds.size()); 
+            logger.info("No of previous refunds : " + refunds.size());
             for (InvoiceItem invoiceItem : invoiceItems) {
                 double refundedQty = 0;
                 double refundedDiscounts = 0;
@@ -323,26 +314,26 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //Take action on table edit
     private void updateTableRow(TableModelEvent e) {
         logger.debug("updateTableRow invoked");
-        
+
         int row = e.getFirstRow();
         int column = e.getColumn();
         try {
             if (column == PRODUCT_CHANGE_QTY_COLUMN) {
                 boolean isValidQty = false;
-                
+
                 double refundableQty = 0;
                 double changeQty = 0;
                 double unitPrice = 0;
                 double availableDiscount = 0;
-                
+
                 unitPrice = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_PRICE_COLUMN).toString());
                 refundableQty = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_REFUNDABLE_QTY_COLUMN).toString());
                 availableDiscount = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_AVAILABLE_DISC_COLUMN).toString());
-                
+
                 String productId = ((KeyValueContainer) billRefundItemTable.getValueAt(row, PRODUCT_ID_COLUMN)).getValue();
-                
+
                 String productUnit = ProductController.getProduct(productId).getUnit();
-                
+
                 try {
                     changeQty = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_CHANGE_QTY_COLUMN).toString());
                     if (refundableQty < changeQty) {
@@ -359,7 +350,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
                     billRefundItemTable.setValueAt(0, row, column);
                     billRefundItemTable.requestFocus();
                 }
-                
+
                 double changeValue = 0;
                 double changeDiscount = 0;
                 double subTotal = 0;
@@ -368,7 +359,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
                     if (refundableQty > 0) {
                         changeDiscount = (availableDiscount / refundableQty) * changeQty;
                     }
-                    
+
                     subTotal = changeValue - changeDiscount;
                     if (subTotal < 0) {
                         logger.warn("Negetive sub Total");
@@ -382,22 +373,22 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             }
         } catch (SQLException ex) {
             logger.error("Error : " + ex.getMessage());
-            
+
         }
     }
 
     //Update refund values
     private void updateValues() {
         logger.debug("updateValues invoked");
-        
+
         double cancelTotal = 0;
         double cancelDiscounts = 0;
-        
+
         for (int row = 0; row < billRefundItemTable.getRowCount(); row++) {
             cancelDiscounts += Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_CHANGE_DISC_COLUMN).toString());
             cancelTotal += Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_SUB_TOTAL_COLUMN).toString());
         }
-        
+
         lblRefundCancelNetTotalVal.setText(String.format("%.2f", cancelTotal));
         lblRefundCancelDiscountAmountVal.setText(String.format("%.2f", cancelDiscounts));
     }
@@ -409,7 +400,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
 // <editor-fold defaultstate="collapsed" desc="Refund System"> 
     private void initializeRefund() {
         logger.debug("initializeRefund invoked");
-        
+
         try {
             int lastRefundId = RefundController.getLastRefundId();
             if (lastRefundId > 0) {
@@ -421,12 +412,12 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             logger.error("SQL error : " + ex.getMessage(), ex);
         }
     }
-    
+
     private void getInvoiceInformation() {
         logger.debug("getInvoiceInformation invoked");
-        
+
         cleanUI();
-        
+
         String billNumber = txtBillNo.getText();
         try {
             if (!isValidInvoiceNumber(billNumber)) {
@@ -435,13 +426,13 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             int invoiceNumber = Integer.parseInt(billNumber.substring(1));
             invoiceId = invoiceNumber;
             logger.info("Invoice number : " + invoiceNumber);
-            
+
             Invoice invoice = InvoiceController.getInvoice(invoiceNumber);
-            
+
             if (invoice == null) {
                 throw new Exception("No such bill found");
             }
-            
+
             lblBillDate.setText(invoice.getDate());
             lblRefundNetTotalVal.setText(String.format("%.2f", invoice.getNetTotal()));
 
@@ -501,7 +492,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             } else {
                 lblRefundVoucherVal.setText("0.00");
             }
-            
+
         } catch (Exception ex) {
             Utilities.showMsgBox("Invalid bill number : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -520,7 +511,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         int refundId = Utilities.convertKeyToInteger(lblBillRefundNoVal.getText());
         int shiftId = parent.getCounterLogin().getShiftId();
         Refund refund = new Refund(refundId, invoiceId, shiftId);
-        
+
         ArrayList<RefundItem> refundItems = new ArrayList();
 
         //Get all refunded items from table and add to the refund object
@@ -533,7 +524,7 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
                     int batchId = Integer.parseInt(billRefundItemTable.getValueAt(row, BATCH_ID_COLUMN).toString());
                     double unitPice = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_PRICE_COLUMN).toString());
                     double refundDiscount = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_CHANGE_DISC_COLUMN).toString());
-                    
+
                     RefundItem refundItem = new RefundItem(refundId, productId, batchId, unitPice, refundQty, refundDiscount);
                     logger.info("Refund item : " + refundItem);
                     refundItems.add(refundItem);
@@ -544,14 +535,14 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             Utilities.showMsgBox("No returned items found", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         refund.setRefundItems(refundItems);
         refund.setAmount(Double.parseDouble(lblRefundCancelNetTotalVal.getText().trim()));
         refund.setRefundTime(Utilities.getCurrentTime(true));
         refund.setRefundDate(Utilities.getStringDate(Utilities.getCurrentDate()));
-        
+
         new RefundVarification(parent, refund, true).setVisible(true);
-        
+
         parent.setIsMainActivityRunning(false);
         parent.setIsBillRefundRunning(false);
         this.dispose();
@@ -560,10 +551,10 @@ public class BillRefundInternalInterface extends javax.swing.JInternalFrame {
     //Cancel a refund
     private void cancelRefund() {
         logger.debug("refund_cancel invoked");
-        
+
         parent.setIsMainActivityRunning(false);
         parent.setIsBillRefundRunning(false);
-        
+
         this.dispose();
     }
     // </editor-fold>
