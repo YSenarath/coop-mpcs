@@ -578,7 +578,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
             logger.error("Error: " + ex.getMessage());
         }
 
-        datePickInvoiceDate.setDate(util.Utilities.getTody());
+        datePickInvoiceDate.setDate(util.Utilities.getToday());
 
         ((PlainDocument) txtLoadingFee.getDocument()).setDocumentFilter(new DoubleFilter());
         ((PlainDocument) txtPurchasingBillDiscount.getDocument()).setDocumentFilter(new DoubleFilter());

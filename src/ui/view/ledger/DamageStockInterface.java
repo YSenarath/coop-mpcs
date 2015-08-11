@@ -316,7 +316,7 @@ public class DamageStockInterface extends javax.swing.JInternalFrame {
             this.dispose();
         }
 
-        datePicker.setDate(util.Utilities.getTody());
+        datePicker.setDate(util.Utilities.getToday());
     }
 
     // </editor-fold>
