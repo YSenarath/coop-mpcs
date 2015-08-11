@@ -170,11 +170,12 @@ public class Utilities {
                 suffix = "I";
                 size = 5;
                 break;
-                
+
             case DatabaseInterface.REFUND:
                 suffix = "U";
                 size = 5;
                 break;
+
             case DatabaseInterface.GRN:
                 suffix = "G";
                 size = 5;
@@ -187,6 +188,11 @@ public class Utilities {
 
             case DatabaseInterface.SRN:
                 suffix = "R";
+                size = 5;
+                break;
+
+            case DatabaseInterface.DAMAGED_STOCK:
+                suffix = "T";
                 size = 5;
                 break;
 

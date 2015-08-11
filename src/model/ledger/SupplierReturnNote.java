@@ -2,7 +2,7 @@ package model.ledger;
 
 import java.util.ArrayList;
 import java.util.Date;
-import model.ledger.item.Item;
+import model.ledger.item.SRNItem;
 import model.supplier.Supplier;
 
 public class SupplierReturnNote {
@@ -13,7 +13,7 @@ public class SupplierReturnNote {
     private Supplier supplier;
     private String location;
 
-    ArrayList<Item> items;
+    ArrayList<SRNItem> items;
 
     public SupplierReturnNote(String f19Number, String grnNumber, Date date, Supplier supplier, String location) {
         this.f19Number = f19Number;
@@ -24,7 +24,7 @@ public class SupplierReturnNote {
         this.items = new ArrayList<>();
     }
 
-    public SupplierReturnNote(String f19Number, String grnNumber, Date date, Supplier supplier, String location, ArrayList<Item> items) {
+    public SupplierReturnNote(String f19Number, String grnNumber, Date date, Supplier supplier, String location, ArrayList<SRNItem> items) {
         this.f19Number = f19Number;
         this.grnNumber = grnNumber;
         this.date = date;
@@ -71,5 +71,17 @@ public class SupplierReturnNote {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void addItem(SRNItem itm) {
+        items.add(itm);
+    }
+
+    public ArrayList<SRNItem> getItems() {
+        return items;
+    }
+
+    public void setItems(ArrayList<SRNItem> items) {
+        this.items = items;
     }
 }

@@ -5,6 +5,30 @@
  */
 package model.ledger.item;
 
-public interface Item {
+public abstract class Item {
+    
+    protected String productID;
+    protected double quantity;
+
+    public Item(String productID, double quantity) {
+        this.productID = productID;
+        this.quantity = quantity;
+    }
+    
+    public String getProductID() {
+        return productID;
+    }
+
+    public void setProductID(String productID) {
+        this.productID = productID;
+    }
+
+    public double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(double quantity) {
+        this.quantity = quantity;
+    }
     
 }

@@ -70,7 +70,7 @@ public class PriceChangeInterface extends javax.swing.JFrame {
 
             },
             new String [] {
-                "", "Product Id", "Description", "Avalable Quantity", "Quantity", "Sales Price", "Value", "Changed Price", "Changed Price (Diffrence)", "Loss", "Profit"
+                "", "Product Id", "Description", "Avalable Quantity", "Quantity", "Sales Price", "Sales Value", "Changed Price", "Changed Price (Diffrence)", "Loss", "Profit"
             }
         ) {
             Class[] types = new Class [] {
