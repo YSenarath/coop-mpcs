@@ -60,18 +60,19 @@ public class LogIn extends javax.swing.JFrame {
                 Utilities.showMsgBox("Please select a counter to continue", "Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(3);
             }
-        } else {
-            try {
-                Counter counter = CounterController.getCounter(Integer.parseInt(Utilities.loadProperty("counter")));
-                if (counter != null) {
-                    txtIntialAmount.setText(String.format("%.2f", counter.getCurrentAmount()));
-                } else {
-                    Utilities.showMsgBox("Error occured while retrieving remaining counter amount", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (SQLException ex) {
-                logger.error("SQL error : " + ex.getMessage());
-            }
         }
+//        else {
+//            try {
+//                Counter counter = CounterController.getCounter(Integer.parseInt(Utilities.loadProperty("counter")));
+//                if (counter != null) {
+//                    txtIntialAmount.setText(String.format("%.2f", counter.getCurrentAmount()));
+//                } else {
+//                    Utilities.showMsgBox("Error occured while retrieving remaining counter amount", "Error", JOptionPane.ERROR_MESSAGE);
+//                }
+//            } catch (SQLException ex) {
+//                logger.error("SQL error : " + ex.getMessage());
+//            }
+//        }
 
     }
 
@@ -79,20 +80,27 @@ public class LogIn extends javax.swing.JFrame {
     private boolean isUserAuthenticated(String userName, char[] password, String requestedAccessLevel) throws Exception {
         logger.debug("isUserAuthenticated invoked");
 
-        if (UserController.isUserAuthenticated(userName, new String(password))) {
-            User user = UserController.getUser("user_name", userName);
-            if ((requestedAccessLevel == User.MANAGER || requestedAccessLevel == User.INVENTORY) && user.getUserType() == User.CASHIER) {
-                throw new Exception("User does not have administrator privilages ");
+        User user = UserController.getUser("user_name", userName);
+        if (user != null) {
+            char[] dbHash = user.getPassword().toCharArray();
+            if (Utilities.isHashSame(dbHash, password)) {
+                logger.info("User varified");
+                if ((requestedAccessLevel.equals(User.MANAGER) || requestedAccessLevel.equals(User.INVENTORY)) && user.getUserType().equals(User.CASHIER)) {
+                    throw new Exception("User does not have administrator privilages ");
+                }
+                if (!(user.getUserType().equals(User.MANAGER) || user.getUserType().equals(User.CASHIER))) {
+                    throw new Exception("User does not have pos privilages ");
+                }
+                if (!user.getUserType().equals(User.MANAGER) && user.isLoggedin()) {
+                    throw new Exception("User :" + userName + " is already logged in");
+                }
+                return true;
+            } else {
+                throw new Exception("Wrong password");
             }
-            if (!(user.getUserType() == User.MANAGER || user.getUserType() == User.CASHIER)) {
-                throw new Exception("User does not have pos privilages ");
-            }
-            if (user.getUserType() != User.MANAGER && user.isLoggedin()) {
-                throw new Exception("User :" + userName + " is already logged in");
-            }
-            return true;
+        } else {
+            throw new Exception("User " + userName + " not found");
         }
-        return false;
 
     }
 

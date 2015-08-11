@@ -36,17 +36,27 @@ public class RefundVarification extends javax.swing.JDialog {
     private boolean isUserAuthenticated(String userName, char[] password, String requestedAccessLevel) throws Exception {
         logger.debug("isUserAuthenticated invoked");
 
-        if (UserController.isUserAuthenticated(userName, new String(password))) {
-            User user = UserController.getUser("user_name", userName);
-            if ((requestedAccessLevel == User.MANAGER || requestedAccessLevel == User.INVENTORY) && user.getUserType() == User.CASHIER) {
-                throw new Exception("User does not have administrator privilages ");
+        User user = UserController.getUser("user_name", userName);
+        if (user != null) {
+            char[] dbHash = user.getPassword().toCharArray();
+            if (Utilities.isHashSame(dbHash, password)) {
+                logger.info("User varified");
+                if ((requestedAccessLevel.equals(User.MANAGER) || requestedAccessLevel.equals(User.INVENTORY)) && user.getUserType().equals(User.CASHIER)) {
+                    throw new Exception("User does not have administrator privilages ");
+                }
+                if (!(user.getUserType().equals(User.MANAGER) || user.getUserType().equals(User.CASHIER))) {
+                    throw new Exception("User does not have pos privilages ");
+                }
+                if (!user.getUserType().equals(User.MANAGER) && user.isLoggedin()) {
+                    throw new Exception("User :" + userName + " is already logged in");
+                }
+                return true;
+            } else {
+                throw new Exception("Wrong password");
             }
-            if (!(user.getUserType() == User.MANAGER || user.getUserType() == User.CASHIER)) {
-                throw new Exception("User does not have pos privilages ");
-            }
-            return true;
+        } else {
+            throw new Exception("User " + userName + " not found");
         }
-        return false;
 
     }
 
@@ -80,7 +90,7 @@ public class RefundVarification extends javax.swing.JDialog {
                     Utilities.showMsgBox("Refund not successfull", "POS", JOptionPane.ERROR);
                 }
                 this.dispose();
-            }else{
+            } else {
                 Utilities.showMsgBox("User varification error ", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception ex) {

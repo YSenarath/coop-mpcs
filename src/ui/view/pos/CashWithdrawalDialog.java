@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -17,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.text.PlainDocument;
+import model.people.User;
 import model.pos.CashWithdrawal;
 import model.pos.Counter;
 import model.pos.CounterLogin;
@@ -190,8 +192,26 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         }
 
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            withdrawCash();
+            btnOk.requestFocus();
         }
+    }
+
+    //Check if user is authenticated
+    private boolean isUserAuthenticated(String userName, char[] password) {
+        logger.debug("isUserAuthenticated invoked");
+
+        try {
+            User user = UserController.getUser("user_name", userName);
+            if (user != null) {
+                char[] dbHash = user.getPassword().toCharArray();
+                if (Utilities.isHashSame(dbHash, password)) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            logger.error("SQL error : " + ex.getMessage());
+        }
+        return false;
     }
 
     // </editor-fold>
@@ -228,9 +248,8 @@ public class CashWithdrawalDialog extends javax.swing.JDialog {
         double withdrawalAmount = Double.parseDouble(txtWithdrawalAmount.getText());
         double maxWithdrawableAmount = Double.parseDouble(lblCurrentAmountVal.getText());
         if (0 < withdrawalAmount && withdrawalAmount <= maxWithdrawableAmount) {
-            String userPassword = new String(txtCashierPassword.getPassword());
             try {
-                if (UserController.isUserAuthenticated(counterLogin.getUserName(), userPassword)) {
+                if (isUserAuthenticated(counterLogin.getUserName(), txtCashierPassword.getPassword())) {
                     String masterPassword = new String(txtChiefCashierPassword.getPassword());
                     if (masterPassword.equals(SettingsController.getSetting("main_cashier_password").getValue())) {
                         cashWithdrawal.setAmount(withdrawalAmount);

@@ -48,17 +48,6 @@ public class UserController implements DatabaseInterface {
         return null;
     }
 
-    public static boolean isUserAuthenticated(String userName, String password) throws SQLException {
-        Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + USER + " WHERE user_name=? AND password=?";
-        Object[] ob = {
-            userName,
-            password
-        };
-        ResultSet resultSet = DBHandler.getData(connection, query, ob);
-        return resultSet.next();
-    }
-
     public static boolean setUserLoginState(String userName, boolean loginState) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "UPDATE " + USER + " SET isLoggedIn=? WHERE user_name=?";

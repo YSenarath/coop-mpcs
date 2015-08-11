@@ -31,8 +31,13 @@ public class UserPropertiesTest {
 //            java.util.logging.Logger.getLogger(UserPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
 //        }
         //logger.info("Counter : " + Utilities.loadProperty("counter"));
-        System.out.println(7.0 / 3);
-        System.out.println(Math.floor(7.0 / 3)*3);
+       // System.out.println(7.0 / 3);
+        //System.out.println(Math.floor(7.0 / 3)*3);
+        
+        System.out.println(Utilities.getSHA1("123".toCharArray()));
+        System.out.println(Utilities.getSHA1("1234".toCharArray()));
+        System.out.println(Utilities.getSHA1("159".toCharArray()));
+                
     }
 
 }

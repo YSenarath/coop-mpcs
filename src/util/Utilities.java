@@ -7,9 +7,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.IllegalFormatConversionException;
@@ -22,12 +26,32 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.xml.bind.DatatypeConverter;
 
 public class Utilities {
 
     //Do not instantiate this class
     private Utilities() {
 
+    }
+
+    //generate sha256 hash of a char sequence
+    public static String getSHA1(char[] password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            digest.reset();
+            byte[] hash = digest.digest(new String(password).getBytes("UTF-8"));
+            return DatatypeConverter.printHexBinary(hash);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+        }
+        return null;
+    }
+
+    //Test equality of two hashes
+    //hash - get it from database
+    //passwoed- char array from text box
+    public static boolean isHashSame(char[] dbHash, char[] password) {
+        return Arrays.equals(dbHash, getSHA1(password).toCharArray());
     }
 
     //Convert 24hour time to 12 hour time
