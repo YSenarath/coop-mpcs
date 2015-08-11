@@ -17,6 +17,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import model.ledger.SupplierReturnNote;
 import model.supplier.Supplier;
 import ui.view.inventory.ManageDepartment;
+import ui.view.inventory.ManageProduct;
 import ui.view.ledger.DamageStockInterface;
 import ui.view.ledger.GRNInterface;
 import ui.view.ledger.SupplierReturnNoteInterface;
@@ -52,12 +53,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         jDesktopPane1.add(winManageDep);
         jDesktopPane1.add(winManagePro);
-        
-        setInternalFrameLocation(winManageDep);
-        setInternalFrameLocation(winManagePro);
-        
-        
-        
+             
         //-----------------------------------------------------------------------
     }
 

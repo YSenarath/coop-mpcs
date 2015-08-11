@@ -36,6 +36,8 @@ class POSMDIInterface extends javax.swing.JFrame {
     //Enable pos only if cashier is logged on
     private boolean isCashierLogedIn;
 
+    private final boolean debugMode;
+
     //Flag to to allow only one of the 3 ui of pos to run at once
     private boolean isMainActivityRunning;
 
@@ -68,6 +70,7 @@ class POSMDIInterface extends javax.swing.JFrame {
 
         }
         invoiceHoldStack = new Stack<>();
+        this.debugMode = isDebugMode;
         performKeyBinding();
         //setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -495,13 +498,19 @@ class POSMDIInterface extends javax.swing.JFrame {
 
     //Manager features
     private void manager() {
-        logger.warn("manager not implemented");
+        if (debugMode) {
+            logger.debug("debug mode shutdown");
+        } else {
+            if (isCashierLogedIn) {
+                logger.warn("User still logged in ");
+                Utilities.showMsgBox("User still logged in", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                logger.warn("manager not implemented");
+            }
 
-        //Give manager the report of daily transactions
-        if (isCashierLogedIn) {
-            logger.warn("User still logged in ");
         }
         this.dispose();
+        //Give manager the report of daily transactions
     }
 
     // </editor-fold>
