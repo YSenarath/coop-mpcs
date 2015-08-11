@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import model.inventory.Department;
 import model.inventory.Product;
 import model.inventory.ProductBuilder;
 import util.Utilities;
@@ -276,4 +277,49 @@ public class ProductController {
         }
         return products;
     }
+    
+    
+    
+    //new nadheesh upadated method
+    
+    public static boolean updateProduct(Product product) throws SQLException{
+        
+        Connection connection = DBConnection.getConnectionToDB();
+        
+        String query = "UPDATE " + DatabaseInterface.PRODUCT + " SET product_name = ? , barcode = ?,description =? ,category_id =? , department_id = ?,unit = ? ,"
+                + "                                                 pack_size = ?, reorder_value = ? , reorder_qty = ?, max_qty = ?  WHERE product_id = ?  " ;
+        
+        Object[] obj  = {
+            product.getProductName(),
+            product.getProductBarCode(),
+            product.getDescription(),
+            Utilities.convertKeyToInteger(product.getCategoryId()),
+            Utilities.convertKeyToInteger(product.getDepartmentId()),
+            product.getUnit(),
+            product.getPackSize(),
+            product.getReorderValue(),
+            product.getReorderQuantity(),
+            product.getMaxQuantity(),
+            Utilities.convertKeyToInteger(product.getProductId())
+        };
+        int added = -1;
+        added = DBHandler.setData(connection, query, obj);
+        
+        return  added == 1 ;
+    }
+    
+    public static boolean removeProduct(String productId) throws SQLException{
+        
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "DELETE FROM " + DatabaseInterface.PRODUCT + " WHERE product_id=?  " ;
+        
+        Object[] obj  = {
+            Utilities.convertKeyToInteger(productId)
+        };
+        int added = -1;
+        added = DBHandler.setData(connection, query, obj);
+        
+        return  added == 1 ;
+    }
+    
 }

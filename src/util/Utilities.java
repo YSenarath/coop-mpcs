@@ -305,7 +305,7 @@ public class Utilities {
     
     
     //nadheesh
-    public static Date getTody() {
+    public static Date getToday() {
         String date = getStringDate((Calendar.getInstance().getTime()));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 

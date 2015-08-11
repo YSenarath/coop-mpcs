@@ -7,12 +7,15 @@ package ui.view.mainwindow;
 
 import java.awt.Dimension;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import ui.view.inventory.ManageDepartment;
+import ui.view.inventory.ManageProduct;
 
 /**
  *
@@ -24,25 +27,31 @@ public class MainWindow extends javax.swing.JFrame {
      * Creates new form MainWindow
      */
     private ManageDepartment winManageDep;
+    private ManageProduct winManagePro;
 
     public MainWindow() {
         initComponents();
 
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+        //--------------------------------Internal Frames-----------------------
         try {
             winManageDep = new ManageDepartment();
+            winManagePro = new ManageProduct();
         } catch (SQLException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        jDesktopPane1.add(winManageDep);
-
-        Dimension desktopSize = jDesktopPane1.getSize();
-        Dimension jInternalFrameSize = winManageDep.getSize();
         
-        winManageDep.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        jDesktopPane1.add(winManageDep);
+        jDesktopPane1.add(winManagePro);
+        
+        setInternalFrameLocation(winManageDep);
+        setInternalFrameLocation(winManagePro);
+        
+        
+        
+        //-----------------------------------------------------------------------
     }
 
     /**
@@ -197,11 +206,12 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuExitActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        winManageDep.getDepIdCombo().setSelectedIndex(0);
         winManageDep.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
+        winManagePro.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
@@ -235,8 +245,18 @@ public class MainWindow extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
+        
+        Properties props = new Properties();
+        props.put("logoString", "CO-OP");
+        
+        com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
+        
         try {
-            UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
+            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+            //UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+            //UIManager.setLookAndFeel("com.jtattoo.plaf.aluminium.AluminiumLookAndFeel");
+            // UIManager.setLookAndFeel("com.jtattoo.plaf.luna.LunaLookAndFeel");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             Logger.getLogger(ManageDepartment.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -266,4 +286,16 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuExit;
     private javax.swing.JPanel welcomePanel;
     // End of variables declaration//GEN-END:variables
+
+
+    private void setInternalFrameLocation(JInternalFrame frame){
+        Dimension desktopSize = jDesktopPane1.getSize();
+        Dimension frameSize = frame.getSize();
+        
+
+        frame.setLocation((desktopSize.width - frameSize.width) / 2,
+                (desktopSize.height - frameSize.height) / 2);
+        
+    }
+
 }

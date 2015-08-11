@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -132,7 +131,6 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         nameLabel5.setText("Department Name");
 
         depIdText.setEditable(false);
-        depIdText.setBackground(new java.awt.Color(240, 240, 240));
         depIdText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 depIdTextActionPerformed(evt);
@@ -256,7 +254,6 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
 
         updateCategory.setMinimumSize(new java.awt.Dimension(534, 250));
         updateCategory.setModal(true);
-        updateCategory.setPreferredSize(new java.awt.Dimension(534, 250));
         updateCategory.setResizable(false);
 
         catTitlePanel3.setTitle("Add Category");
@@ -408,8 +405,6 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         setClosable(true);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setIconifiable(true);
-        setMaximizable(true);
-        setResizable(true);
 
         jXTitledPanel1.setTitleFont(new java.awt.Font("Calibri", 1, 20)); // NOI18N
 
@@ -935,21 +930,13 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField CatDescText;
-    private javax.swing.JTextField CatDescText1;
     private javax.swing.JTextField CatDescText2;
     private javax.swing.JButton addB;
     private javax.swing.JButton addB2;
     private javax.swing.JPanel buttonPanel2;
     private javax.swing.JPanel buttonPanel3;
-    private javax.swing.JTextField catIdText;
-    private javax.swing.JTextField catIdText1;
     private javax.swing.JTextField catIdText2;
-    private javax.swing.JTextField catNameText;
-    private javax.swing.JTextField catNameText1;
     private javax.swing.JTextField catNameText2;
-    private org.jdesktop.swingx.JXTitledPanel catTitlePanel;
-    private org.jdesktop.swingx.JXTitledPanel catTitlePanel1;
     private org.jdesktop.swingx.JXTitledPanel catTitlePanel3;
     private javax.swing.JTable categoryTable;
     private javax.swing.JButton closeB;
@@ -960,15 +947,9 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox depNameCombo;
     private javax.swing.JTextField depNameText;
     private javax.swing.JButton editB;
-    private javax.swing.JPanel enterPanel1;
-    private javax.swing.JPanel enterPanel2;
     private javax.swing.JPanel enterPanel3;
     private javax.swing.JPanel enterPanel5;
     private javax.swing.JPanel fullPanel2;
-    private javax.swing.JLabel idComment;
-    private javax.swing.JLabel idComment1;
-    private javax.swing.JLabel idLabel1;
-    private javax.swing.JLabel idLabel2;
     private javax.swing.JLabel idLabel3;
     private javax.swing.JLabel idLabel5;
     private javax.swing.JButton jButton2;
@@ -985,11 +966,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private org.jdesktop.swingx.JXTitledPanel jXTitledPanel1;
     private javax.swing.JLabel nameLabel10;
-    private javax.swing.JLabel nameLabel2;
-    private javax.swing.JLabel nameLabel3;
-    private javax.swing.JLabel nameLabel4;
     private javax.swing.JLabel nameLabel5;
-    private javax.swing.JLabel nameLabel6;
     private javax.swing.JLabel nameLabel9;
     private javax.swing.JButton removeB;
     private javax.swing.JButton saveDepB;
