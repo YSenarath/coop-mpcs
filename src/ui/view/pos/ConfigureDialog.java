@@ -3,16 +3,17 @@ package ui.view.pos;
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
 import org.apache.log4j.Logger;
+import util.CardNumberFilter;
 import util.IntegerFilter;
-
 import util.Utilities;
 
 class ConfigureDialog extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
+    
     private static final Logger logger = Logger.getLogger(ConfigureDialog.class);
 
-    // </editor-fold>
+// </editor-fold>
     //
     //
     //

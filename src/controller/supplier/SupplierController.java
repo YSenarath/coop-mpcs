@@ -86,4 +86,20 @@ public class SupplierController {
 
         return DBHandler.setData(connection, query, ob) == 1;
     }
+    
+        public static String getNextDamagedStockID() throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = '" + SUPPLIER + "' AND table_schema = DATABASE( )";
+
+        Object[] ob = {};
+
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+
+        while (resultSet.next()) {
+            return util.Utilities.convertKeyToString(resultSet.getInt("AUTO_INCREMENT"), SUPPLIER);
+        }
+
+        return util.Utilities.convertKeyToString(0, SUPPLIER);
+    }
 }
