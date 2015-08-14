@@ -77,7 +77,6 @@ public class MainWindow extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
         welcomePanel = new javax.swing.JPanel();
         lblWelcome = new javax.swing.JLabel();
-        lblLogo = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         mnuExit = new javax.swing.JMenuItem();
@@ -102,32 +101,20 @@ public class MainWindow extends javax.swing.JFrame {
 
         lblWelcome.setFont(new java.awt.Font("Tahoma", 2, 36)); // NOI18N
         lblWelcome.setForeground(new java.awt.Color(255, 255, 255));
+        lblWelcome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblWelcome.setText("Welcome to MEGA COOP CITY POS");
-
-        lblLogo.setBackground(new java.awt.Color(153, 153, 153));
-        lblLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout welcomePanelLayout = new javax.swing.GroupLayout(welcomePanel);
         welcomePanel.setLayout(welcomePanelLayout);
         welcomePanelLayout.setHorizontalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(welcomePanelLayout.createSequentialGroup()
-                .addContainerGap(118, Short.MAX_VALUE)
-                .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 586, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(lblWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(welcomePanelLayout.createSequentialGroup()
-                .addGroup(welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
-                        .addContainerGap(286, Short.MAX_VALUE)
-                        .addComponent(lblWelcome))
-                    .addGroup(welcomePanelLayout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(344, Short.MAX_VALUE)
+                .addComponent(lblWelcome)
                 .addContainerGap())
         );
 
@@ -330,7 +317,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JMenuItem mnuAddDamagedStock;
     private javax.swing.JMenuItem mnuExit;
@@ -344,6 +330,8 @@ public class MainWindow extends javax.swing.JFrame {
 
         GRNInterface grnInterface = new GRNInterface();
 
+        jDesktopPane1.add(grnInterface);
+        
         setInternalFrameLocation(grnInterface);
 
         grnInterface.show();
@@ -353,6 +341,8 @@ public class MainWindow extends javax.swing.JFrame {
 
         SupplierInterface supplierInterface = new SupplierInterface();
 
+        jDesktopPane1.add(supplierInterface);
+        
         setInternalFrameLocation(supplierInterface);
 
         supplierInterface.show();
@@ -361,6 +351,8 @@ public class MainWindow extends javax.swing.JFrame {
     private void createNewSRN() {
         SupplierReturnNoteInterface srnInterface = new SupplierReturnNoteInterface();
 
+        jDesktopPane1.add(srnInterface);
+        
         setInternalFrameLocation(srnInterface);
 
         srnInterface.show();
@@ -393,10 +385,10 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void setInternalFrameLocation(JInternalFrame frame) {
         Dimension desktopSize = jDesktopPane1.getSize();
+        
         Dimension frameSize = frame.getSize();
 
         frame.setLocation((desktopSize.width - frameSize.width) / 2,
                 (desktopSize.height - frameSize.height) / 2);
-
     }
 }

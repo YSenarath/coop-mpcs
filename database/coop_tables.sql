@@ -134,11 +134,39 @@ CREATE TABLE product (
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE supplier(
+
+	supplier_id INT NOT NULL,
+	sup_name VARCHAR(64) NOT NULL,
+	contact_person VARCHAR(32) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    tel_number INT,
+    fax_number INT,
+    e_mail VARCHAR(64) NOT NULL,
+    -- credit_limit DOUBLE,
+    reg_date DATE,
+    cancel_date DATE,
+    
+	CONSTRAINT PRIMARY KEY(supplier_id)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              	
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE TABLE grn(
 
-	grn_number INT NOT NULL,
+	grn_number INT NOT NULL AUTO_INCREMENT,
+    
+    invoice_no INT NOT NULL,
+	invoice_date DATE NOT NULL,
+	supplier_id INT NOT NULL,
+	location VARCHAR(32) NOT NULL,
+	payment_method VARCHAR(8) NOT NULL,
+	loading_fee DOUBLE NOT NULL DEFAULT 0.0,
+	PurchasingBill_discount DOUBLE NOT NULL DEFAULT 0.0,
+	sellingBill_discount DOUBLE NOT NULL DEFAULT 0.0,
+    
 
-	CONSTRAINT PRIMARY KEY(grn_number)
+	CONSTRAINT PRIMARY KEY(grn_number),
+	CONSTRAINT FOREIGN KEY(supplier_id) REFERENCES supplier(supplier_id)
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -343,5 +371,62 @@ CREATE TABLE settings(
 	prop_value VARCHAR(32) NOT NULL,
 
 	CONSTRAINT PRIMARY KEY (prop_key)
+
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE damaged_stock(
+
+	damaged_stock_id INT NOT NULL AUTO_INCREMENT,
+	ds_date DATE NOT NULL,
+	location VARCHAR(30) NOT NULL,
+
+	CONSTRAINT PRIMARY KEY (damaged_stock_id)
+
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE damaged_stock_item(
+
+	id INT NOT NULL AUTO_INCREMENT,
+	damaged_stock_id INT NOT NULL ,
+	product_id INT NOT NULL,
+	qty DOUBLE NOT NULL DEFAULT 0,
+	qty_damaged DOUBLE NOT NULL DEFAULT 0,
+	price DOUBLE NOT NULL DEFAULT 0,
+
+	CONSTRAINT PRIMARY KEY (id),
+
+	CONSTRAINT foreign KEY (damaged_stock_id) REFERENCES damaged_stock(damaged_stock_id)
+
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE srn(
+
+	srn_number INT NOT NULL AUTO_INCREMENT,
+	grn_number INT NOT NULL,
+	srn_date DATE NOT NULL,
+	supplier_id INT NOT NULL,
+	location VARCHAR(30) NOT NULL,
+
+	CONSTRAINT PRIMARY KEY (srn_number),
+
+	CONSTRAINT foreign KEY (grn_number) REFERENCES grn(grn_number),
+	CONSTRAINT foreign KEY (supplier_id) REFERENCES supplier(supplier_id)
+
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE srn_item(
+
+	id INT NOT NULL AUTO_INCREMENT,
+	srn_no INT NOT NULL ,
+	product_id INT NOT NULL,
+	qty DOUBLE NOT NULL DEFAULT 0,
+	cost DOUBLE NOT NULL DEFAULT 0,
+	price DOUBLE NOT NULL DEFAULT 0,
+
+	CONSTRAINT PRIMARY KEY (id),
+
+	CONSTRAINT foreign KEY (srn_no) REFERENCES srn(srn_number),
+	CONSTRAINT FOREIGN KEY (product_id) REFERENCES product(product_id) 
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
