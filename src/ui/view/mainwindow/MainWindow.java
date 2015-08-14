@@ -11,11 +11,9 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import model.ledger.SupplierReturnNote;
-import model.supplier.Supplier;
+import model.people.User;
 import ui.view.inventory.ManageDepartment;
 import ui.view.inventory.ManageProduct;
 import ui.view.ledger.DamageStockInterface;
@@ -29,16 +27,24 @@ import ui.view.supplier.SupplierInterface;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    // <editor-fold defaultstate="collapsed" desc="Variables">
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(MainWindow.class);
+    // </editor-fold>
+
     /**
      * Creates new form MainWindow
      */
     private ManageDepartment winManageDep;
     private ManageProduct winManagePro;
+    private LogIn logInWindow;
 
     Dimension desktopSize;
 
     public MainWindow() {
         initComponents();
+
+        initializeGUI();
+
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.desktopSize = jDesktopPane1.getSize();
 
@@ -50,10 +56,9 @@ public class MainWindow extends javax.swing.JFrame {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
         jDesktopPane1.add(winManageDep);
         jDesktopPane1.add(winManagePro);
-             
+
         //-----------------------------------------------------------------------
     }
 
@@ -288,12 +293,12 @@ public class MainWindow extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
-        
+
         Properties props = new Properties();
         props.put("logoString", "CO-OP");
-        
+
         com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
-        
+
         try {
             com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
             UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
@@ -385,5 +390,24 @@ public class MainWindow extends javax.swing.JFrame {
                 (desktopSize.height - jInternalFrameSize.height) / 2);
 
         i.show();
+    }
+
+    private void initializeGUI() {
+        logger.debug("initializeGUI invoked");
+        if (logInWindow.getLoggedUser().equals(User.INVENTORY)) {
+            logger.debug("Logged in as Inventory cleark");
+        } else if (logInWindow.getLoggedUser().equals(User.MANAGER)) {
+            logger.debug("Logged in as  Manager");
+        } else {
+            logger.debug("");
+        }
+    }
+
+    /**
+     *
+     * @param window
+     */
+    public void setLogInWindow(LogIn window) {
+        this.logInWindow = window;
     }
 }

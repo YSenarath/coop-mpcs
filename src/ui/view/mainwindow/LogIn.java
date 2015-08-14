@@ -11,6 +11,9 @@ import static util.Utilities.setupUI;
 
 class LogIn extends javax.swing.JFrame {
 
+    private MainWindow mainUI;
+    private User loggedUser;
+
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(LogIn.class);
 
@@ -21,7 +24,7 @@ class LogIn extends javax.swing.JFrame {
 // <editor-fold defaultstate="collapsed" desc="Constructor">
     private LogIn() {
         logger.debug("logIn constructor invoked");
-
+        loggedUser = null;
         initComponents();
         initializeSystem();
         setLocationRelativeTo(null);
@@ -35,7 +38,10 @@ class LogIn extends javax.swing.JFrame {
 
     private void initializeSystem() {
         logger.debug("initializeSystem invoked");
-
+        if (mainUI == null) {
+            mainUI = new MainWindow();
+            mainUI.setLogInWindow(this);
+        }
         //Insert code for initializations
     }
 
@@ -49,16 +55,16 @@ class LogIn extends javax.swing.JFrame {
             if (Utilities.isHashSame(dbHash, password)) {
                 logger.info("User varified");
 
-//                if ((requestedAccessLevel.equals(User.MANAGER) || requestedAccessLevel.equals(User.INVENTORY)) && user.getUserType().equals(User.CASHIER)) {
-//                    throw new Exception("User does not have administrator privilages ");
-//                }
-//                if (!(user.getUserType().equals(User.MANAGER) || user.getUserType().equals(User.CASHIER))) {
-//                    throw new Exception("User does not have pos privilages ");
-//                }
-//                if (!user.getUserType().equals(User.MANAGER) && user.isLoggedin()) {
-//                    throw new Exception("User :" + userName + " is already logged in");
-//                }
-                return true;
+                if (user.getUserType().equals(User.CASHIER)) {
+                    throw new Exception("User does not have administrator privilages");
+                }
+                if (user.isLoggedin()) {
+                    throw new Exception("User :" + userName + " is already logged in");
+                }
+                if (requestedAccessLevel.equals(user.getUserType())) {
+                    return true;
+                }
+                return false;
             } else {
                 throw new Exception("Wrong password");
             }
@@ -112,8 +118,12 @@ class LogIn extends javax.swing.JFrame {
             String userName = txtUserName.getText();
 
             if (isUserAuthenticated(userName, txtPassword.getPassword(), User.INVENTORY)) {
-                //Code to enter main UI
-                logger.warn("Not implemented - Code to enter main UI ");
+                //Code to enter main UI with inventory cleark privilages
+                mainUI.setVisible(true);
+                exitApp();
+            } else if (isUserAuthenticated(userName, txtPassword.getPassword(), User.MANAGER)) {
+                //Code to enter main UI with manager privilages
+                mainUI.setVisible(true);
                 exitApp();
             } else {
                 Utilities.showMsgBox("User not identified", "Login Failed", JOptionPane.ERROR_MESSAGE);
@@ -133,7 +143,7 @@ class LogIn extends javax.swing.JFrame {
     private void exitApp() {
         logger.debug("exitApp invoked");
 
-        this.dispose();
+        this.setVisible(false);
     }
 // </editor-fold>
     //
@@ -302,4 +312,8 @@ class LogIn extends javax.swing.JFrame {
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 // </editor-fold>
+
+    public User getLoggedUser() {
+        return  loggedUser;
+    }
 }
