@@ -38,6 +38,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form AddDepartment
+     *
      * @throws java.sql.SQLException
      */
     public ManageProduct() throws SQLException {
@@ -45,18 +46,14 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         initComponents();
         updateProduct.setLocationRelativeTo(null);
 
-        handler.loadProductCombo();
+        handler.loadProducts();
 
         //added 8/14 : configure search boxes================================
         nameSearchField.setFindPopupMenu(namePopUp);
         idSearchField.setFindPopupMenu(idPopUp);
 
-
         //============================================================
-        
-
         //test
-        
         ((PlainDocument) sizeTB1.getDocument()).setDocumentFilter(new IntegerFilter());
         ((PlainDocument) roValue.getDocument()).setDocumentFilter(new DoubleFilter());
         //
@@ -138,9 +135,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jButton3 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        productIdCombo = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
-        productNameCombo = new javax.swing.JComboBox();
         jLabel11 = new javax.swing.JLabel();
         pBarcodeTB = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -406,7 +401,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         categoryBG.add(catIDR);
         catIDR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        catIDR.setSelected(true);
         catIDR.setText("ID");
         catIDR.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -421,6 +415,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         categoryBG.add(catNameR);
         catNameR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        catNameR.setSelected(true);
         catNameR.setText("Name");
         catNameR.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -435,7 +430,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         departmentBG.add(depIDR);
         depIDR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        depIDR.setSelected(true);
         depIDR.setText("ID");
         depIDR.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -450,6 +444,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         departmentBG.add(depNameR);
         depNameR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        depNameR.setSelected(true);
         depNameR.setText("Name");
         depNameR.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -745,6 +740,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             .addComponent(updateProductTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
+        namePopUp.setAutoscrolls(true);
+
         setClosable(true);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setIconifiable(true);
@@ -820,38 +817,9 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jLabel1.setText("Product ID");
         jLabel1.setFocusable(false);
 
-        productIdCombo.setEditable(true);
-        productIdCombo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        productIdCombo.setAutoscrolls(true);
-        productIdCombo.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                productIdComboItemStateChanged(evt);
-            }
-        });
-        productIdCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                productIdComboActionPerformed(evt);
-            }
-        });
-
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setText("Product Name");
         jLabel2.setFocusable(false);
-
-        productNameCombo.setEditable(true);
-        productNameCombo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        productNameCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "" }));
-        productNameCombo.setAutoscrolls(true);
-        productNameCombo.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                productNameComboItemStateChanged(evt);
-            }
-        });
-        productNameCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                productNameComboActionPerformed(evt);
-            }
-        });
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel11.setText("Product Barcode");
@@ -1055,24 +1023,41 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         });
 
         idSearchField.setPrompt("Search ID");
+        idSearchField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                idSearchFieldFocusLost(evt);
+            }
+        });
         idSearchField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 idSearchFieldActionPerformed(evt);
             }
         });
         idSearchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                idSearchFieldKeyPressed(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 idSearchFieldKeyReleased(evt);
             }
         });
 
         nameSearchField.setPrompt("Search Name");
+        nameSearchField.setMinimumSize(new java.awt.Dimension(105, 22));
+        nameSearchField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                nameSearchFieldFocusLost(evt);
+            }
+        });
         nameSearchField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nameSearchFieldActionPerformed(evt);
             }
         });
         nameSearchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                nameSearchFieldKeyPressed(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 nameSearchFieldKeyReleased(evt);
             }
@@ -1084,7 +1069,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
@@ -1118,10 +1103,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
                             .addComponent(pBarcodeTB, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
                             .addComponent(idSearchField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(nameSearchField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(productIdCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(productNameCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(94, 94, 94)))
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1134,12 +1115,10 @@ public class ManageProduct extends javax.swing.JInternalFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(productIdCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(idSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(productNameCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(nameSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(19, 19, 19)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1443,10 +1422,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         this.setVisible(false);
     }//GEN-LAST:event_closeBActionPerformed
 
-    private void productIdComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productIdComboActionPerformed
-
-    }//GEN-LAST:event_productIdComboActionPerformed
-
     private void pDesTBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pDesTBActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_pDesTBActionPerformed
@@ -1514,17 +1489,18 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
 
-        int index = productIdCombo.getSelectedIndex();
-        if (index > 0) {
+        if (idSearchField.getText() != null && !idSearchField.getText().equals("")) {
             CardLayout card = (CardLayout) cardPanel.getLayout();
             card.show(cardPanel, "batchCard");
+            try {
+                handler.loadBatches();
+            } catch (SQLException ex) {
+                logger.error("Database Error : " + ex.getLocalizedMessage());
+            }
+        } else {
+            Utilities.ShowErrorMsg(this, "Select Product first");
+        }
 
-        }
-        try {
-            handler.loadBatches(index);
-        } catch (SQLException ex) {
-            logger.error("Database Error : " + ex.getLocalizedMessage());
-        }
 
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -1540,39 +1516,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_unitTextActionPerformed
 
-    private void productIdComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_productIdComboItemStateChanged
-//        int index = productIdCombo.getSelectedIndex();
-//
-//        if (productNameCombo.getSelectedIndex() != index) {
-//            productNameCombo.setSelectedIndex(index);
-//
-//            if (index > 0) {
-//                try {
-//                    handler.displayProduct();
-//                } catch (SQLException ex) {
-//                    logger.error("Database Error : " + ex.getLocalizedMessage());
-//                }
-//            }
-//        }
-
-
-    }//GEN-LAST:event_productIdComboItemStateChanged
-
-    private void productNameComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_productNameComboItemStateChanged
-//        int index = productNameCombo.getSelectedIndex();
-//
-//        if (productIdCombo.getSelectedIndex() != index) {
-//            productIdCombo.setSelectedIndex(index);
-//            if (index > 0) {
-//                try {
-//                    handler.displayProduct();
-//                } catch (SQLException ex) {
-//                    logger.error("Database Error : " + ex.getLocalizedMessage());
-//                }
-//            }
-//        }
-    }//GEN-LAST:event_productNameComboItemStateChanged
-
     private void jComboBox8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox8ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox8ActionPerformed
@@ -1584,10 +1527,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         addBatch.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void productNameComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productNameComboActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_productNameComboActionPerformed
 
     private void depComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_depComboItemStateChanged
         try {
@@ -1670,13 +1609,13 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     private void updateSaveBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateSaveBActionPerformed
         try {
-            if (!isEditing){
-            handler.addProduct();
-            }
-            else{
+            if (!isEditing) {
+                handler.addProduct();
+            } else {
                 handler.editProduct();
             }
         } catch (SQLException ex) {
+            logger.error(ex.getMessage());
             Utilities.ShowErrorMsg(updateProduct, "Unknown Error!");
         }
     }//GEN-LAST:event_updateSaveBActionPerformed
@@ -1687,27 +1626,53 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     private void nameSearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameSearchFieldActionPerformed
         handler.searchNameMatches(nameSearchField.getText());
-      
     }//GEN-LAST:event_nameSearchFieldActionPerformed
 
     private void nameSearchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameSearchFieldKeyReleased
+
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             logger.info("Enter key pressed");
             nameSearchField.getFindPopupMenu().show(nameSearchField, 0, 20);
         }
+
     }//GEN-LAST:event_nameSearchFieldKeyReleased
 
     private void idSearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idSearchFieldActionPerformed
-       handler.searchIdMatches(idSearchField.getText()); 
+        handler.searchIdMatches(idSearchField.getText());
     }//GEN-LAST:event_idSearchFieldActionPerformed
 
     private void idSearchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idSearchFieldKeyReleased
+        
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             logger.info("Enter key pressed");
             idSearchField.getFindPopupMenu().show(idSearchField, 0, 20);
         }
     }//GEN-LAST:event_idSearchFieldKeyReleased
 
+    private void idSearchFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_idSearchFieldFocusLost
+        if (idPopUp.isShowing()) {
+            idPopUp.requestFocus();
+        } else {
+            handler.setSearchFieldTexts();
+        }
+    }//GEN-LAST:event_idSearchFieldFocusLost
+
+    private void nameSearchFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameSearchFieldFocusLost
+        if (namePopUp.isShowing()) {
+            namePopUp.requestFocus();
+        } else {
+            handler.setSearchFieldTexts();
+        }
+    }//GEN-LAST:event_nameSearchFieldFocusLost
+
+    private void nameSearchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameSearchFieldKeyPressed
+        
+      
+    }//GEN-LAST:event_nameSearchFieldKeyPressed
+
+    private void idSearchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idSearchFieldKeyPressed
+        
+    }//GEN-LAST:event_idSearchFieldKeyPressed
 
     public JComboBox getCatCombo() {
         return catCombo;
@@ -1799,14 +1764,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     public JTextField getpDesTB() {
         return pDesTB;
-    }
-
-    public JComboBox getProductIdCombo() {
-        return productIdCombo;
-    }
-
-    public JComboBox getProductNameCombo() {
-        return productNameCombo;
     }
 
     public JTextField getRoQtyTB() {
@@ -1978,8 +1935,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private javax.swing.JTextField pIdText;
     private javax.swing.JTextField pNameTB;
     private javax.swing.JTextField pNameText;
-    private javax.swing.JComboBox productIdCombo;
-    private javax.swing.JComboBox productNameCombo;
     private javax.swing.JTextField profitText;
     private javax.swing.JTextField qtyTB;
     private javax.swing.JTextField roQty;
@@ -2025,7 +1980,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }
 
     private void displayEditProduct() {
-        if (productIdCombo.getSelectedIndex() > 0) {
+        if (idSearchField.getText() != null && !idSearchField.getText().equals("")) {
             try {
                 handler.loadDepartmentCombo(depIDR.isSelected());
                 if (depIDR.isSelected()) {
@@ -2044,8 +1999,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             }
 
             //set fields data
-            pIdTB.setText(productIdCombo.getSelectedItem().toString());
-            pNameTB.setText(productNameCombo.getSelectedItem().toString());
+            pIdTB.setText(idSearchField.getText());
+            pNameTB.setText(nameSearchField.getText());
             pBarcodeTB1.setText(pBarcodeTB.getText());
             pDesTB1.setText(pDesTB.getText());
             unitTB1.setText(unitTB.getText());
@@ -2065,19 +2020,21 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }
 
     private void removeProduct() {
-        if (productIdCombo.getSelectedIndex() > 0) {
-            int ans = JOptionPane.showConfirmDialog(this, "Do you want to remove Product : " + productNameCombo.getSelectedItem() + " ?", "Remove Product", 0);
+        if (idSearchField.getText() != null && !idSearchField.getText().equals("")) {
+            int ans = JOptionPane.showConfirmDialog(this, "Do you want to remove Product : " + nameSearchField.getText() + " ?", "Remove Product", 0);
             if (ans == 0) {
-               
+
                 try {
                     handler.removeProduct();
+                    
                 } catch (SQLException ex) {
                     java.util.logging.Logger.getLogger(ManageProduct.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
-               
+
             }
-        }
+        }else{
         Utilities.ShowErrorMsg(this, "Please select the Product to be removed");
+        }
 
     }
 
@@ -2096,7 +2053,5 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     public JXSearchField getNameSearchField() {
         return nameSearchField;
     }
-    
-    
 
 }

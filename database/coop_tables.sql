@@ -136,7 +136,7 @@ CREATE TABLE product (
 
 CREATE TABLE supplier(
 
-	supplier_id INT NOT NULL,
+	supplier_id INT NOT NULL AUTO_INCREMENT,
 	sup_name VARCHAR(64) NOT NULL,
 	contact_person VARCHAR(32) NOT NULL,
     address VARCHAR(255) NOT NULL,
@@ -187,7 +187,7 @@ CREATE TABLE batch(
 	discounted BOOLEAN NOT NULL DEFAULT FALSE,
 
 	CONSTRAINT PRIMARY KEY(batch_id,product_id),
-	CONSTRAINT FOREIGN KEY(product_id) REFERENCES product(product_id) ,
+	CONSTRAINT FOREIGN KEY(product_id) REFERENCES product(product_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT FOREIGN KEY(grn_number) REFERENCES grn(grn_number)
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;

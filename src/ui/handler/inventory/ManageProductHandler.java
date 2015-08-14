@@ -42,6 +42,7 @@ public class ManageProductHandler {
     private boolean depChanged;
     private ActionListener nameItemListener;
     private ActionListener idItemListener;
+    private Product selectedPro;
 
     public ManageProductHandler(ManageProduct gui) {
         this.gui = gui;
@@ -55,8 +56,31 @@ public class ManageProductHandler {
                 logger.info("Name menu item was pressed :"
                         + event.getActionCommand());
 
+                String name = event.getActionCommand();
+
+                if (name != null || !name.equals("")) {
+                    Product pro = searchProduct(name);
+                    selectedPro = pro;
+                    if (pro != null) {
+                        setSearchFieldTexts();
+                        try {
+                            displayProduct(pro);
+                        } catch (SQLException ex) {
+                            logger.error("Database Error : " + ex.getLocalizedMessage());
+                        }
+                    } else {
+                        selectedPro = null;
+                        Utilities.ShowErrorMsg(gui, "Error! : The choosed Product is missing");
+                    }
+                } else {
+                    selectedPro = null;
+                    setSearchFieldTexts();
+                    clearFields();
+                }
             }
+
         };
+
         idItemListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -67,14 +91,21 @@ public class ManageProductHandler {
 
                 if (id != null || !id.equals("")) {
                     Product pro = searchProduct(id);
+                    selectedPro = pro;
                     if (pro != null) {
-                        gui.getNameSearchField().setText(pro.getProductName());
+                        setSearchFieldTexts();
                         try {
                             displayProduct(pro);
                         } catch (SQLException ex) {
                             logger.error("Database Error : " + ex.getLocalizedMessage());
                         }
+                    } else {
+                        Utilities.ShowErrorMsg(gui, "Error! : The choosed Product is missing");
                     }
+                } else {
+                    selectedPro = null;
+                    setSearchFieldTexts();
+                    clearFields();
                 }
             }
 
@@ -82,21 +113,9 @@ public class ManageProductHandler {
 
     }
 
-    public void loadProductCombo() throws SQLException {
+    public void loadProducts() throws SQLException {
 
         products = ProductController.getProductIdentities();
-
-        initiating = true;
-        gui.getProductIdCombo().removeAllItems();
-        gui.getProductIdCombo().addItem(" ");
-        gui.getProductNameCombo().removeAllItems();
-        gui.getProductNameCombo().addItem(" ");
-
-        for (Product p : products) {
-            gui.getProductIdCombo().addItem(p.getProductId());
-            gui.getProductNameCombo().addItem(p.getProductName());
-        }
-        initiating = false;
 
     }
 
@@ -145,41 +164,39 @@ public class ManageProductHandler {
         }
     }
 
-    public void loadBatches(int index) throws SQLException {
-        if (index > 0) {
-            String productId = products.get(index - 1).getProductId();
-            String productName = products.get(index - 1).getProductName();
-            ((DefaultTableModel) gui.getBatchTable().getModel()).setRowCount(0);
-            batches = BatchController.getBatches(productId);
+    public void loadBatches() throws SQLException {
 
-            double qty = 0;
-            double totalProfit = 0;
-            double profit;
+        String productId = selectedPro.getProductId();
+        String productName = selectedPro.getProductName();
+        ((DefaultTableModel) gui.getBatchTable().getModel()).setRowCount(0);
+        batches = BatchController.getBatches(productId);
 
-            for (Batch b : batches) {
+        double qty = 0;
+        double totalProfit = 0;
+        double profit;
+
+        for (Batch b : batches) {
+            System.out.println(b.getBatchId());
+            if (b.isInStock()) {
                 System.out.println(b.getBatchId());
-                if (b.isInStock()) {
-                    System.out.println(b.getBatchId());
-                    profit = (b.getUnit_price() - b.getUnit_cost()) * b.getRecievedQuantity();
-                    ((DefaultTableModel) (gui.getBatchTable().getModel())).addRow(new String[]{b.getBatchId(), b.getGrnNumber(), "Yasas", "YASAS", b.getUnit_cost() + "", b.getUnit_price() + "", b.getRecievedQuantity() + "", profit + "", Utilities.getStringDate(b.getExpirationDate()), Utilities.getStringDate(b.getNotificationDate())});
+                profit = (b.getUnit_price() - b.getUnit_cost()) * b.getRecievedQuantity();
+                ((DefaultTableModel) (gui.getBatchTable().getModel())).addRow(new String[]{b.getBatchId(), b.getGrnNumber(), "Yasas", "YASAS", b.getUnit_cost() + "", b.getUnit_price() + "", b.getRecievedQuantity() + "", profit + "", Utilities.getStringDate(b.getExpirationDate()), Utilities.getStringDate(b.getNotificationDate())});
 
-                    qty += b.getRecievedQuantity();
-                    totalProfit += profit;
-                }
+                qty += b.getRecievedQuantity();
+                totalProfit += profit;
             }
-
-            gui.getpIdText().setText(productId);
-            gui.getpNameText().setText(productName);
-
-            gui.getTotalQtyText().setText(qty + "");
-            gui.getProfitText().setText(totalProfit + "");
-
-            if (gui.getBatchTable().getRowCount() == 0) {
-                JOptionPane.showMessageDialog(gui, "Product - " + productName + " is out of stock", "Out of Stock", 1);
-            }
-        } else {
-            JOptionPane.showMessageDialog(gui, "Select Product first", "Invalid Selection", 2);
         }
+
+        gui.getpIdText().setText(productId);
+        gui.getpNameText().setText(productName);
+
+        gui.getTotalQtyText().setText(qty + "");
+        gui.getProfitText().setText(totalProfit + "");
+
+        if (gui.getBatchTable().getRowCount() == 0) {
+            JOptionPane.showMessageDialog(gui, "Product - " + productName + " is out of stock", "Out of Stock", 1);
+        }
+
     }
 
     public boolean addProduct() throws SQLException {
@@ -314,7 +331,7 @@ public class ManageProductHandler {
         Product product = ProductBuilder.Product().withProductId(pid).withProductName(pName).withDescrition(desc).withBarCode(barcode).withCategory(catID).withDepartment(depID).withUnit(unit).withPackSize(pack).withReorderQuantity(roQty).withReorderValue(roValue).withMaxQuantity(roMax).build();
 
         if (ProductController.addProduct(product)) {
-            loadProductCombo();
+            loadProducts();
             gui.getUpdateProduct().setVisible(false);
             return true;
         }
@@ -370,7 +387,14 @@ public class ManageProductHandler {
     }
 
     public boolean removeProduct() throws SQLException {
-        return ProductController.removeProduct(gui.getProductIdCombo().getSelectedItem().toString());
+        if(ProductController.removeProduct(selectedPro.getProductId())){
+            loadProducts();
+            selectedPro = null;
+            setSearchFieldTexts();
+            return true;
+        }
+        return  false;
+        
     }
 
     public boolean editProduct() throws SQLException {
@@ -504,7 +528,8 @@ public class ManageProductHandler {
         Product product = ProductBuilder.Product().withProductId(pid).withProductName(pName).withDescrition(desc).withBarCode(barcode).withCategory(catID).withDepartment(depID).withUnit(unit).withPackSize(pack).withReorderQuantity(roQty).withReorderValue(roValue).withMaxQuantity(roMax).build();
 
         if (ProductController.updateProduct(product)) {
-            loadProductCombo();
+            logger.info("Product Edit Succeded");
+            loadProducts();
             gui.getUpdateProduct().setVisible(false);
             return true;
         }
@@ -518,8 +543,7 @@ public class ManageProductHandler {
         gui.getNamePopUp().removeAll();
 
         for (Product p : products) {
-
-            if (p.getProductName().toLowerCase().contains(name.toLowerCase())) {
+            if (p.getProductName().toLowerCase().contains(name.toLowerCase()) ) {
                 JMenuItem item = new JMenuItem(p.getProductName());
                 item.addActionListener(nameItemListener);
                 gui.getNamePopUp().add(item);
@@ -550,4 +574,20 @@ public class ManageProductHandler {
         return null;
     }
 
+    public void setSearchFieldTexts() {
+
+        gui.getNameSearchField().setFindPopupMenu(null);
+        gui.getIdSearchField().setFindPopupMenu(null);
+
+        if (selectedPro != null) {
+            gui.getNameSearchField().setText(selectedPro.getProductName());
+            gui.getIdSearchField().setText(selectedPro.getProductId());
+        } else {
+            gui.getIdSearchField().setText("");
+            gui.getNameSearchField().setText("");
+        }
+
+        gui.getNameSearchField().setFindPopupMenu(gui.getNamePopUp());
+        gui.getIdSearchField().setFindPopupMenu(gui.getIDPopUp());
+    }
 }
