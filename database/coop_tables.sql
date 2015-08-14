@@ -136,7 +136,7 @@ CREATE TABLE product (
 
 CREATE TABLE supplier(
 
-	supplier_id INT NOT NULL,
+	supplier_id INT NOT NULL AUTO_INCREMENT,
 	sup_name VARCHAR(64) NOT NULL,
 	contact_person VARCHAR(32) NOT NULL,
     address VARCHAR(255) NOT NULL,
@@ -319,7 +319,7 @@ CREATE TABLE employee_voucher_payment(
 	amount DOUBLE NOT NULL,
 
 	CONSTRAINT PRIMARY KEY (bill_id,voucher_payment_id),
-	CONSTRAINT foreign KEY (employee_id) REFERENCES employee(employee_id),
+	CONSTRAINT foreign KEY (employee_id) REFERENCES employee(employee_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id)
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -360,7 +360,7 @@ CREATE TABLE coop_credit_payment(
 
 	CONSTRAINT PRIMARY KEY (bill_id,coop_credit_payment_id),
 	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id),
-	CONSTRAINT foreign KEY (customer_id) REFERENCES credit_customer(customer_id)
+	CONSTRAINT foreign KEY (customer_id) REFERENCES credit_customer(customer_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

@@ -84,6 +84,11 @@ public class MainWindow extends javax.swing.JFrame {
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMinimumSize(new java.awt.Dimension(1300, 825));
         setName("frmMain"); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                MainWindow.this.windowClosed(evt);
+            }
+        });
 
         welcomePanel.setBackground(new java.awt.Color(153, 153, 153));
 
@@ -254,8 +259,13 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuAddDamagedStockActionPerformed
 
     private void mnuLogOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuLogOffActionPerformed
-        logOff();
+        this.dispose();
+        logIn.setVisible(true);
     }//GEN-LAST:event_mnuLogOffActionPerformed
+
+    private void windowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_windowClosed
+
+    }//GEN-LAST:event_windowClosed
 
     public static void main(String args[]) {
         try {
@@ -378,10 +388,5 @@ public class MainWindow extends javax.swing.JFrame {
 
         frame.setLocation((desktopSize.width - frameSize.width) / 2,
                 (desktopSize.height - frameSize.height) / 2);
-    }
-
-    private void logOff() {
-        logIn.setVisible(true);
-        this.dispose();
     }
 }

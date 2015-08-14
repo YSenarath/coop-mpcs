@@ -20,6 +20,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.PlainDocument;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.JXSearchField;
 import ui.handler.inventory.ManageProductHandler;
 import util.DoubleFilter;
 import util.IntegerFilter;
@@ -1540,36 +1541,36 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_unitTextActionPerformed
 
     private void productIdComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_productIdComboItemStateChanged
-        int index = productIdCombo.getSelectedIndex();
-
-        if (productNameCombo.getSelectedIndex() != index) {
-            productNameCombo.setSelectedIndex(index);
-
-            if (index > 0) {
-                try {
-                    handler.displayProduct();
-                } catch (SQLException ex) {
-                    logger.error("Database Error : " + ex.getLocalizedMessage());
-                }
-            }
-        }
+//        int index = productIdCombo.getSelectedIndex();
+//
+//        if (productNameCombo.getSelectedIndex() != index) {
+//            productNameCombo.setSelectedIndex(index);
+//
+//            if (index > 0) {
+//                try {
+//                    handler.displayProduct();
+//                } catch (SQLException ex) {
+//                    logger.error("Database Error : " + ex.getLocalizedMessage());
+//                }
+//            }
+//        }
 
 
     }//GEN-LAST:event_productIdComboItemStateChanged
 
     private void productNameComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_productNameComboItemStateChanged
-        int index = productNameCombo.getSelectedIndex();
-
-        if (productIdCombo.getSelectedIndex() != index) {
-            productIdCombo.setSelectedIndex(index);
-            if (index > 0) {
-                try {
-                    handler.displayProduct();
-                } catch (SQLException ex) {
-                    logger.error("Database Error : " + ex.getLocalizedMessage());
-                }
-            }
-        }
+//        int index = productNameCombo.getSelectedIndex();
+//
+//        if (productIdCombo.getSelectedIndex() != index) {
+//            productIdCombo.setSelectedIndex(index);
+//            if (index > 0) {
+//                try {
+//                    handler.displayProduct();
+//                } catch (SQLException ex) {
+//                    logger.error("Database Error : " + ex.getLocalizedMessage());
+//                }
+//            }
+//        }
     }//GEN-LAST:event_productNameComboItemStateChanged
 
     private void jComboBox8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox8ActionPerformed
@@ -1685,7 +1686,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_roValueActionPerformed
 
     private void nameSearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameSearchFieldActionPerformed
-        handler.searchName(nameSearchField.getText());
+        handler.searchNameMatches(nameSearchField.getText());
       
     }//GEN-LAST:event_nameSearchFieldActionPerformed
 
@@ -1697,7 +1698,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_nameSearchFieldKeyReleased
 
     private void idSearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idSearchFieldActionPerformed
-       handler.searchId(idSearchField.getText()); 
+       handler.searchIdMatches(idSearchField.getText()); 
     }//GEN-LAST:event_idSearchFieldActionPerformed
 
     private void idSearchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idSearchFieldKeyReleased
@@ -2087,5 +2088,15 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     public JPopupMenu getIDPopUp() {
         return idPopUp;
     }
+
+    public JXSearchField getIdSearchField() {
+        return idSearchField;
+    }
+
+    public JXSearchField getNameSearchField() {
+        return nameSearchField;
+    }
+    
+    
 
 }

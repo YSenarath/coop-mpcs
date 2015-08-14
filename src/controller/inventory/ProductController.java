@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import model.inventory.Department;
 import model.inventory.Product;
 import model.inventory.ProductBuilder;
 import util.Utilities;
