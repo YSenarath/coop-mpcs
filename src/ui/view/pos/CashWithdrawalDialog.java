@@ -2,9 +2,9 @@ package ui.view.pos;
 
 import controller.pos.CashWithdrawalController;
 import controller.pos.CounterController;
-import controller.pos.SettingsController;
+import controller.settings.SettingsController;
 import controller.pos.TransactionController;
-import controller.pos.UserController;
+import controller.user.UserController;
 import database.connector.DatabaseInterface;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;

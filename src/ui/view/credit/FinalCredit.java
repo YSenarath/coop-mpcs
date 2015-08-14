@@ -5,8 +5,8 @@
  */
 package ui.view.credit;
 
-import controller.credit.CoopCreditPaymentController;
-import controller.credit.CreditCustomerController;
+import controller.payments.CoopCreditPaymentController;
+import controller.credit.CustomerCreditController;
 import controller.pos.InvoiceController;
 import database.handler.DBHandler;
 import java.awt.CardLayout;
@@ -48,7 +48,7 @@ public class FinalCredit extends javax.swing.JFrame {
     private HashMap<Integer, CreditCustomer> availableCustomers;
     DefaultTableModel CustomerCreditDetailsTableModel;
     DefaultComboBoxModel CreditDetailsCustomerComboBoxModel;
-    CreditCustomerController l = new CreditCustomerController();
+    CustomerCreditController l = new CustomerCreditController();
 
     DBHandler t;
     ResultSet rs;
@@ -66,7 +66,7 @@ public class FinalCredit extends javax.swing.JFrame {
 
         this.CustomerCreditDetailsTableModel = (DefaultTableModel) customerDetailsTbl.getModel();
         this.CreditDetailsCustomerComboBoxModel = (DefaultComboBoxModel) creditDetailsCustomerComboBox.getModel();
-        customerDetailsTbl.setModel(DbUtils.resultSetToTableModel(CreditCustomerController.loadDetails()));
+        customerDetailsTbl.setModel(DbUtils.resultSetToTableModel(CustomerCreditController.loadDetails()));
         loadDetails();
         /**
          *
@@ -78,7 +78,7 @@ public class FinalCredit extends javax.swing.JFrame {
     public void loadDetails() throws SQLException {
 
        CreditDetailsCustomerComboBoxModel.removeAllElements();
-        ArrayList<CreditCustomer> customerDetails = CreditCustomerController.loadCustomers();
+        ArrayList<CreditCustomer> customerDetails = CustomerCreditController.loadCustomers();
 
         for (CreditCustomer customer : customerDetails) {
            // availableCustomers.put(customer.getCustomerId(), customer);
@@ -92,7 +92,7 @@ public class FinalCredit extends javax.swing.JFrame {
     //helper methods
     public void chngTblModel() throws SQLException {
 
-        customerDetailsTbl.setModel(DbUtils.resultSetToTableModel(CreditCustomerController.loadDetails()));
+        customerDetailsTbl.setModel(DbUtils.resultSetToTableModel(CustomerCreditController.loadDetails()));
 
     }
 
@@ -120,7 +120,7 @@ public class FinalCredit extends javax.swing.JFrame {
         }
         CreditCustomer creditCustomer = new CreditCustomer(customerId, ob[1].toString(), ob[2].toString(), customerTele, ob[3].toString(), 10000);
 
-        CreditCustomerController.setEditDetails(creditCustomer, Integer.parseInt(editCustomerCoopIdTxt2.getText()));
+        CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(editCustomerCoopIdTxt2.getText()));
         chngTblModel();
 
         //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
@@ -129,7 +129,7 @@ public class FinalCredit extends javax.swing.JFrame {
         card.show(cardPanel, "customerDetails");
       //      CreditCustomer creditCustomer = new CreditCustomer(customerId,ob[1].toString(),ob[2].toString(),customerTele,ob[3].toString(),10000);
 
-        CreditCustomerController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
+        CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
         editCustomerCoopIdTxt2.setText(null);
         editCustomerFullNameTxt2.setText(null);
         editCustomerAddressTxt2.setText(null);
@@ -162,14 +162,14 @@ public class FinalCredit extends javax.swing.JFrame {
         }
         CreditCustomer creditCustomer = new CreditCustomer(customerId, ob[1].toString(), ob[2].toString(), customerTele, ob[3].toString(), 0.00);
 
-        CreditCustomerController.setDetails(creditCustomer);
+        CustomerCreditController.setDetails(creditCustomer);
         chngTblModel();
 
         //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
         //  CustomerCreditDetailsTableModel.insertRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1, ob);
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "customerDetails");
-        CreditCustomerController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
+        CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
         addCustomerCoopIdTxt1.setText(null);
         addCustomerFullNameTxt1.setText(null);
         addCustomerAddressTxt1.setText(null);
@@ -179,7 +179,7 @@ public class FinalCredit extends javax.swing.JFrame {
     }
     public void deleteCustomerDetails(int i){
         try {
-            CreditCustomerController.deleteDeatils(i);
+            CustomerCreditController.deleteDeatils(i);
         } catch (SQLException ex) {
             java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -192,7 +192,7 @@ public class FinalCredit extends javax.swing.JFrame {
 
     public void setCoopId() {
         try {
-            coopIdNum = CreditCustomerController.getLastCreditCustomerId();
+            coopIdNum = CustomerCreditController.getLastCreditCustomerId();
         } catch (SQLException ex) {
             java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -204,16 +204,16 @@ public class FinalCredit extends javax.swing.JFrame {
         int customerId = 0;
         int customerTele = 0;
 
-        CreditCustomerController.getDetails(i);
+        CustomerCreditController.getDetails(i);
   //      CreditCustomer creditCustomer = new CreditCustomer(ob[0].toString(),ob[1].toString(),Integer.parseInt(ob[2].toString()),ob[3].toString(),Integer.parseInt(ob[4].toString()),Integer.parseInt(ob[5].toString()));
 
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "editCustomer");
-        editCustomerFullNameTxt2.setText(CreditCustomerController.getDetails(i).getCustomerName());
-        editCustomerAddressTxt2.setText(CreditCustomerController.getDetails(i).getCustomerAddress());
-        editCustomerTeleTxt2.setText(Integer.toString(CreditCustomerController.getDetails(i).getTelephone()));
-        editCustomerNicTxt2.setText(CreditCustomerController.getDetails(i).getNic());
-        editCustomerCoopIdTxt2.setText(Integer.toString(CreditCustomerController.getDetails(i).getCustomerId()));
+        editCustomerFullNameTxt2.setText(CustomerCreditController.getDetails(i).getCustomerName());
+        editCustomerAddressTxt2.setText(CustomerCreditController.getDetails(i).getCustomerAddress());
+        editCustomerTeleTxt2.setText(Integer.toString(CustomerCreditController.getDetails(i).getTelephone()));
+        editCustomerNicTxt2.setText(CustomerCreditController.getDetails(i).getNic());
+        editCustomerCoopIdTxt2.setText(Integer.toString(CustomerCreditController.getDetails(i).getCustomerId()));
     }
 
     public void searchDetails() throws SQLException {
@@ -222,13 +222,13 @@ public class FinalCredit extends javax.swing.JFrame {
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "customerSearchResult");
 
-        customerSearchCustomerNameTxt.setText(CreditCustomerController.searchDetails(s).getCustomerName());
-        customerSearchCoopIdTxt.setText(Integer.toString(CreditCustomerController.searchDetails(s).getCustomerId()));
+        customerSearchCustomerNameTxt.setText(CustomerCreditController.searchDetails(s).getCustomerName());
+        customerSearchCoopIdTxt.setText(Integer.toString(CustomerCreditController.searchDetails(s).getCustomerId()));
 
     }
 
     public void loadCreditDetails() throws SQLException {
-        CreditCustomer customer = (CreditCustomerController.searchDetails(CreditDetailsCustomerComboBoxModel.getSelectedItem().toString()));
+        CreditCustomer customer = (CustomerCreditController.searchDetails(CreditDetailsCustomerComboBoxModel.getSelectedItem().toString()));
 
         creditDetailsSettlementNoTxt.setText(customer.getCustomerId() + "");
         ((DefaultTableModel)creditTbl.getModel()).setRowCount(0);

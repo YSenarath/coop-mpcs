@@ -1,8 +1,14 @@
 package controller.pos;
 
 //import controller.inventory.BatchController;
-import controller.credit.CoopCreditPaymentController;
-import controller.credit.CreditCustomerController;
+import controller.user.UserController;
+import controller.payments.EmployeeVoucherPaymentController;
+import controller.payments.CustomerVoucherPaymentController;
+import controller.payments.CashPaymentController;
+import controller.payments.PoshanaPaymentController;
+import controller.payments.CardPaymentController;
+import controller.payments.CoopCreditPaymentController;
+import controller.credit.CustomerCreditController;
 import controller.inventory.BatchController;
 import database.connector.DBConnection;
 import java.sql.Connection;
@@ -218,7 +224,7 @@ public class TransactionController {
 
     public static boolean performRefundTransaction(Refund refund) {
         logger.debug("performRefundTransaction invoked");
-        
+
         //Update database- batches, refund,refund items
         Connection connection = null;
         try {
@@ -310,7 +316,40 @@ public class TransactionController {
             }
         }
     }
-     public static void   updateCreditCustomer(double amount ,int id){
-        CreditCustomerController.updateCreditPayment(amount, id);
+
+    public static boolean updateCreditCustomer(double amount, int id) {
+        logger.debug("updateCreditCustomer invoked");
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnectionToDB();
+            connection.setAutoCommit(false);
+            logger.debug("Connection setAutoCommit(false)");
+
+            boolean result = CustomerCreditController.updateCreditPayment(amount, id);
+            logger.info("Cash withdrawal : " + result);
+
+            connection.commit();
+            return true;
+        } catch (Exception err0) {
+            logger.error("Exception occurred " + err0.getMessage());
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    logger.debug("Connection rolledback");
+                } catch (SQLException err1) {
+                    logger.error("SQLException occurred " + err1.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    logger.debug("Connection setAutoCommit(true)");
+                } catch (SQLException err2) {
+                    logger.error("SQLException occurred " + err2.getMessage());
+                }
+            }
         }
+    }
 }

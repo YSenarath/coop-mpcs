@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller.credit;
+package controller.payments;
 
 import database.connector.DBConnection;
 import database.connector.DatabaseInterface;

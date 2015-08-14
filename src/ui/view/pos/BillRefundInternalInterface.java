@@ -1,11 +1,11 @@
 package ui.view.pos;
 
-import controller.credit.CoopCreditPaymentController;
+import controller.payments.CoopCreditPaymentController;
 import controller.inventory.ProductController;
-import controller.pos.CardPaymentController;
-import controller.pos.CashPaymentController;
-import controller.pos.CustomerVoucherPaymentController;
-import controller.pos.EmployeeVoucherPaymentController;
+import controller.payments.CardPaymentController;
+import controller.payments.CashPaymentController;
+import controller.payments.CustomerVoucherPaymentController;
+import controller.payments.EmployeeVoucherPaymentController;
 import controller.pos.InvoiceController;
 import controller.pos.InvoiceItemController;
 import controller.pos.RefundController;
