@@ -29,7 +29,7 @@ public final class DBConnection implements DatabaseInterface {
         String passwordProperty = Utilities.loadProperty("password");
 
         if (!serverProperty.equals("NULL")) {
-            logger.info("Connecting from counter");
+            logger.info("Server IP from settings");
             serverIp = serverProperty;
         }
         if (!userNameProperty.equals("NULL")) {

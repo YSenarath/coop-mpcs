@@ -1,4 +1,4 @@
-package ui.view.pos;
+package ui.view.mainwindow;
 
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
@@ -19,12 +19,10 @@ class ConfigureDialog extends javax.swing.JDialog {
     public ConfigureDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ((PlainDocument) txtCounterId.getDocument()).setDocumentFilter(new IntegerFilter());
 
         String userNameProperty = Utilities.loadProperty("userName");
         String passwordProperty = Utilities.loadProperty("password");
 
-        String counterId = Utilities.loadProperty("counter");
         String serverIp = Utilities.loadProperty("SERVER_IP");
 
         if (!userNameProperty.equals("NULL")) {
@@ -34,9 +32,6 @@ class ConfigureDialog extends javax.swing.JDialog {
             txtPassword.setText(passwordProperty);
         }
 
-        if (!counterId.equals("NULL")) {
-            txtCounterId.setText(counterId);
-        }
         if (!serverIp.equals("NULL")) {
             txtServerIp.setText(serverIp);
         }
@@ -61,10 +56,6 @@ class ConfigureDialog extends javax.swing.JDialog {
             txtPassword.requestFocus();
             return;
         }
-        if (txtCounterId.getText().trim().isEmpty()) {
-            txtCounterId.requestFocus();
-            return;
-        }
         if (txtServerIp.getText().trim().isEmpty()) {
             txtServerIp.requestFocus();
             return;
@@ -80,14 +71,6 @@ class ConfigureDialog extends javax.swing.JDialog {
             txtServerIp.requestFocus();
             return;
         }
-        int counterId = -1;
-        try {
-            counterId = Integer.parseInt(txtCounterId.getText().trim());
-        } catch (NumberFormatException ex) {
-            Utilities.showMsgBox("Please enter a valid counter ID", "Error", JOptionPane.WARNING_MESSAGE);
-            txtServerIp.requestFocus();
-            return;
-        }
 
         if (!Utilities.isValidDBConnection(userName, password)) {
             Utilities.showMsgBox("Test connection to database failed. Please recheck username and password", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -100,14 +83,13 @@ class ConfigureDialog extends javax.swing.JDialog {
             logger.info("DB connection passed");
         }
 
-        Utilities.saveProperty("counter", String.valueOf(counterId));
         Utilities.saveProperty("SERVER_IP", ipAddress);
 
         Utilities.saveProperty("userName", userName);
         Utilities.saveProperty("password", password);
 
         //dispose();
-        Utilities.showMsgBox("Settings saved successfully", "POS", JOptionPane.WARNING_MESSAGE);
+        Utilities.showMsgBox("Settings saved successfully", "System", JOptionPane.WARNING_MESSAGE);
     }
 
     private void testConnection() {
@@ -137,8 +119,6 @@ class ConfigureDialog extends javax.swing.JDialog {
         jButton2 = new javax.swing.JButton();
         ContainerPanel = new javax.swing.JPanel();
         btnExit = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        txtCounterId = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtServerIp = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
@@ -167,12 +147,6 @@ class ConfigureDialog extends javax.swing.JDialog {
                 btnExitActionPerformed(evt);
             }
         });
-
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel2.setText("Counter ID");
-
-        txtCounterId.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtCounterId.setHorizontalAlignment(javax.swing.JTextField.LEFT);
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel3.setText("Server IP /Name");
@@ -216,14 +190,12 @@ class ConfigureDialog extends javax.swing.JDialog {
                 .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnTestConnection, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtUserName)
                     .addComponent(txtPassword)
-                    .addComponent(txtCounterId)
                     .addGroup(ContainerPanelLayout.createSequentialGroup()
                         .addGap(0, 62, Short.MAX_VALUE)
                         .addComponent(btnSave)
@@ -243,10 +215,6 @@ class ConfigureDialog extends javax.swing.JDialog {
                 .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtCounterId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -295,11 +263,9 @@ class ConfigureDialog extends javax.swing.JDialog {
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnTestConnection;
     private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JTextField txtCounterId;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtServerIp;
     private javax.swing.JTextField txtUserName;
