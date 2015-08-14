@@ -298,8 +298,13 @@ public class MainWindow extends javax.swing.JFrame {
         //</editor-fold>
 
         Properties props = new Properties();
+<<<<<<< HEAD
         props.put("logoString", "CO-OP");
 
+=======
+        props.put("logoString", "");
+        
+>>>>>>> fce283d1e81d7a60abc37e6feb035258755f45f6
         com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
 
         try {
