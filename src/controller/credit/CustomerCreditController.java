@@ -7,11 +7,14 @@ package controller.credit;
 
 import database.connector.DBConnection;
 import database.connector.DatabaseInterface;
+import static database.connector.DatabaseInterface.CREDIT_CUSTOMER;
 import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import model.creditManagement.CreditCustomer;
 
@@ -19,7 +22,7 @@ import model.creditManagement.CreditCustomer;
  *
  * @author HP
  */
-public class CreditCustomerController implements DatabaseInterface {
+public class CustomerCreditController implements DatabaseInterface {
 
     CreditCustomer creditCustomer;
 
@@ -196,6 +199,43 @@ public class CreditCustomerController implements DatabaseInterface {
 
         return customers;
     }
+
+    public static int getLastCreditCustomerId() throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT customer_id FROM " + CREDIT_CUSTOMER + " ORDER BY customer_id DESC LIMIT 1";
+
+        ResultSet resultSet = DBHandler.getData(connection, query);
+
+        if (resultSet.next()) {
+            return resultSet.getInt("customer_id");
+        }
+        return -1;
+    }
+
+    public static boolean updateCreditPayment(double amount, int id) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "UPDATE " + CREDIT_CUSTOMER + " SET current_credit = ?   WHERE customer_id = ? ";
+
+        Object[] creditCustomerObj = {
+            amount,
+            id
+        };
+        return DBHandler.setData(connection, query, creditCustomerObj) == 1;
+
+    }
+
+    public static boolean deleteDeatils(int id) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "DELETE FROM " + CREDIT_CUSTOMER + " WHERE customer_id=?";
+
+        Object[] ob = {
+            id
+        };
+        return DBHandler.setData(connection, query, ob) == 1;
+    }
+
 }
 
 /*   public static void setDetails(CreditCustomer creditCustomer, int i) throws SQLException {

@@ -1,7 +1,7 @@
 package ui.view.pos;
 
 import controller.pos.TransactionController;
-import controller.pos.UserController;
+import controller.user.UserController;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import model.people.User;

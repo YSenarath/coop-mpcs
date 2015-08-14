@@ -11,9 +11,11 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.people.User;
+
 import ui.view.inventory.ManageDepartment;
 import ui.view.inventory.ManageProduct;
 import ui.view.ledger.DamageStockInterface;
@@ -29,24 +31,21 @@ public class MainWindow extends javax.swing.JFrame {
 
     // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(MainWindow.class);
+    private LogIn logIn;
     // </editor-fold>
+
+    private ManageDepartment winManageDep;
+    private ManageProduct winManagePro;
 
     /**
      * Creates new form MainWindow
      */
-    private ManageDepartment winManageDep;
-    private ManageProduct winManagePro;
-    private LogIn logInWindow;
-
-    Dimension desktopSize;
-
     public MainWindow() {
         initComponents();
 
         initializeGUI();
 
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.desktopSize = jDesktopPane1.getSize();
 
         //--------------------------------Internal Frames-----------------------
         try {
@@ -60,6 +59,10 @@ public class MainWindow extends javax.swing.JFrame {
         jDesktopPane1.add(winManagePro);
 
         //-----------------------------------------------------------------------
+    }
+
+    public void setLogInWindow(LogIn logIn) {
+        this.logIn = logIn;
     }
 
     /**
@@ -342,12 +345,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         GRNInterface grnInterface = new GRNInterface();
 
-        jDesktopPane1.add(grnInterface);
-
-        Dimension jInternalFrameSize = grnInterface.getSize();
-
-        grnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        setInternalFrameLocation(grnInterface);
 
         grnInterface.show();
     }
@@ -356,12 +354,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         SupplierInterface supplierInterface = new SupplierInterface();
 
-        jDesktopPane1.add(supplierInterface);
-
-        Dimension jInternalFrameSize = supplierInterface.getSize();
-
-        supplierInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        setInternalFrameLocation(supplierInterface);
 
         supplierInterface.show();
     }
@@ -369,12 +362,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void createNewSRN() {
         SupplierReturnNoteInterface srnInterface = new SupplierReturnNoteInterface();
 
-        jDesktopPane1.add(srnInterface);
-
-        Dimension jInternalFrameSize = srnInterface.getSize();
-
-        srnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        setInternalFrameLocation(srnInterface);
 
         srnInterface.show();
     }
@@ -384,30 +372,32 @@ public class MainWindow extends javax.swing.JFrame {
 
         jDesktopPane1.add(i);
 
-        Dimension jInternalFrameSize = i.getSize();
-
-        i.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        setInternalFrameLocation(i);
 
         i.show();
     }
 
     private void initializeGUI() {
         logger.debug("initializeGUI invoked");
-        if (logInWindow.getLoggedUser().equals(User.INVENTORY)) {
-            logger.debug("Logged in as Inventory cleark");
-        } else if (logInWindow.getLoggedUser().equals(User.MANAGER)) {
-            logger.debug("Logged in as  Manager");
+        if (logIn != null) {
+            if (logIn.getLoggedUserType().equals(User.INVENTORY)) {
+                logger.debug("Logged in as Inventory cleark");
+            } else if (logIn.getLoggedUserType().equals(User.MANAGER)) {
+                logger.debug("Logged in as  Manager");
+            } else {
+                logger.debug("Not logged in");
+            }
         } else {
-            logger.debug("");
+            logger.debug("Not logged in");
         }
     }
 
-    /**
-     *
-     * @param window
-     */
-    public void setLogInWindow(LogIn window) {
-        this.logInWindow = window;
+    private void setInternalFrameLocation(JInternalFrame frame) {
+        Dimension desktopSize = jDesktopPane1.getSize();
+        Dimension frameSize = frame.getSize();
+
+        frame.setLocation((desktopSize.width - frameSize.width) / 2,
+                (desktopSize.height - frameSize.height) / 2);
+
     }
 }

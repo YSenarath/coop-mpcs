@@ -1,4 +1,4 @@
-package controller.pos;
+package controller.settings;
 
 import database.connector.DBConnection;
 import database.connector.DatabaseInterface;

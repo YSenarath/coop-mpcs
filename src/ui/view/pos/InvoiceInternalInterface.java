@@ -1,7 +1,7 @@
 package ui.view.pos;
 
-import controller.credit.CreditCustomerController;
-import controller.credit.EmployeeController;
+import controller.credit.CustomerCreditController;
+import controller.credit.EmployeeCreditController;
 import controller.inventory.BatchController;
 import controller.inventory.BatchDiscountController;
 import controller.inventory.CategoryController;
@@ -1006,7 +1006,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         try {
             employeeComboBoxModel.removeAllElements();
-            ArrayList<Employee> employeeDetails = EmployeeController.loadEmployees();
+            ArrayList<Employee> employeeDetails = EmployeeCreditController.loadEmployees();
 
             employees = new HashMap<>();
 
@@ -1017,7 +1017,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             voucherEmployeeNameComboBox.getModel().setSelectedItem(null);
 
             coopCustomerComboBoxModel.removeAllElements();
-            ArrayList<CreditCustomer> customerDetails = CreditCustomerController.loadCustomers();
+            ArrayList<CreditCustomer> customerDetails = CustomerCreditController.loadCustomers();
 
             customers = new HashMap<>();
             for (CreditCustomer customer : customerDetails) {

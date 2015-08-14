@@ -1,6 +1,6 @@
 package ui.view.mainwindow;
 
-import controller.pos.UserController;
+import controller.user.UserController;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
@@ -9,10 +9,11 @@ import org.apache.log4j.Logger;
 import util.Utilities;
 import static util.Utilities.setupUI;
 
-class LogIn extends javax.swing.JFrame {
+public class LogIn extends javax.swing.JFrame {
 
     private MainWindow mainUI;
-    private User loggedUser;
+    private String userType;
+    private String userName;
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(LogIn.class);
@@ -24,7 +25,8 @@ class LogIn extends javax.swing.JFrame {
 // <editor-fold defaultstate="collapsed" desc="Constructor">
     private LogIn() {
         logger.debug("logIn constructor invoked");
-        loggedUser = null;
+        userType = null;
+        userName = null;
         initComponents();
         initializeSystem();
         setLocationRelativeTo(null);
@@ -107,11 +109,13 @@ class LogIn extends javax.swing.JFrame {
             if (txtUserName.getText().equals("")) {
                 txtPassword.setText("");
                 txtUserName.requestFocus();
+                logger.info("Empty user name");
                 return;
             }
 
             if (txtPassword.getPassword().length == 0) {
                 txtPassword.requestFocus();
+                logger.info("Empty password");
                 return;
             }
 
@@ -119,10 +123,16 @@ class LogIn extends javax.swing.JFrame {
 
             if (isUserAuthenticated(userName, txtPassword.getPassword(), User.INVENTORY)) {
                 //Code to enter main UI with inventory cleark privilages
+                this.userType = User.INVENTORY;
+                logger.error("Logging in as inventory cleark");
+                this.userName = userName;
                 mainUI.setVisible(true);
                 exitApp();
             } else if (isUserAuthenticated(userName, txtPassword.getPassword(), User.MANAGER)) {
                 //Code to enter main UI with manager privilages
+                logger.error("Logging in as manager");
+                this.userType = User.MANAGER;
+                this.userName = userName;
                 mainUI.setVisible(true);
                 exitApp();
             } else {
@@ -142,7 +152,6 @@ class LogIn extends javax.swing.JFrame {
     //Exit application
     private void exitApp() {
         logger.debug("exitApp invoked");
-
         this.setVisible(false);
     }
 // </editor-fold>
@@ -313,7 +322,18 @@ class LogIn extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 // </editor-fold>
 
-    public User getLoggedUser() {
-        return  loggedUser;
+    public String getLoggedUserType() {
+        return userType;
+    }
+
+    public String getLoggedUserName() {
+        return userName;
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        this.txtPassword.setText("");
+        this.txtUserName.setText("");
+        super.setVisible(b); //To change body of generated methods, choose Tools | Templates.
     }
 }
