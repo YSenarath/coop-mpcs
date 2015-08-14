@@ -1645,7 +1645,7 @@
                                                       <Group type="102" alignment="0" attributes="0">
                                                           <Component id="amountEmpLbl" min="-2" pref="150" max="-2" attributes="0"/>
                                                           <EmptySpace max="-2" attributes="0"/>
-                                                          <Component id="VoucherEmployeeVoucherAmount" min="-2" pref="186" max="-2" attributes="0"/>
+                                                          <Component id="voucherEmployeeVoucherAmount" min="-2" pref="186" max="-2" attributes="0"/>
                                                       </Group>
                                                   </Group>
                                                   <EmptySpace pref="93" max="32767" attributes="0"/>
@@ -1663,7 +1663,7 @@
                                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                                   <Group type="103" groupAlignment="3" attributes="0">
                                                       <Component id="amountEmpLbl" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
-                                                      <Component id="VoucherEmployeeVoucherAmount" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="voucherEmployeeVoucherAmount" alignment="3" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <EmptySpace pref="148" max="32767" attributes="0"/>
                                               </Group>
@@ -1700,7 +1700,7 @@
                                             <Property name="text" type="java.lang.String" value="Amount  (Rs.)"/>
                                           </Properties>
                                         </Component>
-                                        <Component class="javax.swing.JTextField" name="VoucherEmployeeVoucherAmount">
+                                        <Component class="javax.swing.JTextField" name="voucherEmployeeVoucherAmount">
                                           <Properties>
                                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                                               <Font name="Tahoma" size="14" style="0"/>
@@ -1708,8 +1708,8 @@
                                             <Property name="horizontalAlignment" type="int" value="4"/>
                                           </Properties>
                                           <Events>
-                                            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="VoucherEmployeeVoucherAmountFocusLost"/>
-                                            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="VoucherEmployeeVoucherAmountKeyReleased"/>
+                                            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="voucherEmployeeVoucherAmountFocusLost"/>
+                                            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="voucherEmployeeVoucherAmountKeyReleased"/>
                                           </Events>
                                         </Component>
                                       </SubComponents>

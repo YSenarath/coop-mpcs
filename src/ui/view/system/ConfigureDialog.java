@@ -1,4 +1,4 @@
-package ui.view.mainwindow;
+package ui.view.system;
 
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;

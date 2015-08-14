@@ -1,4 +1,4 @@
-package ui.view.mainwindow;
+package ui.view.system;
 
 import java.awt.Dimension;
 import java.sql.SQLException;

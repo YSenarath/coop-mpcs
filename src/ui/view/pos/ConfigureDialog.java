@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
 import org.apache.log4j.Logger;
 import util.CardNumberFilter;
+import util.IntegerFilter;
 import util.Utilities;
 
 class ConfigureDialog extends javax.swing.JDialog {
@@ -20,7 +21,7 @@ class ConfigureDialog extends javax.swing.JDialog {
     public ConfigureDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ((PlainDocument) txtCounterId.getDocument()).setDocumentFilter(new CardNumberFilter());
+        ((PlainDocument) txtCounterId.getDocument()).setDocumentFilter(new IntegerFilter());
 
         String userNameProperty = Utilities.loadProperty("userName");
         String passwordProperty = Utilities.loadProperty("password");
