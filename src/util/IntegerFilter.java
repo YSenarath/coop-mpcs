@@ -15,7 +15,7 @@ public class IntegerFilter extends DocumentFilter implements Serializable{
                 return true;
             }
              else if (text.matches("^[0-9]*$")) {
-                 return Integer.parseInt(text) > 0;
+                 return Integer.parseInt(text) >= 0;
             }
              else{
                  return false;

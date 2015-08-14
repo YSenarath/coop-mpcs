@@ -1,4 +1,4 @@
-package ui.view.mainwindow;
+package ui.view.system;
 
 import controller.user.UserController;
 import java.awt.event.KeyEvent;
@@ -45,7 +45,7 @@ public class LogIn extends javax.swing.JFrame {
             mainUI = new MainWindow();
             mainUI.setLogInWindow(this);
         }
-        
+
         //Configure the counter for 1st time
         String isFirstUse = Utilities.loadProperty("firstUseSystem");
 
@@ -119,6 +119,22 @@ public class LogIn extends javax.swing.JFrame {
             btnOK.requestFocus();
         }
     }
+
+    public String getLoggedUserType() {
+        return userType;
+    }
+
+    public String getLoggedUserName() {
+        return userName;
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        this.txtPassword.setText("");
+        this.txtUserName.setText("");
+        super.setVisible(b); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 // </editor-fold>
     //
     //
@@ -260,12 +276,9 @@ public class LogIn extends javax.swing.JFrame {
                         .addComponent(btnOK, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(containerPanelLayout.createSequentialGroup()
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, containerPanelLayout.createSequentialGroup()
-                                .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(142, 142, 142))
-                            .addGroup(containerPanelLayout.createSequentialGroup()
-                                .addComponent(lbluserName, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(142, 142, 142)))
+                            .addComponent(lblPassword, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbluserName, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(142, 142, 142)
                         .addGroup(containerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtUserName, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                             .addComponent(txtPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
@@ -346,18 +359,4 @@ public class LogIn extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 // </editor-fold>
 
-    public String getLoggedUserType() {
-        return userType;
-    }
-
-    public String getLoggedUserName() {
-        return userName;
-    }
-
-    @Override
-    public void setVisible(boolean b) {
-        this.txtPassword.setText("");
-        this.txtUserName.setText("");
-        super.setVisible(b); //To change body of generated methods, choose Tools | Templates.
-    }
 }
