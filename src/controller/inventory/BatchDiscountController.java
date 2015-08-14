@@ -7,7 +7,7 @@ package controller.inventory;
 
 import controller.pos.CounterController;
 import controller.pos.CounterLoginController;
-import controller.pos.UserController;
+import controller.user.UserController;
 import database.connector.DBConnection;
 import database.connector.DatabaseInterface;
 import database.handler.DBHandler;

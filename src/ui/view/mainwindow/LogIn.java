@@ -1,6 +1,6 @@
 package ui.view.mainwindow;
 
-import controller.pos.UserController;
+import controller.user.UserController;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui.view.credit;
+package ui.view.employee;
 
-import controller.credit.EmployeeController;
+import controller.credit.EmployeeCreditController;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.sql.SQLException;
@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.creditManagement.Employee;
 import net.proteanit.sql.DbUtils;
+import ui.view.credit.FinalCredit;
 import util.Utilities;
 
 /**
@@ -35,7 +36,7 @@ public class ManageEmployees extends javax.swing.JFrame {
     setSize(new Dimension(1500, 1500));*/
       this.ManageEmployeesTableModel = (DefaultTableModel)manageEmployeeTbl.getModel();
        
-        manageEmployeeTbl.setModel(DbUtils.resultSetToTableModel(EmployeeController.loadDetails()));
+        manageEmployeeTbl.setModel(DbUtils.resultSetToTableModel(EmployeeCreditController.loadDetails()));
 
     }
 
@@ -62,7 +63,7 @@ public class ManageEmployees extends javax.swing.JFrame {
         
         Employee  employee = new Employee(Integer.parseInt(ob[0].toString()),ob[1].toString(),ob[2].toString(),true);
      
-         EmployeeController.addEmployee(employee);
+         EmployeeCreditController.addEmployee(employee);
          chngTblModel();
          
     
@@ -76,16 +77,16 @@ public class ManageEmployees extends javax.swing.JFrame {
       
         public void editEmployeeDetails(int i) throws SQLException {
       
-        EmployeeController.getDetails(i);
+        EmployeeCreditController.getDetails(i);
   //      CreditCustomer creditCustomer = new CreditCustomer(ob[0].toString(),ob[1].toString(),Integer.parseInt(ob[2].toString()),ob[3].toString(),Integer.parseInt(ob[4].toString()),Integer.parseInt(ob[5].toString()));
         
     
         CardLayout card = (CardLayout) cardPanel.getLayout();
                 card.show(cardPanel, "editEmployee");
-                editEmployeeFullNameTxt2.setText(EmployeeController.getDetails(i).getEmployeeName());
-                editEmployeeIdTxt2.setText(Integer.toString(EmployeeController.getDetails(i).getEmployeeId()));
-                editEmployeePositionTxt1.setText(EmployeeController.getDetails(i).getPosition());
-                voucherValue= EmployeeController.getDetails(i).isVoucherIssued();
+                editEmployeeFullNameTxt2.setText(EmployeeCreditController.getDetails(i).getEmployeeName());
+                editEmployeeIdTxt2.setText(Integer.toString(EmployeeCreditController.getDetails(i).getEmployeeId()));
+                editEmployeePositionTxt1.setText(EmployeeCreditController.getDetails(i).getPosition());
+                voucherValue= EmployeeCreditController.getDetails(i).isVoucherIssued();
                    }
       public void setEditDetails() throws SQLException{
         int EmployeeId = 0;
@@ -106,7 +107,7 @@ public class ManageEmployees extends javax.swing.JFrame {
        
         Employee employee = new Employee(EmployeeId,ob[0].toString(),ob[1].toString(),voucherValue);
      
-        EmployeeController.setEditDetails(employee,Integer.parseInt(editEmployeeIdTxt2.getText()));
+        EmployeeCreditController.setEditDetails(employee,Integer.parseInt(editEmployeeIdTxt2.getText()));
          chngTblModel();
          
         //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
@@ -115,7 +116,7 @@ public class ManageEmployees extends javax.swing.JFrame {
         card.show(cardPanel, "manageEmployees");
       //      CreditCustomer creditCustomer = new CreditCustomer(customerId,ob[1].toString(),ob[2].toString(),customerTele,ob[3].toString(),10000);
       
-        EmployeeController.setEditDetails(employee,EmployeeId);
+        EmployeeCreditController.setEditDetails(employee,EmployeeId);
         editEmployeeFullNameTxt2.setText(null);
             editEmployeeIdTxt2.setText(null);
            editEmployeePositionTxt1.setText(null);
@@ -133,20 +134,20 @@ public class ManageEmployees extends javax.swing.JFrame {
     
     public void chngTblModel() throws SQLException{
       
-        getManageEmployeeTbl().setModel(DbUtils.resultSetToTableModel(EmployeeController.loadDetails()));
+        getManageEmployeeTbl().setModel(DbUtils.resultSetToTableModel(EmployeeCreditController.loadDetails()));
 
      } 
     public void searchEmployeeDetails() throws SQLException{
         String s = employeeSearchEmployeeNameTxt.getText();
-        EmployeeController.searchDetails(s);
+        EmployeeCreditController.searchDetails(s);
          CardLayout card = (CardLayout) subCardPanel.getLayout();
         card.show(subCardPanel, "employeeSearchResult");
 
         
-                employeeSearchEmployeeIdrslt.setText(Integer.toString(EmployeeController.searchDetails(s).getEmployeeId()));
-                employeeSearchFullNamerslt.setText(EmployeeController.searchDetails(s).getEmployeeName());
-                employeeSearchPositionRslt.setText(EmployeeController.searchDetails(s).getPosition());
-                if(EmployeeController.searchDetails(s).isVoucherIssued()==false){
+                employeeSearchEmployeeIdrslt.setText(Integer.toString(EmployeeCreditController.searchDetails(s).getEmployeeId()));
+                employeeSearchFullNamerslt.setText(EmployeeCreditController.searchDetails(s).getEmployeeName());
+                employeeSearchPositionRslt.setText(EmployeeCreditController.searchDetails(s).getPosition());
+                if(EmployeeCreditController.searchDetails(s).isVoucherIssued()==false){
                     jRadioButtonUsed.setSelected(true);
                 }
                 else{

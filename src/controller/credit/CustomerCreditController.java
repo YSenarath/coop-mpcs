@@ -22,7 +22,7 @@ import model.creditManagement.CreditCustomer;
  *
  * @author HP
  */
-public class CreditCustomerController implements DatabaseInterface {
+public class CustomerCreditController implements DatabaseInterface {
 
     CreditCustomer creditCustomer;
 
@@ -199,7 +199,7 @@ public class CreditCustomerController implements DatabaseInterface {
 
         return customers;
     }
-    
+
     public static int getLastCreditCustomerId() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT customer_id FROM " + CREDIT_CUSTOMER + " ORDER BY customer_id DESC LIMIT 1";
@@ -209,49 +209,24 @@ public class CreditCustomerController implements DatabaseInterface {
         if (resultSet.next()) {
             return resultSet.getInt("customer_id");
         }
-       return -1;
+        return -1;
     }
 
-    public static void updateCreditPayment(double amount,int id){
-        
-          Connection connection = null;
-        
-        try {
-            connection = DBConnection.getConnectionToDB();
-        } catch (SQLException ex) {
-            Logger.getLogger(CreditCustomerController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            connection.setAutoCommit(false);
-        } catch (SQLException ex) {
-            Logger.getLogger(CreditCustomerController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public static boolean updateCreditPayment(double amount, int id) throws SQLException {
 
-            String query = "UPDATE " + CREDIT_CUSTOMER + " SET current_credit = ?   WHERE customer_id = ? ";
+        Connection connection = DBConnection.getConnectionToDB();
 
-            Object[] creditCustomerObj = {
-                amount,
-                id
-            
-            };
+        String query = "UPDATE " + CREDIT_CUSTOMER + " SET current_credit = ?   WHERE customer_id = ? ";
 
-        try {
-            DBHandler.setData(connection, query, creditCustomerObj);
-        } catch (SQLException ex) {
-            Logger.getLogger(CreditCustomerController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            connection.commit();
-        } catch (SQLException ex) {
-            Logger.getLogger(CreditCustomerController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Object[] creditCustomerObj = {
+            amount,
+            id
+        };
+        return DBHandler.setData(connection, query, creditCustomerObj) == 1;
 
-        
     }
-    
-    
-     public static boolean deleteDeatils(int id) throws SQLException {
 
+    public static boolean deleteDeatils(int id) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "DELETE FROM " + CREDIT_CUSTOMER + " WHERE customer_id=?";
 
@@ -260,7 +235,7 @@ public class CreditCustomerController implements DatabaseInterface {
         };
         return DBHandler.setData(connection, query, ob) == 1;
     }
-    
+
 }
 
 /*   public static void setDetails(CreditCustomer creditCustomer, int i) throws SQLException {

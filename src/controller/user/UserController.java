@@ -1,4 +1,4 @@
-package controller.pos;
+package controller.user;
 
 import database.connector.DBConnection;
 import database.handler.DBHandler;
@@ -61,7 +61,7 @@ public class UserController implements DatabaseInterface {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
-    public static void addUser(User user){
+    public static void addUser(User user) {
         try {
             Connection connection = DBConnection.getConnectionToDB();
             String query = "INSERT INTO " + USER + " (user_name,password,access_level,isLoggedIn) VALUES (?,?,?,?) ";
@@ -71,16 +71,14 @@ public class UserController implements DatabaseInterface {
                 user.getUserType(),
                 user.isLoggedin()
             };
-            DBHandler.setData(connection, query, ob) ;
+            DBHandler.setData(connection, query, ob);
         } catch (SQLException ex) {
             Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         }
-    
 
-        
-        
     }
-    public static User getLoggedInUsers(){
+
+    public static User getLoggedInUsers() {
         try {
             Connection connection = DBConnection.getConnectionToDB();
             String query = "SELECT * FROM " + USER + " WHERE isLoggedIn =? ";
@@ -96,22 +94,10 @@ public class UserController implements DatabaseInterface {
                         resultSet.getBoolean("isLoggedIn")
                 );
             }
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         }
-      return null;  
+        return null;
     }
-
-    public static boolean isUserAuthenticated(String userName, String password) throws SQLException {
-        Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + USER + " WHERE user_name=? AND password=?";
-        Object[] ob = {
-            userName,
-            password
-        };
-        ResultSet resultSet = DBHandler.getData(connection, query, ob);
-        return resultSet.next();
-    }
-
 }

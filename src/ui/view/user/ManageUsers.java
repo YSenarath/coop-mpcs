@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui.view.credit;
+package ui.view.user;
 
-import controller.credit.EmployeeController;
-import controller.pos.UserController;
+import controller.credit.EmployeeCreditController;
+import controller.user.UserController;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.sql.SQLException;
@@ -37,7 +37,7 @@ public class ManageUsers extends javax.swing.JFrame {
      public  void loadDetails() throws SQLException {
 
            addUserFullNameComboBox1Model.removeAllElements();
-        ArrayList<Employee> employeeDetails = EmployeeController.loadEmployees();
+        ArrayList<Employee> employeeDetails = EmployeeCreditController.loadEmployees();
 
         for (Employee employee : employeeDetails) {
            employees.put(employee.getEmployeeId(), employee);

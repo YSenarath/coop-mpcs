@@ -19,7 +19,7 @@ import model.creditManagement.Employee;
  *
  * @author HP
  */
-public class EmployeeController {
+public class EmployeeCreditController {
 
     public static Employee getDetails() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
