@@ -151,7 +151,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         //Yasara
         ((PlainDocument) coopCreditAmountTxt.getDocument()).setDocumentFilter(new DoubleFilter());
         ((PlainDocument) poshanaPaymentAmountTxt.getDocument()).setDocumentFilter(new DoubleFilter());
-        ((PlainDocument) VoucherEmployeeVoucherAmount.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) voucherEmployeeVoucherAmount.getDocument()).setDocumentFilter(new DoubleFilter());
         ((PlainDocument) voucherCustomerAmountTxt.getDocument()).setDocumentFilter(new DoubleFilter());
 
         ((DefaultTableCellRenderer) invoiceItemTable.getDefaultRenderer(Object.class)).setHorizontalAlignment(JLabel.RIGHT);
@@ -643,7 +643,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         //Yasara
         coopCreditAmountTxt.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
-        VoucherEmployeeVoucherAmount.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
+        voucherEmployeeVoucherAmount.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
         voucherCustomerAmountTxt.setText(remainingAmount > 0 ? String.format("%.2f", remainingAmount) : "0.00");
     }
 
@@ -1501,20 +1501,20 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             int employeeId = Integer.parseInt(((KeyValueContainer) voucherEmployeeNameComboBox.getSelectedItem()).getKey());
 
             try {
-                employeeVoucherPaymentAmount = Double.parseDouble(VoucherEmployeeVoucherAmount.getText());
+                employeeVoucherPaymentAmount = Double.parseDouble(voucherEmployeeVoucherAmount.getText());
                 if (employeeVoucherPaymentAmount == 0.00) {
                     throw new NumberFormatException("Zero payment");
                 }
             } catch (NumberFormatException ex) {
                 Utilities.showMsgBox("Invalid voucher payment amount", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
-                VoucherEmployeeVoucherAmount.requestFocus();
+                voucherEmployeeVoucherAmount.requestFocus();
                 return;
             }
             double remainingAmount = invoice.getNetTotal() - invoice.getAmountPaid();
 
             if (employeeVoucherPaymentAmount > remainingAmount) {
                 Utilities.showMsgBox("Voucher payment should be less than or equal to the remaining amount to be paid", "Invalid amount", JOptionPane.WARNING_MESSAGE);
-                VoucherEmployeeVoucherAmount.requestFocus();
+                voucherEmployeeVoucherAmount.requestFocus();
                 return;
             }
 
@@ -1762,7 +1762,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         employeeNameLbl = new javax.swing.JLabel();
         voucherEmployeeNameComboBox = new javax.swing.JComboBox();
         amountEmpLbl = new javax.swing.JLabel();
-        VoucherEmployeeVoucherAmount = new javax.swing.JTextField();
+        voucherEmployeeVoucherAmount = new javax.swing.JTextField();
         customerCard = new javax.swing.JPanel();
         voucherIdLbl = new javax.swing.JLabel();
         VoucherCustomerIdTxt = new javax.swing.JTextField();
@@ -2655,16 +2655,16 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         amountEmpLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         amountEmpLbl.setText("Amount  (Rs.)");
 
-        VoucherEmployeeVoucherAmount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        VoucherEmployeeVoucherAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        VoucherEmployeeVoucherAmount.addFocusListener(new java.awt.event.FocusAdapter() {
+        voucherEmployeeVoucherAmount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        voucherEmployeeVoucherAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        voucherEmployeeVoucherAmount.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
-                VoucherEmployeeVoucherAmountFocusLost(evt);
+                voucherEmployeeVoucherAmountFocusLost(evt);
             }
         });
-        VoucherEmployeeVoucherAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+        voucherEmployeeVoucherAmount.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                VoucherEmployeeVoucherAmountKeyReleased(evt);
+                voucherEmployeeVoucherAmountKeyReleased(evt);
             }
         });
 
@@ -2682,7 +2682,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addGroup(employeeCardLayout.createSequentialGroup()
                         .addComponent(amountEmpLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(VoucherEmployeeVoucherAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(voucherEmployeeVoucherAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(93, Short.MAX_VALUE))
         );
         employeeCardLayout.setVerticalGroup(
@@ -2695,7 +2695,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(employeeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(amountEmpLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(VoucherEmployeeVoucherAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(voucherEmployeeVoucherAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(148, Short.MAX_VALUE))
         );
 
@@ -3094,13 +3094,13 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_voucherEmployeeNameComboBoxActionPerformed
 
-    private void VoucherEmployeeVoucherAmountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_VoucherEmployeeVoucherAmountFocusLost
+    private void voucherEmployeeVoucherAmountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_voucherEmployeeVoucherAmountFocusLost
         // TODO add your handling code here:
-    }//GEN-LAST:event_VoucherEmployeeVoucherAmountFocusLost
+    }//GEN-LAST:event_voucherEmployeeVoucherAmountFocusLost
 
-    private void VoucherEmployeeVoucherAmountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_VoucherEmployeeVoucherAmountKeyReleased
+    private void voucherEmployeeVoucherAmountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_voucherEmployeeVoucherAmountKeyReleased
         // TODO add your handling code here:
-    }//GEN-LAST:event_VoucherEmployeeVoucherAmountKeyReleased
+    }//GEN-LAST:event_voucherEmployeeVoucherAmountKeyReleased
 
     private void employeeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeRadioButtonActionPerformed
         // TODO add your handling code here:
@@ -3131,7 +3131,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PoshanaPayment;
     private javax.swing.JTextField VoucherCustomerIdTxt;
-    private javax.swing.JTextField VoucherEmployeeVoucherAmount;
     private javax.swing.JPanel VoucherPayment;
     private javax.swing.JLabel amountEmpLbl;
     private javax.swing.JLabel amountLbl;
@@ -3226,6 +3225,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     private javax.swing.JPanel voucherCard;
     private javax.swing.JTextField voucherCustomerAmountTxt;
     private javax.swing.JComboBox voucherEmployeeNameComboBox;
+    private javax.swing.JTextField voucherEmployeeVoucherAmount;
     private javax.swing.JLabel voucherIdLbl;
     private javax.swing.ButtonGroup voucherPaymentBtnGroup;
     // End of variables declaration//GEN-END:variables
