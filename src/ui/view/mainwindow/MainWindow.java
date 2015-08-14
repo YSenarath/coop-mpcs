@@ -57,6 +57,9 @@ public class MainWindow extends javax.swing.JFrame {
 
         jDesktopPane1.add(winManageDep);
         jDesktopPane1.add(winManagePro);
+        
+        setInternalFrameLocation(winManageDep);
+        setInternalFrameLocation(winManagePro);
 
         //-----------------------------------------------------------------------
     }
@@ -285,6 +288,10 @@ public class MainWindow extends javax.swing.JFrame {
         //</editor-fold>
 
         Properties props = new Properties();
+
+        props.put("logoString", "CO-OP");
+
+
         props.put("logoString", "");
         com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
 
