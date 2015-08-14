@@ -2,7 +2,7 @@ package ui.view.pos;
 
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
-import util.IntegerFilter;
+import util.CardNumberFilter;
 import util.Utilities;
 import static util.Utilities.setupUI;
 
@@ -17,7 +17,7 @@ class ConfigureDialog extends javax.swing.JDialog {
     public ConfigureDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ((PlainDocument) txtCounterId.getDocument()).setDocumentFilter(new IntegerFilter());
+        ((PlainDocument) txtCounterId.getDocument()).setDocumentFilter(new CardNumberFilter());
 
         String counterId = Utilities.loadProperty("counter");
         String serverIp = Utilities.loadProperty("SERVER_IP");

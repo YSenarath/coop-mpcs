@@ -302,9 +302,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         Properties props = new Properties();
 
-        props.put("logoString", "CO-OP");
-
-
         props.put("logoString", "");
         com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
 

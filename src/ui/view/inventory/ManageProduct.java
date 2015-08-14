@@ -37,6 +37,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form AddDepartment
+     * @throws java.sql.SQLException
      */
     public ManageProduct() throws SQLException {
         handler = new ManageProductHandler(this);
@@ -45,10 +46,13 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         handler.loadProductCombo();
 
-        //added 8/14 : configure search boxes
+        //added 8/14 : configure search boxes================================
         nameSearchField.setFindPopupMenu(namePopUp);
         idSearchField.setFindPopupMenu(idPopUp);
-        //
+
+
+        //============================================================
+        
 
         //test
         
@@ -741,7 +745,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         );
 
         setClosable(true);
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setIconifiable(true);
 
         jXTitledPanel1.setTitle("Product Details");
@@ -1050,6 +1054,16 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         });
 
         idSearchField.setPrompt("Search ID");
+        idSearchField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                idSearchFieldActionPerformed(evt);
+            }
+        });
+        idSearchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                idSearchFieldKeyReleased(evt);
+            }
+        });
 
         nameSearchField.setPrompt("Search Name");
         nameSearchField.addActionListener(new java.awt.event.ActionListener() {
@@ -1671,7 +1685,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_roValueActionPerformed
 
     private void nameSearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameSearchFieldActionPerformed
-        handler.search(nameSearchField.getText());
+        handler.searchName(nameSearchField.getText());
       
     }//GEN-LAST:event_nameSearchFieldActionPerformed
 
@@ -1681,6 +1695,17 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             nameSearchField.getFindPopupMenu().show(nameSearchField, 0, 20);
         }
     }//GEN-LAST:event_nameSearchFieldKeyReleased
+
+    private void idSearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idSearchFieldActionPerformed
+       handler.searchId(idSearchField.getText()); 
+    }//GEN-LAST:event_idSearchFieldActionPerformed
+
+    private void idSearchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idSearchFieldKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            logger.info("Enter key pressed");
+            idSearchField.getFindPopupMenu().show(idSearchField, 0, 20);
+        }
+    }//GEN-LAST:event_idSearchFieldKeyReleased
 
 
     public JComboBox getCatCombo() {
@@ -2057,6 +2082,10 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     public JPopupMenu getNamePopUp() {
         return namePopUp;
+    }
+
+    public JPopupMenu getIDPopUp() {
+        return idPopUp;
     }
 
 }

@@ -11,7 +11,7 @@ public class CharactorLimitDocument extends PlainDocument {
     public CharactorLimitDocument(int limit) {
         super();
         this.limit = limit;
-        setDocumentFilter(new IntegerFilter());
+        setDocumentFilter(new CardNumberFilter());
     }
 
     @Override

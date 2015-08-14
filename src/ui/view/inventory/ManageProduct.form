@@ -874,7 +874,7 @@
   </NonVisualComponents>
   <Properties>
     <Property name="closable" type="boolean" value="true"/>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="defaultCloseOperation" type="int" value="1"/>
     <Property name="iconifiable" type="boolean" value="true"/>
   </Properties>
   <SyntheticProperties>
@@ -1547,6 +1547,10 @@
                       <Properties>
                         <Property name="prompt" type="java.lang.String" value="Search ID"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="idSearchFieldActionPerformed"/>
+                        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="idSearchFieldKeyReleased"/>
+                      </Events>
                     </Component>
                     <Component class="org.jdesktop.swingx.JXSearchField" name="nameSearchField">
                       <Properties>
