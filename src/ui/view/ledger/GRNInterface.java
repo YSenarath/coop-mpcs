@@ -1,5 +1,6 @@
 package ui.view.ledger;
 //
+//
 // <editor-fold defaultstate="collapsed" desc="Imports">
 
 import controller.inventory.ProductController;
@@ -23,7 +24,9 @@ import util.DoubleFilter;
 
 // </editor-fold>
 // 
+//
 public class GRNInterface extends javax.swing.JInternalFrame {
+    //
     //
     // <editor-fold defaultstate="collapsed" desc="Variables">
 
@@ -32,6 +35,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
     private final DefaultTableModel model;
 
     // </editor-fold>
+    //
     //
     // <editor-fold defaultstate="collapsed" desc="Netbeans generated">
     /**
@@ -497,6 +501,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
 
     // </editor-fold>
     //
+    //
     // <editor-fold defaultstate="collapsed" desc="GRN Management">
     private void recordGoodRecieveNote() {
         /*
@@ -554,6 +559,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
 
     // </editor-fold>
     //
+    //
     // <editor-fold defaultstate="collapsed" desc="Interface Management">
     private void initInterface() {
         try {
@@ -586,6 +592,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
     }
 
     // </editor-fold>
+    //
     //
     // <editor-fold defaultstate="collapsed" desc="Item Management">
     private boolean isItemValid(int row) {
@@ -672,5 +679,6 @@ public class GRNInterface extends javax.swing.JInternalFrame {
     }
 
     // </editor-fold>
+    //
     //
 }

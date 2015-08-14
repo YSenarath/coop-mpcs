@@ -40,11 +40,35 @@ public class LogIn extends javax.swing.JFrame {
 
     private void initializeSystem() {
         logger.debug("initializeSystem invoked");
+
         if (mainUI == null) {
             mainUI = new MainWindow();
             mainUI.setLogInWindow(this);
         }
-        //Insert code for initializations
+        
+        //Configure the counter for 1st time
+        String isFirstUse = Utilities.loadProperty("firstUseSystem");
+
+        if (isFirstUse.equals("NULL")) {
+            logger.info("First time ");
+            new ConfigureDialog(this, true).setVisible(true);
+        }
+
+        String serverIp = Utilities.loadProperty("SERVER_IP");
+
+        if (serverIp.equals("NULL")) {
+            Utilities.showMsgBox("Please set initial Configuration", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(3);
+        } else if (!Utilities.isValidDBConnection()) {
+            Utilities.showMsgBox("Test connection to database failed. Please recheck username and password", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(3);
+        } else {
+            logger.info("DB connection established");
+            if (isFirstUse.equals("NULL")) {
+                logger.info("Initial connection passed");
+                Utilities.saveProperty("firstUseSystem", "1");
+            }
+        }
     }
 
     //Check if user is authenticated

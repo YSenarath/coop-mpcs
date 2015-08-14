@@ -46,13 +46,17 @@ INSERT INTO product (department_id,category_id,product_id,product_name,barcode,d
 
 INSERT INTO product (department_id,category_id,product_id,product_name,barcode,description,unit,pack_size) VALUES (1,2,4,'Sprite',765432198,'Sprite bottle 1.5L','bulk',1);
 
+INSERT INTO supplier (supplier_id, sup_name, contact_person, address, tel_number, fax_number, e_mail, reg_date, cancel_date) VALUES ("1", "Yasas Suppliers", "Yasas", "No84, Mk, Gampaha", "0123456789", "1234567890", "afds@gmail.com", "2007/8/8", "2006/9/8");
+
+
 INSERT INTO product (department_id,category_id,product_id,product_name,barcode,description,unit,pack_size) VALUES (2,1,5,'Head & Shoulders',543219876,'Mens 400g','bulk',1);
 
 INSERT INTO product (department_id,category_id,product_id,product_name,barcode,description,unit,pack_size) VALUES (2,2,6,'Coolgate',654321987,'Coolgate toothpase 100g','bulk',1);
 
 
-INSERT INTO grn(grn_number) VALUES (1);
-INSERT INTO grn(grn_number) VALUES (2);
+INSERT INTO grn (grn_number, invoice_no, invoice_date, supplier_id, location, payment_method, loading_fee, PurchasingBill_discount, sellingBill_discount) VALUES (1, 1, "2010/05/8", 1, "Stores", "cash", 0.0, 0.0, 0.0 );
+
+INSERT INTO grn (grn_number, invoice_no, invoice_date, supplier_id, location, payment_method, loading_fee, PurchasingBill_discount, sellingBill_discount) VALUES (2, 1, "2010/05/8", 1, "Stores", "cash", 0.0, 0.0, 0.0 );
 
 -- 1.Lipton Tea
 INSERT INTO batch (product_id,batch_id,grn_number,unit_cost,unit_price,qty,exp_date,notify_date,recieved_qty,in_stock,discounted) VALUES (1,1,1,300.00,400.00,100,'2017-12-12','2017-11-12',60,true,true);

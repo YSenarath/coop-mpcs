@@ -4,11 +4,12 @@ import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
 import util.CardNumberFilter;
 import util.Utilities;
-import static util.Utilities.setupUI;
 
 class ConfigureDialog extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
+    private static final Logger logger = Logger.getLogger(ConfigureDialog.class);
+
     // </editor-fold>
     //
     //
@@ -19,8 +20,18 @@ class ConfigureDialog extends javax.swing.JDialog {
         initComponents();
         ((PlainDocument) txtCounterId.getDocument()).setDocumentFilter(new CardNumberFilter());
 
+        String userNameProperty = Utilities.loadProperty("userName");
+        String passwordProperty = Utilities.loadProperty("password");
+
         String counterId = Utilities.loadProperty("counter");
         String serverIp = Utilities.loadProperty("SERVER_IP");
+
+        if (!userNameProperty.equals("NULL")) {
+            txtUserName.setText(userNameProperty);
+        }
+        if (!passwordProperty.equals("NULL")) {
+            txtPassword.setText(passwordProperty);
+        }
 
         if (!counterId.equals("NULL")) {
             txtCounterId.setText(counterId);
@@ -28,7 +39,7 @@ class ConfigureDialog extends javax.swing.JDialog {
         if (!serverIp.equals("NULL")) {
             txtServerIp.setText(serverIp);
         }
-        txtCounterId.requestFocus();
+        txtUserName.requestFocus();
         setLocationRelativeTo(null);
     }
 
@@ -38,6 +49,17 @@ class ConfigureDialog extends javax.swing.JDialog {
     //
 // <editor-fold defaultstate="collapsed" desc="Methods">
     private void saveSettings() {
+        logger.debug("saveSettings invoked ");
+
+        if (txtUserName.getText().trim().isEmpty()) {
+            txtUserName.requestFocus();
+            return;
+        }
+
+        if (txtPassword.getPassword().length == 0) {
+            txtPassword.requestFocus();
+            return;
+        }
         if (txtCounterId.getText().trim().isEmpty()) {
             txtCounterId.requestFocus();
             return;
@@ -46,6 +68,9 @@ class ConfigureDialog extends javax.swing.JDialog {
             txtServerIp.requestFocus();
             return;
         }
+
+        String userName = txtUserName.getText();
+        String password = new String(txtPassword.getPassword());
         String ipAddress = txtServerIp.getText().trim();
 
         if (!Utilities.isValidIPv4Address(ipAddress)) {
@@ -63,14 +88,39 @@ class ConfigureDialog extends javax.swing.JDialog {
             return;
         }
 
+        if (!Utilities.isValidDBConnection(userName, password)) {
+            Utilities.showMsgBox("Test connection to database failed. Please recheck username and password", "Warning", JOptionPane.WARNING_MESSAGE);
+            logger.error("DB connection failed");
+            txtUserName.setText("");
+            txtPassword.setText("");
+            txtUserName.requestFocus();
+            return;
+        } else {
+            logger.info("DB connection passed");
+        }
+
         Utilities.saveProperty("counter", String.valueOf(counterId));
         Utilities.saveProperty("SERVER_IP", ipAddress);
 
-        dispose();
+        Utilities.saveProperty("userName", userName);
+        Utilities.saveProperty("password", password);
+
+        //dispose();
         Utilities.showMsgBox("Settings saved successfully", "POS", JOptionPane.WARNING_MESSAGE);
     }
 
+    private void testConnection() {
+        logger.debug("testConnection invoked ");
+
+        if (!Utilities.isValidDBConnection()) {
+            Utilities.showMsgBox("Test connection to database failed. Please recheck username and password", "Warning", JOptionPane.WARNING_MESSAGE);
+        } else {
+            Utilities.showMsgBox("Test connection to database passed.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
     private void configuration_exit() {
+        logger.debug("configuration_exit invoked ");
         dispose();
     }
 
@@ -91,6 +141,11 @@ class ConfigureDialog extends javax.swing.JDialog {
         jLabel3 = new javax.swing.JLabel();
         txtServerIp = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtUserName = new javax.swing.JTextField();
+        txtPassword = new javax.swing.JPasswordField();
+        btnTestConnection = new javax.swing.JButton();
 
         jButton2.setText("jButton2");
 
@@ -122,13 +177,32 @@ class ConfigureDialog extends javax.swing.JDialog {
         jLabel3.setText("Server IP /Name");
 
         txtServerIp.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtServerIp.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtServerIp.setHorizontalAlignment(javax.swing.JTextField.LEFT);
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnSave.setText("Save");
         btnSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSaveActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel4.setText("DB user Name");
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel5.setText("DB Password");
+
+        txtUserName.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtUserName.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+
+        txtPassword.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        btnTestConnection.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnTestConnection.setText("Test Connection");
+        btnTestConnection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTestConnectionActionPerformed(evt);
             }
         });
 
@@ -139,19 +213,22 @@ class ConfigureDialog extends javax.swing.JDialog {
             .addGroup(ContainerPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTestConnection, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtUserName)
+                    .addComponent(txtPassword)
+                    .addComponent(txtCounterId)
                     .addGroup(ContainerPanelLayout.createSequentialGroup()
-                        .addGap(0, 234, Short.MAX_VALUE)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 62, Short.MAX_VALUE)
+                        .addComponent(btnSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(ContainerPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtCounterId))
-                    .addGroup(ContainerPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtServerIp)))
+                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtServerIp))
                 .addContainerGap())
         );
         ContainerPanelLayout.setVerticalGroup(
@@ -159,16 +236,26 @@ class ConfigureDialog extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ContainerPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtCounterId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(txtServerIp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22)
+                .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(ContainerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnTestConnection, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -196,38 +283,25 @@ class ConfigureDialog extends javax.swing.JDialog {
         saveSettings();
     }//GEN-LAST:event_btnSaveActionPerformed
 
-     /**
-      * @param args the command line arguments
-      */
-     public static void main(String args[]) {
-
-         setupUI();
-
-         /* Create and display the dialog */
-         java.awt.EventQueue.invokeLater(new Runnable() {
-
-             public void run() {
-                 ConfigureDialog dialog = new ConfigureDialog(new javax.swing.JFrame(), true);
-                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                     @Override
-                     public void windowClosing(java.awt.event.WindowEvent e) {
-                         System.exit(0);
-                     }
-                 });
-                 dialog.setVisible(true);
-             }
-         });
-     }
+    private void btnTestConnectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestConnectionActionPerformed
+        // TODO add your handling code here:
+        testConnection();
+    }//GEN-LAST:event_btnTestConnectionActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel ContainerPanel;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnTestConnection;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JTextField txtCounterId;
+    private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtServerIp;
+    private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 // </editor-fold>
 }

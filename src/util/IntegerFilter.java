@@ -67,6 +67,5 @@ public class IntegerFilter extends DocumentFilter implements Serializable{
         } else {
             Toolkit.getDefaultToolkit().beep();
         }
-
     }
 }
