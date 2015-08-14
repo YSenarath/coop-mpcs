@@ -120,9 +120,9 @@ public class ManageProductHandler {
             for (Batch b : batches) {
                 System.out.println(b.getBatchId());
                 if (b.isInStock()) {
-                 System.out.println(b.getBatchId());   
+                    System.out.println(b.getBatchId());
                     profit = (b.getUnit_price() - b.getUnit_cost()) * b.getRecievedQuantity();
-                    ((DefaultTableModel) (gui.getBatchTable().getModel())).addRow(new String[]{b.getBatchId(), b.getGrnNumber(),"Yasas","YASAS" , b.getUnit_cost() + "", b.getUnit_price() + "", b.getRecievedQuantity() + "", profit + "", Utilities.getStringDate(b.getExpirationDate()), Utilities.getStringDate(b.getNotificationDate())});
+                    ((DefaultTableModel) (gui.getBatchTable().getModel())).addRow(new String[]{b.getBatchId(), b.getGrnNumber(), "Yasas", "YASAS", b.getUnit_cost() + "", b.getUnit_price() + "", b.getRecievedQuantity() + "", profit + "", Utilities.getStringDate(b.getExpirationDate()), Utilities.getStringDate(b.getNotificationDate())});
 
                     qty += b.getRecievedQuantity();
                     totalProfit += profit;
@@ -134,8 +134,8 @@ public class ManageProductHandler {
 
             gui.getTotalQtyText().setText(qty + "");
             gui.getProfitText().setText(totalProfit + "");
-            
-            if (gui.getBatchTable().getRowCount() == 0){
+
+            if (gui.getBatchTable().getRowCount() == 0) {
                 JOptionPane.showMessageDialog(gui, "Product - " + productName + " is out of stock", "Out of Stock", 1);
             }
         } else {
@@ -160,7 +160,7 @@ public class ManageProductHandler {
         String depID;
         String catID;
 
-        if (pName == null || pName.equals("")){
+        if (pName == null || pName.equals("")) {
             Utilities.ShowErrorMsg(gui.getUpdateProduct(), "Product Name can't be empty");
             return false;
         }
@@ -178,7 +178,7 @@ public class ManageProductHandler {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getpBarcodeTB1().getText() + "\" is not a valid Barcode.\nEnter a valid Barcode", "Invalid Data", 2);
             return false;
         }
-        if (desc == null || desc.equals("")){
+        if (desc == null || desc.equals("")) {
             Utilities.ShowErrorMsg(gui.getUpdateProduct(), "Product Description can't be empty");
             return false;
         }
@@ -309,7 +309,7 @@ public class ManageProductHandler {
         }
 
     }
-  
+
     public void clearFields() {
 
         gui.getpDesTB().setText("");
@@ -324,18 +324,18 @@ public class ManageProductHandler {
         gui.getRoValueTB().setText("0");
         gui.getMaxQtyTB().setText("0");
     }
-    
-    public String getNextIndex (){
-        int index = Utilities.convertKeyToInteger(products.get(products.size()-1).getProductId());
-        return Utilities.convertKeyToString(index+1, DatabaseInterface.PRODUCT);
+
+    public String getNextIndex() {
+        int index = Utilities.convertKeyToInteger(products.get(products.size() - 1).getProductId());
+        return Utilities.convertKeyToString(index + 1, DatabaseInterface.PRODUCT);
     }
 
     public boolean removeProduct() throws SQLException {
-       return ProductController.removeProduct(gui.getProductIdCombo().getSelectedItem().toString());
+        return ProductController.removeProduct(gui.getProductIdCombo().getSelectedItem().toString());
     }
 
     public boolean editProduct() throws SQLException {
-      String pid = gui.getpIdTB().getText().trim();
+        String pid = gui.getpIdTB().getText().trim();
 
         String pName = gui.getpNameTB().getText().trim();
         String desc = gui.getpDesTB1().getText().trim();
@@ -350,7 +350,7 @@ public class ManageProductHandler {
         String depID;
         String catID;
 
-        if (pName == null || pName.equals("")){
+        if (pName == null || pName.equals("")) {
             Utilities.ShowErrorMsg(gui.getUpdateProduct(), "Product Name can't be empty");
             return false;
         }
@@ -368,7 +368,7 @@ public class ManageProductHandler {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getpBarcodeTB1().getText() + "\" is not a valid Barcode.\nEnter a valid Barcode", "Invalid Data", 2);
             return false;
         }
-        if (desc == null || desc.equals("")){
+        if (desc == null || desc.equals("")) {
             Utilities.ShowErrorMsg(gui.getUpdateProduct(), "Product Description can't be empty");
             return false;
         }
@@ -471,8 +471,18 @@ public class ManageProductHandler {
         }
 
         JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Unexpected Error", "Error", 0);
-        return false;        
+        return false;
     }
-    
+
+    public void search(String name) {
+        gui.getNamePopUp().removeAll();
+
+        for (Product p : products) {
+
+            if (p.getProductName().toLowerCase().contains(name)) {
+                gui.getNamePopUp().add(p.getProductName());
+            }
+        }
+    }
 
 }
