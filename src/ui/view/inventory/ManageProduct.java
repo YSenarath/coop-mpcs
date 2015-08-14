@@ -6,6 +6,7 @@
 package ui.view.inventory;
 
 import java.awt.CardLayout;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -1668,11 +1669,12 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     private void nameSearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameSearchFieldActionPerformed
         handler.search(nameSearchField.getText());
-        logger.debug(nameSearchField.getPopupButton());
+      
     }//GEN-LAST:event_nameSearchFieldActionPerformed
 
     private void nameSearchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameSearchFieldKeyReleased
-        if (evt.getKeyCode() == 10) {
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            logger.info("Enter key pressed");
             nameSearchField.getFindButton().doClick();
         }
     }//GEN-LAST:event_nameSearchFieldKeyReleased
