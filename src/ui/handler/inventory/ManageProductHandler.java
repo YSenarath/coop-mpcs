@@ -473,6 +473,19 @@ public class ManageProductHandler {
         JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Unexpected Error", "Error", 0);
         return false;        
     }
+
+    
+    public void search(String name) {
+    
+        gui.getNamePopUp().removeAll();
+        
+        for(Product p : products){
+            
+            if (p.getProductName().toLowerCase().contains(name)){
+                gui.getNamePopUp().add(p.getProductName());
+            }
+        }
+    }
     
 
 }
