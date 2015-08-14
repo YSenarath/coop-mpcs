@@ -306,8 +306,6 @@ public class MainWindow extends javax.swing.JFrame {
 
 
         props.put("logoString", "");
-        
-
         com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
 
         try {
