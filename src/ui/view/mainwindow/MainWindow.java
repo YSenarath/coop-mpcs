@@ -14,6 +14,8 @@ import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import model.people.User;
+
 import ui.view.inventory.ManageDepartment;
 import ui.view.inventory.ManageProduct;
 import ui.view.ledger.DamageStockInterface;
@@ -27,18 +29,23 @@ import ui.view.supplier.SupplierInterface;
  */
 public class MainWindow extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MainWindow
-     */
+    // <editor-fold defaultstate="collapsed" desc="Variables">
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(MainWindow.class);
+    private LogIn logIn;
+    // </editor-fold>
+
     private ManageDepartment winManageDep;
     private ManageProduct winManagePro;
 
-    Dimension desktopSize;
-
+    /**
+     * Creates new form MainWindow
+     */
     public MainWindow() {
         initComponents();
+
+        initializeGUI();
+
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.desktopSize = jDesktopPane1.getSize();
 
         //--------------------------------Internal Frames-----------------------
         try {
@@ -48,11 +55,17 @@ public class MainWindow extends javax.swing.JFrame {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
         jDesktopPane1.add(winManageDep);
         jDesktopPane1.add(winManagePro);
-             
+        
+        setInternalFrameLocation(winManageDep);
+        setInternalFrameLocation(winManagePro);
+
         //-----------------------------------------------------------------------
+    }
+
+    public void setLogInWindow(LogIn logIn) {
+        this.logIn = logIn;
     }
 
     /**
@@ -286,12 +299,15 @@ public class MainWindow extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
-        
+
         Properties props = new Properties();
+
         props.put("logoString", "CO-OP");
-        
+
+
+        props.put("logoString", "");
         com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
-        
+
         try {
             com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
             UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
@@ -335,12 +351,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         GRNInterface grnInterface = new GRNInterface();
 
-        jDesktopPane1.add(grnInterface);
-
-        Dimension jInternalFrameSize = grnInterface.getSize();
-
-        grnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        setInternalFrameLocation(grnInterface);
 
         grnInterface.show();
     }
@@ -349,12 +360,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         SupplierInterface supplierInterface = new SupplierInterface();
 
-        jDesktopPane1.add(supplierInterface);
-
-        Dimension jInternalFrameSize = supplierInterface.getSize();
-
-        supplierInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        setInternalFrameLocation(supplierInterface);
 
         supplierInterface.show();
     }
@@ -362,12 +368,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void createNewSRN() {
         SupplierReturnNoteInterface srnInterface = new SupplierReturnNoteInterface();
 
-        jDesktopPane1.add(srnInterface);
-
-        Dimension jInternalFrameSize = srnInterface.getSize();
-
-        srnInterface.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        setInternalFrameLocation(srnInterface);
 
         srnInterface.show();
     }
@@ -377,21 +378,32 @@ public class MainWindow extends javax.swing.JFrame {
 
         jDesktopPane1.add(i);
 
-        Dimension jInternalFrameSize = i.getSize();
-
-        i.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
-                (desktopSize.height - jInternalFrameSize.height) / 2);
+        setInternalFrameLocation(i);
 
         i.show();
     }
-    
-    private void setInternalFrameLocation(JInternalFrame frame){
+
+    private void initializeGUI() {
+        logger.debug("initializeGUI invoked");
+        if (logIn != null) {
+            if (logIn.getLoggedUserType().equals(User.INVENTORY)) {
+                logger.debug("Logged in as Inventory cleark");
+            } else if (logIn.getLoggedUserType().equals(User.MANAGER)) {
+                logger.debug("Logged in as  Manager");
+            } else {
+                logger.debug("Not logged in");
+            }
+        } else {
+            logger.debug("Not logged in");
+        }
+    }
+
+    private void setInternalFrameLocation(JInternalFrame frame) {
         Dimension desktopSize = jDesktopPane1.getSize();
         Dimension frameSize = frame.getSize();
-        
 
         frame.setLocation((desktopSize.width - frameSize.width) / 2,
                 (desktopSize.height - frameSize.height) / 2);
-        
+
     }
 }
