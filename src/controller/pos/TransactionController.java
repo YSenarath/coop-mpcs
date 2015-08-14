@@ -2,6 +2,7 @@ package controller.pos;
 
 //import controller.inventory.BatchController;
 import controller.credit.CoopCreditPaymentController;
+import controller.credit.CreditCustomerController;
 import controller.inventory.BatchController;
 import database.connector.DBConnection;
 import java.sql.Connection;
@@ -309,4 +310,7 @@ public class TransactionController {
             }
         }
     }
+     public static void   updateCreditCustomer(double amount ,int id){
+        CreditCustomerController.updateCreditPayment(amount, id);
+        }
 }
