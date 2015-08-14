@@ -2,6 +2,7 @@ package ui.view.pos;
 
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
+import org.apache.log4j.Logger;
 import util.CardNumberFilter;
 import util.Utilities;
 

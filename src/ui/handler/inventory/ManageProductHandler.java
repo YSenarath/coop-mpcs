@@ -53,18 +53,33 @@ public class ManageProductHandler {
             @Override
             public void actionPerformed(ActionEvent event) {
                 logger.info("Name menu item was pressed :"
-                        + event.getActionCommand() );
-                
+                        + event.getActionCommand());
+
             }
         };
         idItemListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
                 logger.info("ID menu item was pressed :"
-                        + event.getActionCommand() );
+                        + event.getActionCommand());
+
+                String id = event.getActionCommand();
+
+                if (id != null || !id.equals("")) {
+                    Product pro = searchProduct(id);
+                    if (pro != null) {
+                        gui.getNameSearchField().setText(pro.getProductName());
+                        try {
+                            displayProduct(pro);
+                        } catch (SQLException ex) {
+                            logger.error("Database Error : " + ex.getLocalizedMessage());
+                        }
+                    }
+                }
             }
+
         };
-        
+
     }
 
     public void loadProductCombo() throws SQLException {
@@ -309,11 +324,11 @@ public class ManageProductHandler {
 
     }
 
-    public void displayProduct() throws SQLException {
+    public void displayProduct(Product pro) throws SQLException {
         clearFields();
-        int index = gui.getProductIdCombo().getSelectedIndex() - 1;
-        if (index >= 0) {
-            Product product = ProductController.getProduct(products.get(index));
+
+        if (pro != null) {
+            Product product = ProductController.getProduct(pro);
 
             Department department = DepartmentController.getDepartment(product.getDepartmentId());
             Category category = CategoryController.getCategory(product.getDepartmentId(), product.getCategoryId());
@@ -498,7 +513,7 @@ public class ManageProductHandler {
         return false;
     }
 
-    public void searchName(String name) {
+    public void searchNameMatches(String name) {
 
         gui.getNamePopUp().removeAll();
 
@@ -512,7 +527,7 @@ public class ManageProductHandler {
         }
     }
 
-    public void searchId(String id) {
+    public void searchIdMatches(String id) {
         gui.getIDPopUp().removeAll();
 
         for (Product p : products) {
@@ -523,6 +538,16 @@ public class ManageProductHandler {
                 gui.getIDPopUp().add(item);
             }
         }
+    }
+
+    public Product searchProduct(String text) {
+
+        for (Product p : products) {
+            if (p.getProductId().trim().equals(text.trim()) || p.getProductName().trim().equals(text.trim())) {
+                return p;
+            }
+        }
+        return null;
     }
 
 }
