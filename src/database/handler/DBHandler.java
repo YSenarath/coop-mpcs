@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DBHandler {
+public final class DBHandler {
 
     //Do not instantiate this class
     private DBHandler() {

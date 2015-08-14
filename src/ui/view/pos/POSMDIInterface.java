@@ -10,6 +10,7 @@ import java.beans.PropertyVetoException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Stack;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
@@ -19,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import model.pos.CounterLogin;
+import model.pos.Memento;
 import org.apache.log4j.Logger;
 import util.Utilities;
 import static util.Utilities.setupUI;
@@ -28,8 +30,13 @@ class POSMDIInterface extends javax.swing.JFrame {
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(POSMDIInterface.class);
 
+    //Stack to store temporary invoices
+    private final Stack<Memento> invoiceHoldStack;
+
     //Enable pos only if cashier is logged on
     private boolean isCashierLogedIn;
+
+    private final boolean debugMode;
 
     //Flag to to allow only one of the 3 ui of pos to run at once
     private boolean isMainActivityRunning;
@@ -62,6 +69,8 @@ class POSMDIInterface extends javax.swing.JFrame {
             btnCashierLog.setText("Debug Mode");
 
         }
+        invoiceHoldStack = new Stack<>();
+        this.debugMode = isDebugMode;
         performKeyBinding();
         //setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -196,9 +205,9 @@ class POSMDIInterface extends javax.swing.JFrame {
 
     public void setIsInvoiceRunning(boolean value) {
         this.isInvoiceRunning = value;
-        btnHoldSale.setEnabled(false);
-        btnRestoreSale.setEnabled(false);
-        btnNewSale.setEnabled(true);
+        btnHoldSale.setEnabled(value);
+        btnRestoreSale.setEnabled(value && !invoiceHoldStack.isEmpty());
+        btnNewSale.setEnabled(!value);
         if (!value) {
             this.invoiceInterface = null;
         }
@@ -323,27 +332,46 @@ class POSMDIInterface extends javax.swing.JFrame {
         } catch (PropertyVetoException ex) {
             logger.error("PropertyVetoException : " + ex.getMessage());
         }
-        setHoldBtn(true);
-        setRestoreBtn(false);
-        btnNewSale.setEnabled(false);
+        //setHoldBtn(true);
+        //setRestoreBtn(!invoiceHoldStack.isEmpty());
+        //btnNewSale.setEnabled(false);
     }
 
     //Hold sale
-    private void holdSale() {
-        logger.debug("holdSale invoked");
+    private void addMemento() {
+        logger.debug("addMemento invoked");
 
         if (invoiceInterface != null) {
-            invoiceInterface.holdSale();
+            Memento memento = invoiceInterface.saveToMemento();
+            if (memento != null) {
+                invoiceHoldStack.push(memento);
+                logger.info("memento added to stack ");
+                btnRestoreSale.setEnabled(!invoiceHoldStack.isEmpty());
+            }
         }
     }
 
     //Restore sale
-    private void restoreSale() {
-        logger.debug("restoreSale invoked");
+    private void getMemento() {
+        logger.debug("getMemento invoked");
 
         if (invoiceInterface != null) {
-            invoiceInterface.restoreSale();
+
+            if (!invoiceHoldStack.isEmpty()) {
+                Memento memento = invoiceHoldStack.pop();
+                boolean result = invoiceInterface.restoreFromMemento(memento);
+                if (!result) {
+                    logger.warn("Memento not restored ");
+                    invoiceHoldStack.push(memento);
+                } else {
+                    logger.info("Memento restored ");
+
+                }
+                btnRestoreSale.setEnabled(!invoiceHoldStack.isEmpty());
+            }
+
         }
+        //disable restore btn if stack is empty
     }
 
     //Show bill copy screen
@@ -470,13 +498,19 @@ class POSMDIInterface extends javax.swing.JFrame {
 
     //Manager features
     private void manager() {
-        logger.warn("manager not implemented");
+        if (debugMode) {
+            logger.debug("debug mode shutdown");
+        } else {
+            if (isCashierLogedIn) {
+                logger.warn("User still logged in ");
+                Utilities.showMsgBox("User still logged in", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                logger.warn("manager not implemented");
+            }
 
-        //Give manager the report of daily transactions
-        if (isCashierLogedIn) {
-            logger.warn("User still logged in ");
         }
         this.dispose();
+        //Give manager the report of daily transactions
     }
 
     // </editor-fold>
@@ -908,12 +942,12 @@ class POSMDIInterface extends javax.swing.JFrame {
 
     private void btnHoldSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoldSaleActionPerformed
         // TODO add your handling code here:
-        holdSale();
+        addMemento();
     }//GEN-LAST:event_btnHoldSaleActionPerformed
 
     private void btnRestoreSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestoreSaleActionPerformed
         // TODO add your handling code here:
-        restoreSale();
+        getMemento();
     }//GEN-LAST:event_btnRestoreSaleActionPerformed
 
     private void billTaskPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_billTaskPaneMouseClicked

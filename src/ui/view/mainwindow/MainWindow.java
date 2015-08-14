@@ -51,12 +51,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         jDesktopPane1.add(winManageDep);
         jDesktopPane1.add(winManagePro);
-        
-        setInternalFrameLocation(winManageDep);
-        setInternalFrameLocation(winManagePro);
-        
-        
-        
+             
         //-----------------------------------------------------------------------
     }
 
