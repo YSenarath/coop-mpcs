@@ -136,7 +136,7 @@ CREATE TABLE product (
 
 CREATE TABLE supplier(
 
-	supplier_id INT NOT NULL,
+	supplier_id INT NOT NULL AUTO_INCREMENT,
 	sup_name VARCHAR(64) NOT NULL,
 	contact_person VARCHAR(32) NOT NULL,
     address VARCHAR(255) NOT NULL,
