@@ -55,7 +55,7 @@ public class BatchController {
                     .withRecievedQuantity(resultSet.getDouble("recieved_qty"))
                     .withSoldQty(resultSet.getDouble("sold_qty"))
                     .withDiscounted(resultSet.getBoolean("discounted"))
-                    .withInStock(resultSet.getBoolean("in_stock"))
+                    .withInStock(true)
                     .build()
             );
         }

@@ -259,14 +259,13 @@ class CheckStockInterface extends javax.swing.JInternalFrame {
                 txtDepartment.setText(department.getDepartmentName());
                 txtCategory.setText(category.getCategoryName());
 
-                ArrayList<Batch> batches = BatchController.getAllBatches(productId);
+                ArrayList<Batch> batches = BatchController.getBatches(productId);
                 for (Batch batch : batches) {
                     Object[] ob = {
                         batch.getBatchId(),
                         batch.getExpirationDate(),
                         batch.getRecievedQuantity() - batch.getSoldQty(),
-                        String.format("%.2f", batch.getUnit_price()),
-                        batch.isInStock()
+                        String.format("%.2f", batch.getUnit_price())
                     };
                     itemTableModel.addRow(ob);
                 }
@@ -502,19 +501,12 @@ class CheckStockInterface extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Batch", "Exp. Date", "Available Qty", "Price (Rs.)", "In stock"
+                "Batch", "Exp. Date", "Available Qty", "Price (Rs.)"
             }
         ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
-            };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
