@@ -148,13 +148,12 @@ CREATE TABLE supplier(
     cancel_date DATE,
     
 	CONSTRAINT PRIMARY KEY(supplier_id)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              	
+	
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE grn(
 
 	grn_number INT NOT NULL AUTO_INCREMENT,
-    
     invoice_no INT NOT NULL,
 	invoice_date DATE NOT NULL,
 	supplier_id INT NOT NULL,
@@ -409,7 +408,6 @@ CREATE TABLE srn(
 	location VARCHAR(30) NOT NULL,
 
 	CONSTRAINT PRIMARY KEY (srn_number),
-
 	CONSTRAINT foreign KEY (grn_number) REFERENCES grn(grn_number),
 	CONSTRAINT foreign KEY (supplier_id) REFERENCES supplier(supplier_id)
 
@@ -425,7 +423,6 @@ CREATE TABLE srn_item(
 	price DOUBLE NOT NULL DEFAULT 0,
 
 	CONSTRAINT PRIMARY KEY (id),
-
 	CONSTRAINT foreign KEY (srn_no) REFERENCES srn(srn_number),
 	CONSTRAINT FOREIGN KEY (product_id) REFERENCES product(product_id) 
 
