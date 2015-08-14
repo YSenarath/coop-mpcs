@@ -84,9 +84,6 @@ public class LogIn extends javax.swing.JFrame {
                 if (user.getUserType().equals(User.CASHIER)) {
                     throw new Exception("User does not have administrator privilages");
                 }
-                if (user.isLoggedin()) {
-                    throw new Exception("User :" + userName + " is already logged in");
-                }
                 if (requestedAccessLevel.equals(user.getUserType())) {
                     return true;
                 }
@@ -134,14 +131,13 @@ public class LogIn extends javax.swing.JFrame {
         this.txtUserName.setText("");
         super.setVisible(b); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 // </editor-fold>
     //
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Login Methods">
     //Log in to application
-
     private void logInToSysyem() {
         logger.debug("logInToSysyem invoked");
 
@@ -167,14 +163,14 @@ public class LogIn extends javax.swing.JFrame {
                 logger.error("Logging in as inventory cleark");
                 this.userName = userName;
                 mainUI.setVisible(true);
-                exitApp();
+                hideApp();
             } else if (isUserAuthenticated(userName, txtPassword.getPassword(), User.MANAGER)) {
                 //Code to enter main UI with manager privilages
                 logger.error("Logging in as manager");
                 this.userType = User.MANAGER;
                 this.userName = userName;
                 mainUI.setVisible(true);
-                exitApp();
+                hideApp();
             } else {
                 Utilities.showMsgBox("User not identified", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 logger.error("User not identified");
@@ -190,7 +186,7 @@ public class LogIn extends javax.swing.JFrame {
     }
 
     //Exit application
-    private void exitApp() {
+    private void hideApp() {
         logger.debug("exitApp invoked");
         this.setVisible(false);
     }
@@ -358,5 +354,10 @@ public class LogIn extends javax.swing.JFrame {
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 // </editor-fold>
+
+    private void exitApp() {
+        mainUI.dispose();
+        this.dispose();
+    }
 
 }
