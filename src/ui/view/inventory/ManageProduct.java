@@ -12,7 +12,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -45,12 +44,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         handler.loadProductCombo();
 
-        //set search fields....
-        idSerachField.setFindPopupMenu(idSearchPop);
-        nameSearchField.setFindPopupMenu(nameSearchPop);
-
-        //
         //test
+        
         ((PlainDocument) sizeTB1.getDocument()).setDocumentFilter(new IntegerFilter());
         ((PlainDocument) roValue.getDocument()).setDocumentFilter(new DoubleFilter());
         //
@@ -120,8 +115,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         clearB1 = new javax.swing.JButton();
         cancleB = new javax.swing.JButton();
         updateSaveB = new javax.swing.JButton();
-        nameSearchPop = new javax.swing.JPopupMenu();
-        idSearchPop = new javax.swing.JPopupMenu();
         jXTitledPanel1 = new org.jdesktop.swingx.JXTitledPanel();
         cardPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -161,8 +154,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jLabel13 = new javax.swing.JLabel();
         qtyTB = new javax.swing.JTextField();
         unitText = new javax.swing.JTextField();
-        idSerachField = new org.jdesktop.swingx.JXSearchField();
-        nameSearchField = new org.jdesktop.swingx.JXSearchField();
         jPanel6 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         closeB = new javax.swing.JButton();
@@ -1048,20 +1039,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             }
         });
 
-        idSerachField.setPrompt("Search ID");
-
-        nameSearchField.setPrompt("Search Name");
-        nameSearchField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameSearchFieldActionPerformed(evt);
-            }
-        });
-        nameSearchField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                nameSearchFieldKeyReleased(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -1069,6 +1046,20 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(productNameCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel11)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel5Layout.createSequentialGroup()
+                                    .addGap(30, 30, 30)
+                                    .addComponent(pBarcodeTB, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(productIdCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
@@ -1090,21 +1081,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
                                 .addGroup(jPanel5Layout.createSequentialGroup()
                                     .addComponent(depIdTB, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(18, 18, 18)
-                                    .addComponent(depNameTB, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(nameSearchField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(pBarcodeTB, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
-                            .addComponent(idSerachField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(31, 31, 31)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(productIdCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(productNameCombo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(depNameTB, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1112,19 +1089,17 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(9, 9, 9)
+                .addGap(10, 10, 10)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(idSerachField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(productIdCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                        .addGap(20, 20, 20)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(productNameCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nameSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(19, 19, 19)
+                            .addComponent(productNameCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(20, 20, 20)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel11)
                             .addComponent(pBarcodeTB, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1653,9 +1628,10 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     private void updateSaveBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateSaveBActionPerformed
         try {
-            if (!isEditing) {
-                handler.addProduct();
-            } else {
+            if (!isEditing){
+            handler.addProduct();
+            }
+            else{
                 handler.editProduct();
             }
         } catch (SQLException ex) {
@@ -1678,6 +1654,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             nameSearchField.getFindButton().doClick();
         }
     }//GEN-LAST:event_nameSearchFieldKeyReleased
+
+>>>>>>> origin/master
 
     public JComboBox getCatCombo() {
         return catCombo;
@@ -1870,8 +1848,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton depNameR;
     private javax.swing.JTextField depNameTB;
     private javax.swing.ButtonGroup departmentBG;
-    private javax.swing.JPopupMenu idSearchPop;
-    private org.jdesktop.swingx.JXSearchField idSerachField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -1938,8 +1914,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private org.jdesktop.swingx.JXTitledPanel jXTitledPanel6;
     private javax.swing.JTextField maxQtyTB;
     private javax.swing.JTextField maxQtyTB1;
-    private org.jdesktop.swingx.JXSearchField nameSearchField;
-    private javax.swing.JPopupMenu nameSearchPop;
     private javax.swing.JTextField pBarcodeTB;
     private javax.swing.JTextField pBarcodeTB1;
     private javax.swing.JTextField pDesTB;
@@ -2038,21 +2012,17 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         if (productIdCombo.getSelectedIndex() > 0) {
             int ans = JOptionPane.showConfirmDialog(this, "Do you want to remove Product : " + productNameCombo.getSelectedItem() + " ?", "Remove Product", 0);
             if (ans == 0) {
-
+               
                 try {
                     handler.removeProduct();
                 } catch (SQLException ex) {
                     java.util.logging.Logger.getLogger(ManageProduct.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
-
+               
             }
         }
         Utilities.ShowErrorMsg(this, "Please select the Product to be removed");
 
-    }
-
-    public JPopupMenu getNamePopUp() {
-        return nameSearchPop;
     }
 
 }

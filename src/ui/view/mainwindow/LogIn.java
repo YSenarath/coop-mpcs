@@ -9,7 +9,11 @@ import org.apache.log4j.Logger;
 import util.Utilities;
 import static util.Utilities.setupUI;
 
-class LogIn extends javax.swing.JFrame {
+public class LogIn extends javax.swing.JFrame {
+
+    private MainWindow mainUI;
+    private String userType;
+    private String userName;
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(LogIn.class);
@@ -21,7 +25,8 @@ class LogIn extends javax.swing.JFrame {
 // <editor-fold defaultstate="collapsed" desc="Constructor">
     private LogIn() {
         logger.debug("logIn constructor invoked");
-
+        userType = null;
+        userName = null;
         initComponents();
         initializeSystem();
         setLocationRelativeTo(null);
@@ -35,7 +40,10 @@ class LogIn extends javax.swing.JFrame {
 
     private void initializeSystem() {
         logger.debug("initializeSystem invoked");
-
+        if (mainUI == null) {
+            mainUI = new MainWindow();
+            mainUI.setLogInWindow(this);
+        }
         //Insert code for initializations
     }
 
@@ -49,16 +57,16 @@ class LogIn extends javax.swing.JFrame {
             if (Utilities.isHashSame(dbHash, password)) {
                 logger.info("User varified");
 
-//                if ((requestedAccessLevel.equals(User.MANAGER) || requestedAccessLevel.equals(User.INVENTORY)) && user.getUserType().equals(User.CASHIER)) {
-//                    throw new Exception("User does not have administrator privilages ");
-//                }
-//                if (!(user.getUserType().equals(User.MANAGER) || user.getUserType().equals(User.CASHIER))) {
-//                    throw new Exception("User does not have pos privilages ");
-//                }
-//                if (!user.getUserType().equals(User.MANAGER) && user.isLoggedin()) {
-//                    throw new Exception("User :" + userName + " is already logged in");
-//                }
-                return true;
+                if (user.getUserType().equals(User.CASHIER)) {
+                    throw new Exception("User does not have administrator privilages");
+                }
+                if (user.isLoggedin()) {
+                    throw new Exception("User :" + userName + " is already logged in");
+                }
+                if (requestedAccessLevel.equals(user.getUserType())) {
+                    return true;
+                }
+                return false;
             } else {
                 throw new Exception("Wrong password");
             }
@@ -101,19 +109,31 @@ class LogIn extends javax.swing.JFrame {
             if (txtUserName.getText().equals("")) {
                 txtPassword.setText("");
                 txtUserName.requestFocus();
+                logger.info("Empty user name");
                 return;
             }
 
             if (txtPassword.getPassword().length == 0) {
                 txtPassword.requestFocus();
+                logger.info("Empty password");
                 return;
             }
 
             String userName = txtUserName.getText();
 
             if (isUserAuthenticated(userName, txtPassword.getPassword(), User.INVENTORY)) {
-                //Code to enter main UI
-                logger.warn("Not implemented - Code to enter main UI ");
+                //Code to enter main UI with inventory cleark privilages
+                this.userType = User.INVENTORY;
+                logger.error("Logging in as inventory cleark");
+                this.userName = userName;
+                mainUI.setVisible(true);
+                exitApp();
+            } else if (isUserAuthenticated(userName, txtPassword.getPassword(), User.MANAGER)) {
+                //Code to enter main UI with manager privilages
+                logger.error("Logging in as manager");
+                this.userType = User.MANAGER;
+                this.userName = userName;
+                mainUI.setVisible(true);
                 exitApp();
             } else {
                 Utilities.showMsgBox("User not identified", "Login Failed", JOptionPane.ERROR_MESSAGE);
@@ -132,8 +152,7 @@ class LogIn extends javax.swing.JFrame {
     //Exit application
     private void exitApp() {
         logger.debug("exitApp invoked");
-
-        this.dispose();
+        this.setVisible(false);
     }
 // </editor-fold>
     //
@@ -302,4 +321,19 @@ class LogIn extends javax.swing.JFrame {
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 // </editor-fold>
+
+    public String getLoggedUserType() {
+        return userType;
+    }
+
+    public String getLoggedUserName() {
+        return userName;
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        this.txtPassword.setText("");
+        this.txtUserName.setText("");
+        super.setVisible(b); //To change body of generated methods, choose Tools | Templates.
+    }
 }
