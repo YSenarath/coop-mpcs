@@ -1,5 +1,6 @@
 package util;
 
+import database.connector.DBConnection;
 import database.connector.DatabaseInterface;
 import java.awt.Component;
 import java.io.ByteArrayInputStream;
@@ -10,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +38,7 @@ public class Utilities {
 
     }
 
-    //generate sha256 hash of a char sequence
+    //generate sha1 hash of a char sequence
     public static String getSHA1(char[] password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
@@ -55,9 +57,24 @@ public class Utilities {
         return Arrays.equals(dbHash, getSHA1(password).toCharArray());
     }
 
+    //Test if a db connection is passed
+    public static boolean isValidDBConnection() {
+        try {
+            DBConnection.getConnectionToDB();
+            return true;
+        } catch (SQLException ex) {
+        }
+        return false;
+    }
+
+    //Test if a db connection is passed
+    public static boolean isValidDBConnection(String userNameProperty, String passwordProperty) {
+        return DBConnection.isValidDBConnection(userNameProperty, passwordProperty);
+    }
+
     //Validate a given IP address
     public static boolean isValidIPv4Address(final String ip) {
-        if(ip.toLowerCase().equals("localhost")){
+        if (ip.toLowerCase().equals("localhost")) {
             return true;
         }
         Pattern PATTERN = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");

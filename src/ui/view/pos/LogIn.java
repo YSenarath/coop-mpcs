@@ -56,8 +56,13 @@ class LogIn extends javax.swing.JFrame {
         if (counterId.equals("NULL") || serverIp.equals("NULL")) {
             Utilities.showMsgBox("Please set initial Configuration", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(3);
+        } else if (!Utilities.isValidDBConnection()) {
+            Utilities.showMsgBox("Test connection to database failed. Please recheck username and password", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(3);
         } else {
+            logger.info("DB connection established");
             if (isFirstUse.equals("NULL")) {
+                logger.info("Initial connection passed");
                 Utilities.saveProperty("firstUse", "1");
             }
             txtIntialAmount.setText(String.format("%.2f", 0.0));
