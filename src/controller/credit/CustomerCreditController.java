@@ -21,7 +21,7 @@ import model.creditManagement.CreditCustomer;
  */
 public class CustomerCreditController implements DatabaseInterface {
 
-    public static CreditCustomer getDetails(int id) throws SQLException {
+    public static CreditCustomer getCustomer(int id) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + CREDIT_CUSTOMER + " WHERE customer_id=? ";
         Object[] ob = {
@@ -34,7 +34,7 @@ public class CustomerCreditController implements DatabaseInterface {
                     resultSet.getInt("customer_id"),
                     resultSet.getString("customer_name"),
                     resultSet.getString("customer_address"),
-                    resultSet.getInt("customer_telephone"),
+                    resultSet.getString("customer_telephone"),
                     resultSet.getString("customer_nic"),
                     resultSet.getDouble("current_credit")
             );
@@ -50,26 +50,25 @@ public class CustomerCreditController implements DatabaseInterface {
         return resultSet;
     }
 
-    public static CreditCustomer getDetails() throws SQLException {
-        Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + CREDIT_CUSTOMER;
-
-        ResultSet resultSet = DBHandler.getData(connection, query);
-
-        if (resultSet.next()) {
-            return new CreditCustomer(
-                    resultSet.getInt("customer_id"),
-                    resultSet.getString("customer_name"),
-                    resultSet.getString("customer_address"),
-                    resultSet.getInt("customer_telephone"),
-                    resultSet.getString("customer_nic"),
-                    resultSet.getDouble("current_credit")
-            );
-        }
-        return null;
-    }
-
-    public static boolean setDetails(CreditCustomer creditCustomer) throws SQLException {
+//    public static CreditCustomer getDetails() throws SQLException {
+//        Connection connection = DBConnection.getConnectionToDB();
+//        String query = "SELECT * FROM " + CREDIT_CUSTOMER;
+//
+//        ResultSet resultSet = DBHandler.getData(connection, query);
+//
+//        if (resultSet.next()) {
+//            return new CreditCustomer(
+//                    resultSet.getInt("customer_id"),
+//                    resultSet.getString("customer_name"),
+//                    resultSet.getString("customer_address"),
+//                    resultSet.getInt("customer_telephone"),
+//                    resultSet.getString("customer_nic"),
+//                    resultSet.getDouble("current_credit")
+//            );
+//        }
+//        return null;
+//    }
+    public static boolean AddCustomer(CreditCustomer creditCustomer) throws SQLException {
         Connection connection = null;
         try {
             connection = DBConnection.getConnectionToDB();
@@ -93,6 +92,7 @@ public class CustomerCreditController implements DatabaseInterface {
                     connection.rollback();
 
                 } catch (SQLException ex1) {
+                    throw ex1;
                 }
             }
 
@@ -101,26 +101,65 @@ public class CustomerCreditController implements DatabaseInterface {
                 try {
                     connection.setAutoCommit(true);
                 } catch (SQLException ex1) {
+                    throw ex1;
                 }
             }
         }
         return false;
     }
 
-    public static boolean setEditDetails(CreditCustomer creditCustomer, int i) throws SQLException {
+    //Used to edit customer details ,not credit amount
+    public static boolean EditCustomer(CreditCustomer creditCustomer) throws SQLException {
         Connection connection = null;
         try {
             connection = DBConnection.getConnectionToDB();
             connection.setAutoCommit(false);
 
-            String query = "UPDATE " + CREDIT_CUSTOMER + "SET customer_name = ? , customer_address = ? , customer_telephone = ? , customer_nic = ? ,  current_credit = ? WHERE customer_id = ? ";
+            String query = "UPDATE " + CREDIT_CUSTOMER + " SET customer_name = ? , customer_address = ? , customer_telephone = ? , customer_nic = ? WHERE customer_id = ? ";
 
             Object[] creditCustomerObj = {
                 creditCustomer.getCustomerName(),
                 creditCustomer.getCustomerAddress(),
                 creditCustomer.getTelephone(),
                 creditCustomer.getNic(),
-                creditCustomer.getCurrentCredit(),
+                creditCustomer.getCustomerId()
+            };
+
+            DBHandler.setData(connection, query, creditCustomerObj);
+            connection.commit();
+            return true;
+        } catch (SQLException ex) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex1) {
+                    throw ex1;
+                }
+            }
+
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException ex1) {
+                    throw ex1;
+                }
+            }
+        }
+        return false;
+    }
+
+    //Use to set the customer credit amount
+    public static boolean settleCustomerCredit(double amount, int i) throws SQLException {
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnectionToDB();
+            connection.setAutoCommit(false);
+
+            String query = "UPDATE " + CREDIT_CUSTOMER + " SET current_credit = ? WHERE customer_id = ? ";
+
+            Object[] creditCustomerObj = {
+                amount,
                 i
             };
 
@@ -132,6 +171,7 @@ public class CustomerCreditController implements DatabaseInterface {
                 try {
                     connection.rollback();
                 } catch (SQLException ex1) {
+                    throw ex1;
                 }
             }
 
@@ -140,6 +180,7 @@ public class CustomerCreditController implements DatabaseInterface {
                 try {
                     connection.setAutoCommit(true);
                 } catch (SQLException ex1) {
+                    throw ex1;
                 }
             }
         }
@@ -161,7 +202,7 @@ public class CustomerCreditController implements DatabaseInterface {
                     resultSet.getInt("customer_id"),
                     resultSet.getString("customer_name"),
                     resultSet.getString("customer_address"),
-                    resultSet.getInt("customer_telephone"),
+                    resultSet.getString("customer_telephone"),
                     resultSet.getString("customer_nic"),
                     resultSet.getDouble("current_credit")
             );
@@ -183,7 +224,7 @@ public class CustomerCreditController implements DatabaseInterface {
                     resultSet.getInt("customer_id"),
                     resultSet.getString("customer_name"),
                     resultSet.getString("customer_address"),
-                    resultSet.getInt("customer_telephone"),
+                    resultSet.getString("customer_telephone"),
                     resultSet.getString("customer_nic"),
                     resultSet.getDouble("current_credit")
             );
@@ -242,7 +283,7 @@ public class CustomerCreditController implements DatabaseInterface {
                     resultSet.getInt("customer_id"),
                     resultSet.getString("customer_name"),
                     resultSet.getString("customer_address"),
-                    resultSet.getInt("customer_telephone"),
+                    resultSet.getString("customer_telephone"),
                     resultSet.getString("customer_nic"),
                     resultSet.getDouble("current_credit")
             );

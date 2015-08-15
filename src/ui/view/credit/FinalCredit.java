@@ -51,7 +51,7 @@ public class FinalCredit extends javax.swing.JFrame {
     private final int CURRENT_CREDIT = 5;
 
     private ArrayList<JCheckBox> chBoxes;
-    private HashMap<Integer, CreditCustomer> availableCustomers;
+    //private HashMap<Integer, CreditCustomer> availableCustomers;
     DefaultTableModel CustomerCreditDetailsTableModel;
     DefaultComboBoxModel CreditDetailsCustomerComboBoxModel;
     CustomerCreditController l = new CustomerCreditController();
@@ -59,17 +59,16 @@ public class FinalCredit extends javax.swing.JFrame {
     DBHandler t;
     ResultSet rs;
 
-    CreditCustomer creditCustomer;
-    int coopIdNum = 0;
-
+    // CreditCustomer creditCustomer;
+    // int coopIdNum = 0;
     /**
      * Creates new form finalCredit
      */
     public FinalCredit() throws SQLException {
         initComponents();
         chBoxes = new ArrayList<>();
-        cardPanel.setPreferredSize(new Dimension(800, 800));
-        setSize(new Dimension(1500, 1500));
+        // cardPanel.setPreferredSize(new Dimension(800, 800));
+        // setSize(new Dimension(1500, 1500));
 
         this.CustomerCreditDetailsTableModel = (DefaultTableModel) customerDetailsTbl.getModel();
         this.CreditDetailsCustomerComboBoxModel = (DefaultComboBoxModel) creditDetailsCustomerComboBox.getModel();
@@ -84,10 +83,13 @@ public class FinalCredit extends javax.swing.JFrame {
         ((PlainDocument) addCustomerTeleTxt1.getDocument()).setDocumentFilter(new TelePhoneNumberFilter());
         ((PlainDocument) addCustomerNicTxt1.getDocument()).setDocumentFilter(new NICFilter());
 
+        ((PlainDocument) editCustomerTeleTxt2.getDocument()).setDocumentFilter(new TelePhoneNumberFilter());
+        ((PlainDocument) editCustomerNicTxt2.getDocument()).setDocumentFilter(new NICFilter());
+
         //=========================================================================
     }
 
-    public void loadDetails() throws SQLException {
+    private void loadDetails() throws SQLException {
 
         CreditDetailsCustomerComboBoxModel.removeAllElements();
         ArrayList<CreditCustomer> customerDetails = CustomerCreditController.loadCustomers();
@@ -108,90 +110,79 @@ public class FinalCredit extends javax.swing.JFrame {
 
     }
 
-    public void setEditDetails() throws SQLException {
-        int customerId = 0;
-        int customerTele = 0;
-        Object[] ob = {
-            editCustomerCoopIdTxt2.getText(),
-            editCustomerFullNameTxt2.getText(),
-            editCustomerAddressTxt2.getText(),
-            editCustomerNicTxt2.getText(),
-            editCustomerTeleTxt2.getText(),};
+    public void editCustomer() throws SQLException {
+        //All edit details are varified before this method
+        int customerId = Integer.parseInt(editCustomerCoopIdTxt2.getText());
 
-        try {
-            customerId = Integer.parseInt(editCustomerCoopIdTxt2.getText());
+        CreditCustomer creditCustomer = new CreditCustomer(
+                customerId,
+                editCustomerFullNameTxt2.getText(),
+                editCustomerAddressTxt2.getText(),
+                editCustomerTeleTxt2.getText(),
+                editCustomerNicTxt2.getText().toUpperCase(),
+                0.0
+        );
 
-        } catch (NumberFormatException x) {
-            Utilities.showMsgBox("System Error", "Error", JOptionPane.WARNING_MESSAGE);
+        boolean result = CustomerCreditController.EditCustomer(creditCustomer);
+        if (result) {
+            Utilities.showMsgBox("Changes saved", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            logger.error("Changes not saved");
         }
-        try {
-            customerTele = Integer.parseInt(editCustomerTeleTxt2.getText());
-
-        } catch (NumberFormatException x) {
-            Utilities.showMsgBox("System Error", "Error", JOptionPane.WARNING_MESSAGE);
-        }
-        CreditCustomer creditCustomer = new CreditCustomer(customerId, ob[1].toString(), ob[2].toString(), customerTele, ob[3].toString(), 10000);
-
-        CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(editCustomerCoopIdTxt2.getText()));
         chngTblModel();
 
         //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
         //  CustomerCreditDetailsTableModel.insertRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1, ob);
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "customerDetails");
+        //CardLayout card = (CardLayout) cardPanel.getLayout();
+        //card.show(cardPanel, "customerDetails");
         //      CreditCustomer creditCustomer = new CreditCustomer(customerId,ob[1].toString(),ob[2].toString(),customerTele,ob[3].toString(),10000);
-
-        CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
-        editCustomerCoopIdTxt2.setText(null);
-        editCustomerFullNameTxt2.setText(null);
-        editCustomerAddressTxt2.setText(null);
-        editCustomerNicTxt2.setText(null);
-        editCustomerTeleTxt2.setText(null);
+        //CustomerCreditController.EditCustomer(creditCustomer, Integer.parseInt(ob[4].toString()));
+        editCustomerCoopIdTxt2.setText("");
+        editCustomerFullNameTxt2.setText("");
+        editCustomerAddressTxt2.setText("");
+        editCustomerNicTxt2.setText("");
+        editCustomerTeleTxt2.setText("");
 
     }
 
     public void addCustomer() throws SQLException {
-        int customerId = 0;
-        int customerTele = 0;
-        Object[] ob = {
-            //  Utilities.convertKeyToInteger(addCustomerCoopIdTxt1.getText()),
-            addCustomerCoopIdTxt1.getText(),
-            addCustomerFullNameTxt1.getText(),
-            addCustomerAddressTxt1.getText(),
-            addCustomerNicTxt1.getText(),
-            addCustomerTeleTxt1.getText(),};
+        //All add details are varified before this method
+        int customerId = Integer.parseInt(addCustomerCoopIdTxt1.getText());
+//        Object[] ob = {
+//            //  Utilities.convertKeyToInteger(addCustomerCoopIdTxt1.getText()),
+//            addCustomerCoopIdTxt1.getText(),
+//            addCustomerFullNameTxt1.getText(),
+//            addCustomerAddressTxt1.getText(),
+//            addCustomerNicTxt1.getText(),
+//            addCustomerTeleTxt1.getText(),};
 
-        try {
-            customerId = Integer.parseInt(addCustomerCoopIdTxt1.getText());
+        CreditCustomer creditCustomer = new CreditCustomer(
+                customerId,
+                addCustomerFullNameTxt1.getText(),
+                addCustomerAddressTxt1.getText(),
+                addCustomerTeleTxt1.getText(),
+                addCustomerNicTxt1.getText().toUpperCase(),
+                0.0
+        );
 
-        } catch (NumberFormatException x) {
-            Utilities.showMsgBox("System Error", "Error", JOptionPane.WARNING_MESSAGE);
-        }
-        try {
-            customerTele = Integer.parseInt(addCustomerTeleTxt1.getText());
+        CustomerCreditController.AddCustomer(creditCustomer);
 
-        } catch (NumberFormatException x) {
-            Utilities.showMsgBox("System Error", "Error", JOptionPane.WARNING_MESSAGE);
-        }
-        CreditCustomer creditCustomer = new CreditCustomer(customerId, ob[1].toString(), ob[2].toString(), customerTele, ob[3].toString(), 0.00);
-
-        CustomerCreditController.setDetails(creditCustomer);
         chngTblModel();
 
         //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
         //  CustomerCreditDetailsTableModel.insertRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1, ob);
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "customerDetails");
-        CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
-        addCustomerCoopIdTxt1.setText(null);
-        addCustomerFullNameTxt1.setText(null);
-        addCustomerAddressTxt1.setText(null);
-        addCustomerNicTxt1.setText(null);
-        addCustomerTeleTxt1.setText(null);
+        //  CardLayout card = (CardLayout) cardPanel.getLayout();
+        //card.show(cardPanel, "customerDetails");
+        // CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
+        addCustomerCoopIdTxt1.setText("");
+        addCustomerFullNameTxt1.setText("");
+        addCustomerAddressTxt1.setText("");
+        addCustomerNicTxt1.setText("");
+        addCustomerTeleTxt1.setText("");
 
     }
 
-    public void deleteCustomerDetails(int i) {
+    public void deleteCustomer(int i) {
         try {
             CustomerCreditController.deleteDeatils(i);
         } catch (SQLException ex) {
@@ -205,30 +196,58 @@ public class FinalCredit extends javax.swing.JFrame {
     }
 
     public void setCoopId() {
+
         try {
-            coopIdNum = CustomerCreditController.getLastCreditCustomerId();
+            int coopIdNum = CustomerCreditController.getLastCreditCustomerId();
+
+            logger.info("last customer ID : " + coopIdNum);
+            if (coopIdNum > 0) {
+                addCustomerCoopIdTxt1.setText(String.valueOf(coopIdNum + 1));
+            } else {
+                addCustomerCoopIdTxt1.setText(String.valueOf(1));
+            }
+
         } catch (SQLException ex) {
-            coopIdNum = 1;
+            logger.error("SQL Error : " + ex);
         }
-        System.out.println(coopIdNum);
         // addCustomerCoopIdTxt1.setText((Utilities.convertKeyToString(coopIdNum + 1, DatabaseInterface.CREDIT_CUSTOMER)));
-        addCustomerCoopIdTxt1.setText(coopIdNum + 1 + "");
+
     }
 
-    public void editCustomerDetails(int i) throws SQLException {
-        int customerId = 0;
-        int customerTele = 0;
+    public void showCustomerEditDetails(int i) {
+//        int customerId = 0;
+//        int customerTele = 0;
+//
+//        CustomerCreditController.getCustomer(i);
+//        //      CreditCustomer creditCustomer = new CreditCustomer(ob[0].toString(),ob[1].toString(),Integer.parseInt(ob[2].toString()),ob[3].toString(),Integer.parseInt(ob[4].toString()),Integer.parseInt(ob[5].toString()));
+//
+//        CardLayout card = (CardLayout) cardPanel.getLayout();
+//        card.show(cardPanel, "editCustomer");
+//        editCustomerFullNameTxt2.setText(CustomerCreditController.getCustomer(i).getCustomerName());
+//        editCustomerAddressTxt2.setText(CustomerCreditController.getCustomer(i).getCustomerAddress());
+//        editCustomerTeleTxt2.setText(Integer.toString(CustomerCreditController.getCustomer(i).getTelephone()));
+//        editCustomerNicTxt2.setText(CustomerCreditController.getCustomer(i).getNic());
+//        editCustomerCoopIdTxt2.setText(Integer.toString(CustomerCreditController.getCustomer(i).getCustomerId()));
+        try {
+            CreditCustomer creditCustomer = CustomerCreditController.getCustomer(i);
 
-        CustomerCreditController.getDetails(i);
-        //      CreditCustomer creditCustomer = new CreditCustomer(ob[0].toString(),ob[1].toString(),Integer.parseInt(ob[2].toString()),ob[3].toString(),Integer.parseInt(ob[4].toString()),Integer.parseInt(ob[5].toString()));
+            if (creditCustomer != null) {
 
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "editCustomer");
-        editCustomerFullNameTxt2.setText(CustomerCreditController.getDetails(i).getCustomerName());
-        editCustomerAddressTxt2.setText(CustomerCreditController.getDetails(i).getCustomerAddress());
-        editCustomerTeleTxt2.setText(Integer.toString(CustomerCreditController.getDetails(i).getTelephone()));
-        editCustomerNicTxt2.setText(CustomerCreditController.getDetails(i).getNic());
-        editCustomerCoopIdTxt2.setText(Integer.toString(CustomerCreditController.getDetails(i).getCustomerId()));
+                editCustomerFullNameTxt2.setText(creditCustomer.getCustomerName());
+                editCustomerAddressTxt2.setText(creditCustomer.getCustomerAddress());
+                editCustomerTeleTxt2.setText(creditCustomer.getTelephone());
+                editCustomerNicTxt2.setText(creditCustomer.getNic());
+                editCustomerCoopIdTxt2.setText(String.valueOf(creditCustomer.getCustomerId()));
+
+                CardLayout card = (CardLayout) cardPanel.getLayout();
+                card.show(cardPanel, "editCustomer");
+            } else {
+                Utilities.showMsgBox("No such customer fount", "Eror", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            logger.error("SQL error : " + ex.getMessage());
+        }
+
     }
 
     public void searchDetails() throws SQLException {
@@ -411,6 +430,7 @@ public class FinalCredit extends javax.swing.JFrame {
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(null);
 
         jXTaskPaneContainer1.setBackground(new java.awt.Color(102, 102, 102));
         jXTaskPaneContainer1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
@@ -559,7 +579,7 @@ public class FinalCredit extends javax.swing.JFrame {
         customerSearchLayout.setVerticalGroup(
             customerSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, customerSearchLayout.createSequentialGroup()
-                .addContainerGap(316, Short.MAX_VALUE)
+                .addContainerGap(194, Short.MAX_VALUE)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(400, 400, 400))
         );
@@ -829,6 +849,7 @@ public class FinalCredit extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
         jPanel1.add(addCustomerFullNameTxt1, gridBagConstraints);
 
+        addCustomerCoopIdTxt1.setEditable(false);
         addCustomerCoopIdTxt1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCustomerCoopIdTxt1ActionPerformed(evt);
@@ -1181,6 +1202,7 @@ public class FinalCredit extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
         jPanel2.add(editCustomerFullNameTxt2, gridBagConstraints);
 
+        editCustomerCoopIdTxt2.setEditable(false);
         editCustomerCoopIdTxt2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editCustomerCoopIdTxt2ActionPerformed(evt);
@@ -1397,7 +1419,7 @@ public class FinalCredit extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 871, Short.MAX_VALUE)
+                    .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 749, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.PREFERRED_SIZE, 559, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))))
@@ -1409,6 +1431,7 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void installmentPaymentSubmitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installmentPaymentSubmitBtnActionPerformed
         // TODO add your handling code here:
+        logger.error("Not implemented");
         if ((InstallmentPaymentDatePicker.getDate() != null)) {
             Utilities.showMsgBox("Payment Successful", "Confirmed", JOptionPane.PLAIN_MESSAGE);
             InstallmentPaymentCustomerNameLblValue.setText(null);
@@ -1429,18 +1452,24 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void deleteCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteCustomerBtnActionPerformed
         // TODO add your handling code here:
-        for (int i = 0; i < getCustomerDetailsTbl().getRowCount(); i++) {
-            if (customerDetailsTbl.isRowSelected(i)) {
-
-                deleteCustomerDetails(Integer.parseInt(customerDetailsTbl.getValueAt(i, 0).toString()));
-                break;
-            } else {
-                if (i == getCustomerDetailsTbl().getRowCount() - 1) {
-                    Utilities.showMsgBox("Select a row to delete details", "WARNING", JOptionPane.WARNING_MESSAGE);
-                }
-            }
+//        for (int i = 0; i < getCustomerDetailsTbl().getRowCount(); i++) {
+//            if (customerDetailsTbl.isRowSelected(i)) {
+//
+//                deleteCustomer(Integer.parseInt(customerDetailsTbl.getValueAt(i, 0).toString()));
+//                break;
+//            } else {
+//                if (i == getCustomerDetailsTbl().getRowCount() - 1) {
+//                    Utilities.showMsgBox("Select a row to delete details", "WARNING", JOptionPane.WARNING_MESSAGE);
+//                }
+//            }
+//        }
+        int row = customerDetailsTbl.getSelectedRow();
+        if (row > -1) {
+            System.out.println("Selected customer row : " + row);
+            deleteCustomer(Integer.parseInt(customerDetailsTbl.getValueAt(row, 0).toString()));
+        } else {
+            Utilities.showMsgBox("Select a row to delete", "WARNING", JOptionPane.WARNING_MESSAGE);
         }
-
     }//GEN-LAST:event_deleteCustomerBtnActionPerformed
 
     private void custoemrSearchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_custoemrSearchBtnActionPerformed
@@ -1466,36 +1495,50 @@ public class FinalCredit extends javax.swing.JFrame {
     }//GEN-LAST:event_customerDetailsCreditDetailsBtnActionPerformed
 
     private void addCustomerAddBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerAddBtn1ActionPerformed
-        validateName(addCustomerFullNameTxt1.getText());
+
+        //Validate name
+        if (!validateName(addCustomerFullNameTxt1.getText())) {
+            Utilities.showMsgBox("Enter a valid name", "WARNING", JOptionPane.WARNING_MESSAGE);
+            addCustomerFullNameTxt1.requestFocus();
+            return;
+        }
+
+        //Validate nic
         String nic = addCustomerNicTxt1.getText();
-        if ((nic.length() == 10) && (nic.endsWith("v") == true)) {
+        if ((nic.length() == 10) && nic.toLowerCase().endsWith("v")) {
             try {
-                Integer.parseInt(nic.substring(0, 8));
+                logger.info("NIC no parse result : " + Integer.parseInt(nic.substring(0, 9)));
             } catch (NumberFormatException ex) {
                 Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
-
+                addCustomerNicTxt1.requestFocus();
+                return;
             }
         } else {
             Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
-
+            addCustomerNicTxt1.requestFocus();
+            return;
         }
-
-        if ((addCustomerTeleTxt1.getText().length() == 10)) {
+//
+        //validate tel no
+        String telNo = addCustomerTeleTxt1.getText();
+        if ((telNo.length() == 11) && telNo.contains("-") && telNo.substring(3, 4).equals("-")) {
             try {
-                Integer.parseInt(nic.substring(0, 8));
+                logger.info("Tel no parse result : " + Long.parseLong(telNo.substring(0, 3) + telNo.substring(4, 11)));
             } catch (NumberFormatException ex) {
                 Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-
+                addCustomerTeleTxt1.requestFocus();
+                return;
             }
         } else {
             Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-
+            addCustomerTeleTxt1.requestFocus();
+            return;
         }
 
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "customerDetails");
         try {
             addCustomer();
+            CardLayout card = (CardLayout) cardPanel.getLayout();
+            card.show(cardPanel, "customerDetails");
         } catch (SQLException ex) {
             java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1529,21 +1572,29 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void editCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCustomerBtnActionPerformed
         // TODO add your handling code here:
-        for (int i = 0; i < getCustomerDetailsTbl().getRowCount(); i++) {
-            if (customerDetailsTbl.isRowSelected(i)) {
+//        for (int i = 0; i < getCustomerDetailsTbl().getRowCount(); i++) {
+//            if (customerDetailsTbl.isRowSelected(i)) {
+//
+//                try {
+//                    System.out.println("row" + i);
+//                    editCustomerDetails(Integer.parseInt(customerDetailsTbl.getValueAt(i, 0).toString()));
+//                } catch (SQLException ex) {
+//                    java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                break;
+//            } else {
+//                if (i == getCustomerDetailsTbl().getRowCount() - 1) {
+//                    Utilities.showMsgBox("Select a row to edit details", "WARNING", JOptionPane.WARNING_MESSAGE);
+//                }
+//            }
+//        }
 
-                try {
-                    System.out.println("row" + i);
-                    editCustomerDetails(Integer.parseInt(customerDetailsTbl.getValueAt(i, 0).toString()));
-                } catch (SQLException ex) {
-                    java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                break;
-            } else {
-                if (i == getCustomerDetailsTbl().getRowCount() - 1) {
-                    Utilities.showMsgBox("Select a row to edit details", "WARNING", JOptionPane.WARNING_MESSAGE);
-                }
-            }
+        int row = customerDetailsTbl.getSelectedRow();
+        if (row > -1) {
+            System.out.println("Selected customer row : " + row);
+            showCustomerEditDetails(Integer.parseInt(customerDetailsTbl.getValueAt(row, 0).toString()));
+        } else {
+            Utilities.showMsgBox("Select a row to edit details", "WARNING", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_editCustomerBtnActionPerformed
 
@@ -1582,34 +1633,82 @@ public class FinalCredit extends javax.swing.JFrame {
     }//GEN-LAST:event_creditManagementCreditDetailsLblActionPerformed
 
     private void editCustomerSaveBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCustomerSaveBtn2ActionPerformed
-        try {
-            validateName(editCustomerFullNameTxt2.getText());
-            String nic = editCustomerNicTxt2.getText();
-            if ((nic.length() == 10) && (nic.endsWith("v") == true)) {
-                try {
-                    Integer.parseInt(nic.substring(0, 8));
-                } catch (NumberFormatException ex) {
-                    Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
 
-                }
-            } else {
-                Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
+//        try {
+//            validateName(editCustomerFullNameTxt2.getText());
+//            String nic = editCustomerNicTxt2.getText();
+//            if ((nic.length() == 10) && (nic.endsWith("v") == true)) {
+//                try {
+//                    Integer.parseInt(nic.substring(0, 8));
+//                } catch (NumberFormatException ex) {
+//                    Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
+//
+//                }
+//            } else {
+//                Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
+//
+//            }
+//
+//            if ((editCustomerTeleTxt2.getText().length() == 10)) {
+//                try {
+//                    Integer.parseInt(nic.substring(0, 8));
+//                } catch (NumberFormatException ex) {
+//                    Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
+//
+//                }
+//            } else {
+//                Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
+//
+//            }
+//            // TODO add your handling code here:
+//            setEditDetails();
+//        } catch (SQLException ex) {
+//            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        //Validate name
+        if (!validateName(editCustomerFullNameTxt2.getText())) {
+            Utilities.showMsgBox("Enter a valid name", "WARNING", JOptionPane.WARNING_MESSAGE);
+            editCustomerFullNameTxt2.requestFocus();
+            return;
+        }
 
+        //Validate nic
+        String nic = editCustomerNicTxt2.getText();
+        if ((nic.length() == 10) && nic.toLowerCase().endsWith("v")) {
+            try {
+                logger.info("NIC no parse result : " + Integer.parseInt(nic.substring(0, 9)));
+            } catch (NumberFormatException ex) {
+                Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
+                editCustomerNicTxt2.requestFocus();
+                return;
             }
+        } else {
+            Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
+            editCustomerNicTxt2.requestFocus();
+            return;
+        }
+//
+        //validate tel no
+        String telNo = editCustomerTeleTxt2.getText();
+        if ((telNo.length() == 11) && telNo.contains("-") && telNo.substring(3, 4).equals("-")) {
 
-            if ((editCustomerTeleTxt2.getText().length() == 10)) {
-                try {
-                    Integer.parseInt(nic.substring(0, 8));
-                } catch (NumberFormatException ex) {
-                    Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-
-                }
-            } else {
+            try {
+                logger.info("Tel no parse result : " + Long.parseLong(telNo.substring(0, 3) + telNo.substring(4, 11)));
+            } catch (NumberFormatException ex) {
                 Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-
+                editCustomerTeleTxt2.requestFocus();
+                return;
             }
-            // TODO add your handling code here:
-            setEditDetails();
+        } else {
+            Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
+            editCustomerTeleTxt2.requestFocus();
+            return;
+        }
+
+        try {
+            editCustomer();
+            CardLayout card = (CardLayout) cardPanel.getLayout();
+            card.show(cardPanel, "customerDetails");
         } catch (SQLException ex) {
             java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1671,6 +1770,7 @@ public class FinalCredit extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_confirmBtn1ActionPerformed
+
     public boolean validateName(String txt) {
         logger.debug("validateName invoked");
 

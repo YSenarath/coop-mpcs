@@ -1380,7 +1380,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                 logger.info("Customer ID :" + customerId);
 
                 coopCreditRedeemableAmount = Double.parseDouble(creditLimit)
-                        - CustomerCreditController.getDetails(customers.get(customerId).getCustomerId()).getCurrentCredit();
+                        - CustomerCreditController.getCustomer(customers.get(customerId).getCustomerId()).getCurrentCredit();
                 redeemableAmountTxt.setText(String.format("%.2f", coopCreditRedeemableAmount));
             } catch (SQLException ex) {
                 logger.warn("SQL exception has occured");
