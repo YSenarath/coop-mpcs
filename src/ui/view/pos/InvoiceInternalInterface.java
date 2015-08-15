@@ -601,6 +601,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtcardNo.setText(" ");
         txtCardPaymentAmount.setText("0.00");
         txtcardNo.setEnabled(false);
+        txtcardNo.setEditable(false);
         txtCardPaymentAmount.setEnabled(false);
 
         lblBillValueVal.setText("");
@@ -1300,8 +1301,9 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     break;
             }
 
-            if (selectedOption.equals(CardPayment.AMEX) || selectedOption.equals(CardPayment.MASTER) || selectedOption.equals(CardPayment.VISA)) {
+            if (selectedOption.equals(CardPayment.AMEX) || selectedOption.equals(CardPayment.MASTER) || selectedOption.equals(CardPayment.VISA)) {         
                 txtcardNo.setEnabled(true);
+                txtcardNo.setEditable(true);
                 txtCardPaymentAmount.setEnabled(true);
 
                 txtcardNo.requestFocus();
@@ -1628,6 +1630,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtcardNo.setText(" ");
         txtCardPaymentAmount.setText("0.00");
         txtcardNo.setEnabled(false);
+        txtcardNo.setEditable(false);
         txtCardPaymentAmount.setEnabled(false);
         calculatePaymentParameters();
 
@@ -2738,6 +2741,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             }
         });
 
+        txtcardNo.setEditable(false);
         txtcardNo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtcardNo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtcardNo.setEnabled(false);

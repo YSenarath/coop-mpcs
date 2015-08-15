@@ -14,7 +14,7 @@ public class CardNumberFilter extends DocumentFilter implements Serializable{
             if (text.isEmpty()){
                 return true;
             }
-             else if (text.matches("^(([0-9]{0,3}[1-9])|([0-9]{0,2}[1-9]([0-9])?)|(([0-9])?[1-9][0-9]{0,2})|([1-9]?[0-9]{0,3}))$")) {
+             else if (text.matches("^(([0-9]{0,4}[1-9])|([0-9]{0,3}[1-9]([0-9])?)|([0-9]{0,2}[1-9][0-9]{0,2})|([0-9][1-9][0-9]{0,3})|([1-9][0-9]{0,4})|([0]?[0]?[0]?[0]?))$")) {
                  return Integer.parseInt(text) >= 0;
             }
              else{
