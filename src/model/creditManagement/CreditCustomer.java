@@ -10,20 +10,21 @@ package model.creditManagement;
  * @author HP
  */
 public class CreditCustomer {
+
     private String customerName;
     private String customerAddress;
-    private int telephone;
+    private String telephone;
     private String nic;
     private int customerId;
-    private double currentCredit ;
+    private double currentCredit;
 
-    public CreditCustomer(int customerId,String customerName,String customerAddress, int telephone,String nic,double currentCredit){
+    public CreditCustomer(int customerId, String customerName, String customerAddress, String telephone, String nic, double currentCredit) {
         this.customerName = customerName;
         this.customerAddress = customerAddress;
         this.nic = nic;
         this.telephone = telephone;
-        this.customerId =customerId;
-       this.currentCredit  = currentCredit;
+        this.customerId = customerId;
+        this.currentCredit = currentCredit;
     }
     /**
      * @return the customerName
@@ -56,14 +57,14 @@ public class CreditCustomer {
     /**
      * @return the telephone
      */
-    public int getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
     /**
      * @param telephone the telephone to set
      */
-    public void setTelephone(int telephone) {
+    public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
 
@@ -108,5 +109,5 @@ public class CreditCustomer {
     public void setCurrentCredit(double currentCredit) {
         this.currentCredit = currentCredit;
     }
-    
+
 }

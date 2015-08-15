@@ -57,6 +57,18 @@ public class EmployeeCreditController {
         return null;
     }
 
+    public static int getLastEmployeeId() throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT employee_id FROM " + EMPLOYEE + " ORDER BY employee_id DESC LIMIT 1";
+
+        ResultSet resultSet = DBHandler.getData(connection, query);
+
+        if (resultSet.next()) {
+            return resultSet.getInt("employee_id");
+        }
+        return -1;
+    }
+
     public static Employee searchDetails(String name) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
@@ -99,6 +111,29 @@ public class EmployeeCreditController {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
+    public static boolean updateEmployee(int id) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "UPDATE " + EMPLOYEE + " SET voucher_issued = ?   WHERE employee_id = ? ";
+        Object[] ob = {
+            false,
+            id
+
+        };
+        return DBHandler.setData(connection, query, ob) == 1;
+
+    }
+
+    public static boolean deleteDeatils(int id) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "DELETE FROM " + EMPLOYEE + " WHERE employee_id=?";
+
+        Object[] ob = {
+            id
+        };
+        return DBHandler.setData(connection, query, ob) == 1;
+    }
+
     public static boolean setEditDetails(Employee employee, int i) throws SQLException {
         Connection connection = null;
         try {
@@ -133,6 +168,28 @@ public class EmployeeCreditController {
             }
         }
         return false;
+    }
+
+    public static ArrayList<Employee> loadComboBoxEmployees() throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "SELECT *  FROM " + EMPLOYEE + " WHERE voucher_issued = ?";
+        Object[] ob = {
+            false
+        };
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+        ArrayList<Employee> employees = new ArrayList();
+        while (resultSet.next()) {
+            Employee employee = new Employee(
+                    resultSet.getInt("employee_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("position"),
+                    resultSet.getBoolean("voucher_issued")
+            );
+            employees.add(employee);
+        }
+
+        return employees;
     }
 
     public static ArrayList<Employee> loadEmployees() throws SQLException {

@@ -9,6 +9,7 @@ import controller.payments.PoshanaPaymentController;
 import controller.payments.CardPaymentController;
 import controller.payments.CoopCreditPaymentController;
 import controller.credit.CustomerCreditController;
+import controller.credit.EmployeeCreditController;
 import controller.inventory.BatchController;
 import database.connector.DBConnection;
 import java.sql.Connection;
@@ -181,6 +182,9 @@ public class TransactionController {
                     CoopCreditPayment coopPayment = (CoopCreditPayment) payment;
                     result = CoopCreditPaymentController.addCoopPayment(coopPayment);
                     logger.info("Add coop credit payment : " + result);
+
+                    result = CustomerCreditController.updateCreditPayment(coopPayment.getAmount(), coopPayment.getCustomerId());
+                    logger.info("Update customer details : " + result);
                 } else if (payment instanceof PoshanaPayment) {
                     PoshanaPayment poshanaPayment = (PoshanaPayment) payment;
                     result = PoshanaPaymentController.addPoshanaPayment(poshanaPayment);
@@ -193,6 +197,9 @@ public class TransactionController {
                     EmployeeVoucherPayment employeeVoucherPayment = (EmployeeVoucherPayment) payment;
                     result = EmployeeVoucherPaymentController.addEmployeeVoucherPayment(employeeVoucherPayment);
                     logger.info("Add employee voucher payment : " + result);
+                    
+                    result= EmployeeCreditController.updateEmployee(employeeVoucherPayment.getEmployeeId());
+                    logger.info("Update employee details : " + result);
                 }
             }
 

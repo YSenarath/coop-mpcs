@@ -246,7 +246,15 @@ public class Utilities {
                 suffix = "T";
                 size = 5;
                 break;
+            case DatabaseInterface.CREDIT_CUSTOMER:
+                suffix = "C";
+                size = 4;
+                break;
 
+            case DatabaseInterface.EMPLOYEE:
+                suffix = "E";
+                size = 4;
+                break;
             default:
                 return null;
         }
