@@ -5,9 +5,11 @@
  */
 package ui.handler.inventory;
 
+import controller.inventory.BatchController;
 import controller.inventory.CategoryController;
 import controller.inventory.CategoryDiscountController;
 import controller.inventory.DepartmentController;
+import controller.inventory.ProductController;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,11 +34,10 @@ public class DiscountInterfaceHandler {
     //category wise discounts
     private ArrayList<Department> departments;
     private ArrayList<Category> categories;
-    
+
     //batch wise discounts
     private ArrayList<Batch> batches;
-    private ArrayList<Product> product;
-    
+    private ArrayList<Product> products;
 
     public DiscountInterfaceHandler(DiscountInterface gui) {
         this.gui = gui;
@@ -44,25 +45,25 @@ public class DiscountInterfaceHandler {
 
     }
 
-//    public void loadProductCombo() throws SQLException {
-//
-//        product = DepartmentController.getDeparments();
-//
-//        initiating = true;
-//        gui.getIdText1().removeAllItems();
-//        gui.getIdText1().addItem(" ");
-//        gui.getNameText1().removeAllItems();
-//        gui.getNameText1().addItem(" ");
-//
-//        for (Department d : departments) {
-//
-//            gui.getIdText1().addItem(d.getDepartmentId());
-//            gui.getNameText1().addItem(d.getDepartmentName());
-//        }
-//        initiating = false;
-//    }
+    public void loadProductCombo() throws SQLException {
 
-    
+        products = ProductController.getProductIdentities();
+
+        initiating = true;
+
+        gui.getIdText1().removeAllItems();
+        gui.getIdText1().addItem(" ");
+        gui.getNameText1().removeAllItems();
+        gui.getNameText1().addItem(" ");
+
+        for (Product p : products) {
+
+            gui.getIdText1().addItem(p.getProductId());
+            gui.getNameText1().addItem(p.getProductName());
+        }
+        initiating = false;
+    }
+
     public void loadDepartmentCombo() throws SQLException {
 
         departments = DepartmentController.getDepartments();
@@ -100,6 +101,22 @@ public class DiscountInterfaceHandler {
             }
         }
 
+    }
+
+    public void loadBatches(int index) throws SQLException {
+
+        if (!initiating) {
+            batches = BatchController.getBatches(products.get(index - 1).getProductId());
+
+            gui.getIdText2().removeAllItems();
+            gui.getIdText2().addItem(" ");
+
+            for (Batch b : batches) {
+
+                gui.getIdText2().addItem(b.getBatchId());
+                
+            }
+        }
     }
 
     public void saveCategoryDiscount() throws SQLException {

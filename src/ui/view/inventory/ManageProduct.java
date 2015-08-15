@@ -24,6 +24,7 @@ import org.jdesktop.swingx.JXSearchField;
 import ui.handler.inventory.ManageProductHandler;
 import util.DoubleFilter;
 import util.IntegerFilter;
+import util.QuantityFilter;
 import util.Utilities;
 
 /**
@@ -54,8 +55,12 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         //============================================================
         //test
-        ((PlainDocument) sizeTB1.getDocument()).setDocumentFilter(new IntegerFilter());
-        ((PlainDocument) roValue.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) sizeTB1.getDocument()).setDocumentFilter(new QuantityFilter());
+        ((PlainDocument) roValue.getDocument()).setDocumentFilter(new QuantityFilter());
+        ((PlainDocument) pBarcodeTB1.getDocument()).setDocumentFilter(new IntegerFilter());
+        ((PlainDocument) roQty.getDocument()).setDocumentFilter(new QuantityFilter());
+        ((PlainDocument) maxQtyTB1.getDocument()).setDocumentFilter(new QuantityFilter());
+
         //
     }
 
@@ -129,10 +134,10 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         cardPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        addButton = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        editButton = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -402,6 +407,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         categoryBG.add(catIDR);
         catIDR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         catIDR.setText("ID");
+        catIDR.setFocusable(false);
         catIDR.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 catIDRItemStateChanged(evt);
@@ -417,6 +423,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         catNameR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         catNameR.setSelected(true);
         catNameR.setText("Name");
+        catNameR.setFocusable(false);
         catNameR.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 catNameRItemStateChanged(evt);
@@ -431,6 +438,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         departmentBG.add(depIDR);
         depIDR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         depIDR.setText("ID");
+        depIDR.setFocusable(false);
         depIDR.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 depIDRItemStateChanged(evt);
@@ -446,6 +454,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         depNameR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         depNameR.setSelected(true);
         depNameR.setText("Name");
+        depNameR.setFocusable(false);
         depNameR.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 depNameRItemStateChanged(evt);
@@ -541,7 +550,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jLabel39.setText("Pack Size");
 
         sizeTB1.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        sizeTB1.setText("0");
+        sizeTB1.setText("0.00");
         sizeTB1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sizeTB1ActionPerformed(evt);
@@ -561,12 +570,17 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jLabel41.setText("Re-Order Quantity");
 
         roQty.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        roQty.setText("0");
+        roQty.setText("0.00");
 
         jLabel42.setText("Max Quantity");
 
         maxQtyTB1.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        maxQtyTB1.setText("0");
+        maxQtyTB1.setText("0.00");
+        maxQtyTB1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                maxQtyTB1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
         jPanel19.setLayout(jPanel19Layout);
@@ -755,11 +769,11 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.setEnabled(false);
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton2.setText("New Entry");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        addButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        addButton.setText("New Entry");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                addButtonActionPerformed(evt);
             }
         });
 
@@ -779,11 +793,11 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton3.setText("Edit ");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        editButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        editButton.setText("Edit ");
+        editButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                editButtonActionPerformed(evt);
             }
         });
 
@@ -793,9 +807,9 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(editButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -806,8 +820,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jButton4)
-                .addComponent(jButton3)
-                .addComponent(jButton2)
+                .addComponent(editButton)
+                .addComponent(addButton)
                 .addComponent(jButton5))
         );
 
@@ -905,12 +919,16 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         sizeTB.setEditable(false);
         sizeTB.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        sizeTB.setText("0");
+        sizeTB.setText("0.00");
+        sizeTB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sizeTBActionPerformed(evt);
+            }
+        });
 
         roValueTB.setEditable(false);
         roValueTB.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        roValueTB.setText("0");
-        roValueTB.setPreferredSize(null);
+        roValueTB.setText("0.00");
         roValueTB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 roValueTBActionPerformed(evt);
@@ -925,13 +943,13 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         roQtyTB.setEditable(false);
         roQtyTB.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        roQtyTB.setText("0");
+        roQtyTB.setText("0.00");
 
         jLabel15.setText("Max Quantity");
 
         maxQtyTB.setEditable(false);
         maxQtyTB.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        maxQtyTB.setText("0");
+        maxQtyTB.setText("0.00");
         maxQtyTB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxQtyTBActionPerformed(evt);
@@ -978,9 +996,9 @@ public class ManageProduct extends javax.swing.JInternalFrame {
                     .addComponent(jLabel7)
                     .addComponent(unitTB, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
-                    .addComponent(sizeTB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sizeTB, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel9)
                 .addGap(0, 0, 0)
@@ -1091,8 +1109,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
                                 .addGroup(jPanel5Layout.createSequentialGroup()
                                     .addComponent(depIdTB, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(18, 18, 18)
-                                    .addComponent(depNameTB, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(18, 18, 18))
+                                    .addComponent(depNameTB, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1102,8 +1119,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(pBarcodeTB, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
                             .addComponent(idSearchField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(nameSearchField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(94, 94, 94)))
+                            .addComponent(nameSearchField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(18, 18, 18)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1466,15 +1483,14 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_maxQtyTBActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         displayAddProductDialog();
 
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_addButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         displayEditProduct();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_editButtonActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         removeProduct();
@@ -1610,8 +1626,10 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private void updateSaveBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateSaveBActionPerformed
         try {
             if (!isEditing) {
+                logger.debug("Adding a product");
                 handler.addProduct();
             } else {
+                logger.debug("Editing a product");
                 handler.editProduct();
             }
         } catch (SQLException ex) {
@@ -1642,7 +1660,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_idSearchFieldActionPerformed
 
     private void idSearchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idSearchFieldKeyReleased
-        
+
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             logger.info("Enter key pressed");
             idSearchField.getFindPopupMenu().show(idSearchField, 0, 20);
@@ -1666,13 +1684,21 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_nameSearchFieldFocusLost
 
     private void nameSearchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameSearchFieldKeyPressed
-        
-      
+
+
     }//GEN-LAST:event_nameSearchFieldKeyPressed
 
     private void idSearchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idSearchFieldKeyPressed
-        
+
     }//GEN-LAST:event_idSearchFieldKeyPressed
+
+    private void sizeTBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sizeTBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sizeTBActionPerformed
+
+    private void maxQtyTB1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxQtyTB1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_maxQtyTB1ActionPerformed
 
     public JComboBox getCatCombo() {
         return catCombo;
@@ -1840,6 +1866,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame addBatch;
+    private javax.swing.JButton addButton;
     private javax.swing.JTable batchTable;
     private javax.swing.JButton cancleB;
     private javax.swing.JPanel cardPanel;
@@ -1857,11 +1884,10 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton depNameR;
     private javax.swing.JTextField depNameTB;
     private javax.swing.ButtonGroup departmentBG;
+    private javax.swing.JButton editButton;
     private javax.swing.JPopupMenu idPopUp;
     private org.jdesktop.swingx.JXSearchField idSearchField;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
@@ -1974,8 +2000,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         maxQtyTB1.setText("0");
 
         updateProductTitle.setTitle("Add Product");
+        isEditing = false;
         updateProduct.setVisible(true);
-        isEditing = true;
         logger.debug("Debug : Display product add dialog");
     }
 
@@ -2010,8 +2036,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             maxQtyTB1.setText(maxQtyTB.getText());
 
             updateProductTitle.setTitle("Edit Product");
+            isEditing = true;
             updateProduct.setVisible(true);
-            isEditing = false;
             logger.debug("Debug : Display product edit dialog");
 
         } else {
@@ -2020,20 +2046,21 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }
 
     private void removeProduct() {
+
         if (idSearchField.getText() != null && !idSearchField.getText().equals("")) {
             int ans = JOptionPane.showConfirmDialog(this, "Do you want to remove Product : " + nameSearchField.getText() + " ?", "Remove Product", 0);
             if (ans == 0) {
 
                 try {
                     handler.removeProduct();
-                    
+
                 } catch (SQLException ex) {
                     java.util.logging.Logger.getLogger(ManageProduct.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
 
             }
-        }else{
-        Utilities.ShowErrorMsg(this, "Please select the Product to be removed");
+        } else {
+            Utilities.ShowErrorMsg(this, "Please select the Product to be removed");
         }
 
     }

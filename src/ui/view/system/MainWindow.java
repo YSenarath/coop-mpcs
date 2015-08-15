@@ -10,6 +10,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.people.User;
+import ui.view.inventory.DiscountInterface;
 
 import ui.view.inventory.ManageDepartment;
 import ui.view.inventory.ManageProduct;
@@ -27,6 +28,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private ManageDepartment winManageDep;
     private ManageProduct winManagePro;
+    private DiscountInterface winDiscount;
 
     public MainWindow() {
         initComponents();
@@ -39,16 +41,18 @@ public class MainWindow extends javax.swing.JFrame {
         try {
             winManageDep = new ManageDepartment();
             winManagePro = new ManageProduct();
+            winDiscount = new DiscountInterface();
         } catch (SQLException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        jDesktopPane1.add(winManageDep);
-        jDesktopPane1.add(winManagePro);
+        mainDesktopPanel.add(winDiscount);
+        mainDesktopPanel.add(winManageDep);
+        mainDesktopPanel.add(winManagePro);
 
         setInternalFrameLocation(winManageDep);
         setInternalFrameLocation(winManagePro);
-
+        setInternalFrameLocation(winDiscount);
         //-----------------------------------------------------------------------
     }
 
@@ -61,7 +65,7 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jDesktopPane1 = new javax.swing.JDesktopPane();
+        mainDesktopPanel = new javax.swing.JDesktopPane();
         welcomePanel = new javax.swing.JPanel();
         lblWelcome = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -72,6 +76,7 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         mnuManageSupplier = new javax.swing.JMenuItem();
+        setDiscountMenu = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         mnuNewGRN = new javax.swing.JMenuItem();
         mnuNewSRN = new javax.swing.JMenuItem();
@@ -111,21 +116,21 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
-        jDesktopPane1.setLayout(jDesktopPane1Layout);
-        jDesktopPane1Layout.setHorizontalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout mainDesktopPanelLayout = new javax.swing.GroupLayout(mainDesktopPanel);
+        mainDesktopPanel.setLayout(mainDesktopPanelLayout);
+        mainDesktopPanelLayout.setHorizontalGroup(
+            mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 784, Short.MAX_VALUE)
-            .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(welcomePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jDesktopPane1Layout.setVerticalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        mainDesktopPanelLayout.setVerticalGroup(
+            mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 526, Short.MAX_VALUE)
-            .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(welcomePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jDesktopPane1.setLayer(welcomePanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        mainDesktopPanel.setLayer(welcomePanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jMenu1.setText("File");
 
@@ -173,6 +178,14 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jMenu2.add(mnuManageSupplier);
 
+        setDiscountMenu.setText("Set Discount");
+        setDiscountMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                setDiscountMenuActionPerformed(evt);
+            }
+        });
+        jMenu2.add(setDiscountMenu);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Transactions");
@@ -218,11 +231,11 @@ public class MainWindow extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1)
+            .addComponent(mainDesktopPanel)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(mainDesktopPanel, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         pack();
@@ -230,7 +243,7 @@ public class MainWindow extends javax.swing.JFrame {
 // </editor-fold> 
 
     private void mnuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuExitActionPerformed
-        this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_mnuExitActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
@@ -266,6 +279,10 @@ public class MainWindow extends javax.swing.JFrame {
     private void windowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_windowClosed
 
     }//GEN-LAST:event_windowClosed
+
+    private void setDiscountMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setDiscountMenuActionPerformed
+        winDiscount.setVisible(true);
+    }//GEN-LAST:event_setDiscountMenuActionPerformed
 
     public static void main(String args[]) {
         try {
@@ -304,7 +321,6 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -315,12 +331,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JLabel lblWelcome;
+    private javax.swing.JDesktopPane mainDesktopPanel;
     private javax.swing.JMenuItem mnuAddDamagedStock;
     private javax.swing.JMenuItem mnuExit;
     private javax.swing.JMenuItem mnuLogOff;
     private javax.swing.JMenuItem mnuManageSupplier;
     private javax.swing.JMenuItem mnuNewGRN;
     private javax.swing.JMenuItem mnuNewSRN;
+    private javax.swing.JMenuItem setDiscountMenu;
     private javax.swing.JPanel welcomePanel;
     // End of variables declaration//GEN-END:variables
 
@@ -328,7 +346,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         GRNInterface grnInterface = new GRNInterface();
 
-        jDesktopPane1.add(grnInterface);
+        mainDesktopPanel.add(grnInterface);
 
         setInternalFrameLocation(grnInterface);
 
@@ -339,7 +357,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         SupplierInterface supplierInterface = new SupplierInterface();
 
-        jDesktopPane1.add(supplierInterface);
+        mainDesktopPanel.add(supplierInterface);
 
         setInternalFrameLocation(supplierInterface);
 
@@ -349,7 +367,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void createNewSRN() {
         SupplierReturnNoteInterface srnInterface = new SupplierReturnNoteInterface();
 
-        jDesktopPane1.add(srnInterface);
+        mainDesktopPanel.add(srnInterface);
 
         setInternalFrameLocation(srnInterface);
 
@@ -359,7 +377,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void createNewDamagedStock() {
         DamageStockInterface i = new DamageStockInterface();
 
-        jDesktopPane1.add(i);
+        mainDesktopPanel.add(i);
 
         setInternalFrameLocation(i);
 
@@ -382,7 +400,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void setInternalFrameLocation(JInternalFrame frame) {
-        Dimension desktopSize = jDesktopPane1.getSize();
+        Dimension desktopSize = mainDesktopPanel.getSize();
 
         Dimension frameSize = frame.getSize();
 

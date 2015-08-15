@@ -332,6 +332,9 @@ public class ManageProductHandler {
 
         if (ProductController.addProduct(product)) {
             loadProducts();
+            selectedPro = product;
+            displayProduct(product);
+            setSearchFieldTexts();
             gui.getUpdateProduct().setVisible(false);
             return true;
         }
@@ -374,11 +377,12 @@ public class ManageProductHandler {
         gui.getDepNameTB().setText("");
         gui.getCatIdTB().setText("");
         gui.getCatNameTB().setText("");
-        gui.getSizeTB().setText("0");
+        gui.getSizeTB().setText("0.00");
         gui.getUnitTB().setText("");
-        gui.getRoQtyTB().setText("0");
-        gui.getRoValueTB().setText("0");
-        gui.getMaxQtyTB().setText("0");
+        gui.getRoQtyTB().setText("0.00");
+        gui.getRoValueTB().setText("0.00");
+        gui.getMaxQtyTB().setText("0.00");
+        gui.getUnitText().setText("");
     }
 
     public String getNextIndex() {
@@ -387,14 +391,15 @@ public class ManageProductHandler {
     }
 
     public boolean removeProduct() throws SQLException {
-        if(ProductController.removeProduct(selectedPro.getProductId())){
+        if (ProductController.removeProduct(selectedPro.getProductId())) {
             loadProducts();
             selectedPro = null;
             setSearchFieldTexts();
+            clearFields();
             return true;
         }
-        return  false;
-        
+        return false;
+
     }
 
     public boolean editProduct() throws SQLException {
@@ -530,6 +535,8 @@ public class ManageProductHandler {
         if (ProductController.updateProduct(product)) {
             logger.info("Product Edit Succeded");
             loadProducts();
+            displayProduct(ProductController.getProduct(selectedPro.getProductId()));
+            setSearchFieldTexts();
             gui.getUpdateProduct().setVisible(false);
             return true;
         }
@@ -543,7 +550,7 @@ public class ManageProductHandler {
         gui.getNamePopUp().removeAll();
 
         for (Product p : products) {
-            if (p.getProductName().toLowerCase().contains(name.toLowerCase()) ) {
+            if (p.getProductName().toLowerCase().contains(name.toLowerCase())) {
                 JMenuItem item = new JMenuItem(p.getProductName());
                 item.addActionListener(nameItemListener);
                 gui.getNamePopUp().add(item);

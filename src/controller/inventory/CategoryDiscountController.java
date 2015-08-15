@@ -83,7 +83,6 @@ public class CategoryDiscountController {
             connection = DBConnection.getConnectionToDB();
             connection.setAutoCommit(false);
 
-            //Add your code here 
             int cid = Utilities.convertKeyToInteger(categoryDiscount.getCategoryId());
             int did = Utilities.convertKeyToInteger(categoryDiscount.getDepartmentId());
 
@@ -106,7 +105,7 @@ public class CategoryDiscountController {
             } else {
                 String query = "INSERT INTO " + DatabaseInterface.CATEGORY_DISCOUNT + " (discount, start_date, end_date ,promotional ,quantity , members_only,category_id, department_id ) VALUES (?,?,?,?,?,?,?,?)";
                 DBHandler.setData(connection, query, objs);
-                CategoryController.setDiscounted(connection, cid, did);
+                CategoryController.setDiscounted(connection, true, cid, did);
             }
             connection.commit();
             return true;
@@ -134,4 +133,49 @@ public class CategoryDiscountController {
 
     }
 
+    public static boolean removeCateogryDiscount(String catogeryId, String departmentId) throws SQLException {
+
+        Connection connection = null;
+
+        try {
+            connection = DBConnection.getConnectionToDB();
+            connection.setAutoCommit(false);
+
+            int cid = Utilities.convertKeyToInteger(catogeryId);
+            int did = Utilities.convertKeyToInteger(departmentId);
+
+            Object[] objs = {
+                cid,
+                did
+            };
+            String query2 = "DELETE FROM " + DatabaseInterface.CATEGORY_DISCOUNT + " WHERE category_id = ? AND department_id = ? ";
+            DBHandler.setData(connection, query2, objs);
+            CategoryController.setDiscounted(connection, false, cid, did);
+
+            connection.commit();
+            return true;
+            
+        } catch (Exception err0) {
+            //logger.error("Exception occurred " + err0.getMessage());
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    // logger.debug("Connection rolledback");
+                } catch (SQLException err1) {
+                    // logger.error("SQLException occurred " + err1.getMessage());
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    //  logger.debug("Connection setAutoCommit(true)");
+                } catch (SQLException err2) {
+                    //  logger.error("SQLException occurred " + err2.getMessage());
+                }
+            }
+        }
+
+    }
 }

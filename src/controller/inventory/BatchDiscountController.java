@@ -96,7 +96,7 @@ public class BatchDiscountController {
             } else {
                 String query = "INSERT INTO " + DatabaseInterface.BATCH_DISCOUNT + " (discount, start_date, end_date ,promotional ,qty , members_only,batch_id, product_id ) VALUES (?,?,?,?,?,?,?,?)";
                 DBHandler.setData(connection, query, objs);
-                CategoryController.setDiscounted(connection, cid, did);
+                BatchController.setDiscounted(connection, cid, did);
             }
 
             connection.commit();

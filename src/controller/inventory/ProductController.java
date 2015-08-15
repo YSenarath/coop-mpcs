@@ -286,7 +286,7 @@ public class ProductController {
         Connection connection = DBConnection.getConnectionToDB();
         
         String query = "UPDATE " + DatabaseInterface.PRODUCT + " SET product_name = ? , barcode = ?,description =? ,category_id =? , department_id = ?,unit = ? ,"
-                + "                                                 pack_size = ?, reorder_value = ? , reorder_qty = ?, max_qty = ?  WHERE product_id = ?  " ;
+                + " pack_size = ?, reorder_value = ? , reorder_qty = ?, max_qty = ?  WHERE product_id = ?  " ;
         
         Object[] obj  = {
             product.getProductName(),
