@@ -447,14 +447,14 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
         lblInitialAmount.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         lblChiefCashierIDDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        lblChiefCashierIDDisplay.setText("Chief Cashier  ID");
+        lblChiefCashierIDDisplay.setText("Chief cashier  ID");
 
         lblChiefCashierID.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         lblChiefCashierID.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblChiefCashierID.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         lblChiefCashierPasswordDisplay.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        lblChiefCashierPasswordDisplay.setText("Cashier Password");
+        lblChiefCashierPasswordDisplay.setText("Chief cashier Password");
 
         txtChiefCashierPassword.setBackground(new java.awt.Color(255, 255, 0));
         txtChiefCashierPassword.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
