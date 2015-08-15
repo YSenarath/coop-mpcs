@@ -8,6 +8,7 @@ package ui.view.credit;
 import controller.payments.CoopCreditPaymentController;
 import controller.credit.CustomerCreditController;
 import controller.pos.InvoiceController;
+import database.connector.DatabaseInterface;
 import database.handler.DBHandler;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -19,14 +20,18 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.PlainDocument;
 import model.creditManagement.CreditCustomer;
 import model.pos.item.Invoice;
 import model.pos.payment.CoopCreditPayment;
 import net.proteanit.sql.DbUtils;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.painter.Painter;
+import util.NICFilter;
+import util.TelePhoneNumberFilter;
 import util.Utilities;
 
 /**
@@ -45,6 +50,7 @@ public class FinalCredit extends javax.swing.JFrame {
     private final int CUSTOMER_ID = 4;
     private final int CURRENT_CREDIT = 5;
 
+    private ArrayList<JCheckBox> chBoxes;
     private HashMap<Integer, CreditCustomer> availableCustomers;
     DefaultTableModel CustomerCreditDetailsTableModel;
     DefaultComboBoxModel CreditDetailsCustomerComboBoxModel;
@@ -61,6 +67,7 @@ public class FinalCredit extends javax.swing.JFrame {
      */
     public FinalCredit() throws SQLException {
         initComponents();
+        chBoxes = new ArrayList<>();
         cardPanel.setPreferredSize(new Dimension(800, 800));
         setSize(new Dimension(1500, 1500));
 
@@ -73,19 +80,24 @@ public class FinalCredit extends javax.swing.JFrame {
          * @throws SQLException
          */
 
+        //jnj - adding documnet filters============================================
+        ((PlainDocument) addCustomerTeleTxt1.getDocument()).setDocumentFilter(new TelePhoneNumberFilter());
+        ((PlainDocument) addCustomerNicTxt1.getDocument()).setDocumentFilter(new NICFilter());
+
+        //=========================================================================
     }
 
     public void loadDetails() throws SQLException {
 
-       CreditDetailsCustomerComboBoxModel.removeAllElements();
+        CreditDetailsCustomerComboBoxModel.removeAllElements();
         ArrayList<CreditCustomer> customerDetails = CustomerCreditController.loadCustomers();
 
         for (CreditCustomer customer : customerDetails) {
-           // availableCustomers.put(customer.getCustomerId(), customer);
+            // availableCustomers.put(customer.getCustomerId(), customer);
             CreditDetailsCustomerComboBoxModel.addElement(customer.getCustomerName());
         }
         CreditDetailsCustomerComboBoxModel.setSelectedItem(null);
-     //   CoopCreditPaymentController.getCoopCreditPaymentDetails(availableCustomers.CreditDetailsCustomerComboBoxModel.getSelectedItem().toString())
+        //   CoopCreditPaymentController.getCoopCreditPaymentDetails(availableCustomers.CreditDetailsCustomerComboBoxModel.getSelectedItem().toString())
 
     }
 
@@ -127,7 +139,7 @@ public class FinalCredit extends javax.swing.JFrame {
         //  CustomerCreditDetailsTableModel.insertRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1, ob);
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "customerDetails");
-      //      CreditCustomer creditCustomer = new CreditCustomer(customerId,ob[1].toString(),ob[2].toString(),customerTele,ob[3].toString(),10000);
+        //      CreditCustomer creditCustomer = new CreditCustomer(customerId,ob[1].toString(),ob[2].toString(),customerTele,ob[3].toString(),10000);
 
         CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
         editCustomerCoopIdTxt2.setText(null);
@@ -142,6 +154,7 @@ public class FinalCredit extends javax.swing.JFrame {
         int customerId = 0;
         int customerTele = 0;
         Object[] ob = {
+            //  Utilities.convertKeyToInteger(addCustomerCoopIdTxt1.getText()),
             addCustomerCoopIdTxt1.getText(),
             addCustomerFullNameTxt1.getText(),
             addCustomerAddressTxt1.getText(),
@@ -177,7 +190,8 @@ public class FinalCredit extends javax.swing.JFrame {
         addCustomerTeleTxt1.setText(null);
 
     }
-    public void deleteCustomerDetails(int i){
+
+    public void deleteCustomerDetails(int i) {
         try {
             CustomerCreditController.deleteDeatils(i);
         } catch (SQLException ex) {
@@ -194,10 +208,11 @@ public class FinalCredit extends javax.swing.JFrame {
         try {
             coopIdNum = CustomerCreditController.getLastCreditCustomerId();
         } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
+            coopIdNum = 1;
         }
         System.out.println(coopIdNum);
-        addCustomerCoopIdTxt1.setText((Integer.toString(coopIdNum + 1)));
+        // addCustomerCoopIdTxt1.setText((Utilities.convertKeyToString(coopIdNum + 1, DatabaseInterface.CREDIT_CUSTOMER)));
+        addCustomerCoopIdTxt1.setText(coopIdNum + 1 + "");
     }
 
     public void editCustomerDetails(int i) throws SQLException {
@@ -205,7 +220,7 @@ public class FinalCredit extends javax.swing.JFrame {
         int customerTele = 0;
 
         CustomerCreditController.getDetails(i);
-  //      CreditCustomer creditCustomer = new CreditCustomer(ob[0].toString(),ob[1].toString(),Integer.parseInt(ob[2].toString()),ob[3].toString(),Integer.parseInt(ob[4].toString()),Integer.parseInt(ob[5].toString()));
+        //      CreditCustomer creditCustomer = new CreditCustomer(ob[0].toString(),ob[1].toString(),Integer.parseInt(ob[2].toString()),ob[3].toString(),Integer.parseInt(ob[4].toString()),Integer.parseInt(ob[5].toString()));
 
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "editCustomer");
@@ -229,27 +244,31 @@ public class FinalCredit extends javax.swing.JFrame {
 
     public void loadCreditDetails() throws SQLException {
         CreditCustomer customer = (CustomerCreditController.searchDetails(CreditDetailsCustomerComboBoxModel.getSelectedItem().toString()));
-
+        double paidAmount = 0;
+        double billTotal = 0;
         creditDetailsSettlementNoTxt.setText(customer.getCustomerId() + "");
-        ((DefaultTableModel)creditTbl.getModel()).setRowCount(0);
+        ((DefaultTableModel) creditTbl.getModel()).setRowCount(0);
         ArrayList<CoopCreditPayment> details = CoopCreditPaymentController.loadDetails(customer.getCustomerId());
-        for (CoopCreditPayment c : details){
-            int row =creditTbl.getRowCount() ;
+        for (CoopCreditPayment c : details) {
+            int row = creditTbl.getRowCount();
+            paidAmount += c.getAmountSettled();
+            billTotal += c.getAmount();
             Invoice invoice = InvoiceController.getInvoice(c.getInvoiceId());
-            
-            ((DefaultTableModel)creditTbl.getModel()).setRowCount(row+ 1);
-            creditTbl.setValueAt(c.getInvoiceId() , row , 1);
-            creditTbl.setValueAt(invoice.getDate() , row , 2);
-            creditTbl.setValueAt(c.getAmount() , row , 3);
-            creditTbl.setValueAt(c.getAmountSettled() , row , 4);
+            ((DefaultTableModel) creditTbl.getModel()).addRow(new Object[]{false, c.getInvoiceId() + "", invoice.getDate(), c.getAmount() + "", c.getAmountSettled() + ""});
+
+//            ((DefaultTableModel)creditTbl.getModel()).setRowCount(row+ 1);
+//            creditTbl.setValueAt(c.getInvoiceId() , row , 1);
+//            creditTbl.setValueAt(invoice.getDate() , row , 2);
+//            creditTbl.setValueAt(c.getAmount() , row , 3);
+//            creditTbl.setValueAt(c.getAmountSettled() , row , 4);
         }
-        
+        billTxt1.setText(billTotal + "");
+        paidAmountTxt1.setText(paidAmount + "");
+
     }
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -278,7 +297,6 @@ public class FinalCredit extends javax.swing.JFrame {
         manageCustomerAddCustomerLbl = new javax.swing.JButton();
         creditManagementTaskPane = new org.jdesktop.swingx.JXTaskPane();
         creditManagementCreditDetailsLbl = new javax.swing.JButton();
-        creditManagementSettlementLbl = new javax.swing.JButton();
         cardPanel = new javax.swing.JPanel();
         customerSearch = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
@@ -304,7 +322,9 @@ public class FinalCredit extends javax.swing.JFrame {
         installmentPaymentLbl = new javax.swing.JLabel();
         InstallmentPaymentCancelBtn = new javax.swing.JButton();
         InstallmentPaymentDatePicker = new org.jdesktop.swingx.JXDatePicker();
-        jComboBox3 = new javax.swing.JComboBox();
+        InstallmentPaymentCustomerNameLblValue = new javax.swing.JLabel();
+        InstallmetPaymentPaymentValue = new javax.swing.JLabel();
+        InstallmentPaymentPaymentAmountLbl = new javax.swing.JLabel();
         addCustomer = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         addCustomerAddBtn1 = new org.jdesktop.swingx.JXButton();
@@ -329,8 +349,6 @@ public class FinalCredit extends javax.swing.JFrame {
         billTxt1 = new org.jdesktop.swingx.JXLabel();
         paidAmountTxt1 = new org.jdesktop.swingx.JXLabel();
         paidAmountlbl1 = new org.jdesktop.swingx.JXLabel();
-        PaymentTxt1 = new org.jdesktop.swingx.JXLabel();
-        paymentLbl1 = new org.jdesktop.swingx.JXLabel();
         cancelBtn1 = new javax.swing.JButton();
         confirmBtn1 = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
@@ -452,14 +470,6 @@ public class FinalCredit extends javax.swing.JFrame {
             }
         });
         creditManagementTaskPane.getContentPane().add(creditManagementCreditDetailsLbl);
-
-        creditManagementSettlementLbl.setText("Credit Settlement");
-        creditManagementSettlementLbl.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                creditManagementSettlementLblActionPerformed(evt);
-            }
-        });
-        creditManagementTaskPane.getContentPane().add(creditManagementSettlementLbl);
 
         jXTaskPaneContainer1.add(creditManagementTaskPane);
 
@@ -665,28 +675,10 @@ public class FinalCredit extends javax.swing.JFrame {
 
         installmentPaymentPanelSmall.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         installmentPaymentPanelSmall.setPreferredSize(new java.awt.Dimension(450, 250));
-        installmentPaymentPanelSmall.setLayout(new java.awt.GridBagLayout());
 
         installmetPaymentCustomerNameLbl.setText("Customer Name");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipady = 9;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(11, 12, 0, 0);
-        installmentPaymentPanelSmall.add(installmetPaymentCustomerNameLbl, gridBagConstraints);
 
         InstallmentPaymentDateLbl.setText("Date Settlement");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 17;
-        gridBagConstraints.ipady = 9;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 12, 0, 0);
-        installmentPaymentPanelSmall.add(InstallmentPaymentDateLbl, gridBagConstraints);
 
         installmentPaymentSubmitBtn.setText("Submit");
         installmentPaymentSubmitBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -694,27 +686,12 @@ public class FinalCredit extends javax.swing.JFrame {
                 installmentPaymentSubmitBtnActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(11, 10, 13, 0);
-        installmentPaymentPanelSmall.add(installmentPaymentSubmitBtn, gridBagConstraints);
 
         installmentPaymentLbl.setBackground(new java.awt.Color(204, 204, 204));
         installmentPaymentLbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         installmentPaymentLbl.setText("Installment Payment");
         installmentPaymentLbl.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
         installmentPaymentLbl.setOpaque(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 5;
-        gridBagConstraints.ipadx = 225;
-        gridBagConstraints.ipady = -2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 12, 0, 12);
-        installmentPaymentPanelSmall.add(installmentPaymentLbl, gridBagConstraints);
 
         InstallmentPaymentCancelBtn.setText("Cancel");
         InstallmentPaymentCancelBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -722,23 +699,60 @@ public class FinalCredit extends javax.swing.JFrame {
                 InstallmentPaymentCancelBtnActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(11, 128, 13, 0);
-        installmentPaymentPanelSmall.add(InstallmentPaymentCancelBtn, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.ipadx = 143;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 18, 0, 12);
-        installmentPaymentPanelSmall.add(InstallmentPaymentDatePicker, gridBagConstraints);
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        installmentPaymentPanelSmall.add(jComboBox3, new java.awt.GridBagConstraints());
+        InstallmetPaymentPaymentValue.setText("Payment Amount");
+
+        javax.swing.GroupLayout installmentPaymentPanelSmallLayout = new javax.swing.GroupLayout(installmentPaymentPanelSmall);
+        installmentPaymentPanelSmall.setLayout(installmentPaymentPanelSmallLayout);
+        installmentPaymentPanelSmallLayout.setHorizontalGroup(
+            installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
+                .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(installmentPaymentLbl))
+                    .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
+                            .addGap(247, 247, 247)
+                            .addComponent(InstallmentPaymentCancelBtn)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                            .addComponent(installmentPaymentSubmitBtn))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, installmentPaymentPanelSmallLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(installmetPaymentCustomerNameLbl)
+                                .addComponent(InstallmentPaymentDateLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(InstallmetPaymentPaymentValue, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(47, 47, 47)
+                            .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(InstallmentPaymentDatePicker, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                                .addComponent(InstallmentPaymentPaymentAmountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(InstallmentPaymentCustomerNameLblValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addGap(47, 47, 47))
+        );
+        installmentPaymentPanelSmallLayout.setVerticalGroup(
+            installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(installmentPaymentLbl)
+                .addGap(18, 18, 18)
+                .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(installmetPaymentCustomerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(InstallmentPaymentCustomerNameLblValue, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(InstallmentPaymentDateLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(InstallmentPaymentDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(InstallmetPaymentPaymentValue, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(InstallmentPaymentPaymentAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(installmentPaymentSubmitBtn)
+                    .addComponent(InstallmentPaymentCancelBtn))
+                .addGap(0, 70, Short.MAX_VALUE))
+        );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -930,7 +944,15 @@ public class FinalCredit extends javax.swing.JFrame {
             new String [] {
                 "Select to Pay", "Invoice No.", "Date", "Net Amount", "Paid  Amount"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         creditTbl.setFillsViewportHeight(true);
         jScrollPane7.setViewportView(creditTbl);
 
@@ -970,23 +992,6 @@ public class FinalCredit extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(6, 23, 0, 0);
         jPanel6.add(paidAmountlbl1, gridBagConstraints);
 
-        PaymentTxt1.setText("jXLabel4");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 8;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 55, 0, 0);
-        jPanel6.add(PaymentTxt1, gridBagConstraints);
-
-        paymentLbl1.setText("Payment");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 23, 0, 0);
-        jPanel6.add(paymentLbl1, gridBagConstraints);
-
         cancelBtn1.setText("Cancel");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 8;
@@ -997,6 +1002,11 @@ public class FinalCredit extends javax.swing.JFrame {
         jPanel6.add(cancelBtn1, gridBagConstraints);
 
         confirmBtn1.setText("Confirm");
+        confirmBtn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmBtn1ActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
@@ -1344,7 +1354,7 @@ public class FinalCredit extends javax.swing.JFrame {
                 .addComponent(deleteCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customerDetailsCreditDetailsBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1399,28 +1409,38 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void installmentPaymentSubmitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installmentPaymentSubmitBtnActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "creditDetails");
+        if ((InstallmentPaymentDatePicker.getDate() != null)) {
+            Utilities.showMsgBox("Payment Successful", "Confirmed", JOptionPane.PLAIN_MESSAGE);
+            InstallmentPaymentCustomerNameLblValue.setText(null);
+            InstallmentPaymentDatePicker.setDate(null);
+            InstallmentPaymentPaymentAmountLbl.setText(null);
+        } else {
+            Utilities.showMsgBox("Select the date", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+
     }//GEN-LAST:event_installmentPaymentSubmitBtnActionPerformed
 
     private void InstallmentPaymentCancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InstallmentPaymentCancelBtnActionPerformed
         // TODO add your handling code here:
+        InstallmentPaymentCustomerNameLblValue.setText(null);
+        InstallmentPaymentDatePicker.setDate(null);
+        InstallmentPaymentPaymentAmountLbl.setText(null);
     }//GEN-LAST:event_InstallmentPaymentCancelBtnActionPerformed
 
     private void deleteCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteCustomerBtnActionPerformed
         // TODO add your handling code here:
-         for (int i = 0; i <getCustomerDetailsTbl().getRowCount(); i++) {
+        for (int i = 0; i < getCustomerDetailsTbl().getRowCount(); i++) {
             if (customerDetailsTbl.isRowSelected(i)) {
 
                 deleteCustomerDetails(Integer.parseInt(customerDetailsTbl.getValueAt(i, 0).toString()));
                 break;
             } else {
-                if (i == getCustomerDetailsTbl().getRowCount()-1) {
+                if (i == getCustomerDetailsTbl().getRowCount() - 1) {
                     Utilities.showMsgBox("Select a row to delete details", "WARNING", JOptionPane.WARNING_MESSAGE);
                 }
             }
         }
-        
+
     }//GEN-LAST:event_deleteCustomerBtnActionPerformed
 
     private void custoemrSearchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_custoemrSearchBtnActionPerformed
@@ -1431,7 +1451,7 @@ public class FinalCredit extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
         }
         jTextField1.setText(null);
-      //  CardLayout card = (CardLayout) cardPanel.getLayout();
+        //  CardLayout card = (CardLayout) cardPanel.getLayout();
         //  card.show(cardPanel, "customerSearchResult");
     }//GEN-LAST:event_custoemrSearchBtnActionPerformed
 
@@ -1447,33 +1467,31 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void addCustomerAddBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerAddBtn1ActionPerformed
         validateName(addCustomerFullNameTxt1.getText());
-        String nic=addCustomerNicTxt1.getText();
-        if((nic.length()==10 ) && (nic.endsWith("v") ==true) ){
-            try{
-                Integer.parseInt(nic.substring(0,8));
+        String nic = addCustomerNicTxt1.getText();
+        if ((nic.length() == 10) && (nic.endsWith("v") == true)) {
+            try {
+                Integer.parseInt(nic.substring(0, 8));
+            } catch (NumberFormatException ex) {
+                Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
+
             }
-            catch(NumberFormatException ex){
-                 Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
-               
+        } else {
+            Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
+
+        }
+
+        if ((addCustomerTeleTxt1.getText().length() == 10)) {
+            try {
+                Integer.parseInt(nic.substring(0, 8));
+            } catch (NumberFormatException ex) {
+                Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
+
             }
-        } else{
-                    Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
-                
-                    }
-        
-        if((addCustomerTeleTxt1.getText().length()==10)){
-            try{
-                Integer.parseInt(nic.substring(0,8));
-            }
-            catch(NumberFormatException ex){
-                 Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-               
-            }
-        } else{
-                    Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-                
-                    }
-        
+        } else {
+            Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
+
+        }
+
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "customerDetails");
         try {
@@ -1511,18 +1529,18 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void editCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCustomerBtnActionPerformed
         // TODO add your handling code here:
-        for (int i = 0; i <getCustomerDetailsTbl().getRowCount(); i++) {
+        for (int i = 0; i < getCustomerDetailsTbl().getRowCount(); i++) {
             if (customerDetailsTbl.isRowSelected(i)) {
 
                 try {
-                    System.out.println("row"+i);
+                    System.out.println("row" + i);
                     editCustomerDetails(Integer.parseInt(customerDetailsTbl.getValueAt(i, 0).toString()));
                 } catch (SQLException ex) {
                     java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
             } else {
-                if (i == getCustomerDetailsTbl().getRowCount()-1) {
+                if (i == getCustomerDetailsTbl().getRowCount() - 1) {
                     Utilities.showMsgBox("Select a row to edit details", "WARNING", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -1557,49 +1575,39 @@ public class FinalCredit extends javax.swing.JFrame {
         try {
 
             loadDetails();
-            
+
         } catch (SQLException ex) {
             java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_creditManagementCreditDetailsLblActionPerformed
 
-    private void creditManagementSettlementLblActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditManagementSettlementLblActionPerformed
-        // TODO add your handling code here:
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "installmentPayment");
-    }//GEN-LAST:event_creditManagementSettlementLblActionPerformed
-
     private void editCustomerSaveBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCustomerSaveBtn2ActionPerformed
         try {
             validateName(editCustomerFullNameTxt2.getText());
-        String nic=editCustomerNicTxt2.getText();
-        if((nic.length()==10 ) && (nic.endsWith("v") ==true) ){
-            try{
-                Integer.parseInt(nic.substring(0,8));
+            String nic = editCustomerNicTxt2.getText();
+            if ((nic.length() == 10) && (nic.endsWith("v") == true)) {
+                try {
+                    Integer.parseInt(nic.substring(0, 8));
+                } catch (NumberFormatException ex) {
+                    Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
+
+                }
+            } else {
+                Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
+
             }
-            catch(NumberFormatException ex){
-                 Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
-               
-               
-               
-            }
-        } else{
-                    Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
-                
-                    }
-        
-        if((editCustomerTeleTxt2.getText().length()==10)){
-            try{
-                Integer.parseInt(nic.substring(0,8));
-            }
-            catch(NumberFormatException ex){
-                 Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-               
-            }
-        } else{
+
+            if ((editCustomerTeleTxt2.getText().length() == 10)) {
+                try {
+                    Integer.parseInt(nic.substring(0, 8));
+                } catch (NumberFormatException ex) {
                     Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-                
-                    }
+
+                }
+            } else {
+                Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
+
+            }
             // TODO add your handling code here:
             setEditDetails();
         } catch (SQLException ex) {
@@ -1625,21 +1633,44 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void checkCreditDetailsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkCreditDetailsBtnActionPerformed
         // TODO add your handling code here:
-        
-        if (creditDetailsCustomerComboBox.getSelectedIndex() > 0){
-            CreditDetailsCustomerComboBoxModel.getSelectedItem().toString();
-        try {
-            loadCreditDetails();
-        } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
+
+        if (creditDetailsCustomerComboBox.getSelectedIndex() > 0) {
+            // Object ob = CreditDetailsCustomerComboBoxModel.getSelectedItem();
+            // CreditDetailsCustomerComboBoxModel.removeAllElements();
+            // CreditDetailsCustomerComboBoxModel.addElement(ob);
+
+            try {
+                loadCreditDetails();
+            } catch (SQLException ex) {
+                java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        }
-      
+
     }//GEN-LAST:event_checkCreditDetailsBtnActionPerformed
 
     private void addCustomerFullNameTxt1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerFullNameTxt1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_addCustomerFullNameTxt1ActionPerformed
+
+    private void confirmBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtn1ActionPerformed
+        // TODO add your handling code here:
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "installmentPayment");
+        InstallmentPaymentCustomerNameLblValue.setText(creditDetailsCustomerComboBox.getSelectedItem().toString());
+        double billValue = 0;
+        double paidAmount = 0;
+        double payment = 0;
+        for (int i = 0; i < creditTbl.getRowCount(); i++) {
+            if (creditTbl.getValueAt(i, 0).equals(true)) {
+                billValue = Double.parseDouble(creditTbl.getValueAt(i, 3).toString());
+                paidAmount = Double.parseDouble(creditTbl.getValueAt(i, 4).toString());
+                payment += billValue - paidAmount;
+            }
+        }
+        InstallmentPaymentPaymentAmountLbl.setText(payment + "");
+
+
+    }//GEN-LAST:event_confirmBtn1ActionPerformed
     public boolean validateName(String txt) {
         logger.debug("validateName invoked");
 
@@ -1649,15 +1680,16 @@ public class FinalCredit extends javax.swing.JFrame {
         return matcher.find();
 
     }
-    public void validateNumbers(String x){
-        try{
-      int l= Integer.parseInt(x);
-        }
-        catch(NumberFormatException ex){
-             Utilities.showMsgBox("Enter a valid id", "WARNING", JOptionPane.WARNING_MESSAGE);
-               
+
+    public void validateNumbers(String x) {
+        try {
+            int l = Integer.parseInt(x);
+        } catch (NumberFormatException ex) {
+            Utilities.showMsgBox("Enter a valid id", "WARNING", JOptionPane.WARNING_MESSAGE);
+
         }
     }
+
     /**
      * @param args the command line arguments
      */
@@ -1687,6 +1719,10 @@ public class FinalCredit extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -1702,9 +1738,11 @@ public class FinalCredit extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton InstallmentPaymentCancelBtn;
+    private javax.swing.JLabel InstallmentPaymentCustomerNameLblValue;
     private javax.swing.JLabel InstallmentPaymentDateLbl;
     private org.jdesktop.swingx.JXDatePicker InstallmentPaymentDatePicker;
-    private org.jdesktop.swingx.JXLabel PaymentTxt1;
+    private javax.swing.JLabel InstallmentPaymentPaymentAmountLbl;
+    private javax.swing.JLabel InstallmetPaymentPaymentValue;
     private javax.swing.JPanel addCustomer;
     private org.jdesktop.swingx.JXButton addCustomerAddBtn1;
     private javax.swing.JLabel addCustomerAddressLbl1;
@@ -1734,7 +1772,6 @@ public class FinalCredit extends javax.swing.JFrame {
     private javax.swing.JLabel creditDetailsSettlementDateTxt1;
     private javax.swing.JLabel creditDetailsSettlementNoTxt;
     private javax.swing.JButton creditManagementCreditDetailsLbl;
-    private javax.swing.JButton creditManagementSettlementLbl;
     private org.jdesktop.swingx.JXTaskPane creditManagementTaskPane;
     private javax.swing.JTable creditTbl;
     private javax.swing.JButton custoemrSearchBtn;
@@ -1781,7 +1818,6 @@ public class FinalCredit extends javax.swing.JFrame {
     private javax.swing.JLabel installmetPaymentCustomerNameLbl;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
-    private javax.swing.JComboBox jComboBox3;
     private javax.swing.JLabel jLabel54;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -1806,7 +1842,6 @@ public class FinalCredit extends javax.swing.JFrame {
     private javax.swing.JLabel newCustomerLbl1;
     private org.jdesktop.swingx.JXLabel paidAmountTxt1;
     private org.jdesktop.swingx.JXLabel paidAmountlbl1;
-    private org.jdesktop.swingx.JXLabel paymentLbl1;
     private org.jdesktop.swingx.painter.RectanglePainter rectanglePainter1;
     private org.jdesktop.swingx.painter.ShapePainter shapePainter1;
     private javax.swing.ButtonGroup taskPaneSearch;

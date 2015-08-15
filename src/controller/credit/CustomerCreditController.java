@@ -13,9 +13,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.table.DefaultTableModel;
 import model.creditManagement.CreditCustomer;
 
 /**
@@ -23,10 +20,6 @@ import model.creditManagement.CreditCustomer;
  * @author HP
  */
 public class CustomerCreditController implements DatabaseInterface {
-
-    CreditCustomer creditCustomer;
-
-    DefaultTableModel CustomerCreditDetailsTableModel;
 
     public static CreditCustomer getDetails(int id) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
@@ -236,6 +229,28 @@ public class CustomerCreditController implements DatabaseInterface {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
+    public static ArrayList<CreditCustomer> loadComboBoxCustomers() throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "SELECT *  FROM " + CREDIT_CUSTOMER + " WHERE current_credit < 10000";
+
+        ResultSet resultSet = DBHandler.getData(connection, query);
+        ArrayList<CreditCustomer> customers = new ArrayList();
+        while (resultSet.next()) {
+            CreditCustomer customer = new CreditCustomer(
+                    resultSet.getInt("customer_id"),
+                    resultSet.getString("customer_name"),
+                    resultSet.getString("customer_address"),
+                    resultSet.getInt("customer_telephone"),
+                    resultSet.getString("customer_nic"),
+                    resultSet.getDouble("current_credit")
+            );
+            customers.add(customer);
+        }
+
+        return customers;
+    }
 }
 
 /*   public static void setDetails(CreditCustomer creditCustomer, int i) throws SQLException {

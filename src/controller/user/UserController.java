@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import model.people.User;
 import database.connector.DatabaseInterface;
 import static database.connector.DatabaseInterface.USER;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UserController implements DatabaseInterface {
 
@@ -61,43 +59,37 @@ public class UserController implements DatabaseInterface {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
-    public static void addUser(User user) {
-        try {
-            Connection connection = DBConnection.getConnectionToDB();
-            String query = "INSERT INTO " + USER + " (user_name,password,access_level,isLoggedIn) VALUES (?,?,?,?) ";
-            Object[] ob = {
-                user.getUserName(),
-                user.getPassword(),
-                user.getUserType(),
-                user.isLoggedin()
-            };
-            DBHandler.setData(connection, query, ob);
-        } catch (SQLException ex) {
-            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public static void addUser(User user) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "INSERT INTO " + USER + " (user_name,password,access_level,isLoggedIn) VALUES (?,?,?,?) ";
+        Object[] ob = {
+            user.getUserName(),
+            user.getPassword(),
+            user.getUserType(),
+            user.isLoggedin()
+        };
+        DBHandler.setData(connection, query, ob);
 
     }
 
-    public static User getLoggedInUsers() {
-        try {
-            Connection connection = DBConnection.getConnectionToDB();
-            String query = "SELECT * FROM " + USER + " WHERE isLoggedIn =? ";
-            Object[] ob = {
-                true
-            };
-            ResultSet resultSet = DBHandler.getData(connection, query, ob);
-            if (resultSet.next()) {
-                return new User(
-                        resultSet.getString("user_name"),
-                        resultSet.getString("password"),
-                        resultSet.getString("access_level"),
-                        resultSet.getBoolean("isLoggedIn")
-                );
-            }
+    public static User getLoggedInUsers() throws SQLException {
 
-        } catch (SQLException ex) {
-            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT * FROM " + USER + " WHERE isLoggedIn =? ";
+        Object[] ob = {
+            true
+        };
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+        if (resultSet.next()) {
+            return new User(
+                    resultSet.getString("user_name"),
+                    resultSet.getString("password"),
+                    resultSet.getString("access_level"),
+                    resultSet.getBoolean("isLoggedIn")
+            );
         }
+
         return null;
     }
 }

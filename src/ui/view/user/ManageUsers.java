@@ -26,21 +26,25 @@ import util.Utilities;
  * @author HP
  */
 public class ManageUsers extends javax.swing.JFrame {
-    DefaultComboBoxModel  addUserFullNameComboBox1Model ;  
-    private HashMap<Integer, Employee> employees;/**
+
+    DefaultComboBoxModel addUserFullNameComboBox1Model;
+    private HashMap<Integer, Employee> employees;
+
+    /**
      * Creates new form ManageEmployees
      */
     public ManageUsers() {
         initComponents();
-        addUserFullNameComboBox1Model = (DefaultComboBoxModel)addUserUserLevelComboBox1.getModel();
+        addUserFullNameComboBox1Model = (DefaultComboBoxModel) addUserUserLevelComboBox1.getModel();
     }
-     public  void loadDetails() throws SQLException {
 
-           addUserFullNameComboBox1Model.removeAllElements();
+    public void loadDetails() throws SQLException {
+
+        addUserFullNameComboBox1Model.removeAllElements();
         ArrayList<Employee> employeeDetails = EmployeeCreditController.loadEmployees();
 
         for (Employee employee : employeeDetails) {
-           employees.put(employee.getEmployeeId(), employee);
+            employees.put(employee.getEmployeeId(), employee);
             addUserFullNameComboBox1Model.addElement(employee.getEmployeeName());
         }
 
@@ -49,67 +53,60 @@ public class ManageUsers extends javax.swing.JFrame {
     public void addUser() throws SQLException {
 //checkvalidations
         boolean r = false;
-        if(!addUserUserNameTxt1.getText().isEmpty()){
-            if(!addUserPasswordTxt.getPassword().toString().isEmpty()){
-                if(addUserFullNameComboBox1Model.getSelectedItem()!=null){
-                    
-                    UserController.addUser(new User(addUserUserNameTxt1.getText(), addUserPasswordTxt.getPassword().toString(), addUserUserLevelComboBox1.getSelectedItem().toString(),false));
+        if (!addUserUserNameTxt1.getText().isEmpty()) {
+            if (!addUserPasswordTxt.getPassword().toString().isEmpty()) {
+                if (addUserFullNameComboBox1Model.getSelectedItem() != null) {
+
+                    UserController.addUser(new User(addUserUserNameTxt1.getText(), addUserPasswordTxt.getPassword().toString(), addUserUserLevelComboBox1.getSelectedItem().toString(), false));
+
+                } else {
+                    Utilities.showMsgBox("Fill all the details", "WARNING", JOptionPane.WARNING_MESSAGE);
+                    r = true;
 
                 }
-                else{
-                     Utilities.showMsgBox("Fill all the details", "WARNING", JOptionPane.WARNING_MESSAGE);
-                     r=true;
-               
+                if (r == false) {
+                    Utilities.showMsgBox("Select a row to delete details", "WARNING", JOptionPane.WARNING_MESSAGE);
+                    r = true;
                 }
-                if(r==false){
-                     Utilities.showMsgBox("Select a row to delete details", "WARNING", JOptionPane.WARNING_MESSAGE);
-                     r=true;
-                }
-                
+
             }
-            if(r==false){
-                     Utilities.showMsgBox("Select a row to delete details", "WARNING", JOptionPane.WARNING_MESSAGE);
-                     r=true;
-                }
-            
-        
-        
+            if (r == false) {
+                Utilities.showMsgBox("Select a row to delete details", "WARNING", JOptionPane.WARNING_MESSAGE);
+                r = true;
+            }
+
         }
-       /* Object[] ob = {
-            addUserFullNameComboBox1.getSelectedItem().toString(),
-            addUserUserNameTxt1.getText(),
-            addUserPasswordTxt1.getPassword(),
+        /* Object[] ob = {
+         addUserFullNameComboBox1.getSelectedItem().toString(),
+         addUserUserNameTxt1.getText(),
+         addUserPasswordTxt1.getPassword(),
             
-            addUserUserLevelComboBox1.getSelectedItem().toString(),};
-        User newUser = new User(ob[0].toString(), ob[1].toString(),ob[2].toString(), ob[3].toString(), false);
-        int employeeId = 0;
-        employeeId = employees.get(ob[0].toString()).getEmployeeId();
-        UserController.setDetails(newUser, employeeId);
-        chngTblModel();
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "manageUsers");
-        try {
-            addUser();
-        } catch (SQLException ex) {
-            Logger.getLogger(ManageUsers.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        addUserOnlineUsersTxt1.setText(null);
-        addUserUserNameTxt1.setText(null);
-        addUserPasswordTxt1.setText(null);*/
-        
-        
+         addUserUserLevelComboBox1.getSelectedItem().toString(),};
+         User newUser = new User(ob[0].toString(), ob[1].toString(),ob[2].toString(), ob[3].toString(), false);
+         int employeeId = 0;
+         employeeId = employees.get(ob[0].toString()).getEmployeeId();
+         UserController.setDetails(newUser, employeeId);
+         chngTblModel();
+         CardLayout card = (CardLayout) cardPanel.getLayout();
+         card.show(cardPanel, "manageUsers");
+         try {
+         addUser();
+         } catch (SQLException ex) {
+         Logger.getLogger(ManageUsers.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         addUserOnlineUsersTxt1.setText(null);
+         addUserUserNameTxt1.setText(null);
+         addUserPasswordTxt1.setText(null);*/
+
     }
 
     public void chngTblModel() throws SQLException {
 
-  //      userTable.setModel(DbUtils.resultSetToTableModel(UserController.loadDetails()));
-
+        //      userTable.setModel(DbUtils.resultSetToTableModel(UserController.loadDetails()));
     }
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -677,7 +674,7 @@ public class ManageUsers extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(ManageUsers.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }//GEN-LAST:event_addUserActivateBtn1ActionPerformed
 
     private void addUserUserNameTxt1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addUserUserNameTxt1ActionPerformed
@@ -695,10 +692,14 @@ public class ManageUsers extends javax.swing.JFrame {
     }//GEN-LAST:event_taskPaneSearchUserBtnActionPerformed
 
     private void taskPaneAddUserBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_taskPaneAddUserBtnActionPerformed
-        addUserOnlineUsersTxt1.setText(UserController.getLoggedInUsers().getUserName());
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "addUser");
-        
+        try {
+            addUserOnlineUsersTxt1.setText(UserController.getLoggedInUsers().getUserName());
+
+            CardLayout card = (CardLayout) cardPanel.getLayout();
+            card.show(cardPanel, "addUser");
+        } catch (SQLException ex) {
+            Logger.getLogger(ManageUsers.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_taskPaneAddUserBtnActionPerformed
 
     private void taskPaneUserDetailsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_taskPaneUserDetailsBtnActionPerformed
@@ -750,6 +751,10 @@ public class ManageUsers extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(ManageUsers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
