@@ -55,8 +55,8 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         //============================================================
         //test
-        ((PlainDocument) sizeTB1.getDocument()).setDocumentFilter(new IntegerFilter());
-        ((PlainDocument) roValue.getDocument()).setDocumentFilter(new CurrencyFilter());
+        //((PlainDocument) sizeTB1.getDocument()).setDocumentFilter(new IntegerFilter());
+        //((PlainDocument) roValue.getDocument()).setDocumentFilter(new CurrencyFilter());
         ((PlainDocument) sizeTB1.getDocument()).setDocumentFilter(new QuantityFilter());
         ((PlainDocument) roValue.getDocument()).setDocumentFilter(new QuantityFilter());
         ((PlainDocument) pBarcodeTB1.getDocument()).setDocumentFilter(new IntegerFilter());
