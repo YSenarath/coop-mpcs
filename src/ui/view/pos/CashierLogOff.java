@@ -11,7 +11,7 @@ import model.pos.CashWithdrawal;
 import model.pos.Counter;
 import model.pos.CounterLogin;
 import org.apache.log4j.Logger;
-import util.DoubleFilter;
+import util.CurrencyFilter;
 import util.Utilities;
 
 class CashierLogOff extends javax.swing.JDialog {
@@ -31,7 +31,7 @@ class CashierLogOff extends javax.swing.JDialog {
 
         initComponents();
         this.counterLogin = parent.getCounterLogin();
-        ((PlainDocument) txtActualAmount.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) txtActualAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
 
         setLocationRelativeTo(null);
         showDetails();

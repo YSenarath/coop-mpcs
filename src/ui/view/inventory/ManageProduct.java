@@ -22,7 +22,7 @@ import javax.swing.text.PlainDocument;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXSearchField;
 import ui.handler.inventory.ManageProductHandler;
-import util.DoubleFilter;
+import util.CurrencyFilter;
 import util.IntegerFilter;
 import util.Utilities;
 
@@ -55,7 +55,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         //============================================================
         //test
         ((PlainDocument) sizeTB1.getDocument()).setDocumentFilter(new IntegerFilter());
-        ((PlainDocument) roValue.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) roValue.getDocument()).setDocumentFilter(new CurrencyFilter());
         //
     }
 

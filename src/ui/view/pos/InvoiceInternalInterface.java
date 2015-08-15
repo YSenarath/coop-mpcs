@@ -58,7 +58,7 @@ import model.pos.payment.Payment;
 import model.pos.payment.PoshanaPayment;
 import org.apache.log4j.Logger;
 import util.CharactorLimitDocument;
-import util.DoubleFilter;
+import util.CurrencyFilter;
 import util.KeyValueContainer;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
@@ -156,17 +156,17 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         };
         itemCodeComboBox.addActionListener(productCodeListner);
 
-        ((PlainDocument) txtPrice.getDocument()).setDocumentFilter(new DoubleFilter());
-        ((PlainDocument) txtQty.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) txtPrice.getDocument()).setDocumentFilter(new CurrencyFilter());
+        ((PlainDocument) txtQty.getDocument()).setDocumentFilter(new CurrencyFilter());
 
-        ((PlainDocument) txtCardPaymentAmount.getDocument()).setDocumentFilter(new DoubleFilter());
-        ((PlainDocument) txtCashPaymentAmount.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) txtCardPaymentAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
+        ((PlainDocument) txtCashPaymentAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
 
         //Yasara
-        ((PlainDocument) coopCreditAmountTxt.getDocument()).setDocumentFilter(new DoubleFilter());
-        ((PlainDocument) poshanaPaymentAmountTxt.getDocument()).setDocumentFilter(new DoubleFilter());
-        ((PlainDocument) voucherEmployeeVoucherAmount.getDocument()).setDocumentFilter(new DoubleFilter());
-        ((PlainDocument) voucherCustomerAmountTxt.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) coopCreditAmountTxt.getDocument()).setDocumentFilter(new CurrencyFilter());
+        ((PlainDocument) poshanaPaymentAmountTxt.getDocument()).setDocumentFilter(new CurrencyFilter());
+        ((PlainDocument) voucherEmployeeVoucherAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
+        ((PlainDocument) voucherCustomerAmountTxt.getDocument()).setDocumentFilter(new CurrencyFilter());
 
         ((DefaultTableCellRenderer) invoiceItemTable.getDefaultRenderer(Object.class)).setHorizontalAlignment(JLabel.RIGHT);
         ((DefaultTableCellRenderer) invoicePaymentsTable.getDefaultRenderer(Object.class)).setHorizontalAlignment(JLabel.RIGHT);

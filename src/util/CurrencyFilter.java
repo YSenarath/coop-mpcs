@@ -7,7 +7,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
-public class DoubleFilter extends DocumentFilter implements Serializable {
+public class CurrencyFilter extends DocumentFilter implements Serializable {
 
     private boolean isPositiveDouble(String text) {
         try {

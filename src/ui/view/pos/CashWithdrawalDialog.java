@@ -23,7 +23,7 @@ import model.pos.Counter;
 import model.pos.CounterLogin;
 import model.pos.Setting;
 import org.apache.log4j.Logger;
-import util.DoubleFilter;
+import util.CurrencyFilter;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
 
@@ -137,7 +137,7 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
                 btnOk.setEnabled(false);
             }
 
-            ((PlainDocument) txtWithdrawalAmount.getDocument()).setDocumentFilter(new DoubleFilter());
+            ((PlainDocument) txtWithdrawalAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
 
         } catch (SQLException ex) {
             logger.error("SQL error : " + ex.getMessage());

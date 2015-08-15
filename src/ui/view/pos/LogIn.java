@@ -9,7 +9,7 @@ import javax.swing.text.PlainDocument;
 import model.pos.CounterLogin;
 import model.people.User;
 import org.apache.log4j.Logger;
-import util.DoubleFilter;
+import util.CurrencyFilter;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
 import static util.Utilities.setupUI;
@@ -28,7 +28,7 @@ class LogIn extends javax.swing.JFrame {
         logger.debug("logIn constructor invoked");
 
         initComponents();
-        ((PlainDocument) txtIntialAmount.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) txtIntialAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
         initializePOSSystem();
         setLocationRelativeTo(null);
         txtUserName.requestFocus();

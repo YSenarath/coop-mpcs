@@ -20,7 +20,7 @@ import model.inventory.BatchBuilder;
 import model.inventory.Product;
 import model.ledger.GoodRecieveNote;
 import model.supplier.Supplier;
-import util.DoubleFilter;
+import util.CurrencyFilter;
 
 // </editor-fold>
 // 
@@ -586,9 +586,9 @@ public class GRNInterface extends javax.swing.JInternalFrame {
 
         datePickInvoiceDate.setDate(util.Utilities.getToday());
 
-        ((PlainDocument) txtLoadingFee.getDocument()).setDocumentFilter(new DoubleFilter());
-        ((PlainDocument) txtPurchasingBillDiscount.getDocument()).setDocumentFilter(new DoubleFilter());
-        ((PlainDocument) txtSellingBillDiscount.getDocument()).setDocumentFilter(new DoubleFilter());
+        ((PlainDocument) txtLoadingFee.getDocument()).setDocumentFilter(new CurrencyFilter());
+        ((PlainDocument) txtPurchasingBillDiscount.getDocument()).setDocumentFilter(new CurrencyFilter());
+        ((PlainDocument) txtSellingBillDiscount.getDocument()).setDocumentFilter(new CurrencyFilter());
     }
 
     // </editor-fold>
