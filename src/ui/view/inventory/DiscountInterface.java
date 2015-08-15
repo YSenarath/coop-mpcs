@@ -5,7 +5,6 @@
  */
 package ui.view.inventory;
 
-
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,30 +16,37 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.PlainDocument;
 import org.jdesktop.swingx.JXDatePicker;
 import ui.handler.inventory.DiscountInterfaceHandler;
+import util.PercentageFilter;
 
 /**
  *
  * @author Nadheesh
  */
-public class DiscountInterface extends javax.swing.JFrame {
+public class DiscountInterface extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form Discount
      */
     private DiscountInterfaceHandler handler;
+    private boolean isCategoryDiscount;
 
     public DiscountInterface() throws SQLException {
         initComponents();
-        setLocationRelativeTo(null);
         handler = new DiscountInterfaceHandler(this);
-
+        isCategoryDiscount = true;
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         startDate.setFormats(dateFormat);
         endDate.setFormats(dateFormat);
 
         handler.loadDepartmentCombo();
+
+        //edited 8/15/2015 ========== Documentfilter added===========================
+        ((PlainDocument) disText.getDocument()).setDocumentFilter(new PercentageFilter());
+
+        //===========================================================================
     }
 
     /**
@@ -91,8 +97,7 @@ public class DiscountInterface extends javax.swing.JFrame {
         disType.add(proRadio);
         disType.add(qtyRadio);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jXTitledPanel1.setTitle("Discounts");
         jXTitledPanel1.setTitleFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
@@ -142,7 +147,7 @@ public class DiscountInterface extends javax.swing.JFrame {
         jLabel4.setText("Start Date");
 
         disText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        disText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        disText.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         disText.setText("0.00");
         disText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -341,17 +346,16 @@ public class DiscountInterface extends javax.swing.JFrame {
             categoryLayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(categoryLayerLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(categoryLayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(categoryLayerLayout.createSequentialGroup()
-                        .addGroup(categoryLayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(label1)
-                            .addComponent(idText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nameText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(32, 32, 32))
-                    .addGroup(categoryLayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(idText2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(nameText2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(label2)))
+                .addGroup(categoryLayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(label1)
+                    .addComponent(idText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nameText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(categoryLayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(idText2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(label2)
+                    .addComponent(nameText2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(categoryLayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(disText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -519,10 +523,11 @@ public class DiscountInterface extends javax.swing.JFrame {
     private void disTypeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disTypeComboActionPerformed
 
         if (disTypeCombo.getSelectedItem().equals("Category Wise")) {
+            isCategoryDiscount = true;
             label1.setText("Department");
             label2.setText("Category");
-
             nameText2.setVisible(true);
+            clearFields();
 
             try {
                 handler.loadDepartmentCombo();
@@ -530,10 +535,17 @@ public class DiscountInterface extends javax.swing.JFrame {
                 Logger.getLogger(DiscountInterface.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (disTypeCombo.getSelectedItem().equals("Batch Wise")) {
+            isCategoryDiscount = false;
             label1.setText("Product");
             label2.setText("Batch");
-
             nameText2.setVisible(false);
+            clearFields();
+
+            try {
+                handler.loadProductCombo();
+            } catch (SQLException ex) {
+                Logger.getLogger(DiscountInterface.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         }
 
@@ -563,7 +575,7 @@ public class DiscountInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_proRadioActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        System.exit(0);
+        this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void qtyRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qtyRadioActionPerformed
@@ -591,10 +603,18 @@ public class DiscountInterface extends javax.swing.JFrame {
             nameText1.setSelectedIndex(index);
 
             if (index > 0) {
-                try {
-                    handler.loadCategories(index);
-                } catch (SQLException ex) {
-                    Logger.getLogger(ManageDepartment.class.getName()).log(Level.SEVERE, null, ex);
+                if (isCategoryDiscount) {
+                    try {
+                        handler.loadCategories(index);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ManageDepartment.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    try {
+                        handler.loadBatches(index);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(DiscountInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
@@ -621,11 +641,12 @@ public class DiscountInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_nameText1ItemStateChanged
 
     private void idText2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_idText2ItemStateChanged
-        int index = idText2.getSelectedIndex();
-        if (nameText2.getSelectedIndex() != index) {
-            nameText2.setSelectedIndex(index);
+        if (isCategoryDiscount) {
+            int index = idText2.getSelectedIndex();
+            if (nameText2.getSelectedIndex() != index) {
+                nameText2.setSelectedIndex(index);
+            }
         }
-
     }//GEN-LAST:event_idText2ItemStateChanged
 
     private void nameText2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_nameText2ItemStateChanged
@@ -642,9 +663,8 @@ public class DiscountInterface extends javax.swing.JFrame {
             } catch (SQLException ex) {
                 Logger.getLogger(DiscountInterface.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else if (disTypeCombo.getSelectedItem().equals("Batch Wise")){
-            
-            
+        } else if (disTypeCombo.getSelectedItem().equals("Batch Wise")) {
+
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -794,4 +814,24 @@ public class DiscountInterface extends javax.swing.JFrame {
     private javax.swing.JTextField quantityText;
     private org.jdesktop.swingx.JXDatePicker startDate;
     // End of variables declaration//GEN-END:variables
+
+    public void clearFields() {
+
+        idText1.removeAllItems();
+        idText2.removeAllItems();
+        idText1.addItem("");
+        idText2.addItem("");
+
+        idText1.setSelectedIndex(0);
+        idText2.setSelectedIndex(0);
+
+        nameText1.removeAllItems();
+        nameText2.removeAllItems();
+        nameText1.addItem("");
+        nameText2.addItem("");
+
+        nameText1.setSelectedIndex(0);
+        nameText2.setSelectedIndex(0);
+
+    }
 }
