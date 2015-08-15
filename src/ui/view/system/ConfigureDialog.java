@@ -72,7 +72,7 @@ class ConfigureDialog extends javax.swing.JDialog {
             return;
         }
 
-        if (!Utilities.isValidDBConnection(userName, password)) {
+        if (!Utilities.isValidDBConnection(userName, password,ipAddress)) {
             Utilities.showMsgBox("Test connection to database failed. Please recheck username and password", "Warning", JOptionPane.WARNING_MESSAGE);
             logger.error("DB connection failed");
             txtUserName.setText("");

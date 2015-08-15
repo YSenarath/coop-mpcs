@@ -73,24 +73,15 @@ public final class DBConnection implements DatabaseInterface {
         }
     }
 
-    public static boolean isValidDBConnection(String userNameProperty, String passwordProperty) {
+    public static boolean isValidDBConnection(String userNameProperty, String passwordProperty,String serverIP) {
         try {
             DriverManager.registerDriver(new Driver());
 
-            //Default login
-            String serverIp = SERVER;
-
-            //From settings
-            String serverProperty = Utilities.loadProperty("SERVER_IP");
-
-            if (!serverProperty.equals("NULL")) {
-                serverIp = serverProperty;
-            }
             Properties connectionProps = new Properties();
             connectionProps.put("user", userNameProperty);
             connectionProps.put("password", passwordProperty);
 
-            Connection tmpConn = DriverManager.getConnection("jdbc:mysql://" + serverIp + ":" + PORT + "/" + DATABASE, connectionProps);
+            Connection tmpConn = DriverManager.getConnection("jdbc:mysql://" + serverIP + ":" + PORT + "/" + DATABASE, connectionProps);
             if (tmpConn != null) {
                 return true;
             }

@@ -3,7 +3,6 @@ package ui.view.pos;
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
 import org.apache.log4j.Logger;
-import util.CardNumberFilter;
 import util.IntegerFilter;
 import util.Utilities;
 
@@ -91,7 +90,7 @@ class ConfigureDialog extends javax.swing.JDialog {
             return;
         }
 
-        if (!Utilities.isValidDBConnection(userName, password)) {
+        if (!Utilities.isValidDBConnection(userName, password,ipAddress)) {
             Utilities.showMsgBox("Test connection to database failed. Please recheck username and password", "Warning", JOptionPane.WARNING_MESSAGE);
             logger.error("DB connection failed");
             txtUserName.setText("");
