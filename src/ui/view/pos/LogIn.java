@@ -4,11 +4,13 @@ import controller.pos.TransactionController;
 import controller.user.UserController;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
 import model.pos.CounterLogin;
 import model.people.User;
 import org.apache.log4j.Logger;
+import report.pos.ReportGenerator;
 import util.CurrencyFilter;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
@@ -28,6 +30,7 @@ class LogIn extends javax.swing.JFrame {
         logger.debug("logIn constructor invoked");
 
         initComponents();
+        setIconImage(new ImageIcon(getClass().getResource("/images/pos/pos_icon.png")).getImage());
         ((PlainDocument) txtIntialAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
         initializePOSSystem();
         setLocationRelativeTo(null);
@@ -184,6 +187,7 @@ class LogIn extends javax.swing.JFrame {
                         initialAmount
                 );
                 if (performCounterLogin(counterLogin)) {
+                    ReportGenerator.generateSignOnSlip();
                     new POSMDIInterface(false).setVisible(true);
                 }
                 exitApp();

@@ -1,5 +1,6 @@
 package ui.view.pos;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
 import org.apache.log4j.Logger;
@@ -20,6 +21,8 @@ class ConfigureDialog extends javax.swing.JDialog {
     public ConfigureDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        setIconImage(new ImageIcon(getClass().getResource("/images/pos/pos_icon.png")).getImage());
         ((PlainDocument) txtCounterId.getDocument()).setDocumentFilter(new IntegerFilter());
 
         String userNameProperty = Utilities.loadProperty("userName");
