@@ -389,8 +389,8 @@ class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             cancelTotal += Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_SUB_TOTAL_COLUMN).toString());
         }
 
-        lblRefundCancelNetTotalVal.setText(String.format("%.2f", cancelTotal));
-        lblRefundCancelDiscountAmountVal.setText(String.format("%.2f", cancelDiscounts));
+        lblRefundCancelNetTotalVal.setText(String.format("%.2f", cancelTotal * -1));
+        lblRefundCancelDiscountAmountVal.setText(String.format("%.2f", cancelDiscounts * -1));
     }
 
     // </editor-fold>
