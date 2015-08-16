@@ -440,7 +440,7 @@ class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             loadRefundInfo(invoiceNumber);
 
             //Cash Payments            
-            CashPayment cashPayment = CashPaymentController.getCashpayment(invoiceNumber);
+            CashPayment cashPayment = CashPaymentController.getCashPayment(invoiceNumber);
             if (cashPayment != null) {
                 lblRefundCashAmountVal.setText(String.format("%.2f", cashPayment.getAmount()));
                 lblRefundChangeCashVal.setText(String.format("%.2f", cashPayment.getChangeAmount()));

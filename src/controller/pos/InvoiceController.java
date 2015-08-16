@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.pos.item.Invoice;
 import database.connector.DatabaseInterface;
+import java.util.ArrayList;
 
 public class InvoiceController implements DatabaseInterface {
 
@@ -55,5 +56,19 @@ public class InvoiceController implements DatabaseInterface {
             );
         }
         return null;
+    }
+
+    public static ArrayList<Integer> getInvoicesFromShift(int shiftId) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT bill_id FROM " + INVOICE + " WHERE shift_id=?";
+        Object[] ob = {
+            shiftId
+        };
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+        ArrayList<Integer> invoiceIdList = new ArrayList<>();
+        while (resultSet.next()) {
+            invoiceIdList.add(resultSet.getInt("bill_id"));
+        }
+        return invoiceIdList;
     }
 }

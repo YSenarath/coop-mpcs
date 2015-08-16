@@ -1,145 +1,115 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cashierSignOn" language="groovy" pageWidth="283" pageHeight="340" columnWidth="243" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7fba5085-6bc0-4163-99ba-ba56a7f4ea12">
-	<property name="ireport.zoom" value="1.4641000000000006"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cashierSignOn" language="groovy" pageWidth="283" pageHeight="283" columnWidth="243" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7fba5085-6bc0-4163-99ba-ba56a7f4ea12">
+	<property name="ireport.zoom" value="2.357947691000002"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="counter_id" class="java.lang.String" isForPrompting="false"/>
-	<queryString>
-		<![CDATA[SELECT * FROM counter_login WHERE counter_id=$P{counter_id} ORDER BY shift_id DESC LIMIT 1]]>
-	</queryString>
-	<field name="shift_id" class="java.lang.Integer">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="user_name" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="counter_id" class="java.lang.Integer">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="log_in_time" class="java.sql.Time">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="log_in_date" class="java.sql.Date">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="log_off_time" class="java.sql.Time">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="log_off_date" class="java.sql.Date">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="initial_amount" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="cash_withdrawals" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="log_off_amount_expected" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="log_off_amount_actual" class="java.lang.Double">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="shift_ended" class="java.lang.Boolean">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
+	<parameter name="shiftNo" class="java.lang.String"/>
+	<parameter name="cashierName" class="java.lang.String"/>
+	<parameter name="counter" class="java.lang.String"/>
+	<parameter name="onDate" class="java.lang.String"/>
+	<parameter name="onTime" class="java.lang.String"/>
+	<parameter name="amount" class="java.lang.Double" isForPrompting="false"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="271" splitType="Stretch">
+		<band height="235" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="0" width="243" height="52" uuid="732e360d-afb2-4abd-96bd-49ecc96bbc93"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="16" isBold="true"/>
+					<font size="18" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MEGA COOP CITY]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="33" y="130" width="102" height="20" uuid="373262ea-a171-4328-bd55-918d245fe669"/>
+				<reportElement x="44" y="115" width="102" height="20" uuid="373262ea-a171-4328-bd55-918d245fe669"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Shift No]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="135" y="130" width="88" height="20" uuid="edb4fe3e-a05a-4458-bc7f-3e2dd06f4d98"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{shift_id}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="33" y="150" width="102" height="20" uuid="43ce3513-b55b-41a7-9126-113fc5af8433"/>
+				<reportElement x="44" y="135" width="102" height="20" uuid="43ce3513-b55b-41a7-9126-113fc5af8433"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Cashier Name]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="135" y="150" width="88" height="20" uuid="07dd9357-a1f7-4101-95d6-88eeab8c3a8a"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="33" y="170" width="102" height="20" uuid="6ddf76b0-3995-4465-86e8-97b30fe32f39"/>
+				<reportElement x="44" y="155" width="102" height="20" uuid="6ddf76b0-3995-4465-86e8-97b30fe32f39"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Counter ID]]></text>
 			</staticText>
-			<textField pattern="">
-				<reportElement x="135" y="170" width="88" height="20" uuid="e2150574-ba28-4a65-953e-88d2dd6387b9"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{counter_id}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="33" y="190" width="102" height="20" uuid="02520dec-3d36-4133-b812-c8646bf0dfb6"/>
+				<reportElement x="44" y="175" width="102" height="20" uuid="02520dec-3d36-4133-b812-c8646bf0dfb6"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Date]]></text>
+				<text><![CDATA[On Date]]></text>
 			</staticText>
-			<textField pattern="h.mm a">
-				<reportElement x="135" y="210" width="88" height="20" uuid="128ccff6-ddb6-4e1c-823b-395067f89dfe"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{log_in_time}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="33" y="210" width="102" height="20" uuid="58672570-537e-4140-9b0e-1308a220b93c"/>
+				<reportElement x="44" y="195" width="102" height="20" uuid="58672570-537e-4140-9b0e-1308a220b93c"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Time]]></text>
+				<text><![CDATA[On Time]]></text>
 			</staticText>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="135" y="190" width="88" height="20" uuid="fd06efd6-5e79-488e-a574-973172cd79a2"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{log_in_date}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="33" y="230" width="102" height="20" uuid="ecf5b2cd-586d-4aba-b9d7-7f020a93ea4f"/>
+				<reportElement x="44" y="215" width="102" height="20" uuid="ecf5b2cd-586d-4aba-b9d7-7f020a93ea4f"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Initial Amount (Rs.)]]></text>
+				<text><![CDATA[Initial Amount]]></text>
 			</staticText>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="135" y="230" width="88" height="20" uuid="31bdcc4d-92a2-4761-90d0-d67177870e86"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{initial_amount}]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="0" y="52" width="243" height="20" uuid="d3f7b12d-50b9-47fc-9d0b-68db27750b3a"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
 				<text><![CDATA[MPCS Panadura]]></text>
 			</staticText>
 			<line>
 				<reportElement x="0" y="72" width="243" height="1" uuid="304931ec-7712-46d1-81ca-3a11da6adbfe"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="85" width="243" height="20" uuid="cd14de0e-c965-42a6-bc88-a81bdba86549"/>
-				<textElement textAlignment="Center"/>
+				<reportElement x="0" y="73" width="243" height="20" uuid="cd14de0e-c965-42a6-bc88-a81bdba86549"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="12"/>
+				</textElement>
 				<text><![CDATA[- - - - - - -  Cashier sign on slip - - - - - - -]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="146" y="115" width="97" height="20" uuid="c159cdc1-b16a-4152-95be-6524a9472dc1"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{shiftNo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="146" y="135" width="97" height="20" uuid="027d8d18-fb82-424f-a15b-7610e372217d"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{cashierName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="146" y="155" width="97" height="20" uuid="5150e749-cf78-49a5-a8cc-ee3aff264132"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{counter}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="146" y="175" width="97" height="20" uuid="929b9019-9f78-4498-9e34-c4d7a24642e7"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{onDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="146" y="195" width="97" height="20" uuid="762dd332-801a-4cbf-982e-fc2eb81715a9"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{onTime}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="146" y="215" width="97" height="20" uuid="98371f16-96d5-451d-ba6b-f208f2b8409e"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{amount}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 </jasperReport>

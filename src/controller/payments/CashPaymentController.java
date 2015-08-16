@@ -22,7 +22,7 @@ public class CashPaymentController implements DatabaseInterface {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
-    public static CashPayment getCashpayment(int invoiceNo) throws SQLException {
+    public static CashPayment getCashPayment(int invoiceNo) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + CASH_PAYMENT + " WHERE bill_id=?";
         Object[] ob = {

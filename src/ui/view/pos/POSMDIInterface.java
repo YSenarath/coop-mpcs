@@ -22,6 +22,7 @@ import javax.swing.Timer;
 import model.pos.CounterLogin;
 import model.pos.Memento;
 import org.apache.log4j.Logger;
+import report.pos.ReportGenerator;
 import util.Utilities;
 import static util.Utilities.setupUI;
 
@@ -53,6 +54,10 @@ class POSMDIInterface extends javax.swing.JFrame {
     private BillRefundInternalInterface billRefundInterface;
     private BillCopyInternalInterface billCopyInterface;
     private CheckStockInterface checkStockInterface;
+
+    //Confirm the cashier log off was properly done
+    private boolean cashierLogOff;
+    private boolean authenticatedToShutDown;
 
     // </editor-fold>
     //
@@ -130,6 +135,14 @@ class POSMDIInterface extends javax.swing.JFrame {
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Methods">
+    public void setCashierLogOff(boolean cashierLogOff) {
+        this.cashierLogOff = cashierLogOff;
+    }
+
+    public void setAuthenticatedToShutDown(boolean authenticatedToShutDown) {
+        this.authenticatedToShutDown = authenticatedToShutDown;
+    }
+
     public void setHoldBtn(boolean enabled) {
         logger.debug("setHoldBtn invoked");
 
@@ -162,10 +175,14 @@ class POSMDIInterface extends javax.swing.JFrame {
             Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(3);
         } else {
+            ReportGenerator.generateCashierSignOnSlip(counterLogin);
             lblCashier.setText(this.counterLogin.getUserName());
             lblShift.setText(Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
             isCashierLogedIn = true;
         }
+
+        cashierLogOff = false;
+        authenticatedToShutDown = false;
         lblTaskLogo.setVisible(false);
 
         isMainActivityRunning = false;
@@ -450,47 +467,41 @@ class POSMDIInterface extends javax.swing.JFrame {
         logger.debug("cashierLogOff invoked");
         // TODO add your handling code here:
 
-        /*
-         Important :
-         1.NOT IMPLEMENTED - Show log of UI to print the summery for cashier - 
-         */
-//        logger.warn("NOT IMPLEMENTED - Show log of UI to print the summery for cashier");
-//        logger.warn("Check for unfinished business");
-//
         if (isCashierLogedIn) {
             if (isInvoiceRunning() || isBillRefundRunning() || isBillCopyRunning()) {
                 Utilities.showMsgBox("Please exit all the POS interfaces.", "Cannot Log off", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would you like to log off ?", "Warning", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
-
-                //set the last shift from this machine to ended
-                //Update counter amount
-                //Ui to show expected amount ,enter actual amount
                 if (counterLogin == null || counterLogin.isShiftEnded()) {
                     Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-
                     //Interface to show expected current amount and actual amount
                     new CashierLogOff(this, true).setVisible(true);
-
+                    if (!cashierLogOff) {
+                        return;
+                    }
                     //Set log off time and date
                     counterLogin.setLogOffTime(Utilities.getCurrentTime(true));
                     counterLogin.setLogOffDate(Utilities.getStringDate(Utilities.getCurrentDate()));
+
+                    //ReportGenerator.generateCashierSignOffSlip(counterLogin);
+                    //Perform logoff 
                     boolean result = TransactionController.performLogOffTransaction(counterLogin);
                     if (result) {
+                        ReportGenerator.generateCashierSignOffSlip(counterLogin);
                         logger.info("Shift ended : " + result);
                         logger.info("User : " + counterLogin.getUserName() + " logged off");
 
                         isCashierLogedIn = false;
-                        logger.info("isCashierLogedIn :" + isCashierLogedIn);
+                        logger.info("isCashierLogedIn : " + isCashierLogedIn);
                         setLogOffControls();
                     } else {
                         logger.warn("Sign off failure");
                     }
                 }
-
             }
 
         }
@@ -498,18 +509,22 @@ class POSMDIInterface extends javax.swing.JFrame {
 
     //Manager features
     private void manager() {
-        if (debugMode) {
-            logger.debug("debug mode shutdown");
-        } else {
-            if (isCashierLogedIn) {
-                logger.warn("User still logged in ");
-                Utilities.showMsgBox("User still logged in", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                logger.warn("manager not implemented");
-            }
+        logger.debug("manager invoked ");
 
+        // this.dispose();
+        if (isCashierLogedIn) {
+            logger.warn("User still logged in ");
+            Utilities.showMsgBox("User still logged in", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            new ShutDownVarification(this, true).setVisible(true);
+            if (authenticatedToShutDown) {
+                ReportGenerator.generateManagerSignOffSlip(counterLogin);
+                logger.debug("Shutting down .....");
+                this.dispose();
+            } else {
+                Utilities.showMsgBox("Not authenticated to shutdown", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
-        this.dispose();
         //Give manager the report of daily transactions
     }
 

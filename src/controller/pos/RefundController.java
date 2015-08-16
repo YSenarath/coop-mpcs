@@ -84,4 +84,26 @@ public class RefundController implements DatabaseInterface {
         return refunds;
     }
 
+    public static ArrayList<Refund> getRefundsFromShiftId(int shiftId) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT * FROM " + REFUND + " WHERE shift_id=?";
+        Object[] ob = {
+            shiftId
+        };
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+        ArrayList<Refund> refunds = new ArrayList();
+        while (resultSet.next()) {
+
+            Refund refund = new Refund(
+                    resultSet.getInt("refund_id"),
+                    resultSet.getInt("bill_id"),
+                    resultSet.getInt("shift_id"),
+                    resultSet.getString("refund_time"),
+                    resultSet.getString("refund_date"),
+                    resultSet.getDouble("amount")
+            );
+            refunds.add(refund);
+        }
+        return refunds;
+    }
 }

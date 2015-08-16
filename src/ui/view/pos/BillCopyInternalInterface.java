@@ -251,7 +251,7 @@ import util.Utilities;
 
             double totalPayments = 0;
             //Cash Payments            
-            CashPayment cashPayment = CashPaymentController.getCashpayment(invoiceNumber);
+            CashPayment cashPayment = CashPaymentController.getCashPayment(invoiceNumber);
             if (cashPayment != null) {
                 txtCashPayment.setText(String.format("%.2f", cashPayment.getAmount()));
                 txtChange.setText(String.format("%.2f", cashPayment.getChangeAmount()));

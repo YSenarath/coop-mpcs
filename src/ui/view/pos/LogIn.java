@@ -187,7 +187,6 @@ class LogIn extends javax.swing.JFrame {
                         initialAmount
                 );
                 if (performCounterLogin(counterLogin)) {
-                    ReportGenerator.generateSignOnSlip();
                     new POSMDIInterface(false).setVisible(true);
                 }
                 exitApp();
