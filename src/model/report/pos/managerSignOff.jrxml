@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-08-17T11:39:09 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="managerSignOff" language="groovy" pageWidth="283" pageHeight="595" columnWidth="243" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ec75c999-b22c-420f-ac68-451ac40b6000">
 	<property name="ireport.zoom" value="2.143588810000002"/>
 	<property name="ireport.x" value="0"/>
@@ -13,7 +15,7 @@
 	<parameter name="offDate" class="java.lang.String"/>
 	<parameter name="date" class="java.lang.String"/>
 	<parameter name="time" class="java.lang.String"/>
-	<parameter name="cashWithdrawal" class="java.lang.String"/>
+	<parameter name="cashWithdrawal" class="java.lang.Double"/>
 	<field name="desc" class="java.lang.String"/>
 	<field name="expected" class="java.lang.Double"/>
 	<field name="signOff" class="java.lang.Double"/>
@@ -51,7 +53,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[- - - - - - -  Cashier sign off slip - - - - - - -]]></text>
+				<text><![CDATA[- - - - - - -  Manager sign off slip - - - - - - -]]></text>
 			</staticText>
 			<line>
 				<reportElement x="0" y="72" width="243" height="1" uuid="e41d063b-bc68-4669-a230-a454d7adcd21"/>

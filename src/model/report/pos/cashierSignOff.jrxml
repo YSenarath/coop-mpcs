@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-08-17T11:14:17 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cashierSignOff" language="groovy" pageWidth="283" pageHeight="842" columnWidth="243" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b997ed2e-a5da-4f28-98f7-459161f3a227">
 	<property name="ireport.zoom" value="2.3579476910000023"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="213"/>
+	<property name="com.jaspersoft.studio.unit." value="cm"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="cm"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="cm"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="cm"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="cm"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="cm"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="cm"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="cm"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="cm"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="shiftNo" class="java.lang.String"/>
 	<parameter name="cashierName" class="java.lang.String"/>
 	<parameter name="counter" class="java.lang.String"/>
@@ -24,7 +36,8 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="501" splitType="Stretch">
+		<band height="500" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 			<staticText>
 				<reportElement x="0" y="0" width="243" height="52" uuid="0c91d22f-c2d5-4575-a96b-2ab82a42f636"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -232,7 +245,7 @@
 		</band>
 	</title>
 	<detail>
-		<band height="37" splitType="Stretch">
+		<band height="28" splitType="Stretch">
 			<textField>
 				<reportElement x="197" y="16" width="45" height="12" uuid="8965862b-f2b3-4dbd-bbc7-2101d48b8a0b">
 					<printWhenExpression><![CDATA[$F{invoiceId}!=null || !$F{invoiceId}.toString().equals("")]]></printWhenExpression>
