@@ -57,6 +57,7 @@ import model.pos.payment.EmployeeVoucherPayment;
 import model.pos.payment.Payment;
 import model.pos.payment.PoshanaPayment;
 import org.apache.log4j.Logger;
+import report.pos.ReportGenerator;
 import util.CharactorLimitDocument;
 import util.CurrencyFilter;
 import util.KeyValueContainer;
@@ -106,6 +107,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     private final int PRODUCT_ID_COLUMN = 0;
     private final int BATCH_ID_COLUMN = 1;
+    private final int DESCRIPTION_COLUMN = 3;
     private final int UNIT_PRICE_COLUMN = 4;
     private final int UNIT_QTY_COLUMN = 5;
     private final int NET_DISCOUNT_COLUMN = 6;
@@ -1301,7 +1303,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     break;
             }
 
-            if (selectedOption.equals(CardPayment.AMEX) || selectedOption.equals(CardPayment.MASTER) || selectedOption.equals(CardPayment.VISA)) {         
+            if (selectedOption.equals(CardPayment.AMEX) || selectedOption.equals(CardPayment.MASTER) || selectedOption.equals(CardPayment.VISA)) {
                 txtcardNo.setEnabled(true);
                 txtcardNo.setEditable(true);
                 txtCardPaymentAmount.setEnabled(true);
@@ -1934,9 +1936,9 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     Utilities.convertKeyToInteger(invoiceItemTable.getValueAt(row, BATCH_ID_COLUMN).toString()),
                     Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_PRICE_COLUMN).toString()),
                     Double.parseDouble(invoiceItemTable.getValueAt(row, UNIT_QTY_COLUMN).toString()),
-                    Double.parseDouble(invoiceItemTable.getValueAt(row, NET_DISCOUNT_COLUMN).toString())
+                    Double.parseDouble(invoiceItemTable.getValueAt(row, NET_DISCOUNT_COLUMN).toString()),
+                    invoiceItemTable.getValueAt(row, DESCRIPTION_COLUMN).toString()
             );
-
             invoiceItemsList.add(invoiceItem);
         }
 
@@ -2004,8 +2006,13 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         //
         // <editor-fold defaultstate="collapsed" desc="Perform Transaction">  
         //Update database- batches, invoice,invoice items,invoice payments(5 tables), counter total
+//        logger.warn("Debug invoice print");
+//        ReportGenerator.generateInvoice(parent.getCounterLogin(), invoice);
+        //
+        //
         boolean result = TransactionController.performInvoiceTransaction(invoice, Integer.valueOf(Utilities.loadProperty("counter")));
         if (result) {
+            ReportGenerator.generateInvoice(parent.getCounterLogin(), invoice);
             //Reset invoice arraylists
             resetInvoice();
             showAddItemPanel();
@@ -2013,6 +2020,8 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         } else {
             Utilities.showMsgBox("Something went wrong. Invice was not added to the database", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        //
+        //
         // </editor-fold>
         //
     }

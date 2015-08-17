@@ -487,20 +487,21 @@ class POSMDIInterface extends javax.swing.JFrame {
                     counterLogin.setLogOffTime(Utilities.getCurrentTime(true));
                     counterLogin.setLogOffDate(Utilities.getStringDate(Utilities.getCurrentDate()));
 
-                    //ReportGenerator.generateCashierSignOffSlip(counterLogin);
+                    ReportGenerator.generateCashierSignOffSlip(counterLogin);
+                    logger.warn("Debug cashierLogOff");
                     //Perform logoff 
-                    boolean result = TransactionController.performLogOffTransaction(counterLogin);
-                    if (result) {
-                        ReportGenerator.generateCashierSignOffSlip(counterLogin);
-                        logger.info("Shift ended : " + result);
-                        logger.info("User : " + counterLogin.getUserName() + " logged off");
-
-                        isCashierLogedIn = false;
-                        logger.info("isCashierLogedIn : " + isCashierLogedIn);
-                        setLogOffControls();
-                    } else {
-                        logger.warn("Sign off failure");
-                    }
+//                    boolean result = TransactionController.performLogOffTransaction(counterLogin);
+//                    if (result) {
+//                        ReportGenerator.generateCashierSignOffSlip(counterLogin);
+//                        logger.info("Shift ended : " + result);
+//                        logger.info("User : " + counterLogin.getUserName() + " logged off");
+//
+//                        isCashierLogedIn = false;
+//                        logger.info("isCashierLogedIn : " + isCashierLogedIn);
+//                        setLogOffControls();
+//                    } else {
+//                        logger.warn("Sign off failure");
+//                    }
                 }
             }
 
@@ -508,23 +509,24 @@ class POSMDIInterface extends javax.swing.JFrame {
     }
 
     //Manager features
-    private void manager() {
-        logger.debug("manager invoked ");
-
-        // this.dispose();
-        if (isCashierLogedIn) {
-            logger.warn("User still logged in ");
-            Utilities.showMsgBox("User still logged in", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            new ShutDownVarification(this, true).setVisible(true);
-            if (authenticatedToShutDown) {
-                ReportGenerator.generateManagerSignOffSlip(counterLogin);
-                logger.debug("Shutting down .....");
-                this.dispose();
-            } else {
-                Utilities.showMsgBox("Not authenticated to shutdown", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+    private void managerShutDown() {
+        logger.debug("managerShutDown invoked ");
+        logger.warn("Debug managerShutDown");
+        ReportGenerator.generateManagerSignOffSlip(counterLogin);
+        this.dispose();
+//        if (isCashierLogedIn) {
+//            logger.warn("User still logged in ");
+//            Utilities.showMsgBox("User still logged in", "Error", JOptionPane.ERROR_MESSAGE);
+//        } else {
+//            new ShutDownVarification(this, true).setVisible(true);
+//            if (authenticatedToShutDown) {
+//                ReportGenerator.generateManagerSignOffSlip(counterLogin);
+//                logger.debug("Shutting down .....");
+//                this.dispose();
+//            } else {
+//                Utilities.showMsgBox("Not authenticated to shutdown", "Error", JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
         //Give manager the report of daily transactions
     }
 
@@ -996,7 +998,7 @@ class POSMDIInterface extends javax.swing.JFrame {
 
     private void btnManagerLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManagerLogActionPerformed
         // TODO add your handling code here:
-        manager();
+        managerShutDown();
     }//GEN-LAST:event_btnManagerLogActionPerformed
 
     public static void main(String args[]) {

@@ -35,11 +35,13 @@ import model.pos.item.InvoiceItem;
 import model.pos.payment.CoopCreditPayment;
 import model.pos.payment.CustomerVoucherPayment;
 import model.pos.payment.EmployeeVoucherPayment;
+import model.pos.payment.Payment;
 import model.pos.payment.PoshanaPayment;
 import org.apache.log4j.Logger;
+import report.pos.ReportGenerator;
 import util.Utilities;
 
- class BillCopyInternalInterface extends javax.swing.JInternalFrame {
+class BillCopyInternalInterface extends javax.swing.JInternalFrame {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(BillCopyInternalInterface.class);
@@ -56,6 +58,9 @@ import util.Utilities;
     //Glass pane
     private final JPanel glassPanel;
     private final JLabel padding;
+
+    //Invoice object to print
+    private Invoice printInvoice;
 
     // </editor-fold>
     //
@@ -75,6 +80,7 @@ import util.Utilities;
                 (desktopSize.height - jInternalFrameSize.height) / 2);
 
         this.printItemTableModel = (DefaultTableModel) printItemTable.getModel();
+        this.printInvoice = null;
         this.billPrintReady = false;
 
         this.glassPanel = new JPanel(new GridLayout(0, 1));
@@ -167,7 +173,7 @@ import util.Utilities;
     //validate invoice number
     private boolean isValidInvoiceNumber(String invoiceNo) {
         logger.debug("isValidInvoiceNumber invoked");
-        
+
         invoiceNo = invoiceNo.toUpperCase();
         if (invoiceNo.startsWith("I")) {
             invoiceNo = invoiceNo.substring(1);
@@ -185,6 +191,7 @@ import util.Utilities;
         logger.debug("cleanUI invoked");
 
         this.billPrintReady = false;
+        this.printInvoice = null;
         lblBillDateVal.setText("");
         lblBillTimeVal.setText("");
         lblShiftVal.setText("");
@@ -212,7 +219,7 @@ import util.Utilities;
     private void getInvoiceInformation() {
         logger.debug("getInvoiceInformation invoked");
         cleanUI();
-        
+
         String billNumber = txtSearchBillNO.getText();
         try {
             if (!isValidInvoiceNumber(billNumber)) {
@@ -234,7 +241,9 @@ import util.Utilities;
             txtNetAmount.setText(String.format("%.2f", invoice.getNetTotal()));
 
             ArrayList<InvoiceItem> invoiceItems = InvoiceItemController.getInvoiceItems(invoiceNumber);
+            invoice.setInvoiceItems(invoiceItems);
             double netDiscount = 0;
+            int itemCount = 0;
             for (InvoiceItem InvoiceItem : invoiceItems) {
                 Object[] ob = {
                     Utilities.convertKeyToString(InvoiceItem.getProductId(), DatabaseInterface.PRODUCT),
@@ -246,17 +255,23 @@ import util.Utilities;
                 };
                 printItemTableModel.addRow(ob);
                 netDiscount += InvoiceItem.getDiscount();
+                itemCount += 1;
             }
             txtDiscounts.setText(String.format("%.2f", netDiscount));
+            invoice.setItemCount(itemCount);
+            invoice.setDiscount(netDiscount);
 
+            ArrayList<Payment> invoicePaymntsList = new ArrayList();
             double totalPayments = 0;
-            //Cash Payments            
+            //Cash Payments   
+
             CashPayment cashPayment = CashPaymentController.getCashPayment(invoiceNumber);
             if (cashPayment != null) {
+                invoicePaymntsList.add(cashPayment);
                 txtCashPayment.setText(String.format("%.2f", cashPayment.getAmount()));
                 txtChange.setText(String.format("%.2f", cashPayment.getChangeAmount()));
                 totalPayments += cashPayment.getAmount();
-            }else{
+            } else {
                 txtCashPayment.setText("0.00");
                 txtChange.setText("0.00");
             }
@@ -267,6 +282,7 @@ import util.Utilities;
             double masterAmount = 0;
             double visaAmount = 0;
             for (CardPayment cardPayment : cardPayments) {
+                invoicePaymntsList.add(cardPayment);
                 switch (cardPayment.getCardType()) {
                     case CardPayment.AMEX:
                         amexAmount += cardPayment.getAmount();
@@ -286,6 +302,7 @@ import util.Utilities;
             //Coop credit
             CoopCreditPayment coopCreditPayment = CoopCreditPaymentController.getCoopCreditPayment(invoiceNumber);
             if (coopCreditPayment != null) {
+                invoicePaymntsList.add(coopCreditPayment);
                 txtCoopCreditPayment.setText(String.format("%.2f", coopCreditPayment.getAmount()));
             } else {
                 txtCoopCreditPayment.setText("0.00");
@@ -294,6 +311,7 @@ import util.Utilities;
             //Poshana payment
             PoshanaPayment poshanaPayment = PoshanaPaymentController.getPoshanaPayment(invoiceNumber);
             if (poshanaPayment != null) {
+                invoicePaymntsList.add(poshanaPayment);
                 txtPoshana.setText(String.format("%.2f", poshanaPayment.getAmount()));
             } else {
                 txtPoshana.setText("0.00");
@@ -302,6 +320,7 @@ import util.Utilities;
             //customer Voucher
             CustomerVoucherPayment customerVoucherPayment = CustomerVoucherPaymentController.getCustomerVoucherPayment(invoiceNumber);
             if (customerVoucherPayment != null) {
+                invoicePaymntsList.add(customerVoucherPayment);
                 txtVoucher.setText(String.format("%.2f", customerVoucherPayment.getAmount()));
             } else {
                 txtVoucher.setText("0.00");
@@ -310,14 +329,18 @@ import util.Utilities;
             //Employee voucher
             EmployeeVoucherPayment employeeVoucherPayment = EmployeeVoucherPaymentController.getEmployeeVoucherPayment(invoiceNumber);
             if (employeeVoucherPayment != null) {
+                invoicePaymntsList.add(employeeVoucherPayment);
                 txtVoucher.setText(String.format("%.2f", employeeVoucherPayment.getAmount()));
             } else {
                 txtVoucher.setText("0.00");
             }
 
+            invoice.setPayments(invoicePaymntsList);
+
             totalPayments = totalPayments + amexAmount + masterAmount + visaAmount;
             txtTotalPayments.setText(String.format("%.2f", totalPayments));
 
+            this.printInvoice = invoice;
             this.billPrintReady = true;
         } catch (Exception ex) {
             Utilities.showMsgBox("Invalid bill number : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -329,7 +352,7 @@ import util.Utilities;
         logger.debug("printBill invoked");
 
         if (billPrintReady) {
-            util.Utilities.showMsgBox("Printing bill ", "Successfull", JOptionPane.INFORMATION_MESSAGE);
+            ReportGenerator.generateInvoiceCopy(printInvoice);
             cleanUI();
             txtSearchBillNO.setText("");
             txtSearchBillNO.requestFocus();
