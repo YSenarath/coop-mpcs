@@ -9,6 +9,9 @@ public class RefundItem {
     private double qty;
     private double discount;
 
+    //For reports
+    private String desc;
+
     public RefundItem(int refundId, int productId, int batchId, double UnitPrice, double qty, double discount) {
         this.refundId = refundId;
         this.productId = productId;
@@ -16,6 +19,16 @@ public class RefundItem {
         this.UnitPrice = UnitPrice;
         this.qty = qty;
         this.discount = discount;
+    }
+
+    public RefundItem(int refundId, int productId, int batchId, double UnitPrice, double qty, double discount, String desc) {
+        this.refundId = refundId;
+        this.productId = productId;
+        this.batchId = batchId;
+        this.UnitPrice = UnitPrice;
+        this.qty = qty;
+        this.discount = discount;
+        this.desc = desc;
     }
 
     /**
@@ -101,5 +114,19 @@ public class RefundItem {
     public void setDiscount(double discount) {
         this.discount = discount;
     }
-    
+
+    /**
+     * @return the desc
+     */
+    public String getDesc() {
+        return desc;
+    }
+
+    /**
+     * @param desc the desc to set
+     */
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
 }

@@ -44,6 +44,7 @@ import model.pos.payment.CoopCreditPayment;
 import model.pos.payment.CustomerVoucherPayment;
 import model.pos.payment.EmployeeVoucherPayment;
 import org.apache.log4j.Logger;
+import report.pos.ReportGenerator;
 import util.KeyValueContainer;
 import util.Utilities;
 
@@ -524,8 +525,9 @@ class BillRefundInternalInterface extends javax.swing.JInternalFrame {
                     int batchId = Integer.parseInt(billRefundItemTable.getValueAt(row, BATCH_ID_COLUMN).toString());
                     double unitPice = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_PRICE_COLUMN).toString());
                     double refundDiscount = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_CHANGE_DISC_COLUMN).toString());
-
-                    RefundItem refundItem = new RefundItem(refundId, productId, batchId, unitPice, refundQty, refundDiscount);
+                    String desc = billRefundItemTable.getValueAt(row, PRODUCT_DESC_COLUMN).toString();
+                    RefundItem refundItem = new RefundItem(refundId, productId, batchId, unitPice, refundQty, refundDiscount, desc);
+                    
                     logger.info("Refund item : " + refundItem);
                     refundItems.add(refundItem);
                 }
@@ -541,6 +543,8 @@ class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         refund.setRefundTime(Utilities.getCurrentTime(true));
         refund.setRefundDate(Utilities.getStringDate(Utilities.getCurrentDate()));
 
+//        logger.warn(" debug refund");
+//        ReportGenerator.generateRefund(parent.getCounterLogin(), refund);
         new RefundVarification(parent, refund, true).setVisible(true);
 
         parent.setIsMainActivityRunning(false);

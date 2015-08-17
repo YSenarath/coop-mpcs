@@ -7,12 +7,14 @@ import javax.swing.JOptionPane;
 import model.people.User;
 import model.pos.item.Refund;
 import org.apache.log4j.Logger;
+import report.pos.ReportGenerator;
 import util.Utilities;
 
 class RefundVarification extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
     private static final Logger logger = Logger.getLogger(RefundVarification.class);
+    private final POSMDIInterface parent;
     private final Refund refund;
 
     // </editor-fold>
@@ -22,6 +24,7 @@ class RefundVarification extends javax.swing.JDialog {
 // <editor-fold defaultstate="collapsed" desc="Constructor">
     public RefundVarification(POSMDIInterface parent, Refund refund, boolean modal) {
         super(parent, modal);
+        this.parent = parent;
         this.refund = refund;
         initComponents();
         setLocationRelativeTo(null);
@@ -83,6 +86,7 @@ class RefundVarification extends javax.swing.JDialog {
             if (isUserAuthenticated(txtUserName.getText().trim(), txtPassword.getPassword(), User.CASHIER)) {
                 boolean result = TransactionController.performRefundTransaction(refund);
                 if (result) {
+                    ReportGenerator.generateRefund(parent.getCounterLogin(), refund);
                     logger.info("Refund complete");
                     Utilities.showMsgBox("Refund complete", "POS", JOptionPane.INFORMATION_MESSAGE);
                 } else {

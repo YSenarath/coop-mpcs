@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package report.pos;
 
 import controller.inventory.ProductController;
@@ -52,10 +47,11 @@ import util.Utilities;
  */
 public class ReportGenerator {
 
+    private static final Logger logger = Logger.getLogger(ReportGenerator.class);
+
     private ReportGenerator() {
 
     }
-    private static final Logger logger = Logger.getLogger(ReportGenerator.class);
 
     public static void generateCashierSignOnSlip(CounterLogin counterLogin) {
         logger.debug("generateCashierSignOnSlip invoked ");
@@ -323,7 +319,7 @@ public class ReportGenerator {
     }
 
     public static void generateInvoice(CounterLogin counterLogin, Invoice invoice) {
-        logger.debug("generateCashierSignOffSlip invoked ");
+        logger.debug("generateInvoice invoked ");
 
         String fileName = "/model/report/pos/invoice.jasper";
         String outFileName = "reports/output/pos/invoice.pdf";
@@ -411,11 +407,61 @@ public class ReportGenerator {
         }
     }
 
+    public static void generateRefund(CounterLogin counterLogin, Refund refund) {
+        logger.debug("generateRefund invoked ");
+
+        String fileName = "/model/report/pos/refund.jasper";
+        String outFileName = "reports/output/pos/refund.pdf";
+        FileUtil.mkdir("reports/output/pos/");
+        HashMap hm = new HashMap();
+        try {
+            hm.put("invoiceNo", Utilities.convertKeyToString(refund.getInvoiceId(), DatabaseInterface.INVOICE));
+            hm.put("refundNo", Utilities.convertKeyToString(refund.getRefundId(), DatabaseInterface.REFUND));
+            hm.put("cashier", counterLogin.getUserName());
+            hm.put("date", refund.getRefundDate());
+            hm.put("time", Utilities.convert24hTo12h(refund.getRefundTime()));
+
+            ArrayList<InvoiceItemBean> invoiceItemBeans = new ArrayList<>();
+            int itemCount = 0;
+            for (RefundItem refundItem : refund.getRefundItems()) {
+                InvoiceItemBean invoiceItemBean = new InvoiceItemBean(
+                        refundItem.getDesc(),
+                        Utilities.convertKeyToString(refundItem.getProductId(), DatabaseInterface.PRODUCT),
+                        refundItem.getQty(),
+                        refundItem.getUnitPrice(),
+                        refundItem.getDiscount(),
+                        refundItem.getQty() * refundItem.getUnitPrice() - refundItem.getDiscount()
+                );
+                itemCount += 1;
+                invoiceItemBeans.add(invoiceItemBean);
+            }
+            hm.put("itemCount", itemCount);
+
+            JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(invoiceItemBeans);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, beanColDataSource);
+
+            if (jasperPrint != null) {
+                JasperViewer.viewReport(jasperPrint, false);
+                // Create a PDF exporter
+//                JRPdfExporter exporter = new JRPdfExporter();
+//
+//                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName));
+//                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+//                exporter.setConfiguration(configuration);
+//
+//                exporter.exportReport();
+            }
+        } catch (Exception ex) {
+            logger.error("Error : " + ex.getMessage());
+        }
+    }
+
     public static void generateInvoiceCopy(Invoice invoice) {
-        logger.debug("generateCashierSignOffSlip invoked ");
+        logger.debug("generateInvoiceCopy invoked ");
 
         String fileName = "/model/report/pos/invoice.jasper";
-        String outFileName = "reports/output/pos/invoice.pdf";
+        String outFileName = "reports/output/pos/invoice_copy.pdf";
         FileUtil.mkdir("reports/output/pos/");
         HashMap hm = new HashMap();
         try {
