@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" language="groovy" pageWidth="212" pageHeight="842" columnWidth="172" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="10ad15ef-be4c-4fc0-8b45-cbb65a39bcb5">
 	<property name="ireport.zoom" value="4.17724816941566"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="1118"/>
+	<property name="ireport.y" value="1700"/>
 	<parameter name="invoiceNo" class="java.lang.String"/>
 	<parameter name="cashier" class="java.lang.String"/>
 	<parameter name="date" class="java.lang.String"/>
@@ -502,7 +502,7 @@ within 7 days for refund
 ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="228" width="172" height="39" uuid="d39cd362-ed39-414c-b62e-d7a80adedfda"/>
+				<reportElement x="0" y="242" width="172" height="39" uuid="d39cd362-ed39-414c-b62e-d7a80adedfda"/>
 				<textElement textAlignment="Center">
 					<font size="9"/>
 				</textElement>

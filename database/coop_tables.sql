@@ -69,7 +69,7 @@ CREATE TABLE cash_withdrawal(
 	amount DOUBLE NOT NULL DEFAULT 0,
 
 	CONSTRAINT PRIMARY KEY (cash_withdrawal_id),
-	CONSTRAINT foreign KEY (shift_id) REFERENCES counter_login(shift_id)
+	CONSTRAINT foreign KEY (shift_id) REFERENCES counter_login(shift_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -217,7 +217,7 @@ CREATE TABLE invoice(
 	amount DOUBLE NOT NULL,
 
 	CONSTRAINT PRIMARY KEY (bill_id),
-	CONSTRAINT foreign KEY (shift_id) REFERENCES counter_login(shift_id)
+	CONSTRAINT foreign KEY (shift_id) REFERENCES counter_login(shift_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -233,8 +233,8 @@ CREATE TABLE invoice_items(
 
 	CONSTRAINT PRIMARY KEY (bill_id,batch_id,product_id),
 
-	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id),
-	CONSTRAINT foreign KEY (batch_id,product_id) REFERENCES batch(batch_id,product_id)
+	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT foreign KEY (batch_id,product_id) REFERENCES batch(batch_id,product_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -249,8 +249,8 @@ CREATE TABLE refund(
 	amount DOUBLE NOT NULL,
 
 	CONSTRAINT PRIMARY KEY (refund_id,bill_id),
-	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id),
-	CONSTRAINT foreign KEY (shift_id) REFERENCES counter_login(shift_id)
+	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT foreign KEY (shift_id) REFERENCES counter_login(shift_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -265,8 +265,8 @@ CREATE TABLE refund_items(
 	qty DOUBLE NOT NULL,
 
 	CONSTRAINT PRIMARY KEY (refund_id,batch_id,product_id),
-	CONSTRAINT foreign KEY (refund_id) REFERENCES refund(refund_id),
-	CONSTRAINT foreign KEY (batch_id,product_id) REFERENCES batch(batch_id,product_id)
+	CONSTRAINT foreign KEY (refund_id) REFERENCES refund(refund_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT foreign KEY (batch_id,product_id) REFERENCES batch(batch_id,product_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -279,7 +279,7 @@ CREATE TABLE cash_payment(
 	change_amount DOUBLE NOT NULL DEFAULT 0,
 
 	CONSTRAINT PRIMARY KEY (bill_id,cash_payment_id),
-	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id)
+	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -293,7 +293,7 @@ CREATE TABLE card_payment(
 	amount DOUBLE NOT NULL DEFAULT 0,
 
 	CONSTRAINT PRIMARY KEY (bill_id,card_payment_id),
-	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id)
+	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -307,7 +307,7 @@ CREATE TABLE poshana_payment(
 	amount DOUBLE NOT NULL DEFAULT 0,
 
 	CONSTRAINT PRIMARY KEY (bill_id,poshana_payment_id),
-	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id)
+	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -320,7 +320,7 @@ CREATE TABLE employee_voucher_payment(
 
 	CONSTRAINT PRIMARY KEY (bill_id,voucher_payment_id),
 	CONSTRAINT foreign KEY (employee_id) REFERENCES employee(employee_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id)
+	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -332,7 +332,7 @@ CREATE TABLE customer_voucher_payment(
 	amount DOUBLE NOT NULL DEFAULT 0,
 
 	CONSTRAINT PRIMARY KEY (bill_id,voucher_payment_id),
-	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id)
+	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -359,7 +359,7 @@ CREATE TABLE coop_credit_payment(
 	amount_settled DOUBLE NOT NULL DEFAULT 0,
 
 	CONSTRAINT PRIMARY KEY (bill_id,coop_credit_payment_id),
-	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id),
+	CONSTRAINT foreign KEY (bill_id) REFERENCES invoice(bill_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT foreign KEY (customer_id) REFERENCES credit_customer(customer_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;

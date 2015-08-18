@@ -597,8 +597,8 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         //Yasara
         paymentOptionComboBox.removeAllItems();
         paymentOptionComboBox.addItem(Payment.CASH);
-        paymentOptionComboBox.addItem(Payment.COOP_CREDIT);
         paymentOptionComboBox.addItem(Payment.CREDIT_CARD);
+        paymentOptionComboBox.addItem(Payment.COOP_CREDIT);
         paymentOptionComboBox.addItem(Payment.POSHANA);
         paymentOptionComboBox.addItem(Payment.VOUCHER);
 
@@ -734,6 +734,8 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             paymentChooser();
         }
     }
+    
+    
 
     // </editor-fold>
     //
@@ -3291,6 +3293,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     private void poshanaPaymentAmountTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaPaymentAmountTxtKeyReleased
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_poshanaPaymentAmountTxtKeyReleased
 
     private void poshanaCustomerNameTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_poshanaCustomerNameTxtFocusLost
@@ -3299,6 +3302,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
     private void poshanaCustomerNameTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaCustomerNameTxtKeyReleased
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_poshanaCustomerNameTxtKeyReleased
 
     private void poshanaIdTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_poshanaIdTxtFocusLost
