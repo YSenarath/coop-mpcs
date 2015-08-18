@@ -68,8 +68,8 @@ public class Utilities {
     }
 
     //Test if a db connection is passed
-    public static boolean isValidDBConnection(String userNameProperty, String passwordProperty,String serverIP) {
-        return DBConnection.isValidDBConnection(userNameProperty, passwordProperty,serverIP);
+    public static boolean isValidDBConnection(String userNameProperty, String passwordProperty, String serverIP) {
+        return DBConnection.isValidDBConnection(userNameProperty, passwordProperty, serverIP);
     }
 
     //Validate a given IP address

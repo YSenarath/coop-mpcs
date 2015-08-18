@@ -2,7 +2,6 @@ package report.pos;
 
 import controller.inventory.ProductController;
 import controller.payments.CardPaymentController;
-import controller.payments.CashPaymentController;
 import controller.payments.CoopCreditPaymentController;
 import controller.payments.CustomerVoucherPaymentController;
 import controller.payments.EmployeeVoucherPaymentController;
@@ -45,7 +44,7 @@ import util.Utilities;
  *
  * @author Shehan
  */
-public class ReportGenerator {
+public final class ReportGenerator {
 
     private static final Logger logger = Logger.getLogger(ReportGenerator.class);
 
@@ -53,35 +52,58 @@ public class ReportGenerator {
 
     }
 
+    private static void showReport(JasperPrint jasperPrint) throws Exception {
+        logger.debug("showReport invoked ");
+
+        if (jasperPrint != null) {
+            JasperViewer.viewReport(jasperPrint, false);
+        }
+
+    }
+
+    private static void saveAsPDF(JasperPrint jasperPrint, String outFileName) throws Exception {
+        logger.debug("saveAsPDF invoked ");
+
+        if (jasperPrint != null && outFileName != null && !outFileName.isEmpty()) {
+            FileUtil.mkdir("reports/output/pos/");
+
+            java.util.Date date = new java.util.Date(System.currentTimeMillis());
+
+            java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd-hh.mm.ss");
+            String dateString = formatter.format(date);
+            
+            // Create a PDF exporter
+            JRPdfExporter exporter = new JRPdfExporter();
+
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName + "_" + dateString + ".pdf"));
+            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+            exporter.setConfiguration(configuration);
+
+            exporter.exportReport();
+            logger.info("PDF file creadted");
+        }
+    }
+
     public static void generateCashierSignOnSlip(CounterLogin counterLogin) {
         logger.debug("generateCashierSignOnSlip invoked ");
 
-        String fileName = "/model/report/pos/cashierSignOn.jasper";
-        String outFileName = "reports/output/pos/cashierSignOn.pdf";
-        FileUtil.mkdir("reports/output/pos/");
-        HashMap hm = new HashMap();
+        String jasperFileName = "/model/report/pos/cashierSignOn.jasper";
+        String outFileName = "reports/output/pos/cashierSignOn";
+
+        HashMap hashMap = new HashMap();
         try {
-            hm.put("shiftNo", Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
-            hm.put("cashierName", counterLogin.getUserName());
-            hm.put("counter", counterLogin.getCounterId());
-            hm.put("onDate", counterLogin.getLogInDate());
-            hm.put("onTime", Utilities.convert24hTo12h(counterLogin.getLogInTime()));
-            hm.put("amount", counterLogin.getInitialAmount());
+            hashMap.put("shiftNo", Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
+            hashMap.put("cashierName", counterLogin.getUserName());
+            hashMap.put("counter", counterLogin.getCounterId());
+            hashMap.put("onDate", counterLogin.getLogInDate());
+            hashMap.put("onTime", Utilities.convert24hTo12h(counterLogin.getLogInTime()));
+            hashMap.put("amount", counterLogin.getInitialAmount());
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, new JREmptyDataSource());
+            JasperPrint jasperPrint = JasperFillManager.fillReport(ReportGenerator.class.getResourceAsStream(jasperFileName), hashMap, new JREmptyDataSource());
 
-            if (jasperPrint != null) {
-                JasperViewer.viewReport(jasperPrint, false);
-                // Create a PDF exporter
-//                JRPdfExporter exporter = new JRPdfExporter();
-//
-//                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName));
-//                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-//                exporter.setConfiguration(configuration);
-//
-//                exporter.exportReport();
-            }
+            showReport(jasperPrint);
+            saveAsPDF(jasperPrint, outFileName);
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
         }
@@ -90,21 +112,21 @@ public class ReportGenerator {
     public static void generateCashierSignOffSlip(CounterLogin counterLogin) {
         logger.debug("generateCashierSignOffSlip invoked ");
 
-        String fileName = "/model/report/pos/cashierSignOff.jasper";
-        String outFileName = "reports/output/pos/cashierSignOff.pdf";
-        FileUtil.mkdir("reports/output/pos/");
-        HashMap hm = new HashMap();
+        String jasperFileName = "/model/report/pos/cashierSignOff.jasper";
+        String outFileName = "reports/output/pos/cashierSignOff";
+
+        HashMap hashMap = new HashMap();
         try {
-            hm.put("shiftNo", Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
-            hm.put("cashierName", counterLogin.getUserName());
-            hm.put("counter", counterLogin.getCounterId());
-            hm.put("onDate", counterLogin.getLogInDate());
-            hm.put("onTime", Utilities.convert24hTo12h(counterLogin.getLogInTime()));
-            hm.put("initialAmount", counterLogin.getInitialAmount());
-            hm.put("finalAmount", counterLogin.getLogOffActual());
-            hm.put("offTime", Utilities.convert24hTo12h(counterLogin.getLogOffTime()));
-            hm.put("offDate", counterLogin.getLogOffDate());
-            hm.put("cashWithdrawal", counterLogin.getCashWithdrawals());
+            hashMap.put("shiftNo", Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
+            hashMap.put("cashierName", counterLogin.getUserName());
+            hashMap.put("counter", counterLogin.getCounterId());
+            hashMap.put("onDate", counterLogin.getLogInDate());
+            hashMap.put("onTime", Utilities.convert24hTo12h(counterLogin.getLogInTime()));
+            hashMap.put("initialAmount", counterLogin.getInitialAmount());
+            hashMap.put("finalAmount", counterLogin.getLogOffActual());
+            hashMap.put("offTime", Utilities.convert24hTo12h(counterLogin.getLogOffTime()));
+            hashMap.put("offDate", counterLogin.getLogOffDate());
+            hashMap.put("cashWithdrawal", counterLogin.getCashWithdrawals());
 
             double amexAmount = 0;
             double masterAmount = 0;
@@ -128,11 +150,11 @@ public class ReportGenerator {
                     }
                 }
             }
-            hm.put("amexCard", amexAmount);
-            hm.put("masterCard", masterAmount);
-            hm.put("visaCard", visaAmount);
+            hashMap.put("amexCard", amexAmount);
+            hashMap.put("masterCard", masterAmount);
+            hashMap.put("visaCard", visaAmount);
 
-            ArrayList<CancelledItemsBean> cancelledItemsBeans = new ArrayList<CancelledItemsBean>();
+            ArrayList<CancelledItemsBean> cancelledItemsBeans = new ArrayList<>();
             ArrayList<Refund> refunds = RefundController.getRefundsFromShiftId(counterLogin.getShiftId());
 
             for (Refund refund : refunds) {
@@ -148,23 +170,13 @@ public class ReportGenerator {
             JasperPrint jasperPrint = null;
             if (!cancelledItemsBeans.isEmpty()) {
                 JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(cancelledItemsBeans);
-                jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, beanColDataSource);
+                jasperPrint = JasperFillManager.fillReport(ReportGenerator.class.getResourceAsStream(jasperFileName), hashMap, beanColDataSource);
             } else {
-                jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, new JREmptyDataSource());
+                jasperPrint = JasperFillManager.fillReport(ReportGenerator.class.getResourceAsStream(jasperFileName), hashMap, new JREmptyDataSource());
             }
 
-            if (jasperPrint != null) {
-                JasperViewer.viewReport(jasperPrint, false);
-                // Create a PDF exporter
-//                JRPdfExporter exporter = new JRPdfExporter();
-//
-//                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName));
-//                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-//                exporter.setConfiguration(configuration);
-//
-//                exporter.exportReport();
-            }
+            showReport(jasperPrint);
+            saveAsPDF(jasperPrint, outFileName);
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
         }
@@ -173,24 +185,23 @@ public class ReportGenerator {
     public static void generateManagerSignOffSlip(CounterLogin counterLogin) {
         logger.debug("generateManagerSignOffSlip invoked ");
 
-        String fileName = "/model/report/pos/managerSignOff.jasper";
-        String outFileName = "reports/output/pos/managerSignOff.pdf";
-        FileUtil.mkdir("reports/output/pos/");
-        HashMap hm = new HashMap();
-        try {
-            hm.put("shiftNo", Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
-            hm.put("cashierName", counterLogin.getUserName());
-            hm.put("counter", counterLogin.getCounterId());
-            hm.put("initialAmount", counterLogin.getInitialAmount());
-            hm.put("cashWithdrawal", counterLogin.getCashWithdrawals());
-            hm.put("onDate", counterLogin.getLogInDate());
-            hm.put("onTime", Utilities.convert24hTo12h(counterLogin.getLogInTime()));
-            hm.put("offTime", Utilities.convert24hTo12h(counterLogin.getLogOffTime()));
-            hm.put("offDate", counterLogin.getLogOffDate());
-            hm.put("date", Utilities.getStringDate(Utilities.getCurrentDate()));
-            hm.put("time", Utilities.getCurrentTime(false));
+        String jasperFileName = "/model/report/pos/managerSignOff.jasper";
+        String outFileName = "reports/output/pos/managerSignOff";
 
-//            double cashAmount = 0;
+        HashMap hashMap = new HashMap();
+        try {
+            hashMap.put("shiftNo", Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
+            hashMap.put("cashierName", counterLogin.getUserName());
+            hashMap.put("counter", counterLogin.getCounterId());
+            hashMap.put("initialAmount", counterLogin.getInitialAmount());
+            hashMap.put("cashWithdrawal", counterLogin.getCashWithdrawals());
+            hashMap.put("onDate", counterLogin.getLogInDate());
+            hashMap.put("onTime", Utilities.convert24hTo12h(counterLogin.getLogInTime()));
+            hashMap.put("offTime", Utilities.convert24hTo12h(counterLogin.getLogOffTime()));
+            hashMap.put("offDate", counterLogin.getLogOffDate());
+            hashMap.put("date", Utilities.getStringDate(Utilities.getCurrentDate()));
+            hashMap.put("time", Utilities.getCurrentTime(false));
+
             double amexAmount = 0;
             double masterAmount = 0;
             double visaAmount = 0;
@@ -208,10 +219,6 @@ public class ReportGenerator {
 
             for (Integer i : invoiceIdList) {
 
-//                CashPayment cashPayment = CashPaymentController.getCashPayment(i.intValue());
-//                if (cashPayment != null) {
-//                    cashAmount += cashPayment.getAmount() - cashPayment.getChangeAmount();
-//                }
                 ArrayList<CardPayment> cardPayments = CardPaymentController.getCardPayments(i.intValue());
                 for (CardPayment cardPayment : cardPayments) {
                     switch (cardPayment.getCardType()) {
@@ -263,21 +270,10 @@ public class ReportGenerator {
             incomeBeans.add(new IncomeBean("Poshana ", PoshanaAmount, PoshanaAmount, 0));
 
             JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(incomeBeans);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, beanColDataSource);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(ReportGenerator.class.getResourceAsStream(jasperFileName), hashMap, beanColDataSource);
 
-            if (jasperPrint != null) {
-                JasperViewer.viewReport(jasperPrint, false);
-
-                // Create a PDF exporter
-//                JRPdfExporter exporter = new JRPdfExporter();
-//
-//                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName));
-//                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-//                exporter.setConfiguration(configuration);
-//
-//                exporter.exportReport();
-            }
+            showReport(jasperPrint);
+            saveAsPDF(jasperPrint, outFileName);
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
         }
@@ -286,33 +282,23 @@ public class ReportGenerator {
     public static void generateCashWithdrawalSlip(CashWithdrawal cashWithdrawal, CounterLogin counterLogin) {
         logger.debug("generateCashWithdrawalSlip invoked ");
 
-        String fileName = "/model/report/pos/cashWithdrawal.jasper";
-        String outFileName = "reports/output/pos/cashWithdrawal.pdf";
-        FileUtil.mkdir("reports/output/pos/");
-        HashMap hm = new HashMap();
+        String jasperFileName = "/model/report/pos/cashWithdrawal.jasper";
+        String outFileName = "reports/output/pos/cashWithdrawal";
+
+        HashMap hashMap = new HashMap();
         try {
-            hm.put("withdrawalId", Utilities.convertKeyToString(cashWithdrawal.getWithdrawalId(), DatabaseInterface.CASH_WITHDRAWAL));
-            hm.put("shiftId", Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
-            hm.put("cashierName", counterLogin.getUserName());
-            hm.put("counter", counterLogin.getCounterId());
-            hm.put("date", cashWithdrawal.getDate());
-            hm.put("time", Utilities.convert24hTo12h(cashWithdrawal.getTime()));
-            hm.put("amount", cashWithdrawal.getAmount());
+            hashMap.put("withdrawalId", Utilities.convertKeyToString(cashWithdrawal.getWithdrawalId(), DatabaseInterface.CASH_WITHDRAWAL));
+            hashMap.put("shiftId", Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
+            hashMap.put("cashierName", counterLogin.getUserName());
+            hashMap.put("counter", counterLogin.getCounterId());
+            hashMap.put("date", cashWithdrawal.getDate());
+            hashMap.put("time", Utilities.convert24hTo12h(cashWithdrawal.getTime()));
+            hashMap.put("amount", cashWithdrawal.getAmount());
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, new JREmptyDataSource());
-            if (jasperPrint != null) {
-                JasperViewer.viewReport(jasperPrint, false);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(ReportGenerator.class.getResourceAsStream(jasperFileName), hashMap, new JREmptyDataSource());
 
-                // Create a PDF exporter
-//                JRPdfExporter exporter = new JRPdfExporter();
-//
-//                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName));
-//                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-//                exporter.setConfiguration(configuration);
-//
-//                exporter.exportReport();
-            }
+            showReport(jasperPrint);
+            saveAsPDF(jasperPrint, outFileName);
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
         }
@@ -321,16 +307,16 @@ public class ReportGenerator {
     public static void generateInvoice(CounterLogin counterLogin, Invoice invoice) {
         logger.debug("generateInvoice invoked ");
 
-        String fileName = "/model/report/pos/invoice.jasper";
-        String outFileName = "reports/output/pos/invoice.pdf";
-        FileUtil.mkdir("reports/output/pos/");
-        HashMap hm = new HashMap();
+        String jasperFileName = "/model/report/pos/invoice.jasper";
+        String outFileName = "reports/output/pos/invoice";
+
+        HashMap hashMap = new HashMap();
         try {
-            hm.put("invoiceNo", Utilities.convertKeyToString(invoice.getInvoiceNo(), DatabaseInterface.INVOICE));
-            hm.put("cashier", counterLogin.getUserName());
-            hm.put("date", invoice.getDate());
-            hm.put("time", Utilities.convert24hTo12h(invoice.getTime()));
-            hm.put("itemCount", invoice.getItemCount());
+            hashMap.put("invoiceNo", Utilities.convertKeyToString(invoice.getInvoiceNo(), DatabaseInterface.INVOICE));
+            hashMap.put("cashier", counterLogin.getUserName());
+            hashMap.put("date", invoice.getDate());
+            hashMap.put("time", Utilities.convert24hTo12h(invoice.getTime()));
+            hashMap.put("itemCount", invoice.getItemCount());
 
             ArrayList<InvoiceItemBean> invoiceItemBeans = new ArrayList<>();
 
@@ -352,56 +338,46 @@ public class ReportGenerator {
                 if (payment instanceof CashPayment) {
                     CashPayment cashPayment = (CashPayment) payment;
 
-                    hm.put("payment_cash", cashPayment.getAmount());
-                    hm.put("change", cashPayment.getChangeAmount());
+                    hashMap.put("payment_cash", cashPayment.getAmount());
+                    hashMap.put("change", cashPayment.getChangeAmount());
                 } else if (payment instanceof CardPayment) {
                     CardPayment cardPayment = (CardPayment) payment;
                     switch (cardPayment.getCardType()) {
                         case CardPayment.AMEX:
-                            hm.put("payment_amex", cardPayment.getAmount());
+                            hashMap.put("payment_amex", cardPayment.getAmount());
                             break;
                         case CardPayment.MASTER:
-                            hm.put("payment_master", cardPayment.getAmount());
+                            hashMap.put("payment_master", cardPayment.getAmount());
                             break;
                         case CardPayment.VISA:
-                            hm.put("payment_visa", cardPayment.getAmount());
+                            hashMap.put("payment_visa", cardPayment.getAmount());
                             break;
                     }
 
                 } else if (payment instanceof CoopCreditPayment) {
                     CoopCreditPayment coopPayment = (CoopCreditPayment) payment;
 
-                    hm.put("payment_coop", coopPayment.getAmount());
+                    hashMap.put("payment_coop", coopPayment.getAmount());
                 } else if (payment instanceof PoshanaPayment) {
                     PoshanaPayment poshanaPayment = (PoshanaPayment) payment;
 
-                    hm.put("payment_poshana", poshanaPayment.getAmount());
+                    hashMap.put("payment_poshana", poshanaPayment.getAmount());
                 } else if (payment instanceof CustomerVoucherPayment) {
                     CustomerVoucherPayment customerVoucherPayment = (CustomerVoucherPayment) payment;
 
-                    hm.put("payment_voucher", customerVoucherPayment.getAmount());
+                    hashMap.put("payment_voucher", customerVoucherPayment.getAmount());
                 } else if (payment instanceof EmployeeVoucherPayment) {
                     EmployeeVoucherPayment employeeVoucherPayment = (EmployeeVoucherPayment) payment;
 
-                    hm.put("payment_voucher", employeeVoucherPayment.getAmount());
+                    hashMap.put("payment_voucher", employeeVoucherPayment.getAmount());
                 }
             }
 
             JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(invoiceItemBeans);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, beanColDataSource);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(ReportGenerator.class.getResourceAsStream(jasperFileName), hashMap, beanColDataSource);
 
-            if (jasperPrint != null) {
-                JasperViewer.viewReport(jasperPrint, false);
-                // Create a PDF exporter
-//                JRPdfExporter exporter = new JRPdfExporter();
-//
-//                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName));
-//                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-//                exporter.setConfiguration(configuration);
-//
-//                exporter.exportReport();
-            }
+            showReport(jasperPrint);
+            saveAsPDF(jasperPrint, outFileName);
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
         }
@@ -410,16 +386,16 @@ public class ReportGenerator {
     public static void generateRefund(CounterLogin counterLogin, Refund refund) {
         logger.debug("generateRefund invoked ");
 
-        String fileName = "/model/report/pos/refund.jasper";
-        String outFileName = "reports/output/pos/refund.pdf";
-        FileUtil.mkdir("reports/output/pos/");
-        HashMap hm = new HashMap();
+        String jasperFileName = "/model/report/pos/refund.jasper";
+        String outFileName = "reports/output/pos/refund";
+
+        HashMap hashMap = new HashMap();
         try {
-            hm.put("invoiceNo", Utilities.convertKeyToString(refund.getInvoiceId(), DatabaseInterface.INVOICE));
-            hm.put("refundNo", Utilities.convertKeyToString(refund.getRefundId(), DatabaseInterface.REFUND));
-            hm.put("cashier", counterLogin.getUserName());
-            hm.put("date", refund.getRefundDate());
-            hm.put("time", Utilities.convert24hTo12h(refund.getRefundTime()));
+            hashMap.put("invoiceNo", Utilities.convertKeyToString(refund.getInvoiceId(), DatabaseInterface.INVOICE));
+            hashMap.put("refundNo", Utilities.convertKeyToString(refund.getRefundId(), DatabaseInterface.REFUND));
+            hashMap.put("cashier", counterLogin.getUserName());
+            hashMap.put("date", refund.getRefundDate());
+            hashMap.put("time", Utilities.convert24hTo12h(refund.getRefundTime()));
 
             ArrayList<InvoiceItemBean> invoiceItemBeans = new ArrayList<>();
             int itemCount = 0;
@@ -435,23 +411,13 @@ public class ReportGenerator {
                 itemCount += 1;
                 invoiceItemBeans.add(invoiceItemBean);
             }
-            hm.put("itemCount", itemCount);
+            hashMap.put("itemCount", itemCount);
 
             JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(invoiceItemBeans);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, beanColDataSource);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(ReportGenerator.class.getResourceAsStream(jasperFileName), hashMap, beanColDataSource);
 
-            if (jasperPrint != null) {
-                JasperViewer.viewReport(jasperPrint, false);
-                // Create a PDF exporter
-//                JRPdfExporter exporter = new JRPdfExporter();
-//
-//                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName));
-//                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-//                exporter.setConfiguration(configuration);
-//
-//                exporter.exportReport();
-            }
+            showReport(jasperPrint);
+            saveAsPDF(jasperPrint, outFileName);
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
         }
@@ -460,17 +426,17 @@ public class ReportGenerator {
     public static void generateInvoiceCopy(Invoice invoice) {
         logger.debug("generateInvoiceCopy invoked ");
 
-        String fileName = "/model/report/pos/invoice.jasper";
-        String outFileName = "reports/output/pos/invoice_copy.pdf";
-        FileUtil.mkdir("reports/output/pos/");
-        HashMap hm = new HashMap();
+        String jasperFileName = "/model/report/pos/invoice.jasper";
+        String outFileName = "reports/output/pos/invoice_copy";
+
+        HashMap hashMap = new HashMap();
         try {
-            hm.put("invoiceNo", Utilities.convertKeyToString(invoice.getInvoiceNo(), DatabaseInterface.INVOICE));
-            hm.put("cashier", CounterLoginController.getCounterLogin(invoice.getShiftId()).getUserName());
-            hm.put("date", invoice.getDate());
-            hm.put("time", Utilities.convert24hTo12h(invoice.getTime()));
-            hm.put("itemCount", invoice.getItemCount());
-            hm.put("billCopy", "Invoice copy");
+            hashMap.put("invoiceNo", Utilities.convertKeyToString(invoice.getInvoiceNo(), DatabaseInterface.INVOICE));
+            hashMap.put("cashier", CounterLoginController.getCounterLogin(invoice.getShiftId()).getUserName());
+            hashMap.put("date", invoice.getDate());
+            hashMap.put("time", Utilities.convert24hTo12h(invoice.getTime()));
+            hashMap.put("itemCount", invoice.getItemCount());
+            hashMap.put("billCopy", "Invoice copy");
 
             ArrayList<InvoiceItemBean> invoiceItemBeans = new ArrayList<>();
 
@@ -492,56 +458,46 @@ public class ReportGenerator {
                 if (payment instanceof CashPayment) {
                     CashPayment cashPayment = (CashPayment) payment;
 
-                    hm.put("payment_cash", cashPayment.getAmount());
-                    hm.put("change", cashPayment.getChangeAmount());
+                    hashMap.put("payment_cash", cashPayment.getAmount());
+                    hashMap.put("change", cashPayment.getChangeAmount());
                 } else if (payment instanceof CardPayment) {
                     CardPayment cardPayment = (CardPayment) payment;
                     switch (cardPayment.getCardType()) {
                         case CardPayment.AMEX:
-                            hm.put("payment_amex", cardPayment.getAmount());
+                            hashMap.put("payment_amex", cardPayment.getAmount());
                             break;
                         case CardPayment.MASTER:
-                            hm.put("payment_master", cardPayment.getAmount());
+                            hashMap.put("payment_master", cardPayment.getAmount());
                             break;
                         case CardPayment.VISA:
-                            hm.put("payment_visa", cardPayment.getAmount());
+                            hashMap.put("payment_visa", cardPayment.getAmount());
                             break;
                     }
 
                 } else if (payment instanceof CoopCreditPayment) {
                     CoopCreditPayment coopPayment = (CoopCreditPayment) payment;
 
-                    hm.put("payment_coop", coopPayment.getAmount());
+                    hashMap.put("payment_coop", coopPayment.getAmount());
                 } else if (payment instanceof PoshanaPayment) {
                     PoshanaPayment poshanaPayment = (PoshanaPayment) payment;
 
-                    hm.put("payment_poshana", poshanaPayment.getAmount());
+                    hashMap.put("payment_poshana", poshanaPayment.getAmount());
                 } else if (payment instanceof CustomerVoucherPayment) {
                     CustomerVoucherPayment customerVoucherPayment = (CustomerVoucherPayment) payment;
 
-                    hm.put("payment_voucher", customerVoucherPayment.getAmount());
+                    hashMap.put("payment_voucher", customerVoucherPayment.getAmount());
                 } else if (payment instanceof EmployeeVoucherPayment) {
                     EmployeeVoucherPayment employeeVoucherPayment = (EmployeeVoucherPayment) payment;
 
-                    hm.put("payment_voucher", employeeVoucherPayment.getAmount());
+                    hashMap.put("payment_voucher", employeeVoucherPayment.getAmount());
                 }
             }
 
             JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(invoiceItemBeans);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(new ReportGenerator().getClass().getResourceAsStream(fileName), hm, beanColDataSource);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(ReportGenerator.class.getResourceAsStream(jasperFileName), hashMap, beanColDataSource);
 
-            if (jasperPrint != null) {
-                JasperViewer.viewReport(jasperPrint, false);
-                // Create a PDF exporter
-//                JRPdfExporter exporter = new JRPdfExporter();
-//
-//                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outFileName));
-//                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-//                exporter.setConfiguration(configuration);
-//
-//                exporter.exportReport();
-            }
+            showReport(jasperPrint);
+            saveAsPDF(jasperPrint, outFileName);
         } catch (Exception ex) {
             logger.error("Error : " + ex.getMessage());
         }

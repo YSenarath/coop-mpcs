@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" language="groovy" pageWidth="212" pageHeight="842" columnWidth="172" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="10ad15ef-be4c-4fc0-8b45-cbb65a39bcb5">
 	<property name="ireport.zoom" value="3.1384283767210093"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="428"/>
+	<property name="ireport.y" value="399"/>
 	<parameter name="invoiceNo" class="java.lang.String"/>
 	<parameter name="cashier" class="java.lang.String"/>
 	<parameter name="date" class="java.lang.String"/>
@@ -19,8 +19,7 @@
 		<variableExpression><![CDATA[$F{itemQty}*$F{itemPrice}*-1]]></variableExpression>
 	</variable>
 	<variable name="netDiscounts" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[$F{itemDiscount}*-1
-]]></variableExpression>
+		<variableExpression><![CDATA[$F{itemDiscount}*-1]]></variableExpression>
 	</variable>
 	<variable name="netAmount" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{itemSubTotal}*-1]]></variableExpression>
@@ -279,7 +278,7 @@
 		</band>
 	</detail>
 	<summary>
-		<band height="145" splitType="Stretch">
+		<band height="105" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="0" width="172" height="1" uuid="a02d2abc-78e2-4f76-9d6b-d04453ca5d46"/>
 				<graphicElement>
@@ -343,15 +342,7 @@
 				<textFieldExpression><![CDATA[$P{itemCount}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="86" width="172" height="39" uuid="d39cd362-ed39-414c-b62e-d7a80adedfda"/>
-				<textElement textAlignment="Center">
-					<font size="9"/>
-				</textElement>
-				<text><![CDATA[Thank you
-Please come again]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="125" width="172" height="20" uuid="9f99c368-70ac-4d1d-bc31-67e88a07f22a"/>
+				<reportElement x="0" y="85" width="172" height="20" uuid="9f99c368-70ac-4d1d-bc31-67e88a07f22a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7" isBold="false" isItalic="true"/>
 				</textElement>
