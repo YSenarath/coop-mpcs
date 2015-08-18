@@ -183,7 +183,7 @@ public class TransactionController {
                     result = CoopCreditPaymentController.addCoopPayment(coopPayment);
                     logger.info("Add coop credit payment : " + result);
 
-                    result = CustomerCreditController.updateCreditPayment(coopPayment.getAmount(), coopPayment.getCustomerId());
+                    result = CustomerCreditController.addCreditPayment(coopPayment.getAmount(), coopPayment.getCustomerId());
                     logger.info("Update customer details : " + result);
                 } else if (payment instanceof PoshanaPayment) {
                     PoshanaPayment poshanaPayment = (PoshanaPayment) payment;
@@ -197,8 +197,8 @@ public class TransactionController {
                     EmployeeVoucherPayment employeeVoucherPayment = (EmployeeVoucherPayment) payment;
                     result = EmployeeVoucherPaymentController.addEmployeeVoucherPayment(employeeVoucherPayment);
                     logger.info("Add employee voucher payment : " + result);
-                    
-                    result= EmployeeCreditController.updateEmployee(employeeVoucherPayment.getEmployeeId());
+
+                    result = EmployeeCreditController.setVoucherIssued(employeeVoucherPayment.getEmployeeId(),true);
                     logger.info("Update employee details : " + result);
                 }
             }
@@ -324,39 +324,39 @@ public class TransactionController {
         }
     }
 
-    public static boolean updateCreditCustomer(double amount, int id) {
-        logger.debug("updateCreditCustomer invoked");
-        Connection connection = null;
-        try {
-            connection = DBConnection.getConnectionToDB();
-            connection.setAutoCommit(false);
-            logger.debug("Connection setAutoCommit(false)");
-
-            boolean result = CustomerCreditController.updateCreditPayment(amount, id);
-            logger.info("Cash withdrawal : " + result);
-
-            connection.commit();
-            return true;
-        } catch (Exception err0) {
-            logger.error("Exception occurred " + err0.getMessage());
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                    logger.debug("Connection rolledback");
-                } catch (SQLException err1) {
-                    logger.error("SQLException occurred " + err1.getMessage());
-                }
-            }
-            return false;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.setAutoCommit(true);
-                    logger.debug("Connection setAutoCommit(true)");
-                } catch (SQLException err2) {
-                    logger.error("SQLException occurred " + err2.getMessage());
-                }
-            }
-        }
-    }
+//    public static boolean updateCreditCustomer(double amount, int id) {
+//        logger.debug("updateCreditCustomer invoked");
+//        Connection connection = null;
+//        try {
+//            connection = DBConnection.getConnectionToDB();
+//            connection.setAutoCommit(false);
+//            logger.debug("Connection setAutoCommit(false)");
+//
+//            boolean result = CustomerCreditController.updateCreditPayment(amount, id);
+//            logger.info("Cash withdrawal : " + result);
+//
+//            connection.commit();
+//            return true;
+//        } catch (Exception err0) {
+//            logger.error("Exception occurred " + err0.getMessage());
+//            if (connection != null) {
+//                try {
+//                    connection.rollback();
+//                    logger.debug("Connection rolledback");
+//                } catch (SQLException err1) {
+//                    logger.error("SQLException occurred " + err1.getMessage());
+//                }
+//            }
+//            return false;
+//        } finally {
+//            if (connection != null) {
+//                try {
+//                    connection.setAutoCommit(true);
+//                    logger.debug("Connection setAutoCommit(true)");
+//                } catch (SQLException err2) {
+//                    logger.error("SQLException occurred " + err2.getMessage());
+//                }
+//            }
+//        }
+//    }
 }

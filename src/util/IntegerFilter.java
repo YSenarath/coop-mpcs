@@ -7,19 +7,17 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
-public class IntegerFilter extends DocumentFilter implements Serializable{
+public class IntegerFilter extends DocumentFilter implements Serializable {
 
     private boolean isPositiveInteger(String text) {
         try {
-            if (text.isEmpty()){
+            if (text.isEmpty()) {
                 return true;
+            } else if (text.matches("^[0-9]*$")) {
+                return Integer.parseInt(text) >= 0;
+            } else {
+                return false;
             }
-             else if (text.matches("^[0-9]*$")) {
-                 return Integer.parseInt(text) >= 0;
-            }
-             else{
-                 return false;
-             }
         } catch (NumberFormatException e) {
             return false;
         }

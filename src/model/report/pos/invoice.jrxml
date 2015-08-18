@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice" language="groovy" pageWidth="212" pageHeight="842" columnWidth="172" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="10ad15ef-be4c-4fc0-8b45-cbb65a39bcb5">
-	<property name="ireport.zoom" value="8.954302432552396"/>
-	<property name="ireport.x" value="64"/>
-	<property name="ireport.y" value="967"/>
+	<property name="ireport.zoom" value="4.17724816941566"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="1118"/>
 	<parameter name="invoiceNo" class="java.lang.String"/>
 	<parameter name="cashier" class="java.lang.String"/>
 	<parameter name="date" class="java.lang.String"/>
@@ -13,10 +13,10 @@
 	<parameter name="payment_visa" class="java.lang.Double"/>
 	<parameter name="payment_coop" class="java.lang.Double"/>
 	<parameter name="payment_poshana" class="java.lang.Double"/>
-	<parameter name="payment_vocher" class="java.lang.Double"/>
 	<parameter name="change" class="java.lang.Double"/>
 	<parameter name="itemCount" class="java.lang.Integer"/>
 	<parameter name="billCopy" class="java.lang.String"/>
+	<parameter name="payment_voucher" class="java.lang.Double"/>
 	<field name="itemDesc" class="java.lang.String"/>
 	<field name="itemCode" class="java.lang.String"/>
 	<field name="itemQty" class="java.lang.Double"/>
@@ -241,21 +241,21 @@
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement x="52" y="10" width="30" height="10" uuid="62633af4-aef4-4835-8e67-61efd67ac2e1"/>
-				<textElement textAlignment="Right">
+				<textElement>
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemQty}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement x="82" y="10" width="30" height="10" uuid="52e78820-e12a-4d4e-87e5-5f912c295f19"/>
-				<textElement textAlignment="Right">
+				<textElement>
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemPrice}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement x="112" y="10" width="30" height="10" uuid="a30efa72-1fd3-41eb-a6b2-1e9f50183cca"/>
-				<textElement textAlignment="Right">
+				<textElement>
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{itemDiscount}]]></textFieldExpression>
@@ -381,12 +381,12 @@
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement x="95" y="171" width="77" height="15" isRemoveLineWhenBlank="true" uuid="32cdc37d-5fb3-4f7f-9dcc-dab214727f5e">
-					<printWhenExpression><![CDATA[$P{payment_vocher}!=null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$P{payment_voucher}!=null]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{payment_vocher}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{payment_voucher}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement x="95" y="95" width="77" height="16" isRemoveLineWhenBlank="true" uuid="86949dd9-3dfb-44c8-ac44-4caacbf999a3">
@@ -430,7 +430,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{payment_vocher}!=null?"Voucher":""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{payment_voucher}!=null?"Voucher":""]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="15" y="121" width="57" height="10" isRemoveLineWhenBlank="true" uuid="11956ae4-e33f-4318-8a37-36462375e97c"/>

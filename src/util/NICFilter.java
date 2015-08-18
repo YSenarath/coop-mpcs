@@ -7,17 +7,17 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
-public class NICFilter extends DocumentFilter implements Serializable{
+public class NICFilter extends DocumentFilter implements Serializable {
 
     private boolean isPositiveInteger(String text) {
-      
-            if (text.isEmpty()) {
-                return true;
-            }else if( text.matches("([0-9]{0,9}[V,v])|[0-9]{0,9}")){
-                return true;
-            }else{
-                return false;
-            }
+
+        if (text.isEmpty()) {
+            return true;
+        } else if (text.matches("([0-9]{0,9}[V,v])|[0-9]{0,9}")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

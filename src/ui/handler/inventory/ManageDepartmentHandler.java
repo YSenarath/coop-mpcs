@@ -150,7 +150,6 @@ public class ManageDepartmentHandler {
         String cDesc = gui.getDescText().getText().trim();
         String depId = departments.get(index - 1).getDepartmentId();
 
-        
         if (cName.equals("") || cDesc.equals("")) {
             Utilities.ShowErrorMsg(gui, "Emtpy Field");
             return false;
@@ -170,9 +169,7 @@ public class ManageDepartmentHandler {
         return false;
     }
 
-
-
-   public boolean editCategory(int index) throws SQLException {
+    public boolean editCategory(int index) throws SQLException {
 
         String cId = gui.getIdText().getText().trim();
         String cName = gui.getNameText().getText().trim();
@@ -189,7 +186,7 @@ public class ManageDepartmentHandler {
                 return false;
             }
         }
-        
+
         Category category = new Category(cId, cName, depId, cDesc);
 
         if (CategoryController.updateCategory(category)) {
@@ -197,10 +194,9 @@ public class ManageDepartmentHandler {
             return true;
         }
         return false;
-    
+
     }
 
-    
     public boolean removeCategory() throws SQLException {
         int selectedIndex = gui.getCategoryTable().getSelectedRow();
 
@@ -210,9 +206,8 @@ public class ManageDepartmentHandler {
         }
         return false;
     }
-    
-    
-     private void setSelectedDepartment(String depName) {
+
+    private void setSelectedDepartment(String depName) {
         gui.getDepNameCombo().setSelectedItem(depName);
     }
 

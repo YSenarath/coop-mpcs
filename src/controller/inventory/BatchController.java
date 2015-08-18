@@ -127,7 +127,7 @@ public class BatchController {
 
         String query = "INSERT INTO " + DatabaseInterface.BATCH + " (product_id, grn_number, unit_cost, unit_price, qty, exp_date, notify_date, recieved_qty ,  discounted ) VALUES (?,?,?,?,?,?,?,?,?)";
         int isAdded = -1;
-        
+
         Object[] objs = {
             util.Utilities.convertKeyToInteger(batch.getProductId()),
             util.Utilities.convertKeyToInteger(batch.getGrnNumber()),

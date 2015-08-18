@@ -5,7 +5,6 @@
  */
 package model.inventory;
 
-
 /**
  *
  * @author Nadheesh

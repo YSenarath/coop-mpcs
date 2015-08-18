@@ -322,8 +322,6 @@ class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             if (customerVoucherPayment != null) {
                 invoicePaymntsList.add(customerVoucherPayment);
                 txtVoucher.setText(String.format("%.2f", customerVoucherPayment.getAmount()));
-            } else {
-                txtVoucher.setText("0.00");
             }
 
             //Employee voucher
@@ -331,7 +329,9 @@ class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             if (employeeVoucherPayment != null) {
                 invoicePaymntsList.add(employeeVoucherPayment);
                 txtVoucher.setText(String.format("%.2f", employeeVoucherPayment.getAmount()));
-            } else {
+            }
+
+            if (customerVoucherPayment == null && employeeVoucherPayment == null) {
                 txtVoucher.setText("0.00");
             }
 

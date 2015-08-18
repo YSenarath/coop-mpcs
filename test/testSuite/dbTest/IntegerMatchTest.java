@@ -16,7 +16,7 @@ public class IntegerMatchTest {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        
+
         //must fail
         System.out.println("0000 - " + match("0000"));
         System.out.println("00000 - " + match("00000"));

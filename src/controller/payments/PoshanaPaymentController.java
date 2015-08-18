@@ -21,21 +21,20 @@ public class PoshanaPaymentController implements DatabaseInterface {
 
     public static boolean addPoshanaPayment(PoshanaPayment poshanaPayment) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + COOP_CREDIT_PAYMENT + " (bill_id,poshana_payment_id,stamp_id,customer_name,amount) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO " + POSHANA_PAYMENT + " (bill_id,poshana_payment_id,stamp_id,customer_name,amount) VALUES (?,?,?,?,?)";
         Object[] ob = {
             poshanaPayment.getInvoiceId(),
             poshanaPayment.getPaymentId(),
             poshanaPayment.getStampId(),
             poshanaPayment.getCustomerName(),
             poshanaPayment.getAmount()
-
         };
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
     public static PoshanaPayment getPoshanaPayment(int invoiceNo) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT * FROM " + CUSTOMER_VOUCHER_PAYMENT + " WHERE bill_id=? ";
+        String query = "SELECT * FROM " + POSHANA_PAYMENT + " WHERE bill_id=? ";
         Object[] ob = {
             invoiceNo
         };

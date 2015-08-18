@@ -26,10 +26,9 @@ public class Product implements Serializable {
     private double reorderValue; //reorder notify value
     private double maxQuantity;
     private ArrayList<Batch> batches;
-    
+
     //POS
     private Batch selectedBatch;
-    
 
     //very expensive constuction. keep a pool of objects-----------------------------------
     public Product(ProductBuilder builder) {

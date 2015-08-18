@@ -10,5 +10,5 @@ package ui.handler.inventory;
  * @author Nadheesh
  */
 public class CategoryHandler {
-    
+
 }

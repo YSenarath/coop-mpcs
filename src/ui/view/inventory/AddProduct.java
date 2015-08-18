@@ -9,12 +9,12 @@ package ui.view.inventory;
  *
  * @author Nadheesh
  */
-public class AddProduct extends UpdateProduct{
- 
-        public AddProduct(){
-            
-            super.title= "Add Product";
-            initWindow();
-        }
-    
+public class AddProduct extends UpdateProduct {
+
+    public AddProduct() {
+
+        super.title = "Add Product";
+        initWindow();
+    }
+
 }

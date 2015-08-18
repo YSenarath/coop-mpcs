@@ -30,12 +30,12 @@ class CashierLogOff extends javax.swing.JDialog {
     public CashierLogOff(POSMDIInterface parent, boolean modal) {
         super(parent, modal);
         logger.debug("CashierLogOff constructor invoked");
-        
+
         initComponents();
         this.parent = parent;
         this.counterLogin = parent.getCounterLogin();
         ((PlainDocument) txtActualAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
-        
+
         setLocationRelativeTo(null);
         showDetails();
     }
@@ -55,10 +55,10 @@ class CashierLogOff extends javax.swing.JDialog {
             btnConfirm.requestFocus();
         }
     }
-    
+
     private void showDetails() {
         logger.debug("showDetails invoked");
-        
+
         try {
             Counter counter = CounterController.getCounter(Integer.parseInt(Utilities.loadProperty("counter")));
             ArrayList<CashWithdrawal> cashWithdrawals = CashWithdrawalController.getCashWithdrawals(counterLogin.getShiftId());
@@ -66,34 +66,34 @@ class CashierLogOff extends javax.swing.JDialog {
             for (int itr = 0; itr < cashWithdrawals.size(); itr++) {
                 totalWithdrawalsAmount += cashWithdrawals.get(itr).getAmount();
             }
-            
+
             counterLogin.setCashWithdrawals(totalWithdrawalsAmount);
             counterLogin.setLogOffExpected(counter.getCurrentAmount() - totalWithdrawalsAmount);
-            
+
             txtTotalSales.setText(String.format("%.2f", counter.getCurrentAmount()));
             txtCashWithdrawals.setText(String.format("%.2f", totalWithdrawalsAmount));
             txtExpectedAmount.setText(String.format("%.2f", counter.getCurrentAmount() - totalWithdrawalsAmount));
             txtActualAmount.setText(String.format("%.2f", counter.getCurrentAmount() - totalWithdrawalsAmount));
-            
+
             txtActualAmount.requestFocus();
         } catch (SQLException ex) {
             logger.error("SQL error : " + ex.getMessage(), ex);
         }
-        
+
     }
-    
+
     private void exit() {
         logger.debug("exit invoked");
-        
+
         if (txtActualAmount.getText().trim().isEmpty()) {
             Utilities.showMsgBox("Please enter valid amount", "Warning", JOptionPane.INFORMATION_MESSAGE);
             txtActualAmount.requestFocus();
         }
-        
+
         double actualAmountInCounter = Double.parseDouble(txtActualAmount.getText());
-        
+
         counterLogin.setLogOffActual(actualAmountInCounter);
-        parent.setCashierLogOff(true); 
+        parent.setCashierLogOff(true);
         this.dispose();
     }
 
@@ -245,7 +245,6 @@ class CashierLogOff extends javax.swing.JDialog {
         // TODO add your handling code here:
         txtInitialAmountKeyHandler(evt);
     }//GEN-LAST:event_txtActualAmountKeyReleased
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConfirm;

@@ -1,114 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cashWithdrawal" language="groovy" pageWidth="212" pageHeight="311" columnWidth="172" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="8a1173b3-4c20-40c9-91a9-bff10360bb8c">
-	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
-	<parameter name="withdrawalId" class="java.lang.String"/>
-	<parameter name="shiftId" class="java.lang.String"/>
-	<parameter name="cashierName" class="java.lang.String"/>
-	<parameter name="counter" class="java.lang.String"/>
-	<parameter name="date" class="java.lang.String"/>
-	<parameter name="time" class="java.lang.String"/>
-	<parameter name="amount" class="java.lang.Double" isForPrompting="false"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="253" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="52" width="172" height="20" uuid="78acc42b-7582-441d-824c-5a8f945a3b23"/>
-				<textElement textAlignment="Center">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[MPCS Panadura]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="0" width="172" height="52" uuid="50f6efe6-a045-4158-b1fa-5d89ccf071f7"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="18" isBold="true"/>
-				</textElement>
-				<text><![CDATA[MEGA COOP CITY]]></text>
-			</staticText>
-			<line>
-				<reportElement x="0" y="73" width="172" height="1" uuid="99b538c2-afd4-4a02-8de1-c7ebbc99d62a"/>
-			</line>
-			<staticText>
-				<reportElement x="0" y="113" width="90" height="20" uuid="fdc2f651-2d2b-4c48-82d4-335e085cb296"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Cash Withdrawal ID]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="133" width="90" height="20" uuid="f5527b08-e65e-4ac4-a43f-df4e96fd239e"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Shift ID]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="153" width="90" height="20" uuid="2035cc0e-a638-4e44-a367-21bffc821548"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Cashier Name]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="173" width="90" height="20" uuid="63383d7c-b51e-4377-bfbb-5864fcc81ee1"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Counter]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="193" width="90" height="20" uuid="e0af2a98-e510-47bb-a6c0-673674cfe0c6"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Date]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="233" width="90" height="20" uuid="c15e7c1c-5ad9-46c2-86c8-8cab6e530065"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Amount]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="213" width="90" height="20" uuid="f103a0b0-957b-4733-929d-5ba8b69a6914"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Time]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="73" width="172" height="20" uuid="c56dce4e-658c-40eb-a762-660f544f7384"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[- - - -  Cash withdrawal slip - - -]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="90" y="113" width="82" height="20" uuid="cfd0f964-50a8-4dae-8f1a-9bf769379516"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{withdrawalId}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="90" y="133" width="82" height="20" uuid="0d73605e-5092-44bd-8d07-7961c87593bd"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{shiftId}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="90" y="153" width="82" height="20" uuid="62ffe445-5f5c-44cc-887f-4b02d751e48a"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{cashierName}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="90" y="173" width="82" height="20" uuid="6caf47dc-baf3-444b-bff0-0e366fcc24e1"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{counter}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="90" y="193" width="82" height="20" uuid="a1821627-20f3-468c-a10a-ba525a9ff776"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{date}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="90" y="213" width="82" height="20" uuid="61701331-ddbd-464f-b9e8-b73b3c586355"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{time}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="90" y="233" width="82" height="20" uuid="2dd63923-e787-4ad5-8ef2-cf07a776bb5a"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{amount}]]></textFieldExpression>
-			</textField>
-		</band>
-	</title>
+    <property name="ireport.zoom" value="1.5"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="withdrawalId" class="java.lang.String"/>
+    <parameter name="shiftId" class="java.lang.String"/>
+    <parameter name="cashierName" class="java.lang.String"/>
+    <parameter name="counter" class="java.lang.String"/>
+    <parameter name="date" class="java.lang.String"/>
+    <parameter name="time" class="java.lang.String"/>
+    <parameter name="amount" class="java.lang.Double" isForPrompting="false"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="253" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="52" width="172" height="20" uuid="78acc42b-7582-441d-824c-5a8f945a3b23"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[MPCS Panadura]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="0" width="172" height="52" uuid="50f6efe6-a045-4158-b1fa-5d89ccf071f7"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <text><![CDATA[MEGA COOP CITY]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="73" width="172" height="1" uuid="99b538c2-afd4-4a02-8de1-c7ebbc99d62a"/>
+            </line>
+            <staticText>
+                <reportElement x="0" y="113" width="90" height="20" uuid="fdc2f651-2d2b-4c48-82d4-335e085cb296"/>
+                <textElement verticalAlignment="Middle"/>
+                <text><![CDATA[Cash Withdrawal ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="133" width="90" height="20" uuid="f5527b08-e65e-4ac4-a43f-df4e96fd239e"/>
+                <textElement verticalAlignment="Middle"/>
+                <text><![CDATA[Shift ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="153" width="90" height="20" uuid="2035cc0e-a638-4e44-a367-21bffc821548"/>
+                <textElement verticalAlignment="Middle"/>
+                <text><![CDATA[Cashier Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="173" width="90" height="20" uuid="63383d7c-b51e-4377-bfbb-5864fcc81ee1"/>
+                <textElement verticalAlignment="Middle"/>
+                <text><![CDATA[Counter]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="193" width="90" height="20" uuid="e0af2a98-e510-47bb-a6c0-673674cfe0c6"/>
+                <textElement verticalAlignment="Middle"/>
+                <text><![CDATA[Date]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="233" width="90" height="20" uuid="c15e7c1c-5ad9-46c2-86c8-8cab6e530065"/>
+                <textElement verticalAlignment="Middle"/>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="213" width="90" height="20" uuid="f103a0b0-957b-4733-929d-5ba8b69a6914"/>
+                <textElement verticalAlignment="Middle"/>
+                <text><![CDATA[Time]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="73" width="172" height="20" uuid="c56dce4e-658c-40eb-a762-660f544f7384"/>
+                <textElement textAlignment="Center" verticalAlignment="Bottom">
+                    <font size="12"/>
+                </textElement>
+                <text><![CDATA[- - - -  Cash withdrawal slip - - -]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="90" y="113" width="82" height="20" uuid="cfd0f964-50a8-4dae-8f1a-9bf769379516"/>
+                <textElement verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{withdrawalId}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="90" y="133" width="82" height="20" uuid="0d73605e-5092-44bd-8d07-7961c87593bd"/>
+                <textElement verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{shiftId}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="90" y="153" width="82" height="20" uuid="62ffe445-5f5c-44cc-887f-4b02d751e48a"/>
+                <textElement verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{cashierName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="90" y="173" width="82" height="20" uuid="6caf47dc-baf3-444b-bff0-0e366fcc24e1"/>
+                <textElement verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{counter}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="90" y="193" width="82" height="20" uuid="a1821627-20f3-468c-a10a-ba525a9ff776"/>
+                <textElement verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{date}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="90" y="213" width="82" height="20" uuid="61701331-ddbd-464f-b9e8-b73b3c586355"/>
+                <textElement verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{time}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="90" y="233" width="82" height="20" uuid="2dd63923-e787-4ad5-8ef2-cf07a776bb5a"/>
+                <textElement verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{amount}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
 </jasperReport>

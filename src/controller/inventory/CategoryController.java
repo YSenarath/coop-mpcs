@@ -98,7 +98,7 @@ public class CategoryController {
         return depAdded == 1;
     }
 
-    public static boolean setDiscounted(Connection connection,boolean isDiscounted, int cid, int did) throws SQLException {
+    public static boolean setDiscounted(Connection connection, boolean isDiscounted, int cid, int did) throws SQLException {
 
         String query = "UPDATE " + DatabaseInterface.CATEGORY + " SET discounted= ? WHERE category_id=? AND department_id=?";
         int depAdded = -1;

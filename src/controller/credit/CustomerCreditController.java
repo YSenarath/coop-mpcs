@@ -260,6 +260,20 @@ public class CustomerCreditController implements DatabaseInterface {
 
     }
 
+    public static boolean addCreditPayment(double amount, int id) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "UPDATE " + CREDIT_CUSTOMER + " SET current_credit = current_credit+?   WHERE customer_id = ? ";
+
+        Object[] creditCustomerObj = {
+            amount,
+            id
+        };
+        return DBHandler.setData(connection, query, creditCustomerObj) == 1;
+
+    }
+
     public static boolean deleteDeatils(int id) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "DELETE FROM " + CREDIT_CUSTOMER + " WHERE customer_id=?";

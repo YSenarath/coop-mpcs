@@ -6,7 +6,7 @@
 package model.ledger.item;
 
 public abstract class Item {
-    
+
     protected String productID;
     protected double quantity;
 
@@ -14,7 +14,7 @@ public abstract class Item {
         this.productID = productID;
         this.quantity = quantity;
     }
-    
+
     public String getProductID() {
         return productID;
     }
@@ -30,5 +30,5 @@ public abstract class Item {
     public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
-    
+
 }

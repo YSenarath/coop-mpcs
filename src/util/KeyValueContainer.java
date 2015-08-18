@@ -2,7 +2,7 @@ package util;
 
 import java.io.Serializable;
 
- public class KeyValueContainer implements Serializable {
+public class KeyValueContainer implements Serializable {
 
     private final String key;
     private final String value;

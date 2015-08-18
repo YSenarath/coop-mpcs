@@ -40,8 +40,7 @@ public class GoodRecieveNote {
         this.sellingBillDiscount = sellingBillDiscount;
         this.batches = new ArrayList<>();
     }
-    
-    
+
     public GoodRecieveNote(String f16bNumber, String invoiceNo, Date invoiceDate, Supplier supplier, String location, String paymentMethod, double loadingFee, double purchasingBillDiscount, double sellingBillDiscount, ArrayList<Batch> batces) {
         this.f16bNumber = f16bNumber;
         this.invoiceNo = invoiceNo;
@@ -62,7 +61,7 @@ public class GoodRecieveNote {
     public void setF16bNumber(String f16bNumber) {
         this.f16bNumber = f16bNumber;
     }
-    
+
     public void addBatch(Batch batch) {
         this.batches.add(batch);
     }
@@ -116,7 +115,7 @@ public class GoodRecieveNote {
     }
 
     public double getLoadingFee() {
-        return  this.loadingFee;
+        return this.loadingFee;
     }
 
     public double getPurchasingBillDiscount() {
@@ -142,6 +141,5 @@ public class GoodRecieveNote {
     public void setBatches(ArrayList<Batch> batches) {
         this.batches = batches;
     }
-    
-    
+
 }

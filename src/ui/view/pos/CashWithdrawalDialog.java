@@ -43,10 +43,10 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.counterLogin = parent.getCounterLogin();
-        
+
         setLocationRelativeTo(null);
         performKeyBinding();
-        
+
         showInfo();
     }
 
@@ -56,23 +56,23 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
     //
 // <editor-fold defaultstate="collapsed" desc="Key Bindings "> 
     private void performKeyBinding() {
-        
+
         InputMap inputMap = cashWithdrawalPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = cashWithdrawalPanel.getActionMap();
-        
+
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "doEscapeAction");
         actionMap.put("doEscapeAction", new keyBindingAction("Escape"));
-        
+
     }
-    
+
     private class keyBindingAction extends AbstractAction {
-        
+
         private final String cmd;
-        
+
         public keyBindingAction(String cmd) {
             this.cmd = cmd;
         }
-        
+
         @Override
         public void actionPerformed(ActionEvent tf) {
             if (cmd.equalsIgnoreCase("Escape")) {
@@ -89,9 +89,9 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
 // <editor-fold defaultstate="collapsed" desc="Helper method">
     private void showInfo() {
         logger.debug("showInfo invoked");
-        
+
         try {
-            
+
             int lastCashWithdrawalId = CashWithdrawalController.getLastWithdrawalId();
             if (lastCashWithdrawalId > 0) {
                 cashWithdrawal = new CashWithdrawal(lastCashWithdrawalId + 1);
@@ -100,36 +100,36 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
                 cashWithdrawal = new CashWithdrawal(1);
                 lblCashWithrawalNoVal.setText(Utilities.convertKeyToString(1, DatabaseInterface.CASH_WITHDRAWAL));
             }
-            
+
             String counterId = Utilities.loadProperty("counter");
             lblCounter.setText(counterId);
-            
+
             String userName = counterLogin.getUserName();
             lblUser.setText(userName);
             cashWithdrawal.setShiftId(counterLogin.getShiftId());
-            
+
             lblShiftVal.setText(Utilities.convertKeyToString(counterLogin.getShiftId(), DatabaseInterface.COUNTER_LOGIN));
             lblSignOnDate.setText(counterLogin.getLogInDate());
             lblSignOnTime.setText(Utilities.convert24hTo12h(counterLogin.getLogInTime()));
             lblInitialAmount.setText(String.format("%.2f", counterLogin.getInitialAmount()));
-            
+
             lblCWDate.setText(Utilities.getStringDate(Utilities.getCurrentDate()));
             lblCWTime.setText(Utilities.getCurrentTime(false));
-            
+
             cashWithdrawal.setDate(Utilities.getStringDate(Utilities.getCurrentDate()));
             cashWithdrawal.setTime(Utilities.getCurrentTime(true));
-            
+
             Counter counter = CounterController.getCounter(Integer.parseInt(Utilities.loadProperty("counter")));
-            
+
             ArrayList<CashWithdrawal> cashWithdrawals = CashWithdrawalController.getCashWithdrawals(counterLogin.getShiftId());
             double totalWithdrawalsAmount = 0;
             for (int itr = 0; itr < cashWithdrawals.size(); itr++) {
                 totalWithdrawalsAmount += cashWithdrawals.get(itr).getAmount();
             }
-            
+
             double currentWithdrawalbleAmount = counter.getCurrentAmount() - totalWithdrawalsAmount;
             lblCurrentAmountVal.setText(String.format("%.2f", currentWithdrawalbleAmount));
-            
+
             Setting mainCashierSetting = SettingsController.getSetting("main_cashier_name");
             if (mainCashierSetting != null) {
                 lblChiefCashierID.setText(mainCashierSetting.getValue());
@@ -137,9 +137,9 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
                 logger.error("main_cashier_name setting not found");
                 btnOk.setEnabled(false);
             }
-            
+
             ((PlainDocument) txtWithdrawalAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
-            
+
         } catch (SQLException ex) {
             logger.error("SQL error : " + ex.getMessage());
             btnOk.setEnabled(false);
@@ -157,12 +157,12 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
     //Handle txtWithdrawalAmount key press
     private void txtWithdrawalAmountKeyPressHandler(java.awt.event.KeyEvent evt) {
         logger.debug("txtWithdrawalAmountKeyPressHandler invoked");
-        
+
         if (txtWithdrawalAmount.getText().equals("")) {
             txtWithdrawalAmount.requestFocus();
             return;
         }
-        
+
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             txtCashierPassword.requestFocus();
         }
@@ -171,12 +171,12 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
     //Handle txtCashierPassword key press
     private void txtCashierPasswordKeyPressHandler(java.awt.event.KeyEvent evt) {
         logger.debug("txtCashierPasswordKeyPressHandler invoked");
-        
+
         if (new String(txtCashierPassword.getPassword()).equals("")) {
             txtCashierPassword.requestFocus();
             return;
         }
-        
+
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             txtChiefCashierPassword.requestFocus();
         }
@@ -185,12 +185,12 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
     //Handle txtChiefCashierPassword key press
     private void txtChiefCashierPasswordKeyPressHandler(java.awt.event.KeyEvent evt) {
         logger.debug("txtChiefCashierPasswordKeyPressHandler invoked");
-        
+
         if (new String(txtChiefCashierPassword.getPassword()).equals("")) {
             txtChiefCashierPassword.requestFocus();
             return;
         }
-        
+
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             btnOk.requestFocus();
         }
@@ -199,7 +199,7 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
     //Check if user is authenticated
     private boolean isUserAuthenticated(String userName, char[] password) {
         logger.debug("isUserAuthenticated invoked");
-        
+
         try {
             User user = UserController.getUser("user_name", userName);
             if (user != null) {
@@ -222,7 +222,7 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
     //Withdraw cash from counter
     private void withdrawCash() {
         logger.debug("withdrawCash invoked");
-        
+
         if (txtWithdrawalAmount.getText().isEmpty()) {
             Utilities.showMsgBox("Please enter the withdrawal amount", "Error ", JOptionPane.ERROR_MESSAGE);
             txtWithdrawalAmount.requestFocus();
@@ -244,7 +244,7 @@ class CashWithdrawalDialog extends javax.swing.JDialog {
             txtChiefCashierPassword.setText("");
             return;
         }
-        
+
         double withdrawalAmount = Double.parseDouble(txtWithdrawalAmount.getText());
         double maxWithdrawableAmount = Double.parseDouble(lblCurrentAmountVal.getText());
         if (0 < withdrawalAmount && withdrawalAmount <= maxWithdrawableAmount) {

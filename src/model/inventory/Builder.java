@@ -12,6 +12,6 @@ import java.io.Serializable;
  * @author Nadheesh
  */
 public interface Builder extends Serializable {
-    
+
     Object build();
 }

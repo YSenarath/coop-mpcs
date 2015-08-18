@@ -21,7 +21,7 @@ public class SRNItem extends Item {
         this.costPrice = costPrice;
         this.salesPrice = salesPrice;
     }
-    
+
     public String getSrnNumber() {
         return srnNumber;
     }
@@ -45,7 +45,5 @@ public class SRNItem extends Item {
     public void setSalesPrice(double salesPrice) {
         this.salesPrice = salesPrice;
     }
-    
-    
 
 }

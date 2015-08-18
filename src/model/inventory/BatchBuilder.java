@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author Nadheesh
  */
-public class BatchBuilder implements Builder{
+public class BatchBuilder implements Builder {
 
     private String batchId;
     private String productId;

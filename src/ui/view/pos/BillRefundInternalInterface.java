@@ -527,7 +527,7 @@ class BillRefundInternalInterface extends javax.swing.JInternalFrame {
                     double refundDiscount = Double.parseDouble(billRefundItemTable.getValueAt(row, PRODUCT_CHANGE_DISC_COLUMN).toString());
                     String desc = billRefundItemTable.getValueAt(row, PRODUCT_DESC_COLUMN).toString();
                     RefundItem refundItem = new RefundItem(refundId, productId, batchId, unitPice, refundQty, refundDiscount, desc);
-                    
+
                     logger.info("Refund item : " + refundItem);
                     refundItems.add(refundItem);
                 }

@@ -126,7 +126,7 @@ public class FinalCredit extends javax.swing.JFrame {
         boolean result = CustomerCreditController.EditCustomer(creditCustomer);
         if (result) {
             Utilities.showMsgBox("Changes saved", "Success", JOptionPane.INFORMATION_MESSAGE);
-        }else{
+        } else {
             logger.error("Changes not saved");
         }
         chngTblModel();
@@ -1428,7 +1428,6 @@ public class FinalCredit extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-
     private void installmentPaymentSubmitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installmentPaymentSubmitBtnActionPerformed
         // TODO add your handling code here:
         logger.error("Not implemented");
@@ -1767,7 +1766,6 @@ public class FinalCredit extends javax.swing.JFrame {
             }
         }
         InstallmentPaymentPaymentAmountLbl.setText(payment + "");
-
 
     }//GEN-LAST:event_confirmBtn1ActionPerformed
 

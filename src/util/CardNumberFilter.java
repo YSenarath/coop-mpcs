@@ -7,19 +7,17 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
-public class CardNumberFilter extends DocumentFilter implements Serializable{
+public class CardNumberFilter extends DocumentFilter implements Serializable {
 
     private boolean isPositiveInteger(String text) {
-         try {
-            if (text.isEmpty()){
+        try {
+            if (text.isEmpty()) {
                 return true;
+            } else if (text.matches("^(([0-9]{0,4}[1-9])|([0-9]{0,3}[1-9]([0-9])?)|([0-9]{0,2}[1-9][0-9]{0,2})|([0-9][1-9][0-9]{0,3})|([1-9][0-9]{0,4})|([0]?[0]?[0]?[0]?))$")) {
+                return Integer.parseInt(text) >= 0;
+            } else {
+                return false;
             }
-             else if (text.matches("^(([0-9]{0,4}[1-9])|([0-9]{0,3}[1-9]([0-9])?)|([0-9]{0,2}[1-9][0-9]{0,2})|([0-9][1-9][0-9]{0,3})|([1-9][0-9]{0,4})|([0]?[0]?[0]?[0]?))$")) {
-                 return Integer.parseInt(text) >= 0;
-            }
-             else{
-                 return false;
-             }
         } catch (NumberFormatException e) {
             return false;
         }

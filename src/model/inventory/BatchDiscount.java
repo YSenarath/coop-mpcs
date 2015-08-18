@@ -13,7 +13,7 @@ import java.util.Date;
  * @author Nadheesh
  */
 public class BatchDiscount implements Serializable {
-    
+
     private String batchId;
     private String productId;
     private double discount;
@@ -33,12 +33,12 @@ public class BatchDiscount implements Serializable {
         this.quantity = quantity;
         this.membersOnly = memebersOnly;
     }
-  
+
     public BatchDiscount(String batchId, String productId) {
         this.batchId = batchId;
         this.productId = productId;
     }
-    
+
     public String getBatchId() {
         return batchId;
     }
@@ -102,8 +102,5 @@ public class BatchDiscount implements Serializable {
     public void setMembersOnly(boolean membersOnly) {
         this.membersOnly = membersOnly;
     }
-    
-    
-    
-	 
+
 }

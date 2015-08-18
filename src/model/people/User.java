@@ -42,8 +42,6 @@ public class User {
         this.userName = userName;
     }
 
-
-
     /**
      * @return the password
      */

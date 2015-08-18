@@ -233,7 +233,6 @@ public class settings extends javax.swing.JFrame {
     }
 
     //Set poshana amount from settings table
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel installmentPaymentLbl2;
     private javax.swing.JButton jButton1;

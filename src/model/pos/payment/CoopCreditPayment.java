@@ -16,6 +16,7 @@ public class CoopCreditPayment extends Payment {
         this.customerId = customerId;
         this.amountSettled = 0;
     }
+
     /**
      * @return the customerId
      */

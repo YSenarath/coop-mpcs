@@ -154,7 +154,7 @@ public class CategoryDiscountController {
 
             connection.commit();
             return true;
-            
+
         } catch (Exception err0) {
             //logger.error("Exception occurred " + err0.getMessage());
             if (connection != null) {

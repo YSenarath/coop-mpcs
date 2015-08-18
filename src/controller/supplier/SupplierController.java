@@ -26,7 +26,7 @@ public class SupplierController {
         Object[] ob = {
             util.Utilities.convertKeyToInteger(supplierId)
         };
-    
+
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
 
         while (resultSet.next()) {
@@ -69,9 +69,9 @@ public class SupplierController {
 
     public static boolean addSupplier(Supplier supplier) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        
+
         String query = "INSERT INTO " + SUPPLIER + " (supplier_id, sup_name, contact_person, address, tel_number, fax_number, e_mail, reg_date, cancel_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
+
         Object[] ob = {
             util.Utilities.convertKeyToInteger(supplier.getSupplerID()),
             supplier.getName(),
@@ -86,8 +86,8 @@ public class SupplierController {
 
         return DBHandler.setData(connection, query, ob) == 1;
     }
-    
-        public static String getNextDamagedStockID() throws SQLException {
+
+    public static String getNextDamagedStockID() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
 
         String query = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = '" + SUPPLIER + "' AND table_schema = DATABASE( )";

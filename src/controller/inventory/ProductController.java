@@ -276,19 +276,16 @@ public class ProductController {
         }
         return products;
     }
-    
-    
-    
+
     //new nadheesh upadated method
-    
-    public static boolean updateProduct(Product product) throws SQLException{
-        
+    public static boolean updateProduct(Product product) throws SQLException {
+
         Connection connection = DBConnection.getConnectionToDB();
-        
+
         String query = "UPDATE " + DatabaseInterface.PRODUCT + " SET product_name = ? , barcode = ?,description =? ,category_id =? , department_id = ?,unit = ? ,"
-                + " pack_size = ?, reorder_value = ? , reorder_qty = ?, max_qty = ?  WHERE product_id = ?  " ;
-        
-        Object[] obj  = {
+                + " pack_size = ?, reorder_value = ? , reorder_qty = ?, max_qty = ?  WHERE product_id = ?  ";
+
+        Object[] obj = {
             product.getProductName(),
             product.getProductBarCode(),
             product.getDescription(),
@@ -303,22 +300,22 @@ public class ProductController {
         };
         int added = -1;
         added = DBHandler.setData(connection, query, obj);
-        
-        return  added == 1 ;
+
+        return added == 1;
     }
-    
-    public static boolean removeProduct(String productId) throws SQLException{
-        
+
+    public static boolean removeProduct(String productId) throws SQLException {
+
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "DELETE FROM " + DatabaseInterface.PRODUCT + " WHERE product_id=?  " ;
-        
-        Object[] obj  = {
+        String query = "DELETE FROM " + DatabaseInterface.PRODUCT + " WHERE product_id=?  ";
+
+        Object[] obj = {
             Utilities.convertKeyToInteger(productId)
         };
         int added = -1;
         added = DBHandler.setData(connection, query, obj);
-        
-        return  added == 1 ;
+
+        return added == 1;
     }
-    
+
 }

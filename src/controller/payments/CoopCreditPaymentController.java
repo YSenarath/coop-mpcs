@@ -20,7 +20,7 @@ import model.pos.payment.CoopCreditPayment;
  */
 public class CoopCreditPaymentController implements DatabaseInterface {
 
-   public static CoopCreditPayment getCoopCreditPayment(int invoiceNo) throws SQLException {
+    public static CoopCreditPayment getCoopCreditPayment(int invoiceNo) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT * FROM " + COOP_CREDIT_PAYMENT + " WHERE bill_id=? ";
         Object[] ob = {
@@ -39,7 +39,7 @@ public class CoopCreditPaymentController implements DatabaseInterface {
         }
         return null;
     }
-   
+
     public static boolean addCoopPayment(CoopCreditPayment coopPayment) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "INSERT INTO " + COOP_CREDIT_PAYMENT + " (bill_id,coop_credit_payment_id,customer_id,amount) VALUES (?,?,?,?)";
@@ -51,7 +51,8 @@ public class CoopCreditPaymentController implements DatabaseInterface {
         };
         return DBHandler.setData(connection, query, ob) == 1;
     }
-     public static ResultSet loadCoopDetails() throws SQLException {
+
+    public static ResultSet loadCoopDetails() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "SELECT bill_id,amount,amount_settled FROM " + COOP_CREDIT_PAYMENT;
 
@@ -84,12 +85,12 @@ public class CoopCreditPaymentController implements DatabaseInterface {
 
         Connection connection = DBConnection.getConnectionToDB();
 
-        String query = "SELECT *  FROM " + COOP_CREDIT_PAYMENT + " WHERE customer_id = ? " ;
+        String query = "SELECT *  FROM " + COOP_CREDIT_PAYMENT + " WHERE customer_id = ? ";
 
         Object[] obj = {
             customerId
         };
-        ResultSet resultSet = DBHandler.getData( connection , query , obj);
+        ResultSet resultSet = DBHandler.getData(connection, query, obj);
         ArrayList<CoopCreditPayment> coopPayments = new ArrayList();
         while (resultSet.next()) {
             CoopCreditPayment coopPayment = new CoopCreditPayment(

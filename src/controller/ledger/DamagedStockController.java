@@ -43,7 +43,7 @@ public class DamagedStockController {
                     resultSet.getDate("ds_date"),
                     resultSet.getString("location"),
                     srnItemList);
-            
+
         }
         return null;
     }

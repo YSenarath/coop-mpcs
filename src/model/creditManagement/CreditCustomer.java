@@ -26,6 +26,7 @@ public class CreditCustomer {
         this.customerId = customerId;
         this.currentCredit = currentCredit;
     }
+
     /**
      * @return the customerName
      */

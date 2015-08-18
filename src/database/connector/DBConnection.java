@@ -73,7 +73,7 @@ public final class DBConnection implements DatabaseInterface {
         }
     }
 
-    public static boolean isValidDBConnection(String userNameProperty, String passwordProperty,String serverIP) {
+    public static boolean isValidDBConnection(String userNameProperty, String passwordProperty, String serverIP) {
         try {
             DriverManager.registerDriver(new Driver());
 

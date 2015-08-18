@@ -64,5 +64,5 @@ public class SRNItemController {
 
         return (DBHandler.setData(connection, query, objs) == 1);
     }
-    
+
 }

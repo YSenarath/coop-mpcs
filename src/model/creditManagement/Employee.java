@@ -10,19 +10,19 @@ package model.creditManagement;
  * @author HP
  */
 public class Employee {
-  
-    
+
     private String employeeName;
     private int employeeId;
     private boolean voucherIssued;
     private String position;
-    public Employee(int employeeId,String employeeName,String position,boolean voucherIssued){
+
+    public Employee(int employeeId, String employeeName, String position, boolean voucherIssued) {
         this.employeeId = employeeId;
         this.employeeName = employeeName;
         this.voucherIssued = voucherIssued;
         this.position = position;
     }
-  
+
     /**
      * @return the employeeName
      */
@@ -78,5 +78,5 @@ public class Employee {
     public void setPosition(String position) {
         this.position = position;
     }
-    
+
 }

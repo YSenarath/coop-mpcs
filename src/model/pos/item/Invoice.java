@@ -19,7 +19,7 @@ public class Invoice {
     private ArrayList<InvoiceItem> invoiceItems;//invoice has items
     private ArrayList<Payment> payments;//Invoice has payments
 
-    public Invoice(int invoiceNo,int shiftId) {
+    public Invoice(int invoiceNo, int shiftId) {
         this.invoiceNo = invoiceNo;
         this.shiftId = shiftId;
         this.date = null;
@@ -55,15 +55,12 @@ public class Invoice {
         return invoiceNo;
     }
 
-  
-
     /**
      * @return the shiftId
      */
     public int getShiftId() {
         return shiftId;
     }
-
 
     /**
      * @return the date

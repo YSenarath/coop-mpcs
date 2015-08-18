@@ -71,7 +71,7 @@ public final class ReportGenerator {
 
             java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd-hh.mm.ss");
             String dateString = formatter.format(date);
-            
+
             // Create a PDF exporter
             JRPdfExporter exporter = new JRPdfExporter();
 
@@ -364,8 +364,8 @@ public final class ReportGenerator {
                     hashMap.put("payment_poshana", poshanaPayment.getAmount());
                 } else if (payment instanceof CustomerVoucherPayment) {
                     CustomerVoucherPayment customerVoucherPayment = (CustomerVoucherPayment) payment;
-
                     hashMap.put("payment_voucher", customerVoucherPayment.getAmount());
+
                 } else if (payment instanceof EmployeeVoucherPayment) {
                     EmployeeVoucherPayment employeeVoucherPayment = (EmployeeVoucherPayment) payment;
 

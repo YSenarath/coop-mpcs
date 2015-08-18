@@ -963,7 +963,6 @@ public class ManageEmployees extends javax.swing.JFrame {
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "manageEmployees");
 
-
     }//GEN-LAST:event_searchResultsOKBtnActionPerformed
 
     /**

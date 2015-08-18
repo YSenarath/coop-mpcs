@@ -21,13 +21,13 @@ public class SupplierReturnNoteController {
     public static SupplierReturnNote getSrn(String srnNumber) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
-        
+
         String query = "SELECT * FROM " + SRN + " WHERE srn_number=? ";
-        
+
         Object[] ob = {
             util.Utilities.convertKeyToInteger(srnNumber)
         };
-        
+
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
 
         ArrayList<SRNItem> srnItemList = SRNItemController.getAllAvailableItems(srnNumber);
@@ -35,13 +35,13 @@ public class SupplierReturnNoteController {
         while (resultSet.next()) {
 
             return new SupplierReturnNote(
-                util.Utilities.convertKeyToString(resultSet.getInt("srn_number"), SRN),
-                util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), SRN),
-                resultSet.getDate("srn_date"),
-                SupplierController.getSupplier(resultSet.getString("supplier_id")),
-                resultSet.getString("location"),
-                srnItemList
-        );
+                    util.Utilities.convertKeyToString(resultSet.getInt("srn_number"), SRN),
+                    util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), SRN),
+                    resultSet.getDate("srn_date"),
+                    SupplierController.getSupplier(resultSet.getString("supplier_id")),
+                    resultSet.getString("location"),
+                    srnItemList
+            );
         }
         return null;
     }

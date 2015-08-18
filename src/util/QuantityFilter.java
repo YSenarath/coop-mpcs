@@ -13,11 +13,11 @@ public class QuantityFilter extends DocumentFilter implements Serializable {
         try {
             if (text.isEmpty() || text.equals("0.00")) {
                 return true;
-            } 
-            else if (text.matches("^[0-9]+(\\.)?[0-9]*$")) { 
+            } else if (text.matches("^[0-9]+(\\.)?[0-9]*$")) {
                 return Double.parseDouble(text) >= 0;
+            } else {
+                return false;
             }
-            else{return false;}
         } catch (NumberFormatException e) {
             return false;
         }

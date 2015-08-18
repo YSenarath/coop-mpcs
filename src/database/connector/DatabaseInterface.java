@@ -32,16 +32,16 @@ public interface DatabaseInterface {
     public static final String INVOICE_ITEMS = "invoice_items";
     public static final String REFUND = "refund";
     public static final String REFUND_ITEMS = "refund_items";
-    
+
     public static final String CASH_PAYMENT = "cash_payment";
     public static final String CARD_PAYMENT = "card_payment";
     public static final String POSHANA_PAYMENT = "poshana_payment";
     public static final String EMPLOYEE_VOUCHER_PAYMENT = "employee_voucher_payment";
     public static final String CUSTOMER_VOUCHER_PAYMENT = "customer_voucher_payment";
     public static final String COOP_CREDIT_PAYMENT = "coop_credit_payment";
-    
+
     public static final String SUPPLIER = "supplier";
-    
+
     public static final String GRN = "grn";
     public static final String SRN = "srn";
     public static final String SRN_ITEM = "srn_item";

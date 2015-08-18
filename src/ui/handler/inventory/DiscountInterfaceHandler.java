@@ -114,7 +114,7 @@ public class DiscountInterfaceHandler {
             for (Batch b : batches) {
 
                 gui.getIdText2().addItem(b.getBatchId());
-                
+
             }
         }
     }

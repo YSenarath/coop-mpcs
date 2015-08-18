@@ -111,13 +111,12 @@ public class EmployeeCreditController {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
-    public static boolean updateEmployee(int id) throws SQLException {
+    public static boolean setVoucherIssued(int id,boolean voucherIssued) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "UPDATE " + EMPLOYEE + " SET voucher_issued = ?   WHERE employee_id = ? ";
+        String query = "UPDATE " + EMPLOYEE + " SET voucher_issued =? WHERE employee_id = ? ";
         Object[] ob = {
-            false,
+            voucherIssued,
             id
-
         };
         return DBHandler.setData(connection, query, ob) == 1;
 

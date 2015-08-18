@@ -5,8 +5,8 @@
  */
 package model.ledger.item;
 
-
 public class SRNItemBuilder {
+
     private String srnNumber;
     private String productID;
     private double quantity;
@@ -44,5 +44,5 @@ public class SRNItemBuilder {
     public SRNItem createSRNItem() {
         return new SRNItem(srnNumber, productID, quantity, costPrice, salesPrice);
     }
-    
+
 }

@@ -10,7 +10,6 @@ import util.Utilities;
 class ConfigureDialog extends javax.swing.JDialog {
 
 // <editor-fold defaultstate="collapsed" desc="Variables">
-    
     private static final Logger logger = Logger.getLogger(ConfigureDialog.class);
 
 // </editor-fold>
@@ -21,7 +20,7 @@ class ConfigureDialog extends javax.swing.JDialog {
     public ConfigureDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
         setIconImage(new ImageIcon(getClass().getResource("/images/pos/pos_icon.png")).getImage());
         ((PlainDocument) txtCounterId.getDocument()).setDocumentFilter(new IntegerFilter());
 
@@ -93,7 +92,7 @@ class ConfigureDialog extends javax.swing.JDialog {
             return;
         }
 
-        if (!Utilities.isValidDBConnection(userName, password,ipAddress)) {
+        if (!Utilities.isValidDBConnection(userName, password, ipAddress)) {
             Utilities.showMsgBox("Test connection to database failed. Please recheck username and password", "Warning", JOptionPane.WARNING_MESSAGE);
             logger.error("DB connection failed");
             txtUserName.setText("");

@@ -5,8 +5,8 @@
  */
 package model.ledger.item;
 
-
 public class DamagedItemBuilder {
+
     private String productID;
     private double quantity;
     private String DamagedItemID;
@@ -44,5 +44,5 @@ public class DamagedItemBuilder {
     public DamagedItem createDamagedItem() {
         return new DamagedItem(productID, quantity, DamagedItemID, quantityDamaged, sellingPrice);
     }
-    
+
 }
