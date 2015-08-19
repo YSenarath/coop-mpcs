@@ -1308,7 +1308,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             poshanaCustomerNameTxt.setText("");
         }
         if (paymentType.equals(Payment.VOUCHER)) {
-            paymentOptionComboBox.insertItemAt(Payment.VOUCHER, 4);
+            paymentOptionComboBox.insertItemAt(Payment.VOUCHER, paymentOptionComboBox.getItemCount() );
 
             customerRadioButton.setSelected(true);
             voucherCustomerIdTxt.setText("");
