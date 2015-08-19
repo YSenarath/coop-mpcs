@@ -747,7 +747,8 @@ public class DiscountInterface extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        catDisTable.setColumnSelectionAllowed(true);
+        catDisTable.setCellSelectionEnabled(false);
+        catDisTable.setRowSelectionAllowed(true);
         catDisTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(catDisTable);
         catDisTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -817,7 +818,7 @@ public class DiscountInterface extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        batchDisTable.setCellSelectionEnabled(true);
+        batchDisTable.setRowSelectionAllowed(true);
         batchDisTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(batchDisTable);
         batchDisTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
