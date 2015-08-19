@@ -30,7 +30,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="lblTitle" pref="67" max="32767" attributes="0"/>
+              <Component id="lblTitle" pref="71" max="32767" attributes="0"/>
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
           </Group>
@@ -61,8 +61,8 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="comboSupplier" linkSize="2" alignment="0" pref="161" max="32767" attributes="0"/>
-                                      <Component id="datePicker" linkSize="2" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="datePicker" linkSize="2" max="32767" attributes="0"/>
+                                      <Component id="txtSupplier" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
@@ -124,9 +124,9 @@
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="comboSupplier" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txtGRNNo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtSupplier" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jScrollPane1" min="-2" pref="339" max="-2" attributes="0"/>
@@ -187,13 +187,6 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="comboSupplier">
-          <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="0"/>
-            </Property>
-          </Properties>
-        </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane1">
           <AuxValues>
             <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
@@ -204,15 +197,16 @@
             <Component class="javax.swing.JTable" name="itemDataTable">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="8" rowCount="0">
+                  <Table columnCount="9" rowCount="0">
                     <Column editable="false" title="" type="java.lang.Integer"/>
-                    <Column editable="true" title="Product Id" type="java.lang.String"/>
+                    <Column editable="false" title="Batch Id" type="java.lang.String"/>
                     <Column editable="false" title="Description" type="java.lang.String"/>
                     <Column editable="true" title="Quantity" type="java.lang.String"/>
-                    <Column editable="true" title="Cost Price" type="java.lang.String"/>
+                    <Column editable="false" title="Cost Price" type="java.lang.String"/>
                     <Column editable="false" title="Cost Value" type="java.lang.String"/>
-                    <Column editable="true" title="Sales Price" type="java.lang.String"/>
+                    <Column editable="false" title="Sales Price" type="java.lang.String"/>
                     <Column editable="false" title=" Sales Value" type="java.lang.String"/>
+                    <Column editable="false" title="Stock Quantity" type="java.lang.String"/>
                   </Table>
                 </Property>
                 <Property name="autoResizeMode" type="int" value="0"/>
@@ -254,6 +248,11 @@
                       <Renderer/>
                     </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="100" resizable="true">
+                      <Title/>
+                      <Editor/>
+                      <Renderer/>
+                    </Column>
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -315,8 +314,16 @@
         <Component class="javax.swing.JFormattedTextField" name="txtGRNNo">
           <Properties>
             <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
-              <Format format="G0" subtype="-1" type="0"/>
+              <Format format="G#0" subtype="-1" type="0"/>
             </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtGRNNoKeyReleased"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JTextField" name="txtSupplier">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
           </Properties>
         </Component>
       </SubComponents>

@@ -7,20 +7,20 @@ package model.ledger.item;
 
 public abstract class Item {
 
-    protected String productID;
+    protected String batchID;
     protected double quantity;
 
-    public Item(String productID, double quantity) {
-        this.productID = productID;
+    public Item(String batchID, double quantity) {
+        this.batchID = batchID;
         this.quantity = quantity;
     }
 
-    public String getProductID() {
-        return productID;
+    public String getBatchID() {
+        return batchID;
     }
 
-    public void setProductID(String productID) {
-        this.productID = productID;
+    public void setBatchID(String batchID) {
+        this.batchID = batchID;
     }
 
     public double getQuantity() {

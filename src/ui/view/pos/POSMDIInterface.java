@@ -24,7 +24,6 @@ import model.pos.Memento;
 import org.apache.log4j.Logger;
 import report.pos.ReportGenerator;
 import util.Utilities;
-import static util.Utilities.setupUI;
 
 class POSMDIInterface extends javax.swing.JFrame {
 
@@ -135,6 +134,16 @@ class POSMDIInterface extends javax.swing.JFrame {
     //
     //
 // <editor-fold defaultstate="collapsed" desc="Methods">
+    public void holdBtnPerformClick() {
+        logger.debug("holdBtnPerformClick invoked");
+        btnHoldSale.doClick();
+    }
+
+    public void restoreBtnPerformclick() {
+        logger.debug("restoreBtnPerformclick invoked");
+        btnRestoreSale.doClick();
+    }
+
     public void setCashierLogOff(boolean cashierLogOff) {
         this.cashierLogOff = cashierLogOff;
     }
@@ -330,6 +339,7 @@ class POSMDIInterface extends javax.swing.JFrame {
         logger.debug("showNewInvoiceUI invoked");
 
         if (isMainActivityRunning()) {
+            Utilities.showMsgBox("A main activity is already running", "POS", JOptionPane.WARNING_MESSAGE);
             logger.warn("A main activity is already running");
             return;
         }
@@ -396,6 +406,7 @@ class POSMDIInterface extends javax.swing.JFrame {
         logger.debug("showBillCopyUI invoked");
 
         if (isMainActivityRunning()) {
+            Utilities.showMsgBox("A main activity is already running", "POS", JOptionPane.WARNING_MESSAGE);
             logger.warn("A main activity is already running");
             return;
         }
@@ -419,6 +430,7 @@ class POSMDIInterface extends javax.swing.JFrame {
         logger.debug("showRefundUI invoked");
 
         if (isMainActivityRunning()) {
+            Utilities.showMsgBox("A main activity is already running", "POS", JOptionPane.WARNING_MESSAGE);
             logger.warn("A main activity is already running");
             return;
         }
@@ -441,6 +453,7 @@ class POSMDIInterface extends javax.swing.JFrame {
         logger.debug("showCashWithdrawalShowUI invoked");
 
         if (counterLogin == null || counterLogin.isShiftEnded()) {
+            Utilities.showMsgBox("A main activity is already running", "POS", JOptionPane.WARNING_MESSAGE);
             Utilities.showMsgBox("No current active shift", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             new CashWithdrawalDialog(this, true).setVisible(true);
@@ -1000,16 +1013,6 @@ class POSMDIInterface extends javax.swing.JFrame {
         // TODO add your handling code here:
         managerShutDown();
     }//GEN-LAST:event_btnManagerLogActionPerformed
-
-    public static void main(String args[]) {
-        setupUI();
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new POSMDIInterface(true).setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.jdesktop.swingx.JXTaskPane billTaskPane;

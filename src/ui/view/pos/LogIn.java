@@ -10,7 +10,6 @@ import javax.swing.text.PlainDocument;
 import model.pos.CounterLogin;
 import model.people.User;
 import org.apache.log4j.Logger;
-import report.pos.ReportGenerator;
 import util.CurrencyFilter;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;

@@ -6,6 +6,7 @@
 package controller.supplier;
 
 import database.connector.DBConnection;
+import database.connector.DatabaseInterface;
 import static database.connector.DatabaseInterface.SUPPLIER;
 import database.handler.DBHandler;
 import java.sql.Connection;
@@ -87,7 +88,7 @@ public class SupplierController {
         return DBHandler.setData(connection, query, ob) == 1;
     }
 
-    public static String getNextDamagedStockID() throws SQLException {
+    public static String getNextSupplierID() throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
 
         String query = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = '" + SUPPLIER + "' AND table_schema = DATABASE( )";
@@ -101,5 +102,53 @@ public class SupplierController {
         }
 
         return util.Utilities.convertKeyToString(0, SUPPLIER);
+    }
+
+    public static boolean supplierExists(String supplierId) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "SELECT * FROM " + SUPPLIER + " WHERE supplier_id=? ";
+        Object[] ob = {
+            util.Utilities.convertKeyToInteger(supplierId)
+        };
+
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+
+        while (resultSet.next()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean updateSupplier(Supplier supplier) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "UPDATE " + DatabaseInterface.SUPPLIER + " SET sup_name=?, contact_person=?, address=?, tel_number=?, fax_number=?, e_mail=?, reg_date=?, cancel_date=? WHERE supplier_id=?";
+
+        Object[] ob = {
+            supplier.getName(),
+            supplier.getContactPerson(),
+            supplier.getAddress(),
+            supplier.getTelephoneNumber(),
+            supplier.getFax(),
+            supplier.getEmail(),
+            supplier.getRagDate(),
+            supplier.getCancelDate(),
+            util.Utilities.convertKeyToInteger(supplier.getSupplerID())
+        };
+
+        return DBHandler.setData(connection, query, ob) == 1;
+    }
+
+    public static boolean deleteSuppler(String supplerID) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "DELETE FROM " + DatabaseInterface.SUPPLIER + " WHERE supplier_id=?";
+
+        Object[] ob = {
+            util.Utilities.convertKeyToInteger(supplerID)
+        };
+
+        return DBHandler.setData(connection, query, ob) == 1;
     }
 }

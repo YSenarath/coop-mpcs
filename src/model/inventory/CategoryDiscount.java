@@ -12,7 +12,6 @@ import java.util.Date;
  * @author Nadheesh
  */
 public class CategoryDiscount {
-
     private String categoryId;
     private String departmentId;
     private double discount;
@@ -43,16 +42,17 @@ public class CategoryDiscount {
         this.quantity = quantity;
         this.membersOnly = memebersOnly;
     }
-
-    public void setQuantityDiscount(double quantity) {
-        this.promotional = false;
-        this.quantity = quantity;
+    
+    public void setQuantityDiscount (double quantity) {
+        this.promotional = false ;
+        this.quantity =quantity;
     }
-
-    public void setMembersOnly() {
-        this.membersOnly = true;
+    
+    public void setMembersOnly(){
+        this.membersOnly= true;
     }
-
+    
+    
     public CategoryDiscount(String categoryId, String departmentId) {
         this.categoryId = categoryId;
         this.departmentId = departmentId;
@@ -61,6 +61,7 @@ public class CategoryDiscount {
     public CategoryDiscount() {
     }
 
+    
     public String getCategoryId() {
         return categoryId;
     }
@@ -124,5 +125,6 @@ public class CategoryDiscount {
     public void setMembersOnly(boolean membersOnly) {
         this.membersOnly = membersOnly;
     }
-
+    
+    
 }

@@ -13,9 +13,10 @@ import java.util.Date;
  * @author Nadheesh
  */
 public class BatchDiscount implements Serializable {
-
+    
     private String batchId;
     private String productId;
+    private String productName;
     private double discount;
     private Date startDate;
     private Date endDate;
@@ -23,7 +24,29 @@ public class BatchDiscount implements Serializable {
     private double quantity;
     private boolean membersOnly;
 
-    public BatchDiscount(String batchId, String productId, double discount, Date startDate, Date endDate, boolean promotional, double quantity, boolean memebersOnly) {
+    public BatchDiscount(Batch batch, double discount, Date startDate, Date endDate) {
+        this.batchId =batch.getBatchId();
+        this.productId = batch.getProductId();
+        this.discount = discount;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.promotional = true;
+    }
+    
+    public BatchDiscount(String batchId, String productId,String productName, double discount, Date startDate, Date endDate, boolean promotional, double quantity, boolean memebersOnly) {
+        this.batchId = batchId;
+        this.productId = productId;
+        this.productName= productName;
+        this.discount = discount;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.promotional = promotional;
+        this.quantity = quantity;
+        this.membersOnly = memebersOnly;
+        
+    }
+  
+    public BatchDiscount(String batchId, String productId,double discount, Date startDate, Date endDate, boolean promotional, double quantity, boolean memebersOnly) {
         this.batchId = batchId;
         this.productId = productId;
         this.discount = discount;
@@ -32,13 +55,13 @@ public class BatchDiscount implements Serializable {
         this.promotional = promotional;
         this.quantity = quantity;
         this.membersOnly = memebersOnly;
+       
     }
-
     public BatchDiscount(String batchId, String productId) {
         this.batchId = batchId;
         this.productId = productId;
     }
-
+    
     public String getBatchId() {
         return batchId;
     }
@@ -103,4 +126,11 @@ public class BatchDiscount implements Serializable {
         this.membersOnly = membersOnly;
     }
 
+    public Object getProductName() {
+        return productName;
+    }
+    
+    
+    
+	 
 }

@@ -5,10 +5,10 @@
  */
 package model.ledger.item;
 
-public class SRNItemBuilder {
 
+public class SRNItemBuilder {
     private String srnNumber;
-    private String productID;
+    private String batch;
     private double quantity;
     private double costPrice;
     private double salesPrice;
@@ -21,8 +21,8 @@ public class SRNItemBuilder {
         return this;
     }
 
-    public SRNItemBuilder setProductID(String productID) {
-        this.productID = productID;
+    public SRNItemBuilder setBatchID(String productID) {
+        this.batch = productID;
         return this;
     }
 
@@ -42,7 +42,7 @@ public class SRNItemBuilder {
     }
 
     public SRNItem createSRNItem() {
-        return new SRNItem(srnNumber, productID, quantity, costPrice, salesPrice);
+        return new SRNItem(srnNumber, batch, quantity, costPrice, salesPrice);
     }
-
+    
 }

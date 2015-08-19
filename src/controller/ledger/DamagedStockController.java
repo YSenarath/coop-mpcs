@@ -5,6 +5,7 @@
  */
 package controller.ledger;
 
+import controller.inventory.BatchController;
 import controller.ledger.item.DamagedStockItemController;
 import database.connector.DBConnection;
 import static database.connector.DatabaseInterface.DAMAGED_STOCK;
@@ -43,14 +44,14 @@ public class DamagedStockController {
                     resultSet.getDate("ds_date"),
                     resultSet.getString("location"),
                     srnItemList);
-
+            
         }
         return null;
     }
 
     public static boolean addDamagedStock(DamageStock stock) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
-
+        connection.setAutoCommit(false);
         String query = "INSERT INTO " + DAMAGED_STOCK + " (damaged_stock_id, ds_date, location) VALUES (?, ?, ?)";
 
         Object[] ob = {
@@ -63,8 +64,9 @@ public class DamagedStockController {
 
         for (DamagedItem it : stock.getItems()) {
             DamagedStockItemController.addNewItem(it);
+            BatchController.reduceQuantity(it.getQuantityDamaged(), it.getBatchID());
         }
-
+        connection.setAutoCommit(false);
         return retVal;
     }
 

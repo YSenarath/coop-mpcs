@@ -84,4 +84,15 @@ public class User {
         this.loggedin = loggedin;
     }
 
+    public String dataTruncation(String level) {
+        switch (level) {
+            case "MANAGER":
+                return "manager";
+            case "CASHIER":
+                return "cashier";
+            case "INVENTORY":
+                return "inventory_manager";
+        }
+        return "";
+    }
 }

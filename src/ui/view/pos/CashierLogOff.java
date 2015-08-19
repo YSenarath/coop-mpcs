@@ -2,7 +2,6 @@ package ui.view.pos;
 
 import controller.pos.CashWithdrawalController;
 import controller.pos.CounterController;
-import groovy.xml.dom.DOMCategory;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;

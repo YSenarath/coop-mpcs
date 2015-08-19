@@ -15,13 +15,13 @@ public class SRNItem extends Item {
     private double costPrice;
     private double salesPrice;
 
-    public SRNItem(String srnNumber, String productID, double quantity, double costPrice, double salesPrice) {
-        super(productID, quantity);
+    public SRNItem(String srnNumber, String batchID, double quantity, double costPrice, double salesPrice) {
+        super(batchID, quantity);
         this.srnNumber = srnNumber;
         this.costPrice = costPrice;
         this.salesPrice = salesPrice;
     }
-
+    
     public String getSrnNumber() {
         return srnNumber;
     }
@@ -45,5 +45,7 @@ public class SRNItem extends Item {
     public void setSalesPrice(double salesPrice) {
         this.salesPrice = salesPrice;
     }
+    
+    
 
 }

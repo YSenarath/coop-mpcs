@@ -7,12 +7,12 @@ package model.supplier;
 
 import java.util.Date;
 
+
 /**
  *
  * @author Yasas
  */
 public class Supplier {
-
     private String supplerID;
     private String name;
     private String contactPerson;
@@ -21,7 +21,7 @@ public class Supplier {
     private int fax;
     private String email;
     private Date ragDate;
-    private Date cancelDate;
+    private Date cancelDate;    
 
     public Supplier(String supplerID, String name, String contactPerson, String address, int telephoneNumber, int fax, String email, Date ragDate, Date cancelDate) {
         this.supplerID = supplerID;

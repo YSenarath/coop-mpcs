@@ -14,8 +14,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import model.inventory.Batch;
 import model.inventory.Category;
@@ -169,18 +171,29 @@ public class ManageProductHandler {
         String productId = selectedPro.getProductId();
         String productName = selectedPro.getProductName();
         ((DefaultTableModel) gui.getBatchTable().getModel()).setRowCount(0);
-        batches = BatchController.getBatches(productId);
+        batches = BatchController.getBatchesOfProduct(productId);
 
         double qty = 0;
         double totalProfit = 0;
         double profit;
 
         for (Batch b : batches) {
-            System.out.println(b.getBatchId());
             if (b.isInStock()) {
-                System.out.println(b.getBatchId());
+
                 profit = (b.getUnit_price() - b.getUnit_cost()) * b.getRecievedQuantity();
-                ((DefaultTableModel) (gui.getBatchTable().getModel())).addRow(new String[]{b.getBatchId(), b.getGrnNumber(), "Yasas", "YASAS", b.getUnit_cost() + "", b.getUnit_price() + "", b.getRecievedQuantity() + "", profit + "", Utilities.getStringDate(b.getExpirationDate()), Utilities.getStringDate(b.getNotificationDate())});
+                ((DefaultTableModel) (gui.getBatchTable().getModel())).addRow(new Object[]{
+                    b.getBatchId(),
+                    b.getGrnNumber(),
+                    b.getSupplierID(),
+                    b.getSupplierName(),
+                    b.getUnit_cost() + "",
+                    b.getUnit_price() + "",
+                    b.getRecievedQuantity() + "",
+                    profit + "",
+                    Utilities.getStringDate(b.getExpirationDate()),
+                    Utilities.getStringDate(b.getNotificationDate()),
+                    b.isDiscounted()
+                });
 
                 qty += b.getRecievedQuantity();
                 totalProfit += profit;
@@ -365,6 +378,12 @@ public class ManageProductHandler {
             gui.getRoValueTB().setText(product.getReorderValue() + "");
             gui.getMaxQtyTB().setText(product.getMaxQuantity() + "");
             gui.getUnitText().setText(product.getUnit());
+            gui.getQtyTB().setText(product.getTotalQuantity()+ "");
+            if (product.getReorderLevel() > 0){
+            gui.getReOrderLevelTB().setText(product.getReorderLevel() + "");
+            }else{
+                gui.getReOrderLevelTB().setText( "Not Set");
+            }
         }
 
     }
@@ -597,4 +616,29 @@ public class ManageProductHandler {
         gui.getNameSearchField().setFindPopupMenu(gui.getNamePopUp());
         gui.getIdSearchField().setFindPopupMenu(gui.getIDPopUp());
     }
+
+    public void showSetNotifiation() {
+        gui.getWinSetNotification().setLocationRelativeTo(gui);
+        JTable batchTable = gui.getBatchTable();
+        int row = batchTable.getSelectedRow();
+        if (row >= 0) {
+            gui.getpNameLable().setText(gui.getpIdText().getText() + "   " + gui.getpNameText().getText());
+            gui.getpBatchIdLabel().setText(batchTable.getValueAt(row, 0).toString());
+            gui.getpExpDateLabel().setText(batchTable.getValueAt(row, 8).toString());
+            gui.getWinSetNotification().setVisible(true);
+        } else {
+            Utilities.ShowWarningMsg(gui, "Select a batch first");
+        }
+    }
+
+    public void setNotification() throws SQLException {
+        Date notifyDate = gui.getpSetNotifyBox().getDate();
+        String productId = gui.getpIdText().getText();
+        String batchId = gui.getpBatchIdLabel().getText();
+        BatchController.updateBatchWithNotifyDate(productId, batchId, notifyDate);
+        loadBatches();
+        gui.getWinSetNotification().setVisible(false);
+
+    }
+
 }

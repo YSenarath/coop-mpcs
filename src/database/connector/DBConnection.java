@@ -56,7 +56,9 @@ public final class DBConnection implements DatabaseInterface {
     private static DBConnection getDBConnection() throws SQLException {
         if (dbConnetion == null) {
             synchronized (DBConnection.class) {
-                dbConnetion = new DBConnection();
+                if (dbConnetion == null) {
+                    dbConnetion = new DBConnection();
+                }
             }
         }
         return dbConnetion;

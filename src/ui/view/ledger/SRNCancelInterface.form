@@ -93,11 +93,11 @@
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="txtCancelCostValue" min="-2" pref="101" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
-                          <Component id="btnDeleteItem" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnDeleteItem" linkSize="1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="btnNewItem" min="-2" pref="87" max="-2" attributes="0"/>
+                          <Component id="btnNewItem" linkSize="1" min="-2" pref="87" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButton3" min="-2" pref="87" max="-2" attributes="0"/>
+                          <Component id="jButton3" linkSize="1" min="-2" pref="87" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -282,7 +282,7 @@
         </Container>
         <Component class="javax.swing.JButton" name="btnNewItem">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Add (F2)"/>
+            <Property name="text" type="java.lang.String" value="Add"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnNewItemActionPerformed"/>
@@ -290,7 +290,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="btnDeleteItem">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Delete(Del)"/>
+            <Property name="text" type="java.lang.String" value="Delete"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDeleteItemActionPerformed"/>

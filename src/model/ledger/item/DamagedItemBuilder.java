@@ -5,9 +5,9 @@
  */
 package model.ledger.item;
 
-public class DamagedItemBuilder {
 
-    private String productID;
+public class DamagedItemBuilder {
+    private String batchID;
     private double quantity;
     private String DamagedItemID;
     private double quantityDamaged;
@@ -16,8 +16,8 @@ public class DamagedItemBuilder {
     public DamagedItemBuilder() {
     }
 
-    public DamagedItemBuilder setProductID(String productID) {
-        this.productID = productID;
+    public DamagedItemBuilder setBatchID(String batchID) {
+        this.batchID = batchID;
         return this;
     }
 
@@ -42,7 +42,7 @@ public class DamagedItemBuilder {
     }
 
     public DamagedItem createDamagedItem() {
-        return new DamagedItem(productID, quantity, DamagedItemID, quantityDamaged, sellingPrice);
+        return new DamagedItem(batchID, quantity, DamagedItemID, quantityDamaged, sellingPrice);
     }
-
+    
 }

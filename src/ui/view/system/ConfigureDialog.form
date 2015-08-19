@@ -46,13 +46,13 @@
   <SubComponents>
     <Container class="javax.swing.JPanel" name="ContainerPanel">
       <Properties>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <PropertyBean type="org.jdesktop.swingx.border.DropShadowBorder">
             <Property name="showLeftShadow" type="boolean" value="true"/>
             <Property name="showTopShadow" type="boolean" value="true"/>
           </PropertyBean>
         </Property>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
 
       <Layout>

@@ -160,21 +160,25 @@ public class LogIn extends javax.swing.JFrame {
             if (isUserAuthenticated(userName, txtPassword.getPassword(), User.INVENTORY)) {
                 //Code to enter main UI with inventory cleark privilages
                 this.userType = User.INVENTORY;
-                logger.error("Logging in as inventory cleark");
+                logger.info("Logging in as inventory manager");
                 this.userName = userName;
+                mainUI.initializeGUI();
                 mainUI.setVisible(true);
                 hideApp();
             } else if (isUserAuthenticated(userName, txtPassword.getPassword(), User.MANAGER)) {
                 //Code to enter main UI with manager privilages
-                logger.error("Logging in as manager");
+                logger.info("Logging in as manager");
                 this.userType = User.MANAGER;
                 this.userName = userName;
+                mainUI.initializeGUI();
+
                 mainUI.setVisible(true);
                 hideApp();
             } else {
                 Utilities.showMsgBox("User not identified", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 logger.error("User not identified");
             }
+
         } catch (SQLException ex) {
             logger.error("SQL error : " + ex.getMessage());
             Utilities.showMsgBox("SQL error : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -189,6 +193,10 @@ public class LogIn extends javax.swing.JFrame {
     private void hideApp() {
         logger.debug("exitApp invoked");
         this.setVisible(false);
+    }
+
+    private void exitApp() {
+        System.exit(0);
     }
 // </editor-fold>
     //
@@ -354,10 +362,5 @@ public class LogIn extends javax.swing.JFrame {
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 // </editor-fold>
-
-    private void exitApp() {
-        mainUI.dispose();
-        this.dispose();
-    }
 
 }

@@ -6,6 +6,7 @@
 package ui.handler.inventory;
 
 import controller.inventory.CategoryController;
+import controller.inventory.CategoryDiscountController;
 import controller.inventory.DepartmentController;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import model.inventory.Department;
 import ui.view.inventory.ManageDepartment;
 import util.Utilities;
 import database.connector.DatabaseInterface;
+import model.inventory.CategoryDiscount;
 
 /**
  *
@@ -25,6 +27,7 @@ public class ManageDepartmentHandler {
     private final ManageDepartment gui;
     private ArrayList<Department> departments;
     private ArrayList<Category> categories;
+    private ArrayList<CategoryDiscount> categoryDiscounts;
 
     private boolean initiating;
 
@@ -58,10 +61,27 @@ public class ManageDepartmentHandler {
             String departmentID = departments.get(index - 1).getDepartmentId();
             ((DefaultTableModel) gui.getCategoryTable().getModel()).setRowCount(0);
             categories = CategoryController.getCategories(departmentID);
+            categoryDiscounts = CategoryDiscountController.getCategoryDiscountsForDepartment(departmentID);
+
+            int catDisIndex = 0;
+            String discount ;
+            String startDate ;
+            String endDate ;
 
             for (Category c : categories) {
 
-                ((DefaultTableModel) (gui.getCategoryTable().getModel())).addRow(new String[]{c.getCategoryId() + "", c.getCategoryName(), c.getDescription(), "", "", ""});
+                if (catDisIndex<categoryDiscounts.size() && c.getCategoryId().equals(categoryDiscounts.get(catDisIndex).getCategoryId())) {
+                    discount = categoryDiscounts.get(catDisIndex).getDiscount() + "%";
+                    startDate = Utilities.getStringDate(categoryDiscounts.get(catDisIndex).getStartDate());
+                    endDate = Utilities.getStringDate(categoryDiscounts.get(catDisIndex).getEndDate());
+                    catDisIndex++;
+                } else {
+                    discount = "None";
+                    startDate = "";
+                    endDate = "";
+
+                }
+                ((DefaultTableModel) (gui.getCategoryTable().getModel())).addRow(new String[]{c.getCategoryId(), c.getCategoryName(), c.getDescription(),discount, startDate, endDate});
 
             }
         }

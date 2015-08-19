@@ -26,6 +26,9 @@ public class BatchBuilder implements Builder {
     private Date notificationDate;
     private boolean discounted;
     private double soldQty;
+    private String suppplierName;
+    private String suppplierID;
+    private String productName;
 
     public static BatchBuilder Batch() {
         return new BatchBuilder();
@@ -33,6 +36,16 @@ public class BatchBuilder implements Builder {
 
     public BatchBuilder withBatchId(String batchId) {
         this.batchId = batchId;
+        return this;
+    }
+
+    public BatchBuilder withSupplierName(String name) {
+        this.suppplierName = name;
+        return this;
+    }
+
+    public BatchBuilder withSupplierID(String supID) {
+        this.suppplierID = supID;
         return this;
     }
 
@@ -96,10 +109,23 @@ public class BatchBuilder implements Builder {
         return this;
     }
 
+    public BatchBuilder withProductName(String productName) {
+        this.productName = productName;
+        return this;
+    }
+
     @Override
     public Batch build() {
         return new Batch(this);
 
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public String getSuppplierName() {
+        return suppplierName;
     }
 
     public double getSoldQty() {
@@ -152,6 +178,10 @@ public class BatchBuilder implements Builder {
 
     public boolean isDiscounted() {
         return discounted;
+    }
+
+    String getSuppplierID() {
+        return suppplierID;
     }
 
 }

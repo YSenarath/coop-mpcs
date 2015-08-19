@@ -11,8 +11,10 @@ import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import model.inventory.CategoryDiscount;
+import org.apache.log4j.Logger;
 import util.Utilities;
 
 /**
@@ -21,10 +23,20 @@ import util.Utilities;
  */
 public class CategoryDiscountController {
 
-    public static HashMap<String, CategoryDiscount> getCategoryDiscounts(String departmentId) throws SQLException {
+    private static final Logger logger = Logger.getLogger(CategoryDiscountController.class);
+
+    public static ArrayList<CategoryDiscount> getCategoryDiscountsForDepartment(String departmentId) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT category_id, discount, start_date, end_date , promotional , qty , members_only FROM " + DatabaseInterface.CATEGORY_DISCOUNT + " WHERE department_id=?";
+        String query = "SELECT category_id, "
+                + "discount, "
+                + "start_date, end_date , "
+                + "promotional , "
+                + "qty , "
+                + "members_only FROM "
+                + DatabaseInterface.CATEGORY_DISCOUNT
+                + " WHERE department_id=? "
+                + " ORDER BY category_id ";
 
         Object[] ob = {
             Utilities.convertKeyToInteger(departmentId)
@@ -32,13 +44,19 @@ public class CategoryDiscountController {
 
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
 
-        HashMap< String, CategoryDiscount> categoryDiscounts = new HashMap<>();
+        ArrayList<CategoryDiscount> categoryDiscounts = new ArrayList<>();
 
         while (resultSet.next()) {
 
             String categoryId = Utilities.convertKeyToString(resultSet.getInt("category_id"), DatabaseInterface.CATEGORY);
 
-            categoryDiscounts.put(categoryId + departmentId, (new CategoryDiscount(categoryId, departmentId, resultSet.getDouble("discount"), resultSet.getDate("start_date"), resultSet.getDate("end_date"), resultSet.getBoolean("promotional"), resultSet.getInt("qty"), resultSet.getBoolean("members_only"))));
+            categoryDiscounts.add(new CategoryDiscount(categoryId,
+                    departmentId, resultSet.getDouble("discount"),
+                    resultSet.getDate("start_date"),
+                    resultSet.getDate("end_date"),
+                    resultSet.getBoolean("promotional"),
+                    resultSet.getInt("qty"),
+                    resultSet.getBoolean("members_only")));
 
         }
         return categoryDiscounts;
@@ -47,7 +65,14 @@ public class CategoryDiscountController {
     public static CategoryDiscount getCategoryDiscount(String departmentId, String categoryId) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT discount, start_date, end_date , promotional , qty , members_only FROM " + DatabaseInterface.CATEGORY_DISCOUNT + " WHERE department_id=? AND category_id=?";
+        String query = "SELECT discount, "
+                + "start_date, "
+                + "end_date , "
+                + "promotional , "
+                + "qty , "
+                + "members_only FROM "
+                + DatabaseInterface.CATEGORY_DISCOUNT
+                + " WHERE department_id=? AND category_id=?";
 
         Object[] ob = {
             Utilities.convertKeyToInteger(departmentId),
@@ -99,11 +124,30 @@ public class CategoryDiscountController {
 
             if (isReplacing) {
 
-                String query2 = "UPDATE " + DatabaseInterface.CATEGORY_DISCOUNT + " SET discount = ? , start_date = ? , end_date = ? , promotional = ? , quantity = ? , members_only = ? WHERE category_id = ? AND department_id = ? ";
+                String query2 = "UPDATE " + DatabaseInterface.CATEGORY_DISCOUNT
+                        + " SET discount = ? , "
+                        + "start_date = ? , "
+                        + "end_date = ? , "
+                        + "promotional = ? , "
+                        + "qty = ? , "
+                        + "members_only = ? "
+                        + "WHERE category_id = ? "
+                        + "AND department_id = ? ";
+
                 DBHandler.setData(connection, query2, objs);
 
             } else {
-                String query = "INSERT INTO " + DatabaseInterface.CATEGORY_DISCOUNT + " (discount, start_date, end_date ,promotional ,quantity , members_only,category_id, department_id ) VALUES (?,?,?,?,?,?,?,?)";
+                String query = "INSERT INTO " + DatabaseInterface.CATEGORY_DISCOUNT
+                        + " (discount, "
+                        + "start_date, "
+                        + "end_date ,"
+                        + "promotional ,"
+                        + "qty , "
+                        + "members_only,"
+                        + "category_id, "
+                        + "department_id ) "
+                        + "VALUES (?,?,?,?,?,?,?,?)";
+
                 DBHandler.setData(connection, query, objs);
                 CategoryController.setDiscounted(connection, true, cid, did);
             }
@@ -114,9 +158,9 @@ public class CategoryDiscountController {
             if (connection != null) {
                 try {
                     connection.rollback();
-                    // logger.debug("Connection rolledback");
+                    //logger.debug("Connection rolledback");
                 } catch (SQLException err1) {
-                    // logger.error("SQLException occurred " + err1.getMessage());
+                    //logger.error("SQLException occurred " + err1.getMessage());
                 }
             }
             return false;
@@ -124,13 +168,12 @@ public class CategoryDiscountController {
             if (connection != null) {
                 try {
                     connection.setAutoCommit(true);
-                    //  logger.debug("Connection setAutoCommit(true)");
+                    //logger.debug("Connection setAutoCommit(true)");
                 } catch (SQLException err2) {
-                    //  logger.error("SQLException occurred " + err2.getMessage());
+                    //logger.error("SQLException occurred " + err2.getMessage());
                 }
             }
         }
-
     }
 
     public static boolean removeCateogryDiscount(String catogeryId, String departmentId) throws SQLException {
@@ -148,7 +191,10 @@ public class CategoryDiscountController {
                 cid,
                 did
             };
-            String query2 = "DELETE FROM " + DatabaseInterface.CATEGORY_DISCOUNT + " WHERE category_id = ? AND department_id = ? ";
+            String query2 = "DELETE FROM " + DatabaseInterface.CATEGORY_DISCOUNT
+                    + " WHERE category_id = ? "
+                    + "AND department_id = ? ";
+
             DBHandler.setData(connection, query2, objs);
             CategoryController.setDiscounted(connection, false, cid, did);
 
@@ -177,5 +223,40 @@ public class CategoryDiscountController {
             }
         }
 
+    }
+
+    public static ArrayList<CategoryDiscount> getCategoryDiscounts() throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT category_id, discount, "
+                + "start_date, end_date , "
+                + "promotional , "
+                + "qty , "
+                + "department_id , "
+                + "members_only FROM "
+                + DatabaseInterface.CATEGORY_DISCOUNT
+                +" ORDER BY department_id";
+
+       
+        ResultSet resultSet = DBHandler.getData(connection, query);
+
+        ArrayList<CategoryDiscount> categoryDiscounts = new ArrayList<>();
+
+        while (resultSet.next()) {
+
+            String categoryId = Utilities.convertKeyToString(resultSet.getInt("category_id"), DatabaseInterface.CATEGORY);
+            String departmentId = Utilities.convertKeyToString(resultSet.getInt("department_id"), DatabaseInterface.DEPARTMENT);
+
+            
+            categoryDiscounts.add(new CategoryDiscount(categoryId,
+                    departmentId, resultSet.getDouble("discount"),
+                    resultSet.getDate("start_date"),
+                    resultSet.getDate("end_date"),
+                    resultSet.getBoolean("promotional"),
+                    resultSet.getInt("qty"),
+                    resultSet.getBoolean("members_only")));
+
+        }
+        return categoryDiscounts;
     }
 }

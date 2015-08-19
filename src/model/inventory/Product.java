@@ -22,15 +22,17 @@ public class Product implements Serializable {
     private String departmentId;
     private String unit;
     private double packSize;
-    private double reorderQuantity; //reorder notify quantity
-    private double reorderValue; //reorder notify value
+    private double reorderQuantity; 
+    private double reorderValue; 
     private double maxQuantity;
     private ArrayList<Batch> batches;
-
+    private  double totalQuantity;
+    private double reOrderLevel ; //reordering notification
+    
     //POS
     private Batch selectedBatch;
-
-    //very expensive constuction. keep a pool of objects-----------------------------------
+    
+    
     public Product(ProductBuilder builder) {
         this.productId = builder.getProductId();
         this.productName = builder.getProductName();
@@ -44,6 +46,8 @@ public class Product implements Serializable {
         this.reorderValue = builder.getReorderValue();
         this.maxQuantity = builder.getMaxQuantity();
         this.selectedBatch = null;
+        this.totalQuantity = builder.getTotalQuantity();
+        this.reOrderLevel = builder.getReorderLevel();
     }
 
     public String getProductId() {
@@ -138,6 +142,10 @@ public class Product implements Serializable {
         return batches;
     }
 
+    public double getTotalQuantity() {
+        return totalQuantity;
+    }
+
     public void setBatches(ArrayList<Batch> batches) {
         this.batches = batches;
     }
@@ -154,6 +162,10 @@ public class Product implements Serializable {
      */
     public void setSelectedBatch(Batch selectedBatch) {
         this.selectedBatch = selectedBatch;
+    }
+
+    public double getReorderLevel() {
+        return reOrderLevel;
     }
 
 }

@@ -1,6 +1,7 @@
 package ui.view.system;
 
 import java.awt.Dimension;
+import static java.awt.SystemColor.window;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -10,14 +11,22 @@ import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import model.people.User;
+import net.sf.jcarrierpigeon.Notification;
+import net.sf.jcarrierpigeon.NotificationQueue;
+import net.sf.jcarrierpigeon.WindowPosition;
 import ui.view.inventory.DiscountInterface;
-
 import ui.view.inventory.ManageDepartment;
 import ui.view.inventory.ManageProduct;
+import ui.view.inventory.NotificationPanel;
 import ui.view.ledger.DamageStockInterface;
+import ui.view.ledger.GRNCancelInterface;
 import ui.view.ledger.GRNInterface;
 import ui.view.ledger.SupplierReturnNoteInterface;
+import ui.view.report.GRNListingRequestInterfae;
+import ui.view.report.GRNRequestInterface;
+import ui.view.report.SRNListingRequestInterfae;
 import ui.view.supplier.SupplierInterface;
+import ui.view.user.ManageUsers;
 
 public class MainWindow extends javax.swing.JFrame {
 
@@ -29,30 +38,34 @@ public class MainWindow extends javax.swing.JFrame {
     private ManageDepartment winManageDep;
     private ManageProduct winManagePro;
     private DiscountInterface winDiscount;
+    private NotificationPanel winNotification;
 
     public MainWindow() {
-        initComponents();
 
+        initComponents();
         initializeGUI();
 
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        //--------------------------------Internal Frames-----------------------
+        //--------------------------------Internal Frames == Inventory-----------------------
         try {
             winManageDep = new ManageDepartment();
             winManagePro = new ManageProduct();
             winDiscount = new DiscountInterface();
+            winNotification = new NotificationPanel();
         } catch (SQLException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex);
         }
 
         mainDesktopPanel.add(winDiscount);
         mainDesktopPanel.add(winManageDep);
         mainDesktopPanel.add(winManagePro);
+        mainDesktopPanel.add(winNotification);
 
         setInternalFrameLocation(winManageDep);
         setInternalFrameLocation(winManagePro);
         setInternalFrameLocation(winDiscount);
+        setInternalFrameLocation(winNotification);
         //-----------------------------------------------------------------------
     }
 
@@ -72,17 +85,23 @@ public class MainWindow extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         mnuLogOff = new javax.swing.JMenuItem();
         mnuExit = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        mnuStock = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         mnuManageSupplier = new javax.swing.JMenuItem();
         setDiscountMenu = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        mnuLedgers = new javax.swing.JMenu();
         mnuNewGRN = new javax.swing.JMenuItem();
+        grnCancel = new javax.swing.JMenuItem();
         mnuNewSRN = new javax.swing.JMenuItem();
         mnuAddDamagedStock = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
-        jMenu5 = new javax.swing.JMenu();
+        mnuReports = new javax.swing.JMenu();
+        mnuGRNRequest = new javax.swing.JMenuItem();
+        mnuGrnList = new javax.swing.JMenuItem();
+        mnuSrnListing = new javax.swing.JMenuItem();
+        mnuUtilities = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -100,7 +119,7 @@ public class MainWindow extends javax.swing.JFrame {
         lblWelcome.setFont(new java.awt.Font("Tahoma", 2, 36)); // NOI18N
         lblWelcome.setForeground(new java.awt.Color(255, 255, 255));
         lblWelcome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblWelcome.setText("Welcome to MEGA COOP CITY POS");
+        lblWelcome.setText("Welcome to MEGA COOP CITY ");
 
         javax.swing.GroupLayout welcomePanelLayout = new javax.swing.GroupLayout(welcomePanel);
         welcomePanel.setLayout(welcomePanelLayout);
@@ -110,17 +129,17 @@ public class MainWindow extends javax.swing.JFrame {
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(welcomePanelLayout.createSequentialGroup()
-                .addContainerGap(344, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
+                .addContainerGap(450, Short.MAX_VALUE)
                 .addComponent(lblWelcome)
-                .addContainerGap())
+                .addGap(32, 32, 32))
         );
 
         javax.swing.GroupLayout mainDesktopPanelLayout = new javax.swing.GroupLayout(mainDesktopPanel);
         mainDesktopPanel.setLayout(mainDesktopPanelLayout);
         mainDesktopPanelLayout.setHorizontalGroup(
             mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 784, Short.MAX_VALUE)
+            .addGap(0, 838, Short.MAX_VALUE)
             .addGroup(mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(welcomePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -152,43 +171,51 @@ public class MainWindow extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Stock");
+        mnuStock.setText("Stock");
 
-        jMenuItem1.setText("Manage Departments");
+        jMenuItem1.setText("Departments");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem1);
+        mnuStock.add(jMenuItem1);
 
-        jMenuItem2.setText("Manage Products");
+        jMenuItem2.setText("Products");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem2ActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem2);
+        mnuStock.add(jMenuItem2);
 
-        mnuManageSupplier.setText("Manage Suppliers");
+        mnuManageSupplier.setText("Suppliers");
         mnuManageSupplier.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuManageSupplierActionPerformed(evt);
             }
         });
-        jMenu2.add(mnuManageSupplier);
+        mnuStock.add(mnuManageSupplier);
 
-        setDiscountMenu.setText("Set Discount");
+        setDiscountMenu.setText("Discount");
         setDiscountMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setDiscountMenuActionPerformed(evt);
             }
         });
-        jMenu2.add(setDiscountMenu);
+        mnuStock.add(setDiscountMenu);
 
-        jMenuBar1.add(jMenu2);
+        jMenuItem3.setText("Notification");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        mnuStock.add(jMenuItem3);
 
-        jMenu3.setText("Transactions");
+        jMenuBar1.add(mnuStock);
+
+        mnuLedgers.setText("Transactions");
 
         mnuNewGRN.setText("GoodRecieveNote");
         mnuNewGRN.addActionListener(new java.awt.event.ActionListener() {
@@ -196,7 +223,15 @@ public class MainWindow extends javax.swing.JFrame {
                 mnuNewGRNActionPerformed(evt);
             }
         });
-        jMenu3.add(mnuNewGRN);
+        mnuLedgers.add(mnuNewGRN);
+
+        grnCancel.setText("Good Recive Note Cancel");
+        grnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                grnCancelActionPerformed(evt);
+            }
+        });
+        mnuLedgers.add(grnCancel);
 
         mnuNewSRN.setText("SupplierReturnNote");
         mnuNewSRN.addActionListener(new java.awt.event.ActionListener() {
@@ -204,7 +239,7 @@ public class MainWindow extends javax.swing.JFrame {
                 mnuNewSRNActionPerformed(evt);
             }
         });
-        jMenu3.add(mnuNewSRN);
+        mnuLedgers.add(mnuNewSRN);
 
         mnuAddDamagedStock.setText("DamagedStock");
         mnuAddDamagedStock.addActionListener(new java.awt.event.ActionListener() {
@@ -212,15 +247,49 @@ public class MainWindow extends javax.swing.JFrame {
                 mnuAddDamagedStockActionPerformed(evt);
             }
         });
-        jMenu3.add(mnuAddDamagedStock);
+        mnuLedgers.add(mnuAddDamagedStock);
 
-        jMenuBar1.add(jMenu3);
+        jMenuBar1.add(mnuLedgers);
 
-        jMenu4.setText("Reports");
-        jMenuBar1.add(jMenu4);
+        mnuReports.setText("Reports");
 
-        jMenu5.setText("Utilities");
-        jMenuBar1.add(jMenu5);
+        mnuGRNRequest.setText("GRN Request");
+        mnuGRNRequest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuGRNRequestActionPerformed(evt);
+            }
+        });
+        mnuReports.add(mnuGRNRequest);
+
+        mnuGrnList.setText("GRN Listing");
+        mnuGrnList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuGrnListActionPerformed(evt);
+            }
+        });
+        mnuReports.add(mnuGrnList);
+
+        mnuSrnListing.setText("SRN Listing");
+        mnuSrnListing.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuSrnListingActionPerformed(evt);
+            }
+        });
+        mnuReports.add(mnuSrnListing);
+
+        jMenuBar1.add(mnuReports);
+
+        mnuUtilities.setText("Utilities");
+
+        jMenuItem4.setText("User Management");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        mnuUtilities.add(jMenuItem4);
+
+        jMenuBar1.add(mnuUtilities);
 
         jMenu6.setText("Help");
         jMenuBar1.add(jMenu6);
@@ -259,18 +328,6 @@ public class MainWindow extends javax.swing.JFrame {
         createNewSupplier();
     }//GEN-LAST:event_mnuManageSupplierActionPerformed
 
-    private void mnuNewGRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewGRNActionPerformed
-        createNewGRN();
-    }//GEN-LAST:event_mnuNewGRNActionPerformed
-
-    private void mnuNewSRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewSRNActionPerformed
-        createNewSRN();
-    }//GEN-LAST:event_mnuNewSRNActionPerformed
-
-    private void mnuAddDamagedStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuAddDamagedStockActionPerformed
-        createNewDamagedStock();
-    }//GEN-LAST:event_mnuAddDamagedStockActionPerformed
-
     private void mnuLogOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuLogOffActionPerformed
         this.dispose();
         logIn.setVisible(true);
@@ -283,6 +340,42 @@ public class MainWindow extends javax.swing.JFrame {
     private void setDiscountMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setDiscountMenuActionPerformed
         winDiscount.setVisible(true);
     }//GEN-LAST:event_setDiscountMenuActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        winNotification.setVisible(true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void mnuNewGRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewGRNActionPerformed
+        createNewGRN();
+    }//GEN-LAST:event_mnuNewGRNActionPerformed
+
+    private void grnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_grnCancelActionPerformed
+        createNewGRNCancel();
+    }//GEN-LAST:event_grnCancelActionPerformed
+
+    private void mnuNewSRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuNewSRNActionPerformed
+        createNewSRN();
+    }//GEN-LAST:event_mnuNewSRNActionPerformed
+
+    private void mnuAddDamagedStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuAddDamagedStockActionPerformed
+        createNewDamagedStock();
+    }//GEN-LAST:event_mnuAddDamagedStockActionPerformed
+
+    private void mnuGRNRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuGRNRequestActionPerformed
+        createGRNPrint();
+    }//GEN-LAST:event_mnuGRNRequestActionPerformed
+
+    private void mnuGrnListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuGrnListActionPerformed
+        createGRNList();
+    }//GEN-LAST:event_mnuGrnListActionPerformed
+
+    private void mnuSrnListingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuSrnListingActionPerformed
+        createSRNList();
+    }//GEN-LAST:event_mnuSrnListingActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        createUserManagement();
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     public static void main(String args[]) {
         try {
@@ -321,23 +414,29 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem grnCancel;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
-    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JDesktopPane mainDesktopPanel;
     private javax.swing.JMenuItem mnuAddDamagedStock;
     private javax.swing.JMenuItem mnuExit;
+    private javax.swing.JMenuItem mnuGRNRequest;
+    private javax.swing.JMenuItem mnuGrnList;
+    private javax.swing.JMenu mnuLedgers;
     private javax.swing.JMenuItem mnuLogOff;
     private javax.swing.JMenuItem mnuManageSupplier;
     private javax.swing.JMenuItem mnuNewGRN;
     private javax.swing.JMenuItem mnuNewSRN;
+    private javax.swing.JMenu mnuReports;
+    private javax.swing.JMenuItem mnuSrnListing;
+    private javax.swing.JMenu mnuStock;
+    private javax.swing.JMenu mnuUtilities;
     private javax.swing.JMenuItem setDiscountMenu;
     private javax.swing.JPanel welcomePanel;
     // End of variables declaration//GEN-END:variables
@@ -384,13 +483,23 @@ public class MainWindow extends javax.swing.JFrame {
         i.show();
     }
 
-    private void initializeGUI() {
+    public void initializeGUI() {
         logger.debug("initializeGUI invoked");
         if (logIn != null) {
+            mnuUtilities.setEnabled(false);
+            mnuReports.setEnabled(false);
+            mnuLedgers.setEnabled(false);
+            mnuStock.setEnabled(false);
             if (logIn.getLoggedUserType().equals(User.INVENTORY)) {
-                logger.debug("Logged in as Inventory cleark");
+                logger.debug("Logged in as Inventory manager");
+                mnuLedgers.setEnabled(true);
+                mnuStock.setEnabled(true);
             } else if (logIn.getLoggedUserType().equals(User.MANAGER)) {
                 logger.debug("Logged in as  Manager");
+                mnuReports.setEnabled(true);
+                mnuUtilities.setEnabled(true);
+                mnuLedgers.setEnabled(true);
+                mnuStock.setEnabled(true);
             } else {
                 logger.debug("Not logged in");
             }
@@ -406,5 +515,55 @@ public class MainWindow extends javax.swing.JFrame {
 
         frame.setLocation((desktopSize.width - frameSize.width) / 2,
                 (desktopSize.height - frameSize.height) / 2);
+    }
+
+    private void createNewGRNCancel() {
+        GRNCancelInterface i = new GRNCancelInterface();
+
+        mainDesktopPanel.add(i);
+
+        setInternalFrameLocation(i);
+
+        i.show();
+    }
+
+    private void createGRNPrint() {
+        GRNRequestInterface i = new GRNRequestInterface();
+
+        mainDesktopPanel.add(i);
+
+        setInternalFrameLocation(i);
+
+        i.show();
+    }
+
+    private void createGRNList() {
+        GRNListingRequestInterfae i = new GRNListingRequestInterfae();
+
+        mainDesktopPanel.add(i);
+
+        setInternalFrameLocation(i);
+
+        i.show();
+    }
+
+    private void createSRNList() {
+        SRNListingRequestInterfae i = new SRNListingRequestInterfae();
+
+        mainDesktopPanel.add(i);
+
+        setInternalFrameLocation(i);
+
+        i.show();
+    }
+
+    private void createUserManagement() {
+        ManageUsers i = new ManageUsers();
+
+        mainDesktopPanel.add(i);
+
+        setInternalFrameLocation(i);
+
+        i.show();
     }
 }

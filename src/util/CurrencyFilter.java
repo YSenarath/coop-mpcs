@@ -14,7 +14,7 @@ public class CurrencyFilter extends DocumentFilter implements Serializable {
             if (text.isEmpty() || text.equals("0.00")) {
                 return true;
             } else if (text.matches("^[0-9]+(\\.)?[0-9]{0,2}$")) {
-                return Double.parseDouble(text) > 0;
+                return Double.parseDouble(text) >= 0;
             } else {
                 return false;
             }

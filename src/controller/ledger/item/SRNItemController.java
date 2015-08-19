@@ -39,7 +39,7 @@ public class SRNItemController {
 
             SRNItem itm = new SRNItemBuilder().
                     setSrnNumber(Utilities.convertKeyToString(resultSet.getInt("srn_no"), DatabaseInterface.SRN))
-                    .setProductID(Utilities.convertKeyToString(resultSet.getInt("product_id"), DatabaseInterface.PRODUCT))
+                    .setBatchID(Utilities.convertKeyToString(resultSet.getInt("batch_id"), DatabaseInterface.BATCH))
                     .setQuantity(resultSet.getDouble("qty"))
                     .setCostPrice(resultSet.getDouble("cost"))
                     .setSalesPrice(resultSet.getDouble("price"))
@@ -52,11 +52,11 @@ public class SRNItemController {
     public static boolean addNewItem(SRNItem it) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
 
-        String query = "INSERT INTO " + DatabaseInterface.SRN_ITEM + " (srn_no, product_id, qty, cost, price) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO " + DatabaseInterface.SRN_ITEM + " (srn_no, batch_id, qty, cost, price) VALUES (?,?,?,?,?)";
 
         Object[] objs = {
             util.Utilities.convertKeyToInteger(it.getSrnNumber()),
-            util.Utilities.convertKeyToInteger(it.getProductID()),
+            util.Utilities.convertKeyToInteger(it.getBatchID()),
             it.getQuantity(),
             it.getCostPrice(),
             it.getSalesPrice()
@@ -64,5 +64,5 @@ public class SRNItemController {
 
         return (DBHandler.setData(connection, query, objs) == 1);
     }
-
+    
 }

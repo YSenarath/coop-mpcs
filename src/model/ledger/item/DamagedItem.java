@@ -15,8 +15,8 @@ public class DamagedItem extends Item {
     private double quantityDamaged;
     private double sellingPrice;
 
-    public DamagedItem(String productID, double quantity, String DamagedItemID, double quantityDamaged, double sellingPrice) {
-        super(productID, quantity);
+    public DamagedItem(String batchID, double quantity, String DamagedItemID, double quantityDamaged, double sellingPrice) {
+        super(batchID, quantity);
         this.DamagedItemID = DamagedItemID;
         this.quantityDamaged = quantityDamaged;
         this.sellingPrice = sellingPrice;

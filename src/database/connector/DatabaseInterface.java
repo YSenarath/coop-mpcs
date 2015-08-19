@@ -41,8 +41,9 @@ public interface DatabaseInterface {
     public static final String COOP_CREDIT_PAYMENT = "coop_credit_payment";
 
     public static final String SUPPLIER = "supplier";
-
     public static final String GRN = "grn";
+    public static final String GRN_ITEM = "grn_item";
+    public static final String GRN_CANCEL = "grn_cancel";
     public static final String SRN = "srn";
     public static final String SRN_ITEM = "srn_item";
     public static final String DAMAGED_STOCK = "damaged_stock";

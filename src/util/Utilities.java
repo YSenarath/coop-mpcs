@@ -255,6 +255,12 @@ public class Utilities {
                 suffix = "E";
                 size = 4;
                 break;
+                
+            case DatabaseInterface.GRN_CANCEL:
+                suffix = "N";
+                size = 5;
+                break;
+                
             default:
                 return null;
         }
@@ -278,6 +284,20 @@ public class Utilities {
     //Show msg boxes
     public static void showMsgBox(String msg, String title, int msgType) {
         JOptionPane.showMessageDialog(null, msg, title, msgType);
+    }
+    
+        //Show OkCancel boxes
+    public static int showOkCancel(String theMessage) {
+        int result = JOptionPane.showConfirmDialog((Component) null, theMessage,
+                "alert", JOptionPane.OK_CANCEL_OPTION);
+        return result;
+    }
+
+    //Show message with buttons boxes
+    public static int showButtonMsg(String theMessage, String title, int jOptionPaneint) {
+        int result = JOptionPane.showConfirmDialog((Component) null, theMessage,
+                title, jOptionPaneint);
+        return result;
     }
 
     //Save a client app specific property

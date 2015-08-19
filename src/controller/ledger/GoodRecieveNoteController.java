@@ -6,14 +6,17 @@
 package controller.ledger;
 
 import controller.inventory.BatchController;
+import controller.ledger.item.GRNItemController;
 import controller.supplier.SupplierController;
 import database.connector.DBConnection;
 import static database.connector.DatabaseInterface.GRN;
+import static database.connector.DatabaseInterface.SUPPLIER;
 import database.handler.DBHandler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import model.inventory.Batch;
 import model.ledger.GoodRecieveNote;
 
@@ -40,7 +43,7 @@ public class GoodRecieveNoteController {
                     util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), GRN),
                     resultSet.getString("invoice_no"),
                     resultSet.getDate("invoice_date"),
-                    SupplierController.getSupplier(resultSet.getString("supplier_id")),
+                    SupplierController.getSupplier(util.Utilities.convertKeyToString(resultSet.getInt("supplier_id"), SUPPLIER)),
                     resultSet.getString("location"),
                     resultSet.getString("payment_method"),
                     resultSet.getDouble("loading_fee"),
@@ -50,6 +53,52 @@ public class GoodRecieveNoteController {
             );
         }
         return null;
+    }
+
+    public static ArrayList<GoodRecieveNote> getGrn(String supplierId, Date from, Date to) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "SELECT * FROM " + GRN;
+
+        Object[] ob = new Object[]{};
+
+        if (!"All".equals(supplierId)) {
+            query += " WHERE supplier_id=? ";
+
+            ob = new Object[]{
+                util.Utilities.convertKeyToInteger(supplierId)
+            };
+        }
+
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+
+        ArrayList<GoodRecieveNote> output = new ArrayList<>();
+
+        while (resultSet.next()) {
+
+            String grnId = util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), GRN);
+
+            ArrayList<Batch> batches = BatchController.getAllAvailableBatchesOfGrn(grnId);
+
+            Date grnDate = resultSet.getDate("invoice_date");
+
+            if (util.Utilities.isDateBetweenRange(grnDate, from, to)) {
+                output.add(new GoodRecieveNote(
+                        grnId,
+                        resultSet.getString("invoice_no"),
+                        grnDate,
+                        SupplierController.getSupplier(supplierId),
+                        resultSet.getString("location"),
+                        resultSet.getString("payment_method"),
+                        resultSet.getDouble("loading_fee"),
+                        resultSet.getDouble("PurchasingBill_discount"),
+                        resultSet.getDouble("sellingBill_discount"),
+                        batches
+                ));
+            }
+        }
+
+        return output;
     }
 
     public static boolean addGrn(GoodRecieveNote grn) throws SQLException {
@@ -72,7 +121,8 @@ public class GoodRecieveNoteController {
         boolean retVal = DBHandler.setData(connection, query, ob) == 1;
 
         for (Batch b : grn.getBatches()) {
-            BatchController.addNewBatch(b);
+            BatchController.addBatch(b);
+            GRNItemController.addNewItem(b);
         }
 
         return retVal;
@@ -92,6 +142,23 @@ public class GoodRecieveNoteController {
         }
 
         return util.Utilities.convertKeyToString(0, GRN);
+    }
+
+    public static boolean GRNExists(String grnNumber) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "SELECT * FROM " + GRN + " WHERE grn_number=? ";
+
+        Object[] ob = {
+            util.Utilities.convertKeyToInteger(grnNumber)
+        };
+
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+
+        while (resultSet.next()) {
+            return true;
+        }
+        return false;
     }
 
 }

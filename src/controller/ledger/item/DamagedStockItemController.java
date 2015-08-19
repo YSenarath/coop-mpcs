@@ -38,7 +38,7 @@ public class DamagedStockItemController {
         while (resultSet.next()) {
 
             DamagedItem itm = new DamagedItemBuilder()
-                    .setProductID(Utilities.convertKeyToString(resultSet.getInt("product_id"), DatabaseInterface.DAMAGED_STOCK))
+                    .setBatchID(Utilities.convertKeyToString(resultSet.getInt("batch_id"), DatabaseInterface.BATCH))
                     .setQuantity(resultSet.getDouble("qty"))
                     .setDamagedItemID(Utilities.convertKeyToString(resultSet.getInt("damaged_stock_id"), DatabaseInterface.DAMAGED_STOCK))
                     .setQuantityDamaged(resultSet.getDouble("qty_damaged"))
@@ -53,11 +53,11 @@ public class DamagedStockItemController {
     public static boolean addNewItem(DamagedItem it) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
 
-        String query = "INSERT INTO " + DatabaseInterface.DAMAGED_STOCK_ITEM + " (damaged_stock_id, product_id, qty, qty_damaged, price) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO " + DatabaseInterface.DAMAGED_STOCK_ITEM + " (damaged_stock_id, batch_id, qty, qty_damaged, price) VALUES (?,?,?,?,?)";
 
         Object[] objs = {
             util.Utilities.convertKeyToInteger(it.getDamagedItemID()),
-            util.Utilities.convertKeyToInteger(it.getProductID()),
+            util.Utilities.convertKeyToInteger(it.getBatchID()),
             it.getQuantity(),
             it.getQuantityDamaged(),
             it.getSellingPrice()

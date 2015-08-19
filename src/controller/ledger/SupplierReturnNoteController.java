@@ -1,5 +1,6 @@
 package controller.ledger;
 
+import controller.inventory.BatchController;
 import model.ledger.SupplierReturnNote;
 import controller.ledger.item.SRNItemController;
 import controller.supplier.SupplierController;
@@ -10,6 +11,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import model.ledger.item.SRNItem;
 
 /**
@@ -21,13 +23,13 @@ public class SupplierReturnNoteController {
     public static SupplierReturnNote getSrn(String srnNumber) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
-
+        
         String query = "SELECT * FROM " + SRN + " WHERE srn_number=? ";
-
+        
         Object[] ob = {
             util.Utilities.convertKeyToInteger(srnNumber)
         };
-
+        
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
 
         ArrayList<SRNItem> srnItemList = SRNItemController.getAllAvailableItems(srnNumber);
@@ -35,13 +37,13 @@ public class SupplierReturnNoteController {
         while (resultSet.next()) {
 
             return new SupplierReturnNote(
-                    util.Utilities.convertKeyToString(resultSet.getInt("srn_number"), SRN),
-                    util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), SRN),
-                    resultSet.getDate("srn_date"),
-                    SupplierController.getSupplier(resultSet.getString("supplier_id")),
-                    resultSet.getString("location"),
-                    srnItemList
-            );
+                util.Utilities.convertKeyToString(resultSet.getInt("srn_number"), SRN),
+                util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), SRN),
+                resultSet.getDate("srn_date"),
+                SupplierController.getSupplier(resultSet.getString("supplier_id")),
+                resultSet.getString("location"),
+                srnItemList
+        );
         }
         return null;
     }
@@ -63,6 +65,7 @@ public class SupplierReturnNoteController {
 
         for (SRNItem it : srn.getItems()) {
             SRNItemController.addNewItem(it);
+            BatchController.reduceQuantity(it.getQuantity(), it.getBatchID());
         }
 
         return retVal;
@@ -82,6 +85,48 @@ public class SupplierReturnNoteController {
         }
 
         return util.Utilities.convertKeyToString(0, SRN);
+    }
+
+    public static ArrayList<SupplierReturnNote> getSrn(String supplierId, Date from, Date to) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "SELECT * FROM " + SRN;
+
+        Object[] ob = new Object[]{};
+
+        if (!"All".equals(supplierId)) {
+            query += " WHERE supplier_id=? ";
+
+            ob = new Object[]{
+                util.Utilities.convertKeyToInteger(supplierId)
+            };
+        }
+
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+
+        ArrayList<SupplierReturnNote> output = new ArrayList<>();
+
+        while (resultSet.next()) {
+
+            String srnId = util.Utilities.convertKeyToString(resultSet.getInt("srn_number"), SRN);
+
+            ArrayList<SRNItem> batches = SRNItemController.getAllAvailableItems(srnId);
+
+            Date srnDate = resultSet.getDate("srn_date");
+
+            if (util.Utilities.isDateBetweenRange(srnDate, from, to)) {
+                output.add(new SupplierReturnNote(
+                        srnId,
+                        resultSet.getString("grn_number"),
+                        srnDate,
+                        SupplierController.getSupplier(supplierId),
+                        resultSet.getString("location"),
+                        batches
+                ));
+            }
+        }
+
+        return output;
     }
 
 }

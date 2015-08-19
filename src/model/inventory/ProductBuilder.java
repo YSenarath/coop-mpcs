@@ -22,11 +22,14 @@ public class ProductBuilder implements Builder {
     private double reorderQuantity; //reorder notify quantity
     private double reorderValue; //reorder notify value
     private double maxQuantity;
-
+    private double totalQuantity;
+    private double reorderLevel;
+    
     public static ProductBuilder Product() {
         return new ProductBuilder();
     }
-
+    
+   
     public ProductBuilder withProductId(String pId) {
         this.productId = pId;
         return this;
@@ -76,9 +79,21 @@ public class ProductBuilder implements Builder {
         this.reorderQuantity = reorderQty;
         return this;
     }
+    
+    public ProductBuilder withReorderLevel(double reorderLevel) {
+        this.reorderLevel= reorderLevel;
+        return this;
+    }
 
     public ProductBuilder withReorderValue(double reorderValue) {
         this.reorderValue = reorderValue;
+        return this;
+    }
+
+    public ProductBuilder withTotalQuantity(double totalQuantity) {
+
+        this.totalQuantity = totalQuantity;
+
         return this;
     }
 
@@ -89,6 +104,10 @@ public class ProductBuilder implements Builder {
 
     public String getProductId() {
         return productId;
+    }
+
+    public double getTotalQuantity() {
+        return totalQuantity;
     }
 
     public String getProductName() {
@@ -129,6 +148,10 @@ public class ProductBuilder implements Builder {
 
     public double getMaxQuantity() {
         return maxQuantity;
+    }
+
+    public double getReorderLevel() {
+        return reorderLevel;
     }
 
 }

@@ -67,7 +67,6 @@ class ConfigureDialog extends javax.swing.JDialog {
 
         if (!Utilities.isValidIPv4Address(ipAddress)) {
             Utilities.showMsgBox("Please enter a valid IP address", "Error", JOptionPane.WARNING_MESSAGE);
-
             txtServerIp.requestFocus();
             return;
         }

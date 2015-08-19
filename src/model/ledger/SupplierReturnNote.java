@@ -84,4 +84,16 @@ public class SupplierReturnNote {
     public void setItems(ArrayList<SRNItem> items) {
         this.items = items;
     }
+
+    public double getCost() {
+        Double sum = 0.0;
+        sum = items.stream().map((b) -> b.getQuantity() * b.getCostPrice()).reduce(sum, (accumulator, _item) -> accumulator + _item);
+        return sum;
+    }
+
+    public double getSales() {
+        Double sum = 0.0;
+        sum = items.stream().map((b) -> b.getQuantity() * b.getSalesPrice()).reduce(sum, (accumulator, _item) -> accumulator + _item);
+        return sum;
+    }
 }

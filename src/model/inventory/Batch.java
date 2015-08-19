@@ -5,7 +5,9 @@
  */
 package model.inventory;
 
+import controller.inventory.ProductController;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Date;
 
 /**
@@ -26,13 +28,17 @@ public class Batch implements Serializable {
     private boolean inStock;
     private Date expirationDate;
     private Date notificationDate;
-
+    private String supplierName;
     private boolean discounted;
     private double soldQty;
+    private String supplierId;
+    private String productName;
 
     public Batch(BatchBuilder builder) {
+
         this.batchId = builder.getBatchId();
         this.productId = builder.getProductId();
+        this.productName = builder.getProductName();
         this.grnNumber = builder.getGrnNumber();
         this.unitCost = builder.getUnitCost();
         this.costDiscount = builder.getCostDiscount();
@@ -42,8 +48,10 @@ public class Batch implements Serializable {
         this.inStock = builder.isInStock();
         this.expirationDate = builder.getExpirationDate();
         this.notificationDate = builder.getNotificationDate();
+        this.supplierName = builder.getSuppplierName();
         this.discounted = builder.isDiscounted();
         this.soldQty = builder.getSoldQty();
+        this.supplierId = builder.getSuppplierID();
     }
 
     public double getRecievedQuantity() {
@@ -56,6 +64,10 @@ public class Batch implements Serializable {
 
     public boolean isInStock() {
         return inStock;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
     }
 
     public void setInStock(boolean inStock) {
@@ -92,6 +104,38 @@ public class Batch implements Serializable {
 
     public void setUnit_cost(double unit_cost) {
         this.unitCost = unit_cost;
+    }
+
+    public double getUnitCost() {
+        return unitCost;
+    }
+
+    public void setUnitCost(double unitCost) {
+        this.unitCost = unitCost;
+    }
+
+    public double getCostDiscount() {
+        return costDiscount;
+    }
+
+    public void setCostDiscount(double costDiscount) {
+        this.costDiscount = costDiscount;
+    }
+
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public String getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(String supplierId) {
+        this.supplierId = supplierId;
     }
 
     public double getCost_discount() {
@@ -158,6 +202,22 @@ public class Batch implements Serializable {
 
     @Override
     public String toString() {
-        return getBatchId();//To change body of generated methods, choose Tools | Templates.
+        return getProductId();//To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getSupplierID() {
+        return supplierId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public String getDescription() {
+        try {
+            return ProductController.getProduct(productId).getProductName();
+        } catch (SQLException ex) {
+            return "-";
+        }
     }
 }

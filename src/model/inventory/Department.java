@@ -12,7 +12,6 @@ import java.util.ArrayList;
  * @author Nadheesh
  */
 public class Department {
-
     private String departmentId;
     private String departmentName;
     private ArrayList<Category> categories;

@@ -22,6 +22,7 @@ import util.Utilities;
  */
 public class ProductController {
 
+    //methods by JNJ ============================================================================
     public static boolean addProduct(Product product) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
@@ -78,7 +79,22 @@ public class ProductController {
     public static Product getProduct(Product product) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "SELECT barcode,description,category_id, department_id,unit,pack_size,reorder_value,reorder_qty,max_qty FROM " + DatabaseInterface.PRODUCT + " WHERE product_id= ?";
+        String query = "SELECT p.barcode,"
+                + " p.description,"
+                + " p.category_id, "
+                + " p.department_id,"
+                + " p.unit,"
+                + " p.pack_size,"
+                + " p.reorder_value,"
+                + " p.reorder_qty, "
+                + " p.reorder_level,"
+                + " p.max_qty, "
+                + " SUM(b.recieved_qty) "
+                + " FROM " + DatabaseInterface.PRODUCT + " p "
+                + " LEFT JOIN " + DatabaseInterface.BATCH + " b "
+                + " ON p.product_id=b.product_id AND b.in_stock = TRUE "
+                + " GROUP BY p.product_id "
+                + " HAVING p.product_id= ?";
 
         Object[] objs = {
             Utilities.convertKeyToInteger(product.getProductId())
@@ -86,21 +102,126 @@ public class ProductController {
 
         ResultSet resultSet = DBHandler.getData(connection, query, objs);
 
+        Product pro = product;
         if (resultSet.next()) {
-            product.setProductBarCode(resultSet.getLong("barcode"));
-            product.setDescription(resultSet.getString("description"));
-            product.setCategoryId(Utilities.convertKeyToString(resultSet.getInt("category_id"), DatabaseInterface.CATEGORY));
-            product.setDepartmentId(Utilities.convertKeyToString(resultSet.getInt("department_id"), DatabaseInterface.DEPARTMENT));
-            product.setUnit(resultSet.getString("unit"));
-            product.setPackSize(resultSet.getDouble("pack_size"));
-            product.setReorderValue(resultSet.getDouble("reorder_value"));
-            product.setReorderQuantity(resultSet.getDouble("reorder_qty"));
-            product.setMaxQuantity(resultSet.getDouble("max_qty"));
+            pro = ProductBuilder.Product()
+                    .withProductId(product.getProductId())
+                    .withProductName(product.getProductName())
+                    .withBarCode(resultSet.getLong("barcode"))
+                    .withDescrition(resultSet.getString("description"))
+                    .withCategory(Utilities.convertKeyToString(resultSet.getInt("category_id"), DatabaseInterface.CATEGORY))
+                    .withDepartment(Utilities.convertKeyToString(resultSet.getInt("department_id"), DatabaseInterface.DEPARTMENT))
+                    .withUnit(resultSet.getString("unit"))
+                    .withPackSize(resultSet.getDouble("pack_size"))
+                    .withReorderQuantity(resultSet.getDouble("reorder_qty"))
+                    .withReorderValue(resultSet.getDouble("reorder_value"))
+                    .withMaxQuantity(resultSet.getDouble("max_qty"))
+                    .withTotalQuantity(resultSet.getDouble("SUM(b.recieved_qty)"))
+                    .withReorderLevel(resultSet.getDouble("reorder_level"))
+                    .build();
+        
         }
-        return product;
+        return pro;
     }
 
-    //
+    //new upadated method by JNJ
+    public static boolean updateProduct(Product product) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "UPDATE " + DatabaseInterface.PRODUCT + " SET product_name = ? , barcode = ?,description =? ,category_id =? , department_id = ?,unit = ? ,"
+                + " pack_size = ?, reorder_value = ? , reorder_qty = ?, max_qty = ?  WHERE product_id = ?  ";
+
+        Object[] obj = {
+            product.getProductName(),
+            product.getProductBarCode(),
+            product.getDescription(),
+            Utilities.convertKeyToInteger(product.getCategoryId()),
+            Utilities.convertKeyToInteger(product.getDepartmentId()),
+            product.getUnit(),
+            product.getPackSize(),
+            product.getReorderValue(),
+            product.getReorderQuantity(),
+            product.getMaxQuantity(),
+            Utilities.convertKeyToInteger(product.getProductId())
+        };
+        int added = -1;
+        added = DBHandler.setData(connection, query, obj);
+
+        return added == 1;
+    }
+
+    public static boolean removeProduct(String productId) throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "DELETE FROM " + DatabaseInterface.PRODUCT + " WHERE product_id=?  ";
+
+        Object[] obj = {
+            Utilities.convertKeyToInteger(productId)
+        };
+        int added = -1;
+        added = DBHandler.setData(connection, query, obj);
+
+        return added == 1;
+    }
+
+    public static ArrayList<Product> getAboutToFinishGoods() throws SQLException {
+
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "SELECT p.product_id , "
+                + " p.product_name , "
+                + " p.category_id, "
+                + " p.department_id, "
+                + " p.unit, "
+                + " p.reorder_level,"
+                + " SUM(b.recieved_qty) "
+                + " FROM " + DatabaseInterface.PRODUCT + " p "
+                + " LEFT JOIN " + DatabaseInterface.BATCH + " b "
+                + " ON p.product_id=b.product_id AND b.in_stock = TRUE "
+                + " GROUP BY p.product_id "
+                + " HAVING (p.reorder_level > 0 AND SUM(b.qty) <= p.reorder_level)  OR SUM(b.recieved_qty) IS NULL";
+
+        ResultSet resultSet = DBHandler.getData(connection, query);
+
+        ArrayList<Product> products = new ArrayList();
+
+        while (resultSet.next()) {
+            Product product = ProductBuilder.Product()
+                    .withProductId(Utilities.convertKeyToString(resultSet.getInt("product_id"), DatabaseInterface.PRODUCT))
+                    .withProductName(resultSet.getString("product_name"))
+                    .withCategory(Utilities.convertKeyToString(resultSet.getInt("category_id"), DatabaseInterface.CATEGORY))
+                    .withDepartment(Utilities.convertKeyToString(resultSet.getInt("department_id"), DatabaseInterface.DEPARTMENT))
+                    .withUnit(resultSet.getString("unit"))
+                    .withReorderLevel(resultSet.getDouble("reorder_level"))
+                    .withTotalQuantity(resultSet.getDouble("SUM(b.recieved_qty)"))
+                    .build();
+
+            products.add(product);
+        }
+        return products;
+    }
+
+    public static boolean saveReOrderLevel(String productId , double reOrder) throws SQLException {
+        
+        Connection connection = DBConnection.getConnectionToDB();
+
+        String query = "UPDATE " + DatabaseInterface.PRODUCT + " SET reorder_level = ? WHERE product_id = ?  ";
+
+        Object[] obj = {
+            reOrder,
+            Utilities.convertKeyToInteger( productId)
+        };
+        
+        int added = -1;
+        added = DBHandler.setData(connection, query, obj);
+
+        return added == 1;
+
+    }
+    //============================================================================================
+    
+    //by msw
     //POS
     //
     public static ArrayList<Product> getAllAvailableProducts() throws SQLException {
@@ -277,45 +398,6 @@ public class ProductController {
         return products;
     }
 
-    //new nadheesh upadated method
-    public static boolean updateProduct(Product product) throws SQLException {
-
-        Connection connection = DBConnection.getConnectionToDB();
-
-        String query = "UPDATE " + DatabaseInterface.PRODUCT + " SET product_name = ? , barcode = ?,description =? ,category_id =? , department_id = ?,unit = ? ,"
-                + " pack_size = ?, reorder_value = ? , reorder_qty = ?, max_qty = ?  WHERE product_id = ?  ";
-
-        Object[] obj = {
-            product.getProductName(),
-            product.getProductBarCode(),
-            product.getDescription(),
-            Utilities.convertKeyToInteger(product.getCategoryId()),
-            Utilities.convertKeyToInteger(product.getDepartmentId()),
-            product.getUnit(),
-            product.getPackSize(),
-            product.getReorderValue(),
-            product.getReorderQuantity(),
-            product.getMaxQuantity(),
-            Utilities.convertKeyToInteger(product.getProductId())
-        };
-        int added = -1;
-        added = DBHandler.setData(connection, query, obj);
-
-        return added == 1;
-    }
-
-    public static boolean removeProduct(String productId) throws SQLException {
-
-        Connection connection = DBConnection.getConnectionToDB();
-        String query = "DELETE FROM " + DatabaseInterface.PRODUCT + " WHERE product_id=?  ";
-
-        Object[] obj = {
-            Utilities.convertKeyToInteger(productId)
-        };
-        int added = -1;
-        added = DBHandler.setData(connection, query, obj);
-
-        return added == 1;
-    }
+    
 
 }

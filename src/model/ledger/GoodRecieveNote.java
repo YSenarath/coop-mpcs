@@ -7,6 +7,8 @@ package model.ledger;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import model.inventory.Batch;
 import model.supplier.Supplier;
 
@@ -140,6 +142,27 @@ public class GoodRecieveNote {
 
     public void setBatches(ArrayList<Batch> batches) {
         this.batches = batches;
+    }
+
+    public double getCost() {
+        Double sum = 0.0;
+        sum = batches.stream().map((b) -> b.getQuantity() * b.getUnit_cost()).reduce(sum, (accumulator, _item) -> accumulator + _item);
+        return sum;
+    }
+
+    public double getSales() {
+        Double sum = 0.0;
+        sum = batches.stream().map((b) -> b.getQuantity() * b.getUnit_price()).reduce(sum, (accumulator, _item) -> accumulator + _item);
+        return sum;
+    }
+
+    public Map getParameters() {
+        Map parameters = new HashMap();
+        parameters.put("supplier", supplier.getName());
+        parameters.put("invoiceNo", invoiceNo);
+        parameters.put("grnNumber", f16bNumber);
+        parameters.put("date", util.Utilities.getStringDate(invoiceDate));
+        return parameters;
     }
 
 }
