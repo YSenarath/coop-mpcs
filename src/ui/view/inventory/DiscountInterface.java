@@ -23,7 +23,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.PlainDocument;
 import org.jdesktop.swingx.JXDatePicker;
 import ui.handler.inventory.DiscountInterfaceHandler;
+import util.DoubleFilter;
 import util.PercentageFilter;
+import util.Utilities;
 
 /**
  *
@@ -48,6 +50,8 @@ public class DiscountInterface extends javax.swing.JInternalFrame {
         
         //edited 8/15/2015 ========== Documentfilter added===========================
         ((PlainDocument) disText.getDocument()).setDocumentFilter(new PercentageFilter());
+        ((PlainDocument) quantityText.getDocument()).setDocumentFilter(new DoubleFilter());
+        
         //===========================================================================
         
         winRemoveBatch.setLocationRelativeTo(this);
@@ -1207,6 +1211,7 @@ public class DiscountInterface extends javax.swing.JInternalFrame {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         try {
             handler.removeSelectedBatchDiscounts();
+            Utilities.ShowCompleteMsg(this, "Discount Remove Successfull");
         } catch (SQLException ex) {
             Logger.getLogger(DiscountInterface.class.getName()).log(Level.SEVERE, null, ex);
         }

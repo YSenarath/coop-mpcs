@@ -408,6 +408,11 @@ public class Utilities {
         JOptionPane.showMessageDialog(component, msg, "Error", 0);
     }
 
+    public static void ShowCompleteMsg(Component component, String msg) {
+        JOptionPane.showMessageDialog(component, msg, "Success", 1);
+    }
+
+    
     public static void ShowWarningMsg(Component component, String msg) {
         JOptionPane.showMessageDialog(component, msg, "Warning", 2);
     }
