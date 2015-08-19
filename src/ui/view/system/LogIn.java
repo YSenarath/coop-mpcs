@@ -3,11 +3,15 @@ package ui.view.system;
 import controller.user.UserController;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import java.util.Properties;
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import model.people.User;
 import org.apache.log4j.Logger;
+import ui.view.inventory.ManageDepartment;
 import util.Utilities;
-import static util.Utilities.setupUI;
 
 public class LogIn extends javax.swing.JFrame {
 
@@ -28,7 +32,6 @@ public class LogIn extends javax.swing.JFrame {
         userType = null;
         userName = null;
         initComponents();
-        initializeSystem();
         setLocationRelativeTo(null);
         txtUserName.requestFocus();
     }
@@ -162,6 +165,7 @@ public class LogIn extends javax.swing.JFrame {
                 this.userType = User.INVENTORY;
                 logger.info("Logging in as inventory manager");
                 this.userName = userName;
+                initializeSystem();
                 mainUI.initializeGUI();
                 mainUI.setVisible(true);
                 hideApp();
@@ -170,8 +174,8 @@ public class LogIn extends javax.swing.JFrame {
                 logger.info("Logging in as manager");
                 this.userType = User.MANAGER;
                 this.userName = userName;
+                initializeSystem();
                 mainUI.initializeGUI();
-
                 mainUI.setVisible(true);
                 hideApp();
             } else {
@@ -344,7 +348,32 @@ public class LogIn extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPasswordKeyReleased
 
     public static void main(String args[]) {
-        setupUI();
+        //setupUI();
+
+        Properties props = new Properties();
+
+        props.put("logoString", "");
+
+        com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
+
+        try {
+            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
+            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+            //UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+            //UIManager.setLookAndFeel("com.jtattoo.plaf.aluminium.AluminiumLookAndFeel");
+            // UIManager.setLookAndFeel("com.jtattoo.plaf.luna.LunaLookAndFeel");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            try {
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
+                }
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex1) {
+                java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new LogIn().setVisible(true);

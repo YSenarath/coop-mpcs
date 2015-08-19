@@ -178,6 +178,7 @@ public final class DiscountInterfaceHandler {
                                 } catch (NumberFormatException ex) {
 
                                     gui.getDiscountError("Enter valid Quantity");
+                                    
                                 }
                             }
                             if (!all) {
