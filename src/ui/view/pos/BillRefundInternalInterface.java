@@ -44,7 +44,6 @@ import model.pos.payment.CoopCreditPayment;
 import model.pos.payment.CustomerVoucherPayment;
 import model.pos.payment.EmployeeVoucherPayment;
 import org.apache.log4j.Logger;
-import report.pos.ReportGenerator;
 import util.KeyValueContainer;
 import util.Utilities;
 
@@ -495,7 +494,7 @@ class BillRefundInternalInterface extends javax.swing.JInternalFrame {
             }
 
         } catch (Exception ex) {
-            Utilities.showMsgBox("Invalid bill number : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Utilities.showMsgBox("Invalid bill number" , "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -627,10 +626,28 @@ class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         lblBillRefundDateDisplay = new javax.swing.JLabel();
         lblBillDate = new javax.swing.JLabel();
 
+        setClosable(true);
         setMaximizable(true);
         setResizable(true);
         setTitle("Bill Refund");
         setMinimumSize(new java.awt.Dimension(934, 598));
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -988,6 +1005,12 @@ class BillRefundInternalInterface extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         txtLoadBillHandler(evt);
     }//GEN-LAST:event_txtBillNoKeyReleased
+
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+        // TODO add your handling code here:
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        cancelRefund();
+    }//GEN-LAST:event_formInternalFrameClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane billItemSP1;

@@ -24,8 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
@@ -60,7 +58,10 @@ import org.apache.log4j.Logger;
 import report.pos.ReportGenerator;
 import util.CharactorLimitDocument;
 import util.CurrencyFilter;
+import util.IntegerFilter;
 import util.KeyValueContainer;
+import util.NameFilter;
+import util.QuantityFilter;
 import util.Utilities;
 import static util.Utilities.doubleFormatComponentText;
 
@@ -140,7 +141,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         itemCodeComboBox.addActionListener(productCodeListner);
 
         ((PlainDocument) txtPrice.getDocument()).setDocumentFilter(new CurrencyFilter());
-        ((PlainDocument) txtQty.getDocument()).setDocumentFilter(new CurrencyFilter());
+        ((PlainDocument) txtQty.getDocument()).setDocumentFilter(new QuantityFilter());
 
         ((PlainDocument) txtCardPaymentAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
         ((PlainDocument) txtCashPaymentAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
@@ -160,9 +161,15 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         //Yasara
         ((PlainDocument) coopCreditAmountTxt.getDocument()).setDocumentFilter(new CurrencyFilter());
+
+        ((PlainDocument) poshanaCustomerNameTxt.getDocument()).setDocumentFilter(new NameFilter());
+        ((PlainDocument) poshanaIdTxt.getDocument()).setDocumentFilter(new IntegerFilter());
         ((PlainDocument) poshanaPaymentAmountTxt.getDocument()).setDocumentFilter(new CurrencyFilter());
-        ((PlainDocument) voucherEmployeeVoucherAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
+
+        ((PlainDocument) voucherCustomerIdTxt.getDocument()).setDocumentFilter(new IntegerFilter());
         ((PlainDocument) voucherCustomerAmountTxt.getDocument()).setDocumentFilter(new CurrencyFilter());
+
+        ((PlainDocument) voucherEmployeeVoucherAmount.getDocument()).setDocumentFilter(new CurrencyFilter());
 
         ((DefaultTableCellRenderer) invoiceItemTable.getDefaultRenderer(Object.class)).setHorizontalAlignment(JLabel.RIGHT);
         ((DefaultTableCellRenderer) invoicePaymentsTable.getDefaultRenderer(Object.class)).setHorizontalAlignment(JLabel.RIGHT);
@@ -226,11 +233,23 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         itemAddPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "doF5Action");
         itemAddPanelActionMap.put("doF5Action", new keyBindingAction("F5"));
 
+        itemAddPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), "doF9Action");
+        itemAddPanelActionMap.put("doF9Action", new keyBindingAction("F9"));
+
+        itemAddPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), "doF10Action");
+        itemAddPanelActionMap.put("doF10Action", new keyBindingAction("F10"));
+
         itemAddPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0), "doF12Action");
         itemAddPanelActionMap.put("doF12Action", new keyBindingAction("F12"));
 
         paymentPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), "doF3Action");
         paymentPanelActionMap.put("doF3Action", new keyBindingAction("F3"));
+
+        paymentPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), "doF9Action");
+        paymentPanelActionMap.put("doF9Action", new keyBindingAction("F9"));
+
+        paymentPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), "doF10Action");
+        paymentPanelActionMap.put("doF10Action", new keyBindingAction("F10"));
 
         // paymentPanelInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "doConfirmAction");
         // paymentPanelActionMap.put("doConfirmAction", new keyBindingAction("Confirm"));
@@ -267,6 +286,12 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             } else if (cmd.equalsIgnoreCase("F12")) {
                 logger.debug("InvoiceInternalInterface Interface - F12 Pressed ");
                 btnPayment.doClick();
+            } else if (cmd.equalsIgnoreCase("F9")) {
+                logger.debug("InvoiceInternalInterface Interface - F9 Pressed ");
+                parent.holdBtnPerformClick();
+            } else if (cmd.equalsIgnoreCase("F10")) {
+                logger.debug("InvoiceInternalInterface Interface - F10 Pressed ");
+                parent.restoreBtnPerformclick();
             }
         }
     }
@@ -284,17 +309,9 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         //See if product expired if so give prompt to accept or reject
         if (isExpired(selectedBatch.getExpirationDate())) {
             logger.warn("Item Expired");
-
-            int response = JOptionPane.showConfirmDialog(this, "This batch expired on " + selectedBatch.getExpirationDate() + ".\n Do you want to still add it ?", "Batch expired", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (response == JOptionPane.YES_OPTION) {
-                processingProduct.setSelectedBatch(selectedBatch);
-                setPropFromBatch();
-                txtQty.requestFocus();
-            } else {
-                invoiceClearProductinfo();
-                itemCodeComboBox.requestFocus();
-            }
-
+            Utilities.showMsgBox("This batch expired on " + selectedBatch.getExpirationDate(), "", JOptionPane.WARNING_MESSAGE);
+            invoiceClearProductinfo();
+            itemCodeComboBox.requestFocus();
         } else {
             processingProduct.setSelectedBatch(selectedBatch);
             setPropFromBatch();
@@ -333,11 +350,23 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         itemAddPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
         itemAddPanelActionMap.remove("doF5Action");
 
+        itemAddPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
+        itemAddPanelActionMap.remove("doF9Action");
+
+        itemAddPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0));
+        itemAddPanelActionMap.remove("doF10Action");
+
         itemAddPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0));
         itemAddPanelActionMap.remove("doF12Action");
 
         paymentPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
         paymentPanelActionMap.remove("doF3Action");
+
+        paymentPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
+        paymentPanelActionMap.remove("doF9Action");
+
+        paymentPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0));
+        paymentPanelActionMap.remove("doF10Action");
 
         //  paymentPanelInputMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
         // paymentPanelActionMap.remove("doConfirmAction");
@@ -412,6 +441,16 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         setTableData(invoiceItemTable, memento.getItemData());
         setTableData(invoicePaymentsTable, memento.getPaymentData());
+
+        //Remove voucher and poshana option if found on table
+        for (int row = 0; row < invoicePaymentsTable.getRowCount(); row++) {
+            if (invoicePaymentsTable.getValueAt(row, PAYMENT_OPTION_COLUMN).toString().equals(Payment.POSHANA)) {
+                paymentOptionComboBox.removeItem(Payment.POSHANA);
+            }
+            if (invoicePaymentsTable.getValueAt(row, PAYMENT_OPTION_COLUMN).toString().equals(Payment.VOUCHER)) {
+                paymentOptionComboBox.removeItem(Payment.VOUCHER);
+            }
+        }
 
         calculateItemParameters();
         calculatePaymentParameters();
@@ -584,7 +623,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtCashPaymentAmount.setText("");
 
         cardTypeComboBox.setSelectedIndex(-1);
-        txtcardNo.setText(" ");
+        txtcardNo.setText("");
         txtcardNo.setEnabled(false);
         txtcardNo.setEditable(false);
         txtCardPaymentAmount.setText("0.00");
@@ -687,16 +726,15 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     }
 
     //Validate a given name
-    public boolean validateName(String txt) {
-        logger.debug("validateName invoked");
-
-        String regx = "^[A-Za-z\\s]{1,}[\\.]{0,1}[A-Za-z\\s]{0,}$";
-        Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(txt);
-        return matcher.find();
-
-    }
-
+//    public boolean validateName(String txt) {
+//        logger.debug("validateName invoked");
+//
+//        String regx = "^[A-Za-z\\s]{1,}[\\.]{0,1}[A-Za-z\\s]{0,}$";
+//        Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE);
+//        Matcher matcher = pattern.matcher(txt);
+//        return matcher.find();
+//
+//    }
     //Handle txt Qty key press
     private void txtQtyKeyPressHandler(java.awt.event.KeyEvent evt) {
         logger.debug("txtQtyKeyPressHandler invoked");
@@ -734,8 +772,70 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             paymentChooser();
         }
     }
-    
-    
+
+    //Handle PoshanaCustomerName key press
+    private void txtPoshanaCustomerNamePressHandler(java.awt.event.KeyEvent evt) {
+        logger.debug("txtPoshanaCustomerNamePressHandler invoked");
+
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_TAB) {
+//            if (!validateName(poshanaCustomerNameTxt.getText())) {
+//                Utilities.showMsgBox("Poshana customer name not valid", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+//                poshanaCustomerNameTxt.requestFocus();
+//                return;
+//            }
+            poshanaIdTxt.requestFocus();
+        }
+    }
+
+    //Handle txtPoshanaId key press
+    private void txtPoshanaIdPressHandler(java.awt.event.KeyEvent evt) {
+        logger.debug("txtPoshanaIdPressHandler invoked");
+
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (poshanaIdTxt.getText().trim().isEmpty()) {
+                Utilities.showMsgBox("Poshana voucher id cannot be empty", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+                poshanaIdTxt.requestFocus();
+                return;
+            } else {
+                try {
+                    int poshanaVoucherId = Integer.parseInt(poshanaIdTxt.getText().trim());
+                    if (poshanaVoucherId == 0) {
+                        throw new NumberFormatException("Zero number");
+                    }
+                } catch (NumberFormatException ex) {
+                    Utilities.showMsgBox("Invalid number", "Incorrect poshanaId number", JOptionPane.WARNING_MESSAGE);
+                    poshanaIdTxt.requestFocus();
+                    return;
+                }
+            }
+            paymentChooser();
+        }
+    }
+
+    //Handle txtVoucherCustomerIdP key press
+    private void txtVoucherCustomerIdPressHandler(java.awt.event.KeyEvent evt) {
+        logger.debug("txtVoucherCustomerIdPressHandler invoked");
+
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (voucherCustomerIdTxt.getText().trim().isEmpty()) {
+                Utilities.showMsgBox("Poshana voucher id cannot be empty", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+                voucherCustomerIdTxt.requestFocus();
+                return;
+            } else {
+                try {
+                    int poshanaVoucherId = Integer.parseInt(voucherCustomerIdTxt.getText().trim());
+                    if (poshanaVoucherId == 0) {
+                        throw new NumberFormatException("Zero number");
+                    }
+                } catch (NumberFormatException ex) {
+                    Utilities.showMsgBox("Invalid number", "Incorrect poshanaId number", JOptionPane.WARNING_MESSAGE);
+                    voucherCustomerIdTxt.requestFocus();
+                    return;
+                }
+            }
+            voucherCustomerAmountTxt.requestFocus();
+        }
+    }
 
     // </editor-fold>
     //
@@ -748,6 +848,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         CardLayout invoiceCard = (CardLayout) invoicePanel.getLayout();
         invoiceCard.show(invoicePanel, "itemCard");
+        invoiceItemTable.getSelectionModel().clearSelection();
         itemCodeComboBox.requestFocus();
     }
 
@@ -801,10 +902,13 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
     //Cancel current bill and show welocme screen
     private void cancelBill() {
         logger.debug("cancelBill invoked");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         if (invoiceItemTableModel.getRowCount() > 0) {
             int dialogResult = JOptionPane.showConfirmDialog(null, "Discard current sale ?", "Warning", JOptionPane.YES_NO_OPTION);
             if (dialogResult != JOptionPane.YES_OPTION) {
                 return;
+            } else {
+                setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
             }
         }
         parent.setIsMainActivityRunning(false);
@@ -1111,6 +1215,9 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         } finally {
             coopCustomerNameComboBox.removeActionListener(coopCustomerListner);
             coopCustomerNameComboBox.addActionListener(coopCustomerListner);
+            if (coopCustomerNameComboBox.getItemCount() > 1) {
+                coopCreditAmountTxt.setEnabled(false);
+            }
         }
     }
 
@@ -1468,7 +1575,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         logger.info("Card payment added");
 
         cardTypeComboBox.setSelectedIndex(-1);
-        txtcardNo.setText(" ");
+        txtcardNo.setText("");
         txtCardPaymentAmount.setText("0.00");
         txtcardNo.setEnabled(false);
         txtcardNo.setEditable(false);
@@ -1593,12 +1700,11 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             }
         }
 
-        if (!validateName(poshanaCustomerNameTxt.getText())) {
-            Utilities.showMsgBox("Poshana customer name not valid", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
-            poshanaCustomerNameTxt.requestFocus();
-            return;
-        }
-
+//        if (!validateName(poshanaCustomerNameTxt.getText())) {
+//            Utilities.showMsgBox("Poshana customer name not valid", "Incorrect payment", JOptionPane.WARNING_MESSAGE);
+//            poshanaCustomerNameTxt.requestFocus();
+//            return;
+//        }
         //Poshana amount must come from settings
         double poshanaAmount = 0;
         try {
@@ -1998,11 +2104,29 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         txtBillNumber = new javax.swing.JTextField();
         chkMember = new javax.swing.JCheckBox();
 
+        setClosable(true);
         setMaximizable(true);
         setResizable(true);
         setTitle("Invoice");
         setMinimumSize(new java.awt.Dimension(1031, 610));
         setPreferredSize(new java.awt.Dimension(1031, 610));
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -2084,7 +2208,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
             }
         });
 
-        itemCodeComboBox.setEditable(true);
         itemCodeComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         itemCodeComboBox.setMaximumRowCount(5);
 
@@ -2764,16 +2887,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         poshanaPaymentAmountTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         poshanaPaymentAmountTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         poshanaPaymentAmountTxt.setEnabled(false);
-        poshanaPaymentAmountTxt.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                poshanaPaymentAmountTxtFocusLost(evt);
-            }
-        });
-        poshanaPaymentAmountTxt.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                poshanaPaymentAmountTxtKeyReleased(evt);
-            }
-        });
 
         poshanaIdLbl.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         poshanaIdLbl.setText("Poshana Id");
@@ -2783,11 +2896,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         poshanaCustomerNameTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         poshanaCustomerNameTxt.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        poshanaCustomerNameTxt.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                poshanaCustomerNameTxtFocusLost(evt);
-            }
-        });
         poshanaCustomerNameTxt.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 poshanaCustomerNameTxtKeyReleased(evt);
@@ -2796,11 +2904,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         poshanaIdTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         poshanaIdTxt.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        poshanaIdTxt.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                poshanaIdTxtFocusLost(evt);
-            }
-        });
         poshanaIdTxt.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 poshanaIdTxtKeyReleased(evt);
@@ -2817,7 +2920,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                     .addGroup(PoshanaPaymentLayout.createSequentialGroup()
                         .addComponent(poshanaCustomerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(poshanaCustomerNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(poshanaCustomerNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(PoshanaPaymentLayout.createSequentialGroup()
                         .addComponent(poshanaIdLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2826,7 +2929,7 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
                         .addComponent(poshanaPaymentAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(poshanaPaymentAmountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(182, Short.MAX_VALUE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
         PoshanaPaymentLayout.setVerticalGroup(
             PoshanaPaymentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2879,11 +2982,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
 
         voucherCustomerIdTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         voucherCustomerIdTxt.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        voucherCustomerIdTxt.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                voucherCustomerIdTxtFocusLost(evt);
-            }
-        });
         voucherCustomerIdTxt.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 voucherCustomerIdTxtKeyReleased(evt);
@@ -2951,16 +3049,6 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         voucherEmployeeVoucherAmount.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         voucherEmployeeVoucherAmount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         voucherEmployeeVoucherAmount.setEnabled(false);
-        voucherEmployeeVoucherAmount.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                voucherEmployeeVoucherAmountFocusLost(evt);
-            }
-        });
-        voucherEmployeeVoucherAmount.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                voucherEmployeeVoucherAmountKeyReleased(evt);
-            }
-        });
 
         javax.swing.GroupLayout employeeCardLayout = new javax.swing.GroupLayout(employeeCard);
         employeeCard.setLayout(employeeCardLayout);
@@ -3287,50 +3375,25 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         convertToMemberInvoice();
     }//GEN-LAST:event_chkMemberActionPerformed
 
-    private void poshanaPaymentAmountTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_poshanaPaymentAmountTxtFocusLost
-        // TODO add your handling code here:
-    }//GEN-LAST:event_poshanaPaymentAmountTxtFocusLost
-
-    private void poshanaPaymentAmountTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaPaymentAmountTxtKeyReleased
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_poshanaPaymentAmountTxtKeyReleased
-
-    private void poshanaCustomerNameTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_poshanaCustomerNameTxtFocusLost
-        // TODO add your handling code here:
-    }//GEN-LAST:event_poshanaCustomerNameTxtFocusLost
-
     private void poshanaCustomerNameTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaCustomerNameTxtKeyReleased
         // TODO add your handling code here:
-        
+        txtPoshanaCustomerNamePressHandler(evt);
     }//GEN-LAST:event_poshanaCustomerNameTxtKeyReleased
-
-    private void poshanaIdTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_poshanaIdTxtFocusLost
-        // TODO add your handling code here:
-    }//GEN-LAST:event_poshanaIdTxtFocusLost
 
     private void poshanaIdTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_poshanaIdTxtKeyReleased
         // TODO add your handling code here:
-        txtPaymentKeyPressHandler(evt);
+        txtPoshanaIdPressHandler(evt);
     }//GEN-LAST:event_poshanaIdTxtKeyReleased
 
     private void coopCreditAmountTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_coopCreditAmountTxtFocusLost
         // TODO add your handling code here:
+        doubleFormatComponentText(coopCreditAmountTxt);
     }//GEN-LAST:event_coopCreditAmountTxtFocusLost
 
     private void coopCreditAmountTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_coopCreditAmountTxtKeyReleased
         // TODO add your handling code here:
         txtPaymentKeyPressHandler(evt);
     }//GEN-LAST:event_coopCreditAmountTxtKeyReleased
-
-    private void voucherEmployeeVoucherAmountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_voucherEmployeeVoucherAmountFocusLost
-        // TODO add your handling code here:
-    }//GEN-LAST:event_voucherEmployeeVoucherAmountFocusLost
-
-    private void voucherEmployeeVoucherAmountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_voucherEmployeeVoucherAmountKeyReleased
-        // TODO add your handling code here:
-        txtPaymentKeyPressHandler(evt);
-    }//GEN-LAST:event_voucherEmployeeVoucherAmountKeyReleased
 
     private void employeeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeRadioButtonActionPerformed
         // TODO add your handling code here:
@@ -3342,22 +3405,25 @@ class InvoiceInternalInterface extends javax.swing.JInternalFrame {
         toggleVoucherType();
     }//GEN-LAST:event_customerRadioButtonActionPerformed
 
-    private void voucherCustomerIdTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_voucherCustomerIdTxtFocusLost
-        // TODO add your handling code here:
-    }//GEN-LAST:event_voucherCustomerIdTxtFocusLost
-
     private void voucherCustomerIdTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_voucherCustomerIdTxtKeyReleased
         // TODO add your handling code here:
+        txtVoucherCustomerIdPressHandler(evt);
     }//GEN-LAST:event_voucherCustomerIdTxtKeyReleased
 
     private void voucherCustomerAmountTxtFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_voucherCustomerAmountTxtFocusLost
         // TODO add your handling code here:
+        doubleFormatComponentText(voucherCustomerAmountTxt);
     }//GEN-LAST:event_voucherCustomerAmountTxtFocusLost
 
     private void voucherCustomerAmountTxtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_voucherCustomerAmountTxtKeyReleased
         // TODO add your handling code here:
         txtPaymentKeyPressHandler(evt);
     }//GEN-LAST:event_voucherCustomerAmountTxtKeyReleased
+
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+        // TODO add your handling code here:
+        cancelBill();
+    }//GEN-LAST:event_formInternalFrameClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PoshanaPayment;

@@ -352,7 +352,25 @@ class CheckStockInterface extends javax.swing.JInternalFrame {
         itemInfoTable = new javax.swing.JTable();
         btnOk = new javax.swing.JButton();
 
+        setClosable(true);
         setTitle("Check Stock");
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -376,7 +394,6 @@ class CheckStockInterface extends javax.swing.JInternalFrame {
             }
         });
 
-        itemCodeComboBox.setEditable(true);
         itemCodeComboBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         itemCodeComboBox.setMaximumRowCount(5);
 
@@ -589,6 +606,12 @@ class CheckStockInterface extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         loadSellebleProducts();
     }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+        // TODO add your handling code here:
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        exitCheck();
+    }//GEN-LAST:event_formInternalFrameClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnOk;

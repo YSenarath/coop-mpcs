@@ -343,7 +343,7 @@ class BillCopyInternalInterface extends javax.swing.JInternalFrame {
             this.printInvoice = invoice;
             this.billPrintReady = true;
         } catch (Exception ex) {
-            Utilities.showMsgBox("Invalid bill number : " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Utilities.showMsgBox("Invalid bill number", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -423,8 +423,26 @@ class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         jLabel11 = new javax.swing.JLabel();
         txtTotalPayments = new javax.swing.JTextField();
 
+        setClosable(true);
         setTitle("Bill Copy");
         setMinimumSize(new java.awt.Dimension(926, 630));
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -817,6 +835,12 @@ class BillCopyInternalInterface extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         txtBillSearchHandler(evt);
     }//GEN-LAST:event_txtSearchBillNOKeyReleased
+
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+        // TODO add your handling code here:
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        cancelPrint();
+    }//GEN-LAST:event_formInternalFrameClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel billCopyPanel;

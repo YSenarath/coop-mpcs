@@ -235,7 +235,6 @@ class ShutDownVarification extends javax.swing.JDialog {
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
-
         cancelRefund();
     }//GEN-LAST:event_btnCancelActionPerformed
 
