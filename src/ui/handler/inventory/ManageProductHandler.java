@@ -669,9 +669,9 @@ public class ManageProductHandler {
             try {
                 if (notifyDate == null) {
                     Utilities.ShowErrorMsg(gui, "Notification Date is not a valid value");
-                } else if (notifyDate.after(Utilities.getToday())) {
+                } else if (notifyDate.before(Utilities.getToday())) {
                     Utilities.ShowErrorMsg(gui, "Notification Date is an expired date");
-                } else if (notifyDate.before(sf.parse(gui.getpExpDateLabel().getText()))) {
+                } else if (notifyDate.after(sf.parse(gui.getpExpDateLabel().getText()))) {
 
                     Utilities.ShowErrorMsg(gui, "Notification Date is after Expired date");
 
