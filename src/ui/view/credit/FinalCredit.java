@@ -11,7 +11,10 @@ import controller.pos.InvoiceController;
 import database.connector.DatabaseInterface;
 import database.handler.DBHandler;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,7 +33,9 @@ import model.pos.payment.CoopCreditPayment;
 import net.proteanit.sql.DbUtils;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.painter.Painter;
+import util.AddressFilter;
 import util.NICFilter;
+import util.StringFilter;
 import util.TelePhoneNumberFilter;
 import util.Utilities;
 
@@ -38,11 +43,12 @@ import util.Utilities;
  *
  * @author HP
  */
-public class FinalCredit extends javax.swing.JFrame {
+public class FinalCredit extends javax.swing.JInternalFrame {
 
     private Painter p;
     //Variables
     private static final Logger logger = Logger.getLogger(FinalCredit.class);
+
     private final int CUSTOMER_NAME = 0;
     private final int CUSTOMER_ADDRESS = 1;
     private final int TELEPHONE = 2;
@@ -53,6 +59,8 @@ public class FinalCredit extends javax.swing.JFrame {
     private ArrayList<JCheckBox> chBoxes;
     //private HashMap<Integer, CreditCustomer> availableCustomers;
     DefaultTableModel CustomerCreditDetailsTableModel;
+    private int selectedIndex;
+    DefaultTableModel CreditDetailsTableModel;
     DefaultComboBoxModel CreditDetailsCustomerComboBoxModel;
     CustomerCreditController l = new CustomerCreditController();
 
@@ -64,139 +72,190 @@ public class FinalCredit extends javax.swing.JFrame {
     /**
      * Creates new form finalCredit
      */
-    public FinalCredit() throws SQLException {
-        initComponents();
-        chBoxes = new ArrayList<>();
-        // cardPanel.setPreferredSize(new Dimension(800, 800));
-        // setSize(new Dimension(1500, 1500));
+    public FinalCredit() {
+        try {
+            initComponents();
+            chBoxes = new ArrayList<>();
+            // cardPanel.setPreferredSize(new Dimension(800, 800));
+            // setSize(new Dimension(1500, 1500));
 
-        this.CustomerCreditDetailsTableModel = (DefaultTableModel) customerDetailsTbl.getModel();
-        this.CreditDetailsCustomerComboBoxModel = (DefaultComboBoxModel) creditDetailsCustomerComboBox.getModel();
-        customerDetailsTbl.setModel(DbUtils.resultSetToTableModel(CustomerCreditController.loadDetails()));
-        loadDetails();
-        /**
-         *
-         * @throws SQLException
-         */
+            this.CustomerCreditDetailsTableModel = (DefaultTableModel) customerDetailsTbl.getModel();
+            this.CreditDetailsTableModel = (DefaultTableModel) creditTbl.getModel();
+            
 
-        //jnj - adding documnet filters============================================
-        ((PlainDocument) addCustomerTeleTxt1.getDocument()).setDocumentFilter(new TelePhoneNumberFilter());
-        ((PlainDocument) addCustomerNicTxt1.getDocument()).setDocumentFilter(new NICFilter());
+            this.CreditDetailsCustomerComboBoxModel = (DefaultComboBoxModel) creditDetailsCustomerComboBox.getModel();
+            customerDetailsTbl.setModel(DbUtils.resultSetToTableModel(CustomerCreditController.loadDetails()));
+            customerDetailsTbl.setSelectionMode(0);
+            loadDetails();
+       
 
-        ((PlainDocument) editCustomerTeleTxt2.getDocument()).setDocumentFilter(new TelePhoneNumberFilter());
-        ((PlainDocument) editCustomerNicTxt2.getDocument()).setDocumentFilter(new NICFilter());
+            /**
+             *
+             * @throws SQLException
+             */
+            //jnj - adding documnet filters============================================
+            ((PlainDocument) addCustomerTeleTxt1.getDocument()).setDocumentFilter(new TelePhoneNumberFilter());
+            ((PlainDocument) addCustomerNicTxt1.getDocument()).setDocumentFilter(new NICFilter());
 
-        //=========================================================================
+            ((PlainDocument) editCustomerTeleTxt2.getDocument()).setDocumentFilter(new TelePhoneNumberFilter());
+            ((PlainDocument) editCustomerNicTxt2.getDocument()).setDocumentFilter(new NICFilter());
+            
+              ((PlainDocument) addCustomerFullNameTxt1.getDocument()).setDocumentFilter(new StringFilter());
+                ((PlainDocument) customerSearchTxt.getDocument()).setDocumentFilter(new StringFilter());
+                  ((PlainDocument) addCustomerAddressTxt1.getDocument()).setDocumentFilter(new AddressFilter());
+       ((PlainDocument) editCustomerAddressTxt2.getDocument()).setDocumentFilter(new AddressFilter());
+       
+            
+
+            //=========================================================================
+        } catch (SQLException ex) {
+            logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
     }
 
-    private void loadDetails() throws SQLException {
+    private void loadDetails() {
 
-        CreditDetailsCustomerComboBoxModel.removeAllElements();
-        ArrayList<CreditCustomer> customerDetails = CustomerCreditController.loadCustomers();
+        try {
+            logger.debug("loadDetails method invoked");
+            CreditDetailsCustomerComboBoxModel.removeAllElements();
+            ArrayList<CreditCustomer> customerDetails = CustomerCreditController.loadCustomers();
 
-        for (CreditCustomer customer : customerDetails) {
-            // availableCustomers.put(customer.getCustomerId(), customer);
-            CreditDetailsCustomerComboBoxModel.addElement(customer.getCustomerName());
+            for (CreditCustomer customer : customerDetails) {
+                // availableCustomers.put(customer.getCustomerId(), customer);
+                CreditDetailsCustomerComboBoxModel.addElement(customer.getCustomerName());
+            }
+            CreditDetailsCustomerComboBoxModel.setSelectedItem(null);
+            //   CoopCreditPaymentController.getCoopCreditPaymentDetails(availableCustomers.CreditDetailsCustomerComboBoxModel.getSelectedItem().toString())
+        } catch (SQLException ex) {
+            logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        CreditDetailsCustomerComboBoxModel.setSelectedItem(null);
-        //   CoopCreditPaymentController.getCoopCreditPaymentDetails(availableCustomers.CreditDetailsCustomerComboBoxModel.getSelectedItem().toString())
 
     }
 
     //helper methods
-    public void chngTblModel() throws SQLException {
+    public void chngTblModel() {
 
-        customerDetailsTbl.setModel(DbUtils.resultSetToTableModel(CustomerCreditController.loadDetails()));
-
-    }
-
-    public void editCustomer() throws SQLException {
-        //All edit details are varified before this method
-        int customerId = Integer.parseInt(editCustomerCoopIdTxt2.getText());
-
-        CreditCustomer creditCustomer = new CreditCustomer(
-                customerId,
-                editCustomerFullNameTxt2.getText(),
-                editCustomerAddressTxt2.getText(),
-                editCustomerTeleTxt2.getText(),
-                editCustomerNicTxt2.getText().toUpperCase(),
-                0.0
-        );
-
-        boolean result = CustomerCreditController.EditCustomer(creditCustomer);
-        if (result) {
-            Utilities.showMsgBox("Changes saved", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            logger.error("Changes not saved");
+        try {
+            logger.debug("chngTblMdl method invoked");
+            customerDetailsTbl.setModel(DbUtils.resultSetToTableModel(CustomerCreditController.loadDetails()));
+        } catch (SQLException ex) {
+            logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        chngTblModel();
-
-        //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
-        //  CustomerCreditDetailsTableModel.insertRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1, ob);
-        //CardLayout card = (CardLayout) cardPanel.getLayout();
-        //card.show(cardPanel, "customerDetails");
-        //      CreditCustomer creditCustomer = new CreditCustomer(customerId,ob[1].toString(),ob[2].toString(),customerTele,ob[3].toString(),10000);
-        //CustomerCreditController.EditCustomer(creditCustomer, Integer.parseInt(ob[4].toString()));
-        editCustomerCoopIdTxt2.setText("");
-        editCustomerFullNameTxt2.setText("");
-        editCustomerAddressTxt2.setText("");
-        editCustomerNicTxt2.setText("");
-        editCustomerTeleTxt2.setText("");
 
     }
 
-    public void addCustomer() throws SQLException {
-        //All add details are varified before this method
-        int customerId = Integer.parseInt(addCustomerCoopIdTxt1.getText());
-//        Object[] ob = {
-//            //  Utilities.convertKeyToInteger(addCustomerCoopIdTxt1.getText()),
-//            addCustomerCoopIdTxt1.getText(),
-//            addCustomerFullNameTxt1.getText(),
-//            addCustomerAddressTxt1.getText(),
-//            addCustomerNicTxt1.getText(),
-//            addCustomerTeleTxt1.getText(),};
+    public void selectPayment() {
+        double value = 0;
+        for (int i = 0; i < CreditDetailsTableModel.getRowCount(); i++) {
+            if (CreditDetailsTableModel.getValueAt(i, 0).equals(true)) {
+                double paymentValue = Double.parseDouble(CreditDetailsTableModel.getValueAt(i, 3).toString()) - Double.parseDouble(CreditDetailsTableModel.getValueAt(i, 4).toString());
+                value += paymentValue;
+                paymentAmountCrdtTblTxt.setText(value + "");
+            }
 
-        CreditCustomer creditCustomer = new CreditCustomer(
-                customerId,
-                addCustomerFullNameTxt1.getText(),
-                addCustomerAddressTxt1.getText(),
-                addCustomerTeleTxt1.getText(),
-                addCustomerNicTxt1.getText().toUpperCase(),
-                0.0
-        );
+        }
+    }
 
-        CustomerCreditController.AddCustomer(creditCustomer);
+    public void editCustomer() {
+        try {
+            logger.debug("editCustomer method invoked");
+            //All edit details are varified before this method
+            int customerId = Integer.parseInt(editCustomerCoopIdTxt2.getText());
 
-        chngTblModel();
+            CreditCustomer creditCustomer = new CreditCustomer(
+                    customerId,
+                    editCustomerFullNameTxt2.getText(),
+                    editCustomerAddressTxt2.getText(),
+                    editCustomerTeleTxt2.getText(),
+                    editCustomerNicTxt2.getText().toUpperCase(),
+                    0.0
+            );
 
-        //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
-        //  CustomerCreditDetailsTableModel.insertRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1, ob);
-        //  CardLayout card = (CardLayout) cardPanel.getLayout();
-        //card.show(cardPanel, "customerDetails");
-        // CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
-        addCustomerCoopIdTxt1.setText("");
-        addCustomerFullNameTxt1.setText("");
-        addCustomerAddressTxt1.setText("");
-        addCustomerNicTxt1.setText("");
-        addCustomerTeleTxt1.setText("");
+            boolean result = CustomerCreditController.EditCustomer(creditCustomer);
+            if (result) {
+                Utilities.showMsgBox("Changes saved", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            } else {
+                logger.error("Changes not saved");
+            }
+            chngTblModel();
+
+            //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
+            //  CustomerCreditDetailsTableModel.insertRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1, ob);
+            //CardLayout card = (CardLayout) cardPanel.getLayout();
+            //card.show(cardPanel, "customerDetails");
+            //      CreditCustomer creditCustomer = new CreditCustomer(customerId,ob[1].toString(),ob[2].toString(),customerTele,ob[3].toString(),10000);
+            //CustomerCreditController.EditCustomer(creditCustomer, Integer.parseInt(ob[4].toString()));
+            editCustomerCoopIdTxt2.setText("");
+            editCustomerFullNameTxt2.setText("");
+            editCustomerAddressTxt2.setText("");
+            editCustomerNicTxt2.setText("");
+            editCustomerTeleTxt2.setText("");
+        } catch (SQLException ex) {
+            logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+    }
+
+    public void addCustomer() {
+        try {
+            logger.debug("addCustomer method invoked");
+            //All add details are varified before this method
+            int customerId = Integer.parseInt(addCustomerCoopIdTxt1.getText());
+
+            CreditCustomer creditCustomer = new CreditCustomer(
+                    customerId,
+                    addCustomerFullNameTxt1.getText(),
+                    addCustomerAddressTxt1.getText(),
+                    addCustomerTeleTxt1.getText(),
+                    addCustomerNicTxt1.getText().toUpperCase(),
+                    0.0
+            );
+
+            CustomerCreditController.AddCustomer(creditCustomer);
+
+            chngTblModel();
+
+            //CustomerCreditDetailsTableModel.removeRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1);
+            //  CustomerCreditDetailsTableModel.insertRow(Integer.parseInt(editCustomerCoopIdTxt2.getText())-1, ob);
+            //  CardLayout card = (CardLayout) cardPanel.getLayout();
+            //card.show(cardPanel, "customerDetails");
+            // CustomerCreditController.setEditDetails(creditCustomer, Integer.parseInt(ob[4].toString()));
+            addCustomerCoopIdTxt1.setText("");
+            addCustomerFullNameTxt1.setText("");
+            addCustomerAddressTxt1.setText("");
+            addCustomerNicTxt1.setText("");
+            addCustomerTeleTxt1.setText("");
+        } catch (SQLException ex) {
+            logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
     }
 
     public void deleteCustomer(int i) {
+        logger.debug("deleteCustomer method invoked");
         try {
             CustomerCreditController.deleteDeatils(i);
         } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        try {
-            chngTblModel();
-        } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        chngTblModel();
     }
 
     public void setCoopId() {
-
+        logger.debug("setCoopId method invoked");
         try {
             int coopIdNum = CustomerCreditController.getLastCreditCustomerId();
 
@@ -209,26 +268,15 @@ public class FinalCredit extends javax.swing.JFrame {
 
         } catch (SQLException ex) {
             logger.error("SQL Error : " + ex);
+            return;
         }
         // addCustomerCoopIdTxt1.setText((Utilities.convertKeyToString(coopIdNum + 1, DatabaseInterface.CREDIT_CUSTOMER)));
 
     }
 
     public void showCustomerEditDetails(int i) {
-//        int customerId = 0;
-//        int customerTele = 0;
-//
-//        CustomerCreditController.getCustomer(i);
-//        //      CreditCustomer creditCustomer = new CreditCustomer(ob[0].toString(),ob[1].toString(),Integer.parseInt(ob[2].toString()),ob[3].toString(),Integer.parseInt(ob[4].toString()),Integer.parseInt(ob[5].toString()));
-//
-//        CardLayout card = (CardLayout) cardPanel.getLayout();
-//        card.show(cardPanel, "editCustomer");
-//        editCustomerFullNameTxt2.setText(CustomerCreditController.getCustomer(i).getCustomerName());
-//        editCustomerAddressTxt2.setText(CustomerCreditController.getCustomer(i).getCustomerAddress());
-//        editCustomerTeleTxt2.setText(Integer.toString(CustomerCreditController.getCustomer(i).getTelephone()));
-//        editCustomerNicTxt2.setText(CustomerCreditController.getCustomer(i).getNic());
-//        editCustomerCoopIdTxt2.setText(Integer.toString(CustomerCreditController.getCustomer(i).getCustomerId()));
-        try {
+        logger.debug("showCustomerDetails method invoked");
+   try {
             CreditCustomer creditCustomer = CustomerCreditController.getCustomer(i);
 
             if (creditCustomer != null) {
@@ -242,57 +290,109 @@ public class FinalCredit extends javax.swing.JFrame {
                 CardLayout card = (CardLayout) cardPanel.getLayout();
                 card.show(cardPanel, "editCustomer");
             } else {
-                Utilities.showMsgBox("No such customer fount", "Eror", JOptionPane.ERROR_MESSAGE);
+                Utilities.showMsgBox("No such customer found", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
         } catch (SQLException ex) {
             logger.error("SQL error : " + ex.getMessage());
+            return;
         }
 
     }
 
-    public void searchDetails() throws SQLException {
-        String s = jTextField1.getText();
+    private void cleanCreditTbl() {
+        creditDetailsCustomerComboBox.removeAllItems();
+        creditDetailsSettlementNoTxt.setText("");
+        CreditDetailsTableModel.setNumRows(0);
+        billTxt1.setText("");
+        paidAmountTxt1.setText("");
+        paymentAmountCrdtTblTxt.setText("");
+    }
 
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "customerSearchResult");
+    public void searchDetails() {
+        logger.debug("searchDetails method invoked");
+       
 
-        customerSearchCustomerNameTxt.setText(CustomerCreditController.searchDetails(s).getCustomerName());
-        customerSearchCoopIdTxt.setText(Integer.toString(CustomerCreditController.searchDetails(s).getCustomerId()));
+        try {
+
+            String s = customerSearchTxt.getText();
+            if(s==null){
+                   Utilities.ShowErrorMsg((Component) this, (String) "Please enter a name first");
+     
+            }
+
+            CreditCustomer ob = CustomerCreditController.searchDetails(s);
+            if (ob != null) {
+                customerSearchCustomerNameTxt.setText(ob.getCustomerName());
+                customerSearchCoopIdTxt.setText(Integer.toString(CustomerCreditController.searchDetails(s).getCustomerId()));
+                CardLayout card = (CardLayout) cardPanel.getLayout();
+                card.show(cardPanel, "customerSearchResult");
+                CreditDetailsCustomerComboBoxModel.removeAllElements();
+                ArrayList<CreditCustomer> customerDetails = CustomerCreditController.loadCustomers();
+
+                for (CreditCustomer customer : customerDetails) {
+                    if (customer.getCustomerName().toLowerCase().equals(ob.getCustomerName().toLowerCase())) {
+                        CreditDetailsCustomerComboBoxModel.addElement(customer.getCustomerName());
+                        //creditDetailsSettlementNoTxt.setText(customer.getCustomerId()+"");
+                        loadCreditDetails();
+                        break;
+                    }
+                }
+
+            } else {
+                Utilities.showMsgBox("Search name not found", "Error", JOptionPane.WARNING_MESSAGE);
+                return;
+
+            }
+        } catch (SQLException ex) {
+            logger.debug("SQLException = " + ex.getMessage());
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
 
     }
 
-    public void loadCreditDetails() throws SQLException {
-        CreditCustomer customer = (CustomerCreditController.searchDetails(CreditDetailsCustomerComboBoxModel.getSelectedItem().toString()));
-        double paidAmount = 0;
-        double billTotal = 0;
-        creditDetailsSettlementNoTxt.setText(customer.getCustomerId() + "");
-        ((DefaultTableModel) creditTbl.getModel()).setRowCount(0);
-        ArrayList<CoopCreditPayment> details = CoopCreditPaymentController.loadDetails(customer.getCustomerId());
-        for (CoopCreditPayment c : details) {
-            int row = creditTbl.getRowCount();
-            paidAmount += c.getAmountSettled();
-            billTotal += c.getAmount();
-            Invoice invoice = InvoiceController.getInvoice(c.getInvoiceId());
-            ((DefaultTableModel) creditTbl.getModel()).addRow(new Object[]{false, c.getInvoiceId() + "", invoice.getDate(), c.getAmount() + "", c.getAmountSettled() + ""});
+    public void loadCreditDetails() {
+        logger.debug("loadCreditDetails method invoked");
+        try {
+            CreditCustomer customer = (CustomerCreditController.searchDetails(CreditDetailsCustomerComboBoxModel.getSelectedItem().toString()));
+            double paidAmount = 0;
+            double billTotal = 0;
+            creditDetailsSettlementNoTxt.setText(customer.getCustomerId() + "");
+            ((DefaultTableModel) creditTbl.getModel()).setRowCount(0);
+            ArrayList<CoopCreditPayment> details = CoopCreditPaymentController.loadDetails(customer.getCustomerId());
+            for (CoopCreditPayment c : details) {
+                int row = creditTbl.getRowCount();
+                paidAmount += c.getAmountSettled();
+                billTotal += c.getAmount();
+                Invoice invoice = InvoiceController.getInvoice(c.getInvoiceId());
+                ((DefaultTableModel) creditTbl.getModel()).addRow(new Object[]{false, c.getInvoiceId() + "", invoice.getDate(), c.getAmount() + "", c.getAmountSettled() + ""});
 
 //            ((DefaultTableModel)creditTbl.getModel()).setRowCount(row+ 1);
 //            creditTbl.setValueAt(c.getInvoiceId() , row , 1);
 //            creditTbl.setValueAt(invoice.getDate() , row , 2);
 //            creditTbl.setValueAt(c.getAmount() , row , 3);
 //            creditTbl.setValueAt(c.getAmountSettled() , row , 4);
+            }
+            billTxt1.setText(billTotal + "");
+            paidAmountTxt1.setText(paidAmount + "");
+        } catch (SQLException ex) {
+            logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        billTxt1.setText(billTotal + "");
-        paidAmountTxt1.setText(paidAmount + "");
 
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         customerGender = new javax.swing.ButtonGroup();
         glossPainter1 = new org.jdesktop.swingx.painter.GlossPainter();
@@ -321,8 +421,7 @@ public class FinalCredit extends javax.swing.JFrame {
         jPanel8 = new javax.swing.JPanel();
         jLabel54 = new javax.swing.JLabel();
         custoemrSearchBtn = new javax.swing.JButton();
-        customerSearchBackBtn = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        customerSearchTxt = new javax.swing.JTextField();
         installmentPaymentLbl2 = new javax.swing.JLabel();
         customerSearchResultPanel = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -331,7 +430,6 @@ public class FinalCredit extends javax.swing.JFrame {
         customerSearchcoopIdLbl = new javax.swing.JLabel();
         customerSearchCustomerNameTxt = new javax.swing.JLabel();
         customerSearchCreditDetailsBtn = new javax.swing.JButton();
-        customerSearchOkBtn = new javax.swing.JButton();
         customerSearchLBl = new javax.swing.JLabel();
         installmentPaymentPanel = new javax.swing.JPanel();
         installmentPaymentPanelSmall = new javax.swing.JPanel();
@@ -359,6 +457,7 @@ public class FinalCredit extends javax.swing.JFrame {
         addCustomerTeleLbl1 = new javax.swing.JLabel();
         addCustomerNicTxt1 = new javax.swing.JTextField();
         newCustomerLbl = new javax.swing.JLabel();
+        addCustomerBackBtn2 = new org.jdesktop.swingx.JXButton();
         creditDetails = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane7 = new javax.swing.JScrollPane();
@@ -366,19 +465,21 @@ public class FinalCredit extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         billTotalLbl1 = new org.jdesktop.swingx.JXLabel();
         billTxt1 = new org.jdesktop.swingx.JXLabel();
-        paidAmountTxt1 = new org.jdesktop.swingx.JXLabel();
         paidAmountlbl1 = new org.jdesktop.swingx.JXLabel();
-        cancelBtn1 = new javax.swing.JButton();
-        confirmBtn1 = new javax.swing.JButton();
+        paidAmountTxt1 = new org.jdesktop.swingx.JXLabel();
+        jPanel3 = new javax.swing.JPanel();
+        checkAmountButton1 = new javax.swing.JButton();
+        paymentAmountCrdtTblTxt = new javax.swing.JTextField();
         jPanel7 = new javax.swing.JPanel();
         creditDetailsCreditorLbl = new javax.swing.JLabel();
         creditDetailsSettleentNoLbl = new javax.swing.JLabel();
         creditDetailsSettlementNoTxt = new javax.swing.JLabel();
         creditDetailsCustomerComboBox = new javax.swing.JComboBox();
-        creditDetailsSettleentDateLbl1 = new javax.swing.JLabel();
-        creditDetailsSettlementDateTxt1 = new javax.swing.JLabel();
-        installmentPaymentLbl4 = new javax.swing.JLabel();
         checkCreditDetailsBtn = new javax.swing.JButton();
+        installmentPaymentLbl4 = new javax.swing.JLabel();
+        creditTblBackBtn = new javax.swing.JButton();
+        confirmBtn1 = new javax.swing.JButton();
+        cancelBtn1 = new javax.swing.JButton();
         editCustomer = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         editCustomerSaveBtn2 = new org.jdesktop.swingx.JXButton();
@@ -394,6 +495,7 @@ public class FinalCredit extends javax.swing.JFrame {
         editCustomerTeleLbl2 = new javax.swing.JLabel();
         editCustomerNicTxt2 = new javax.swing.JTextField();
         editCustomerLbl2 = new javax.swing.JLabel();
+        editCustomerBackBtn3 = new org.jdesktop.swingx.JXButton();
         customerDetails = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         customerDetailsTbl = new org.jdesktop.swingx.JXTable();
@@ -429,8 +531,8 @@ public class FinalCredit extends javax.swing.JFrame {
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(null);
+        setClosable(true);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jXTaskPaneContainer1.setBackground(new java.awt.Color(102, 102, 102));
         jXTaskPaneContainer1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
@@ -441,7 +543,7 @@ public class FinalCredit extends javax.swing.JFrame {
         customerSearchTaskPane.setTitle("Customer Search");
         customerSearchTaskPane.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
-        customerSearchSearchLbl.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        customerSearchSearchLbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         customerSearchSearchLbl.setText("Search");
         customerSearchSearchLbl.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -458,6 +560,7 @@ public class FinalCredit extends javax.swing.JFrame {
         manageCustomerTaskPane.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         manageCustomerTaskPane.getContentPane().setLayout(new org.jdesktop.swingx.VerticalLayout());
 
+        manageCustomerCustomerDetailsLbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         manageCustomerCustomerDetailsLbl.setText("Customer Details");
         manageCustomerCustomerDetailsLbl.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -466,6 +569,7 @@ public class FinalCredit extends javax.swing.JFrame {
         });
         manageCustomerTaskPane.getContentPane().add(manageCustomerCustomerDetailsLbl);
 
+        manageCustomerAddCustomerLbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         manageCustomerAddCustomerLbl.setText("Add Customer");
         manageCustomerAddCustomerLbl.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -483,6 +587,7 @@ public class FinalCredit extends javax.swing.JFrame {
         creditManagementTaskPane.setTitle("Credit Management");
         creditManagementTaskPane.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
+        creditManagementCreditDetailsLbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         creditManagementCreditDetailsLbl.setText("Credit Details");
         creditManagementCreditDetailsLbl.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -493,213 +598,195 @@ public class FinalCredit extends javax.swing.JFrame {
 
         jXTaskPaneContainer1.add(creditManagementTaskPane);
 
+        cardPanel.setPreferredSize(new java.awt.Dimension(1407, 800));
         cardPanel.setLayout(new java.awt.CardLayout());
 
         customerSearch.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         customerSearch.setName("paymentHistory");
 
         jPanel8.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        java.awt.GridBagLayout jPanel8Layout = new java.awt.GridBagLayout();
-        jPanel8Layout.columnWidths = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
-        jPanel8Layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
-        jPanel8.setLayout(jPanel8Layout);
 
-        jLabel54.setText("Customer Name/Code");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.ipadx = 15;
-        gridBagConstraints.ipady = 16;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-        jPanel8.add(jLabel54, gridBagConstraints);
+        jLabel54.setFont(customerSearchcoopIdLbl.getFont());
+        jLabel54.setText("Customer Name");
 
+        custoemrSearchBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         custoemrSearchBtn.setText("Search");
         custoemrSearchBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 custoemrSearchBtnActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 46;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 15);
-        jPanel8.add(custoemrSearchBtn, gridBagConstraints);
 
-        customerSearchBackBtn.setText("Back");
-        customerSearchBackBtn.addActionListener(new java.awt.event.ActionListener() {
+        customerSearchTxt.setFont(customerSearchcoopIdLbl.getFont());
+        customerSearchTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customerSearchBackBtnActionPerformed(evt);
+                customerSearchTxtActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 42;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.ipady = 4;
-        jPanel8.add(customerSearchBackBtn, gridBagConstraints);
-
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 18;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 31;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 15);
-        jPanel8.add(jTextField1, gridBagConstraints);
 
         installmentPaymentLbl2.setBackground(new java.awt.Color(204, 204, 204));
         installmentPaymentLbl2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         installmentPaymentLbl2.setText("Customer Search                            ");
         installmentPaymentLbl2.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
         installmentPaymentLbl2.setOpaque(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 47;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.2;
-        gridBagConstraints.insets = new java.awt.Insets(11, 1, 11, 12);
-        jPanel8.add(installmentPaymentLbl2, gridBagConstraints);
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(custoemrSearchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel8Layout.createSequentialGroup()
+                            .addComponent(jLabel54, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(28, 28, 28)
+                            .addComponent(customerSearchTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(installmentPaymentLbl2, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(installmentPaymentLbl2)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(customerSearchTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel54))
+                .addGap(18, 18, 18)
+                .addComponent(custoemrSearchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30))
+        );
 
         javax.swing.GroupLayout customerSearchLayout = new javax.swing.GroupLayout(customerSearch);
         customerSearch.setLayout(customerSearchLayout);
         customerSearchLayout.setHorizontalGroup(
             customerSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, customerSearchLayout.createSequentialGroup()
-                .addContainerGap(607, Short.MAX_VALUE)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(400, 400, 400))
+                .addGap(329, 329, 329)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(282, Short.MAX_VALUE))
         );
         customerSearchLayout.setVerticalGroup(
             customerSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, customerSearchLayout.createSequentialGroup()
-                .addContainerGap(194, Short.MAX_VALUE)
+                .addGap(144, 144, 144)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(400, 400, 400))
         );
 
         cardPanel.add(customerSearch, "customerSearch");
 
-        customerSearchResultPanel.setLayout(new java.awt.GridBagLayout());
-
         jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel4.setLayout(new java.awt.GridBagLayout());
 
+        customerSearchCustomerNameLbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         customerSearchCustomerNameLbl.setText("Customer Name");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 32;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(9, 14, 7, 13);
-        jPanel4.add(customerSearchCustomerNameLbl, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 250;
-        gridBagConstraints.ipady = 25;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(33, 10, 0, 29);
-        jPanel4.add(customerSearchCoopIdTxt, gridBagConstraints);
 
+        customerSearchCoopIdTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        customerSearchCoopIdTxt.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        customerSearchcoopIdLbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         customerSearchcoopIdLbl.setText("Coop Id");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 70;
-        gridBagConstraints.ipady = 8;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        gridBagConstraints.insets = new java.awt.Insets(5, 1, 4, 0);
-        jPanel4.add(customerSearchcoopIdLbl, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.ipadx = 244;
-        gridBagConstraints.ipady = 25;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 29);
-        jPanel4.add(customerSearchCustomerNameTxt, gridBagConstraints);
 
+        customerSearchCustomerNameTxt.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        customerSearchCustomerNameTxt.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        customerSearchCreditDetailsBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         customerSearchCreditDetailsBtn.setText("Credit Details");
         customerSearchCreditDetailsBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 customerSearchCreditDetailsBtnActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 275;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 11, 5, 10);
-        jPanel4.add(customerSearchCreditDetailsBtn, gridBagConstraints);
-
-        customerSearchOkBtn.setText("OK");
-        customerSearchOkBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customerSearchOkBtnActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
-        gridBagConstraints.ipadx = 26;
-        gridBagConstraints.ipady = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_TRAILING;
-        gridBagConstraints.weightx = 1.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 81, 37, 11);
-        jPanel4.add(customerSearchOkBtn, gridBagConstraints);
 
         customerSearchLBl.setBackground(new java.awt.Color(204, 204, 204));
         customerSearchLBl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         customerSearchLBl.setText("Customer Search Result                            ");
         customerSearchLBl.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
         customerSearchLBl.setOpaque(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 14;
-        gridBagConstraints.ipady = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 8);
-        jPanel4.add(customerSearchLBl, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(234, 489, 235, 490);
-        customerSearchResultPanel.add(jPanel4, gridBagConstraints);
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(customerSearchLBl, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(customerSearchcoopIdLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(customerSearchCustomerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(customerSearchCustomerNameTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                            .addComponent(customerSearchCoopIdTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(29, 29, 29)
+                        .addComponent(customerSearchCreditDetailsBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(customerSearchLBl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(4, 4, 4)
+                                .addComponent(customerSearchCustomerNameLbl))
+                            .addComponent(customerSearchCustomerNameTxt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(customerSearchcoopIdLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(customerSearchCoopIdTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(customerSearchCreditDetailsBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(30, 30, 30))))
+        );
+
+        jPanel4Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {customerSearchCoopIdTxt, customerSearchCustomerNameLbl, customerSearchCustomerNameTxt, customerSearchcoopIdLbl});
+
+        javax.swing.GroupLayout customerSearchResultPanelLayout = new javax.swing.GroupLayout(customerSearchResultPanel);
+        customerSearchResultPanel.setLayout(customerSearchResultPanelLayout);
+        customerSearchResultPanelLayout.setHorizontalGroup(
+            customerSearchResultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, customerSearchResultPanelLayout.createSequentialGroup()
+                .addContainerGap(230, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(224, 224, 224))
+        );
+        customerSearchResultPanelLayout.setVerticalGroup(
+            customerSearchResultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(customerSearchResultPanelLayout.createSequentialGroup()
+                .addGap(164, 164, 164)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(170, Short.MAX_VALUE))
+        );
 
         cardPanel.add(customerSearchResultPanel, "customerSearchResult");
 
         installmentPaymentPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         installmentPaymentPanel.setName("paymentHistory");
         installmentPaymentPanel.setOpaque(true);
-        java.awt.GridBagLayout installmentPaymentPanelLayout = new java.awt.GridBagLayout();
-        installmentPaymentPanelLayout.columnWidths = new int[] {0};
-        installmentPaymentPanelLayout.rowHeights = new int[] {0};
-        installmentPaymentPanel.setLayout(installmentPaymentPanelLayout);
 
         installmentPaymentPanelSmall.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         installmentPaymentPanelSmall.setPreferredSize(new java.awt.Dimension(450, 250));
 
+        installmetPaymentCustomerNameLbl.setFont(customerSearchCustomerNameLbl.getFont());
         installmetPaymentCustomerNameLbl.setText("Customer Name");
 
+        InstallmentPaymentDateLbl.setFont(customerSearchCustomerNameLbl.getFont());
         InstallmentPaymentDateLbl.setText("Date Settlement");
 
+        installmentPaymentSubmitBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         installmentPaymentSubmitBtn.setText("Submit");
         installmentPaymentSubmitBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -713,6 +800,7 @@ public class FinalCredit extends javax.swing.JFrame {
         installmentPaymentLbl.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
         installmentPaymentLbl.setOpaque(true);
 
+        InstallmentPaymentCancelBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         InstallmentPaymentCancelBtn.setText("Cancel");
         InstallmentPaymentCancelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -720,244 +808,249 @@ public class FinalCredit extends javax.swing.JFrame {
             }
         });
 
+        InstallmentPaymentCustomerNameLblValue.setFont(customerSearchCustomerNameLbl.getFont());
+
+        InstallmetPaymentPaymentValue.setFont(customerSearchCustomerNameLbl.getFont());
         InstallmetPaymentPaymentValue.setText("Payment Amount");
+
+        InstallmentPaymentPaymentAmountLbl.setFont(customerSearchCustomerNameLbl.getFont());
 
         javax.swing.GroupLayout installmentPaymentPanelSmallLayout = new javax.swing.GroupLayout(installmentPaymentPanelSmall);
         installmentPaymentPanelSmall.setLayout(installmentPaymentPanelSmallLayout);
         installmentPaymentPanelSmallLayout.setHorizontalGroup(
             installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
                 .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(installmentPaymentLbl))
-                    .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
-                            .addGap(247, 247, 247)
-                            .addComponent(InstallmentPaymentCancelBtn)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
-                            .addComponent(installmentPaymentSubmitBtn))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, installmentPaymentPanelSmallLayout.createSequentialGroup()
-                            .addContainerGap()
-                            .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(installmetPaymentCustomerNameLbl)
-                                .addComponent(InstallmentPaymentDateLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(InstallmetPaymentPaymentValue, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(47, 47, 47)
-                            .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(InstallmentPaymentDatePicker, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
-                                .addComponent(InstallmentPaymentPaymentAmountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(InstallmentPaymentCustomerNameLblValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                .addGap(47, 47, 47))
+                        .addComponent(InstallmentPaymentCancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(207, 207, 207)
+                        .addComponent(installmentPaymentSubmitBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(installmentPaymentLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
+                        .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(InstallmentPaymentDateLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(installmetPaymentCustomerNameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(InstallmetPaymentPaymentValue, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(InstallmentPaymentDatePicker, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                            .addComponent(InstallmentPaymentPaymentAmountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(InstallmentPaymentCustomerNameLblValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(20, 20, 20))
         );
         installmentPaymentPanelSmallLayout.setVerticalGroup(
             installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(15, 15, 15)
                 .addComponent(installmentPaymentLbl)
-                .addGap(18, 18, 18)
+                .addGap(20, 20, 20)
                 .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(installmetPaymentCustomerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(InstallmentPaymentCustomerNameLblValue, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InstallmentPaymentDateLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(InstallmentPaymentDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InstallmetPaymentPaymentValue, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(InstallmentPaymentPaymentAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(20, 20, 20)
                 .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(installmentPaymentSubmitBtn)
                     .addComponent(InstallmentPaymentCancelBtn))
-                .addGap(0, 70, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.insets = new java.awt.Insets(173, 211, 314, 282);
-        installmentPaymentPanel.add(installmentPaymentPanelSmall, gridBagConstraints);
+        installmentPaymentPanelSmallLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {InstallmentPaymentCustomerNameLblValue, InstallmentPaymentDateLbl, InstallmentPaymentDatePicker, InstallmentPaymentPaymentAmountLbl, InstallmetPaymentPaymentValue, installmetPaymentCustomerNameLbl});
+
+        javax.swing.GroupLayout installmentPaymentPanelLayout = new javax.swing.GroupLayout(installmentPaymentPanel);
+        installmentPaymentPanel.setLayout(installmentPaymentPanelLayout);
+        installmentPaymentPanelLayout.setHorizontalGroup(
+            installmentPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(installmentPaymentPanelLayout.createSequentialGroup()
+                .addGap(278, 278, 278)
+                .addComponent(installmentPaymentPanelSmall, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(282, Short.MAX_VALUE))
+        );
+        installmentPaymentPanelLayout.setVerticalGroup(
+            installmentPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(installmentPaymentPanelLayout.createSequentialGroup()
+                .addGap(132, 132, 132)
+                .addComponent(installmentPaymentPanelSmall, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(134, Short.MAX_VALUE))
+        );
 
         cardPanel.add(installmentPaymentPanel, "installmentPayment");
 
-        java.awt.GridBagLayout addCustomerLayout = new java.awt.GridBagLayout();
-        addCustomerLayout.columnWidths = new int[] {0};
-        addCustomerLayout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0};
-        addCustomer.setLayout(addCustomerLayout);
-
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel1.setLayout(new java.awt.GridBagLayout());
 
         addCustomerAddBtn1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         addCustomerAddBtn1.setText("Add");
+        addCustomerAddBtn1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         addCustomerAddBtn1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCustomerAddBtn1ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.ipadx = 67;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(11, 147, 13, 12);
-        jPanel1.add(addCustomerAddBtn1, gridBagConstraints);
 
+        addCustomerFullNameLbl1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerFullNameLbl1.setText("Full Name");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 0);
-        jPanel1.add(addCustomerFullNameLbl1, gridBagConstraints);
 
+        addCustomerCoopIdLbl1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerCoopIdLbl1.setText("Coop ID");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 5;
-        gridBagConstraints.ipadx = 28;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 12, 0, 0);
-        jPanel1.add(addCustomerCoopIdLbl1, gridBagConstraints);
 
+        addCustomerAddressLbl1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerAddressLbl1.setText("Address");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 12, 0, 0);
-        jPanel1.add(addCustomerAddressLbl1, gridBagConstraints);
 
+        addCustomerFullNameTxt1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerFullNameTxt1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCustomerFullNameTxt1ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = -5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel1.add(addCustomerFullNameTxt1, gridBagConstraints);
 
         addCustomerCoopIdTxt1.setEditable(false);
+        addCustomerCoopIdTxt1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerCoopIdTxt1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCustomerCoopIdTxt1ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = -4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel1.add(addCustomerCoopIdTxt1, gridBagConstraints);
 
         addCustomerAddressTxt1.setColumns(20);
         addCustomerAddressTxt1.setRows(5);
         jScrollPane5.setViewportView(addCustomerAddressTxt1);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 183;
-        gridBagConstraints.ipady = 73;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel1.add(jScrollPane5, gridBagConstraints);
-
+        addCustomerNicLbl1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerNicLbl1.setText("NIC No");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 0);
-        jPanel1.add(addCustomerNicLbl1, gridBagConstraints);
 
+        addCustomerTeleTxt1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerTeleTxt1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCustomerTeleTxt1ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = -4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel1.add(addCustomerTeleTxt1, gridBagConstraints);
 
+        addCustomerTeleLbl1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerTeleLbl1.setText("Telephone No");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 0);
-        jPanel1.add(addCustomerTeleLbl1, gridBagConstraints);
 
+        addCustomerNicTxt1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addCustomerNicTxt1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCustomerNicTxt1ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = -4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel1.add(addCustomerNicTxt1, gridBagConstraints);
 
         newCustomerLbl.setBackground(new java.awt.Color(204, 204, 204));
         newCustomerLbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         newCustomerLbl.setText("New Customer");
         newCustomerLbl.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
         newCustomerLbl.setOpaque(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 6;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 13, 0, 12);
-        jPanel1.add(newCustomerLbl, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
-        gridBagConstraints.insets = new java.awt.Insets(24, 19, 27, 29);
-        addCustomer.add(jPanel1, gridBagConstraints);
+        addCustomerBackBtn2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        addCustomerBackBtn2.setText("Back");
+        addCustomerBackBtn2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        addCustomerBackBtn2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addCustomerBackBtn2ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(newCustomerLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(addCustomerFullNameLbl1)
+                            .addComponent(addCustomerCoopIdLbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addCustomerNicLbl1)
+                            .addComponent(addCustomerAddressLbl1)
+                            .addComponent(addCustomerTeleLbl1))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(addCustomerFullNameTxt1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addCustomerCoopIdTxt1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addCustomerNicTxt1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addCustomerTeleTxt1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(addCustomerBackBtn2, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(addCustomerAddBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
+        );
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addCustomerCoopIdTxt1, addCustomerFullNameTxt1, addCustomerNicTxt1, addCustomerTeleTxt1, jScrollPane5});
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addCustomerAddressLbl1, addCustomerCoopIdLbl1, addCustomerFullNameLbl1, addCustomerNicLbl1, addCustomerTeleLbl1});
+
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(newCustomerLbl)
+                .addGap(15, 15, 15)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(addCustomerFullNameLbl1)
+                    .addComponent(addCustomerFullNameTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addCustomerCoopIdTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addCustomerCoopIdLbl1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addCustomerNicTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addCustomerNicLbl1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(addCustomerAddressLbl1)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addCustomerTeleTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addCustomerTeleLbl1))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addCustomerAddBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addCustomerBackBtn2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(32, Short.MAX_VALUE))
+        );
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {addCustomerAddressLbl1, addCustomerCoopIdLbl1, addCustomerCoopIdTxt1, addCustomerNicLbl1, addCustomerNicTxt1, addCustomerTeleLbl1, addCustomerTeleTxt1});
+
+        javax.swing.GroupLayout addCustomerLayout = new javax.swing.GroupLayout(addCustomer);
+        addCustomer.setLayout(addCustomerLayout);
+        addCustomerLayout.setHorizontalGroup(
+            addCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addCustomerLayout.createSequentialGroup()
+                .addContainerGap(286, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(280, 280, 280))
+        );
+        addCustomerLayout.setVerticalGroup(
+            addCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addCustomerLayout.createSequentialGroup()
+                .addContainerGap(33, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
+        );
 
         cardPanel.add(addCustomer, "addCustomer");
 
         creditDetails.setPreferredSize(new java.awt.Dimension(148, 666));
-        creditDetails.setLayout(new java.awt.GridBagLayout());
 
         jPanel5.setPreferredSize(new java.awt.Dimension(1126, 775));
 
         creditTbl.setAutoCreateRowSorter(true);
+        creditTbl.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        creditTbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         creditTbl.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -976,69 +1069,116 @@ public class FinalCredit extends javax.swing.JFrame {
         });
         creditTbl.setFillsViewportHeight(true);
         jScrollPane7.setViewportView(creditTbl);
+        if (creditTbl.getColumnModel().getColumnCount() > 0) {
+            creditTbl.getColumnModel().getColumn(0).setHeaderValue("Select to Pay");
+            creditTbl.getColumnModel().getColumn(1).setHeaderValue("Invoice No.");
+            creditTbl.getColumnModel().getColumn(2).setHeaderValue("Date");
+            creditTbl.getColumnModel().getColumn(3).setHeaderValue("Net Amount");
+            creditTbl.getColumnModel().getColumn(4).setHeaderValue("Paid  Amount");
+        }
 
-        jPanel6.setLayout(new java.awt.GridBagLayout());
+        jPanel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         billTotalLbl1.setText("Bill Total");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(11, 23, 0, 0);
-        jPanel6.add(billTotalLbl1, gridBagConstraints);
+        billTotalLbl1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
 
-        billTxt1.setText("jXLabel1");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 8;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(11, 55, 0, 0);
-        jPanel6.add(billTxt1, gridBagConstraints);
-
-        paidAmountTxt1.setText("jXLabel1");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 8;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 55, 0, 0);
-        jPanel6.add(paidAmountTxt1, gridBagConstraints);
+        billTxt1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        billTxt1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
 
         paidAmountlbl1.setText("Paid Amount");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 23, 0, 0);
-        jPanel6.add(paidAmountlbl1, gridBagConstraints);
+        paidAmountlbl1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
 
-        cancelBtn1.setText("Cancel");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 8;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 55, 11, 15);
-        jPanel6.add(cancelBtn1, gridBagConstraints);
+        paidAmountTxt1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        paidAmountTxt1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
 
-        confirmBtn1.setText("Confirm");
-        confirmBtn1.addActionListener(new java.awt.event.ActionListener() {
+        jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        checkAmountButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        checkAmountButton1.setText("CHECK AMOUNT");
+        checkAmountButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                confirmBtn1ActionPerformed(evt);
+                checkAmountButton1ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 7;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 23, 11, 0);
-        jPanel6.add(confirmBtn1, gridBagConstraints);
 
+        paymentAmountCrdtTblTxt.setEditable(false);
+        paymentAmountCrdtTblTxt.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        paymentAmountCrdtTblTxt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        paymentAmountCrdtTblTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paymentAmountCrdtTblTxtActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(checkAmountButton1)
+                .addGap(18, 18, 18)
+                .addComponent(paymentAmountCrdtTblTxt)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(checkAmountButton1)
+                    .addComponent(paymentAmountCrdtTblTxt))
+                .addContainerGap(46, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(paidAmountlbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(billTotalLbl1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(30, 30, 30)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(billTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paidAmountTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(billTotalLbl1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(billTxt1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(paidAmountlbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paidAmountTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(53, Short.MAX_VALUE))
+        );
+
+        jPanel6Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {billTotalLbl1, billTxt1, paidAmountTxt1, paidAmountlbl1});
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        creditDetailsCreditorLbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         creditDetailsCreditorLbl.setText("Creditor");
 
+        creditDetailsSettleentNoLbl.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         creditDetailsSettleentNoLbl.setText("Settlement No.");
+
+        creditDetailsSettlementNoTxt.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        creditDetailsSettlementNoTxt.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        creditDetailsSettlementNoTxt.setText(" ");
 
         creditDetailsCustomerComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1046,42 +1186,43 @@ public class FinalCredit extends javax.swing.JFrame {
             }
         });
 
-        creditDetailsSettleentDateLbl1.setText("Settlement Date");
+        checkCreditDetailsBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        checkCreditDetailsBtn.setText("Check");
+        checkCreditDetailsBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkCreditDetailsBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(creditDetailsCreditorLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(creditDetailsSettleentNoLbl))
+                .addGap(32, 32, 32)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(creditDetailsCreditorLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(creditDetailsSettleentNoLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(creditDetailsSettleentDateLbl1, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(creditDetailsSettlementNoTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(creditDetailsCustomerComboBox, 0, 373, Short.MAX_VALUE)
-                    .addComponent(creditDetailsSettlementDateTxt1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(creditDetailsCustomerComboBox, 0, 225, Short.MAX_VALUE)
+                    .addComponent(creditDetailsSettlementNoTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(81, 81, 81)
+                .addComponent(checkCreditDetailsBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(creditDetailsCustomerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(creditDetailsCreditorLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(3, 3, 3)))
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(creditDetailsSettleentNoLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-                    .addComponent(creditDetailsSettlementNoTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(creditDetailsCustomerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(creditDetailsCreditorLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkCreditDetailsBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(creditDetailsSettleentDateLbl1, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-                    .addComponent(creditDetailsSettlementDateTxt1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(17, 17, 17))
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(creditDetailsSettlementNoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(creditDetailsSettleentNoLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         installmentPaymentLbl4.setBackground(new java.awt.Color(204, 204, 204));
@@ -1090,10 +1231,27 @@ public class FinalCredit extends javax.swing.JFrame {
         installmentPaymentLbl4.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
         installmentPaymentLbl4.setOpaque(true);
 
-        checkCreditDetailsBtn.setText("Check");
-        checkCreditDetailsBtn.addActionListener(new java.awt.event.ActionListener() {
+        creditTblBackBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        creditTblBackBtn.setText("Back");
+        creditTblBackBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkCreditDetailsBtnActionPerformed(evt);
+                creditTblBackBtnActionPerformed(evt);
+            }
+        });
+
+        confirmBtn1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        confirmBtn1.setText("Confirm");
+        confirmBtn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmBtn1ActionPerformed(evt);
+            }
+        });
+
+        cancelBtn1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        cancelBtn1.setText("Cancel");
+        cancelBtn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelBtn1ActionPerformed(evt);
             }
         });
 
@@ -1102,211 +1260,231 @@ public class FinalCredit extends javax.swing.JFrame {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(installmentPaymentLbl4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel5Layout.createSequentialGroup()
-                            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(67, 67, 67)
-                            .addComponent(checkCreditDetailsBtn)
-                            .addContainerGap())
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 1106, javax.swing.GroupLayout.PREFERRED_SIZE))))
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(installmentPaymentLbl4, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(619, Short.MAX_VALUE)))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 636, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 10, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(creditTblBackBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cancelBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43)
+                        .addComponent(confirmBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(59, 59, 59)
-                        .addComponent(checkCreditDetailsBtn)))
+                .addComponent(installmentPaymentLbl4)
+                .addGap(20, 20, 20)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 421, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(creditTblBackBtn)
+                    .addComponent(confirmBtn1)
+                    .addComponent(cancelBtn1))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(installmentPaymentLbl4)
-                    .addContainerGap(713, Short.MAX_VALUE)))
         );
 
-        creditDetails.add(jPanel5, new java.awt.GridBagConstraints());
+        javax.swing.GroupLayout creditDetailsLayout = new javax.swing.GroupLayout(creditDetails);
+        creditDetails.setLayout(creditDetailsLayout);
+        creditDetailsLayout.setHorizontalGroup(
+            creditDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, creditDetailsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 997, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        creditDetailsLayout.setVerticalGroup(
+            creditDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(creditDetailsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         cardPanel.add(creditDetails, "creditDetails");
 
-        editCustomer.setLayout(new java.awt.GridBagLayout());
-
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel2.setLayout(new java.awt.GridBagLayout());
 
         editCustomerSaveBtn2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         editCustomerSaveBtn2.setText("Save");
+        editCustomerSaveBtn2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         editCustomerSaveBtn2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editCustomerSaveBtn2ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.ipadx = 67;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(11, 147, 13, 12);
-        jPanel2.add(editCustomerSaveBtn2, gridBagConstraints);
 
+        editCustomerFullNameLbl2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerFullNameLbl2.setText("Full Name");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 0);
-        jPanel2.add(editCustomerFullNameLbl2, gridBagConstraints);
 
+        editCustomerCoopIdLbl2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerCoopIdLbl2.setText("Coop ID");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 5;
-        gridBagConstraints.ipadx = 28;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 12, 0, 0);
-        jPanel2.add(editCustomerCoopIdLbl2, gridBagConstraints);
 
+        editCustomerAddressLbl2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerAddressLbl2.setText("Address");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 12, 0, 0);
-        jPanel2.add(editCustomerAddressLbl2, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = -5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel2.add(editCustomerFullNameTxt2, gridBagConstraints);
+
+        editCustomerFullNameTxt2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
 
         editCustomerCoopIdTxt2.setEditable(false);
+        editCustomerCoopIdTxt2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerCoopIdTxt2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editCustomerCoopIdTxt2ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = -4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel2.add(editCustomerCoopIdTxt2, gridBagConstraints);
 
         editCustomerAddressTxt2.setColumns(20);
+        editCustomerAddressTxt2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerAddressTxt2.setRows(5);
         jScrollPane8.setViewportView(editCustomerAddressTxt2);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 183;
-        gridBagConstraints.ipady = 73;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel2.add(jScrollPane8, gridBagConstraints);
-
+        editCustomerNicLbl2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerNicLbl2.setText("NIC No");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 0);
-        jPanel2.add(editCustomerNicLbl2, gridBagConstraints);
 
+        editCustomerTeleTxt2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerTeleTxt2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editCustomerTeleTxt2ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = -4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel2.add(editCustomerTeleTxt2, gridBagConstraints);
 
+        editCustomerTeleLbl2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerTeleLbl2.setText("Telephone No");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 12, 0, 0);
-        jPanel2.add(editCustomerTeleLbl2, gridBagConstraints);
 
+        editCustomerNicTxt2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         editCustomerNicTxt2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editCustomerNicTxt2ActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = -4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 31, 0, 12);
-        jPanel2.add(editCustomerNicTxt2, gridBagConstraints);
 
         editCustomerLbl2.setBackground(new java.awt.Color(204, 204, 204));
         editCustomerLbl2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         editCustomerLbl2.setText("Edit Customer");
         editCustomerLbl2.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
         editCustomerLbl2.setOpaque(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 6;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 13, 0, 12);
-        jPanel2.add(editCustomerLbl2, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
-        gridBagConstraints.insets = new java.awt.Insets(24, 19, 27, 29);
-        editCustomer.add(jPanel2, gridBagConstraints);
+        editCustomerBackBtn3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        editCustomerBackBtn3.setText("Back");
+        editCustomerBackBtn3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        editCustomerBackBtn3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editCustomerBackBtn3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(editCustomerLbl2, javax.swing.GroupLayout.PREFERRED_SIZE, 467, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(editCustomerBackBtn3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(editCustomerSaveBtn2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(editCustomerFullNameLbl2)
+                                .addComponent(editCustomerCoopIdLbl2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(editCustomerNicLbl2)
+                                .addComponent(editCustomerAddressLbl2)
+                                .addComponent(editCustomerTeleLbl2))
+                            .addGap(31, 31, 31)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(editCustomerFullNameTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(editCustomerCoopIdTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(editCustomerNicTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(editCustomerTeleTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(20, 20, 20))
+        );
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {editCustomerAddressLbl2, editCustomerCoopIdLbl2, editCustomerFullNameLbl2, editCustomerNicLbl2, editCustomerTeleLbl2});
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {editCustomerCoopIdTxt2, editCustomerFullNameTxt2, editCustomerNicTxt2, editCustomerTeleTxt2, jScrollPane8});
+
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(editCustomerLbl2)
+                .addGap(20, 20, 20)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(editCustomerFullNameLbl2))
+                    .addComponent(editCustomerFullNameTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(editCustomerCoopIdLbl2)
+                    .addComponent(editCustomerCoopIdTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(editCustomerNicLbl2))
+                    .addComponent(editCustomerNicTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(editCustomerAddressLbl2)
+                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(editCustomerTeleLbl2))
+                    .addComponent(editCustomerTeleTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editCustomerSaveBtn2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editCustomerBackBtn3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {editCustomerAddressLbl2, editCustomerCoopIdLbl2, editCustomerCoopIdTxt2, editCustomerFullNameLbl2, editCustomerFullNameTxt2, editCustomerNicLbl2, editCustomerNicTxt2, editCustomerTeleLbl2, editCustomerTeleTxt2});
+
+        javax.swing.GroupLayout editCustomerLayout = new javax.swing.GroupLayout(editCustomer);
+        editCustomer.setLayout(editCustomerLayout);
+        editCustomerLayout.setHorizontalGroup(
+            editCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editCustomerLayout.createSequentialGroup()
+                .addContainerGap(266, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(236, 236, 236))
+        );
+        editCustomerLayout.setVerticalGroup(
+            editCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editCustomerLayout.createSequentialGroup()
+                .addContainerGap(40, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41))
+        );
 
         cardPanel.add(editCustomer, "editCustomer");
 
-        customerDetails.setLayout(new java.awt.GridBagLayout());
+        customerDetails.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
+        customerDetailsTbl.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         customerDetailsTbl.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1315,23 +1493,15 @@ public class FinalCredit extends javax.swing.JFrame {
                 "Coop Id", "Customer Name", "Address", "Tele No.", "NIC No.", "Current Credit"
             }
         ));
+        customerDetailsTbl.setEditable(false);
         customerDetailsTbl.setSelectionBackground(new java.awt.Color(153, 153, 153));
         customerDetailsTbl.setShowGrid(true);
         jScrollPane6.setViewportView(customerDetailsTbl);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 697;
-        gridBagConstraints.ipady = 507;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(14, 5, 23, 5);
-        customerDetails.add(jScrollPane6, gridBagConstraints);
+        jXPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         editCustomerBtn.setText("Edit");
+        editCustomerBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         editCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editCustomerBtnActionPerformed(evt);
@@ -1339,6 +1509,7 @@ public class FinalCredit extends javax.swing.JFrame {
         });
 
         deleteCustomerBtn.setText("Delete");
+        deleteCustomerBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         deleteCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteCustomerBtnActionPerformed(evt);
@@ -1346,6 +1517,7 @@ public class FinalCredit extends javax.swing.JFrame {
         });
 
         customerDetailsCreditDetailsBtn.setText("Credit Details");
+        customerDetailsCreditDetailsBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         customerDetailsCreditDetailsBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 customerDetailsCreditDetailsBtnActionPerformed(evt);
@@ -1357,12 +1529,12 @@ public class FinalCredit extends javax.swing.JFrame {
         jXPanel2Layout.setHorizontalGroup(
             jXPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jXPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(20, 20, 20)
                 .addGroup(jXPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(editCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(deleteCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(customerDetailsCreditDetailsBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
 
         jXPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {customerDetailsCreditDetailsBtn, deleteCustomerBtn, editCustomerBtn});
@@ -1370,36 +1542,47 @@ public class FinalCredit extends javax.swing.JFrame {
         jXPanel2Layout.setVerticalGroup(
             jXPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jXPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(10, 10, 10)
                 .addComponent(editCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(deleteCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(customerDetailsCreditDetailsBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addGap(10, 10, 10))
         );
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipady = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 19);
-        customerDetails.add(jXPanel2, gridBagConstraints);
 
         newCustomerLbl1.setBackground(new java.awt.Color(204, 204, 204));
         newCustomerLbl1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         newCustomerLbl1.setText("Customer Details                                                                                                                                                               ");
         newCustomerLbl1.setBorder(new org.jdesktop.swingx.border.DropShadowBorder());
         newCustomerLbl1.setOpaque(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 5;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 161;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 26);
-        customerDetails.add(newCustomerLbl1, gridBagConstraints);
+
+        javax.swing.GroupLayout customerDetailsLayout = new javax.swing.GroupLayout(customerDetails);
+        customerDetails.setLayout(customerDetailsLayout);
+        customerDetailsLayout.setHorizontalGroup(
+            customerDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(customerDetailsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane6)
+                .addGap(13, 13, 13)
+                .addComponent(jXPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22))
+            .addGroup(customerDetailsLayout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addComponent(newCustomerLbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 1004, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        customerDetailsLayout.setVerticalGroup(
+            customerDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(customerDetailsLayout.createSequentialGroup()
+                .addComponent(newCustomerLbl1)
+                .addGap(20, 20, 20)
+                .addGroup(customerDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(customerDetailsLayout.createSequentialGroup()
+                        .addComponent(jXPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(328, Short.MAX_VALUE))
+                    .addComponent(jScrollPane6)))
+        );
 
         cardPanel.add(customerDetails, "customerDetails");
 
@@ -1408,21 +1591,20 @@ public class FinalCredit extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 1145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 1014, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 749, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.PREFERRED_SIZE, 559, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                .addGap(15, 15, 15)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -1430,20 +1612,41 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void installmentPaymentSubmitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installmentPaymentSubmitBtnActionPerformed
         // TODO add your handling code here:
-        logger.error("Not implemented");
+
         if ((InstallmentPaymentDatePicker.getDate() != null)) {
-            Utilities.showMsgBox("Payment Successful", "Confirmed", JOptionPane.PLAIN_MESSAGE);
-            InstallmentPaymentCustomerNameLblValue.setText(null);
-            InstallmentPaymentDatePicker.setDate(null);
-            InstallmentPaymentPaymentAmountLbl.setText(null);
+            try {
+                logger.info("credit customer payment confirmation");
+                CustomerCreditController.settleCustomerCredit((Double.parseDouble(InstallmentPaymentPaymentAmountLbl.getText()) - CustomerCreditController.getCustomer(Integer.parseInt(creditDetailsSettlementNoTxt.getText())).getCurrentCredit()), Integer.parseInt(creditDetailsSettlementNoTxt.getText()));
+                for (int i = 0; i < CreditDetailsTableModel.getRowCount(); i++) {
+                    if (CreditDetailsTableModel.getValueAt(i, 0).equals(true)) {
+                        CoopCreditPaymentController.deleteDeatils(Integer.parseInt(CreditDetailsTableModel.getValueAt(i, 1).toString()));
+                    }
+                }
+
+                Utilities.showMsgBox("Payment Successful", "Confirmed", JOptionPane.PLAIN_MESSAGE);
+                InstallmentPaymentCustomerNameLblValue.setText(null);
+                InstallmentPaymentDatePicker.setDate(null);
+                InstallmentPaymentPaymentAmountLbl.setText(null);
+                cleanCreditTbl();
+                chngTblModel();
+                CardLayout card = (CardLayout) cardPanel.getLayout();
+                card.show(cardPanel, "customerDetails");
+            } catch (SQLException ex) {
+                logger.error("SQL exception has occured");
+                Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         } else {
             Utilities.showMsgBox("Select the date", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
     }//GEN-LAST:event_installmentPaymentSubmitBtnActionPerformed
 
     private void InstallmentPaymentCancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InstallmentPaymentCancelBtnActionPerformed
         // TODO add your handling code here:
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "creditDetails");
         InstallmentPaymentCustomerNameLblValue.setText(null);
         InstallmentPaymentDatePicker.setDate(null);
         InstallmentPaymentPaymentAmountLbl.setText(null);
@@ -1472,35 +1675,50 @@ public class FinalCredit extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteCustomerBtnActionPerformed
 
     private void custoemrSearchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_custoemrSearchBtnActionPerformed
-        try {
-            // TODO add your handling code here:
-            searchDetails();
-        } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        jTextField1.setText(null);
+        searchDetails();
+        customerSearchTxt.setText("");
         //  CardLayout card = (CardLayout) cardPanel.getLayout();
         //  card.show(cardPanel, "customerSearchResult");
     }//GEN-LAST:event_custoemrSearchBtnActionPerformed
 
-    private void customerSearchBackBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerSearchBackBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_customerSearchBackBtnActionPerformed
-
     private void customerDetailsCreditDetailsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerDetailsCreditDetailsBtnActionPerformed
         // TODO add your handling code here:
+        cleanCreditTbl();
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "creditDetails");
+        loadDetails();
     }//GEN-LAST:event_customerDetailsCreditDetailsBtnActionPerformed
 
     private void addCustomerAddBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerAddBtn1ActionPerformed
-
+        logger.debug("validating addCustomer details ");
         //Validate name
+        boolean isValid = false;
         if (!validateName(addCustomerFullNameTxt1.getText())) {
             Utilities.showMsgBox("Enter a valid name", "WARNING", JOptionPane.WARNING_MESSAGE);
             addCustomerFullNameTxt1.requestFocus();
             return;
         }
+       else{
+            try {
+                isValid =CustomerCreditController.checkDataExistence(addCustomerFullNameTxt1.getText());
+                if(!isValid){
+                    logger.info("valid name entered");
+                }
+                else{
+                    logger.error("this name exists");
+                    Utilities.showMsgBox("This customer name already taken", " Error", JOptionPane.WARNING_MESSAGE);
+                    addCustomerFullNameTxt1.setText("");
+                    addCustomerFullNameTxt1.requestFocus();
+                    return;
+                    
+                }
+                logger.info("valid name");
+            } catch (SQLException ex) {
+               logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            return;   }
+        }
+        
 
         //Validate nic
         String nic = addCustomerNicTxt1.getText();
@@ -1517,6 +1735,12 @@ public class FinalCredit extends javax.swing.JFrame {
             addCustomerNicTxt1.requestFocus();
             return;
         }
+        String address = addCustomerAddressTxt1.getText();
+         if (this.addCustomerAddressTxt1.getText() == null || this.addCustomerAddressTxt1.getText().trim().equals("")) {
+                logger.debug((Object) "invalid detail or empty block found");
+                Utilities.showMsgBox((String) "Give a valid address", (String) " Error", (int) 2);
+                return;
+            }
 //
         //validate tel no
         String telNo = addCustomerTeleTxt1.getText();
@@ -1534,13 +1758,9 @@ public class FinalCredit extends javax.swing.JFrame {
             return;
         }
 
-        try {
-            addCustomer();
-            CardLayout card = (CardLayout) cardPanel.getLayout();
-            card.show(cardPanel, "customerDetails");
-        } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        addCustomer();
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "customerDetails");
     }//GEN-LAST:event_addCustomerAddBtn1ActionPerformed
 
     private void addCustomerCoopIdTxt1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerCoopIdTxt1ActionPerformed
@@ -1555,19 +1775,15 @@ public class FinalCredit extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_addCustomerNicTxt1ActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void customerSearchTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerSearchTxtActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_customerSearchTxtActionPerformed
 
     private void customerSearchCreditDetailsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerSearchCreditDetailsBtnActionPerformed
         // TODO add your handling code here:
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "creditDetails");
     }//GEN-LAST:event_customerSearchCreditDetailsBtnActionPerformed
-
-    private void customerSearchOkBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerSearchOkBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_customerSearchOkBtnActionPerformed
 
     private void editCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCustomerBtnActionPerformed
         // TODO add your handling code here:
@@ -1587,13 +1803,14 @@ public class FinalCredit extends javax.swing.JFrame {
 //                }
 //            }
 //        }
-
+        selectedIndex = customerDetailsTbl.getSelectedRow();
         int row = customerDetailsTbl.getSelectedRow();
         if (row > -1) {
             System.out.println("Selected customer row : " + row);
             showCustomerEditDetails(Integer.parseInt(customerDetailsTbl.getValueAt(row, 0).toString()));
         } else {
             Utilities.showMsgBox("Select a row to edit details", "WARNING", JOptionPane.WARNING_MESSAGE);
+            return;
         }
     }//GEN-LAST:event_editCustomerBtnActionPerformed
 
@@ -1619,57 +1836,47 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void creditManagementCreditDetailsLblActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditManagementCreditDetailsLblActionPerformed
         // TODO add your handling code here:
-
+        cleanCreditTbl();
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "creditDetails");
-        try {
-
-            loadDetails();
-
-        } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        loadDetails();
     }//GEN-LAST:event_creditManagementCreditDetailsLblActionPerformed
 
     private void editCustomerSaveBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCustomerSaveBtn2ActionPerformed
 
-//        try {
-//            validateName(editCustomerFullNameTxt2.getText());
-//            String nic = editCustomerNicTxt2.getText();
-//            if ((nic.length() == 10) && (nic.endsWith("v") == true)) {
-//                try {
-//                    Integer.parseInt(nic.substring(0, 8));
-//                } catch (NumberFormatException ex) {
-//                    Utilities.showMsgBox("Enter a valid nic number", "WARNING", JOptionPane.WARNING_MESSAGE);
-//
-//                }
-//            } else {
-//                Utilities.showMsgBox("Enter a valid id number", "WARNING", JOptionPane.WARNING_MESSAGE);
-//
-//            }
-//
-//            if ((editCustomerTeleTxt2.getText().length() == 10)) {
-//                try {
-//                    Integer.parseInt(nic.substring(0, 8));
-//                } catch (NumberFormatException ex) {
-//                    Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-//
-//                }
-//            } else {
-//                Utilities.showMsgBox("Enter a valid telephone number", "WARNING", JOptionPane.WARNING_MESSAGE);
-//
-//            }
-//            // TODO add your handling code here:
-//            setEditDetails();
-//        } catch (SQLException ex) {
-//            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        //Validate name
-        if (!validateName(editCustomerFullNameTxt2.getText())) {
-            Utilities.showMsgBox("Enter a valid name", "WARNING", JOptionPane.WARNING_MESSAGE);
-            editCustomerFullNameTxt2.requestFocus();
-            return;
-        }
+        boolean isValid = true;
+   
+            if (this.editCustomerFullNameTxt2.getText() != null && !this.editCustomerFullNameTxt2.getText().trim().equals("") && this.validateName(this.editCustomerFullNameTxt2.getText().trim())) {
+                logger.info("selected index :"+ selectedIndex);
+                if (this.editCustomerFullNameTxt2.getText().trim().equals(this.customerDetailsTbl.getValueAt(this.selectedIndex, 1).toString().trim())) {
+                    isValid = false;
+                    logger.info("Names are equal" );
+                } else {
+                    try {
+                        isValid = CustomerCreditController.checkDataExistence((String)this.editCustomerFullNameTxt2.getText().trim());
+                    } catch (SQLException ex) {
+                       logger.error("SQL exception has occured");
+            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+             return;   
+                    }
+
+                }
+                if (isValid) {
+                    logger.error((Object) "this name exists");
+                    Utilities.showMsgBox((String) "This user name already taken", (String) " Error", (int) 2);
+                    this.editCustomerFullNameTxt2.setText("");
+                    this.editCustomerFullNameTxt2.requestFocus();
+                    return;
+                }
+                logger.info((Object) "valid name entered");
+            } else {
+                logger.debug((Object) "invalid detail or empty block found");
+                Utilities.showMsgBox((String) "Give a valid name", (String) " Error", (int) 2);
+                this.editCustomerFullNameTxt2.setText("");
+                this.editCustomerFullNameTxt2.requestFocus();
+                return;
+            }
+            logger.info((Object) "valid name");
 
         //Validate nic
         String nic = editCustomerNicTxt2.getText();
@@ -1686,6 +1893,12 @@ public class FinalCredit extends javax.swing.JFrame {
             editCustomerNicTxt2.requestFocus();
             return;
         }
+          String address = editCustomerAddressTxt2.getText();
+         if (this.editCustomerAddressTxt2.getText() == null || editCustomerAddressTxt2.getText().trim().equals("") || !this.validateName(editCustomerAddressTxt2.getText().trim())) {
+                logger.debug((Object) "invalid detail or empty block found");
+                Utilities.showMsgBox((String) "Give a valid address", (String) " Error", (int) 2);
+                return;
+            }
 //
         //validate tel no
         String telNo = editCustomerTeleTxt2.getText();
@@ -1704,13 +1917,9 @@ public class FinalCredit extends javax.swing.JFrame {
             return;
         }
 
-        try {
-            editCustomer();
-            CardLayout card = (CardLayout) cardPanel.getLayout();
-            card.show(cardPanel, "customerDetails");
-        } catch (SQLException ex) {
-            java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        editCustomer();
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "customerDetails");
     }//GEN-LAST:event_editCustomerSaveBtn2ActionPerformed
 
     private void editCustomerCoopIdTxt2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCustomerCoopIdTxt2ActionPerformed
@@ -1732,17 +1941,14 @@ public class FinalCredit extends javax.swing.JFrame {
     private void checkCreditDetailsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkCreditDetailsBtnActionPerformed
         // TODO add your handling code here:
 
-        if (creditDetailsCustomerComboBox.getSelectedIndex() > 0) {
-            // Object ob = CreditDetailsCustomerComboBoxModel.getSelectedItem();
-            // CreditDetailsCustomerComboBoxModel.removeAllElements();
-            // CreditDetailsCustomerComboBoxModel.addElement(ob);
+        if (creditDetailsCustomerComboBox.getSelectedIndex() >= 0) {
+            loadCreditDetails();
+        } else {
+            Utilities.showMsgBox("No item selected in creditDetailsCustomerComboBox", "WARNING", JOptionPane.WARNING_MESSAGE);
 
-            try {
-                loadCreditDetails();
-            } catch (SQLException ex) {
-                java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            return;
         }
+
 
     }//GEN-LAST:event_checkCreditDetailsBtnActionPerformed
 
@@ -1752,22 +1958,81 @@ public class FinalCredit extends javax.swing.JFrame {
 
     private void confirmBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtn1ActionPerformed
         // TODO add your handling code here:
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "installmentPayment");
-        InstallmentPaymentCustomerNameLblValue.setText(creditDetailsCustomerComboBox.getSelectedItem().toString());
-        double billValue = 0;
-        double paidAmount = 0;
-        double payment = 0;
-        for (int i = 0; i < creditTbl.getRowCount(); i++) {
-            if (creditTbl.getValueAt(i, 0).equals(true)) {
-                billValue = Double.parseDouble(creditTbl.getValueAt(i, 3).toString());
-                paidAmount = Double.parseDouble(creditTbl.getValueAt(i, 4).toString());
-                payment += billValue - paidAmount;
+        boolean checked = false;
+        for (int j = 0; j < creditTbl.getRowCount(); j++) {
+            if (creditTbl.getValueAt(j, 0).equals(true)) {
+                checked = true;
             }
         }
-        InstallmentPaymentPaymentAmountLbl.setText(payment + "");
+        if (checked) {
+            CardLayout card = (CardLayout) cardPanel.getLayout();
+            card.show(cardPanel, "installmentPayment");
+            InstallmentPaymentCustomerNameLblValue.setText(creditDetailsCustomerComboBox.getSelectedItem().toString());
+            double billValue = 0;
+            double paidAmount = 0;
+            double payment = 0;
+            for (int i = 0; i < creditTbl.getRowCount(); i++) {
+                if (creditTbl.getValueAt(i, 0).equals(true)) {
+                    billValue = Double.parseDouble(creditTbl.getValueAt(i, 3).toString());
+                    paidAmount = Double.parseDouble(creditTbl.getValueAt(i, 4).toString());
+                    payment += billValue - paidAmount;
+                }
+            }
+            InstallmentPaymentPaymentAmountLbl.setText(payment + "");
+        } else {
+            Utilities.showMsgBox("No payment selected", "WARNING", JOptionPane.WARNING_MESSAGE);
+            logger.error("check whether the user selected a payment or not.");
+            return;
+        }
 
     }//GEN-LAST:event_confirmBtn1ActionPerformed
+
+    private void cancelBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtn1ActionPerformed
+        // TODO add your handling code here:
+        for (int i = 0; i < creditTbl.getRowCount(); i++) {
+            creditTbl.setValueAt(false, 0, i);
+        }
+    }//GEN-LAST:event_cancelBtn1ActionPerformed
+
+    private void creditTblBackBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditTblBackBtnActionPerformed
+        // TODO add your handling code here:
+        cleanCreditTbl();
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "customerSearch");
+    }//GEN-LAST:event_creditTblBackBtnActionPerformed
+
+    private void checkAmountButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkAmountButton1ActionPerformed
+        // TODO add your handling code here:
+        selectPayment();
+
+    }//GEN-LAST:event_checkAmountButton1ActionPerformed
+
+    private void paymentAmountCrdtTblTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentAmountCrdtTblTxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_paymentAmountCrdtTblTxtActionPerformed
+
+    private void editCustomerBackBtn3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCustomerBackBtn3ActionPerformed
+        // TODO add your handling code here:
+        
+        editCustomerCoopIdTxt2.setText("");
+            editCustomerFullNameTxt2.setText("");
+            editCustomerAddressTxt2.setText("");
+            editCustomerNicTxt2.setText("");
+            editCustomerTeleTxt2.setText("");
+                    CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "customerSearch");
+    }//GEN-LAST:event_editCustomerBackBtn3ActionPerformed
+
+    private void addCustomerBackBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerBackBtn2ActionPerformed
+        // TODO add your handling code here:
+       addCustomerCoopIdTxt1.setText("");
+            addCustomerFullNameTxt1.setText("");
+            addCustomerAddressTxt1.setText("");
+            addCustomerNicTxt1.setText("");
+            addCustomerTeleTxt1.setText("");
+             CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "customerSearch");
+    }//GEN-LAST:event_addCustomerBackBtn2ActionPerformed
 
     public boolean validateName(String txt) {
         logger.debug("validateName invoked");
@@ -1825,11 +2090,7 @@ public class FinalCredit extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                try {
-                    new FinalCredit().setVisible(true);
-                } catch (SQLException ex) {
-                    java.util.logging.Logger.getLogger(FinalCredit.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                new FinalCredit().setVisible(true);
             }
         });
     }
@@ -1845,6 +2106,7 @@ public class FinalCredit extends javax.swing.JFrame {
     private org.jdesktop.swingx.JXButton addCustomerAddBtn1;
     private javax.swing.JLabel addCustomerAddressLbl1;
     private javax.swing.JTextArea addCustomerAddressTxt1;
+    private org.jdesktop.swingx.JXButton addCustomerBackBtn2;
     private javax.swing.JLabel addCustomerCoopIdLbl1;
     private javax.swing.JTextField addCustomerCoopIdTxt1;
     private javax.swing.JLabel addCustomerFullNameLbl1;
@@ -1859,40 +2121,40 @@ public class FinalCredit extends javax.swing.JFrame {
     private org.jdesktop.swingx.painter.BusyPainter busyPainter1;
     private javax.swing.JButton cancelBtn1;
     private javax.swing.JPanel cardPanel;
+    private javax.swing.JButton checkAmountButton1;
     private javax.swing.JButton checkCreditDetailsBtn;
     private org.jdesktop.swingx.painter.CheckerboardPainter checkerboardPainter1;
     private javax.swing.JButton confirmBtn1;
     private javax.swing.JPanel creditDetails;
     private javax.swing.JLabel creditDetailsCreditorLbl;
     private javax.swing.JComboBox creditDetailsCustomerComboBox;
-    private javax.swing.JLabel creditDetailsSettleentDateLbl1;
     private javax.swing.JLabel creditDetailsSettleentNoLbl;
-    private javax.swing.JLabel creditDetailsSettlementDateTxt1;
     private javax.swing.JLabel creditDetailsSettlementNoTxt;
     private javax.swing.JButton creditManagementCreditDetailsLbl;
     private org.jdesktop.swingx.JXTaskPane creditManagementTaskPane;
     private javax.swing.JTable creditTbl;
+    private javax.swing.JButton creditTblBackBtn;
     private javax.swing.JButton custoemrSearchBtn;
     private javax.swing.JPanel customerDetails;
     private org.jdesktop.swingx.JXButton customerDetailsCreditDetailsBtn;
     private org.jdesktop.swingx.JXTable customerDetailsTbl;
     private javax.swing.ButtonGroup customerGender;
     private javax.swing.JPanel customerSearch;
-    private javax.swing.JButton customerSearchBackBtn;
     private javax.swing.JLabel customerSearchCoopIdTxt;
     private javax.swing.JButton customerSearchCreditDetailsBtn;
     private javax.swing.JLabel customerSearchCustomerNameLbl;
     private javax.swing.JLabel customerSearchCustomerNameTxt;
     private javax.swing.JLabel customerSearchLBl;
-    private javax.swing.JButton customerSearchOkBtn;
     private javax.swing.JPanel customerSearchResultPanel;
     private javax.swing.JButton customerSearchSearchLbl;
     private org.jdesktop.swingx.JXTaskPane customerSearchTaskPane;
+    private javax.swing.JTextField customerSearchTxt;
     private javax.swing.JLabel customerSearchcoopIdLbl;
     private org.jdesktop.swingx.JXButton deleteCustomerBtn;
     private javax.swing.JPanel editCustomer;
     private javax.swing.JLabel editCustomerAddressLbl2;
     private javax.swing.JTextArea editCustomerAddressTxt2;
+    private org.jdesktop.swingx.JXButton editCustomerBackBtn3;
     private org.jdesktop.swingx.JXButton editCustomerBtn;
     private javax.swing.JLabel editCustomerCoopIdLbl2;
     private javax.swing.JTextField editCustomerCoopIdTxt2;
@@ -1919,6 +2181,7 @@ public class FinalCredit extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel54;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
@@ -1928,7 +2191,6 @@ public class FinalCredit extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
-    private javax.swing.JTextField jTextField1;
     private org.jdesktop.swingx.JXPanel jXPanel2;
     private org.jdesktop.swingx.JXTaskPaneContainer jXTaskPaneContainer1;
     private org.jdesktop.swingx.JXTitledPanel jXTitledPanel3;
@@ -1940,6 +2202,7 @@ public class FinalCredit extends javax.swing.JFrame {
     private javax.swing.JLabel newCustomerLbl1;
     private org.jdesktop.swingx.JXLabel paidAmountTxt1;
     private org.jdesktop.swingx.JXLabel paidAmountlbl1;
+    private javax.swing.JTextField paymentAmountCrdtTblTxt;
     private org.jdesktop.swingx.painter.RectanglePainter rectanglePainter1;
     private org.jdesktop.swingx.painter.ShapePainter shapePainter1;
     private javax.swing.ButtonGroup taskPaneSearch;

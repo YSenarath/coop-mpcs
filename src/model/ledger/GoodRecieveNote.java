@@ -160,7 +160,7 @@ public class GoodRecieveNote {
         Map parameters = new HashMap();
         parameters.put("supplier", supplier.getName());
         parameters.put("invoiceNo", invoiceNo);
-        parameters.put("grnNumber", f16bNumber);
+        parameters.put("f16bNumber", f16bNumber);
         parameters.put("date", util.Utilities.getStringDate(invoiceDate));
         return parameters;
     }

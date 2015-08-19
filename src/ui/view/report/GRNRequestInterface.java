@@ -150,7 +150,7 @@ public class GRNRequestInterface extends javax.swing.JInternalFrame {
             String GRNId = txtGRNID.getText();
             GoodRecieveNote grn = GoodRecieveNoteController.getGrn(GRNId);
             if (grn != null) {
-                GRNCopy.produceCopy(grn);
+                GRNCopy.produceCopyTest(grn);
             } else {
                 util.Utilities.ShowErrorMsg(this, "Unable to find GRN with that ID!");
                 logger.error("Unable to find GRN with that ID!");

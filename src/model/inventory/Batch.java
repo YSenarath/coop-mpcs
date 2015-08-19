@@ -6,6 +6,7 @@
 package model.inventory;
 
 import controller.inventory.ProductController;
+import groovy.transform.ToString;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Date;
@@ -211,6 +212,14 @@ public class Batch implements Serializable {
 
     public String getProductName() {
         return productName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public String getDescription() {

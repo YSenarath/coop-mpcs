@@ -200,7 +200,7 @@ public class GRNListingRequestInterfae extends javax.swing.JInternalFrame {
                 supplierName = s.getName();
             }
             try {
-                GRNListing.produceListing(glist, supplierName, fromDate, toDate);
+                GRNListing.produceCopyTest(glist, supplierName, fromDate, toDate);
             } catch (JRException ex) {
                 logger.error(ex.getMessage());
                 util.Utilities.ShowErrorMsg(this, "Unable to print the document, Check the date inputs again.");

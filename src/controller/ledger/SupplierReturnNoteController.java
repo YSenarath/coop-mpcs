@@ -23,13 +23,13 @@ public class SupplierReturnNoteController {
     public static SupplierReturnNote getSrn(String srnNumber) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
-        
+
         String query = "SELECT * FROM " + SRN + " WHERE srn_number=? ";
-        
+
         Object[] ob = {
             util.Utilities.convertKeyToInteger(srnNumber)
         };
-        
+
         ResultSet resultSet = DBHandler.getData(connection, query, ob);
 
         ArrayList<SRNItem> srnItemList = SRNItemController.getAllAvailableItems(srnNumber);
@@ -37,38 +37,56 @@ public class SupplierReturnNoteController {
         while (resultSet.next()) {
 
             return new SupplierReturnNote(
-                util.Utilities.convertKeyToString(resultSet.getInt("srn_number"), SRN),
-                util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), SRN),
-                resultSet.getDate("srn_date"),
-                SupplierController.getSupplier(resultSet.getString("supplier_id")),
-                resultSet.getString("location"),
-                srnItemList
-        );
+                    util.Utilities.convertKeyToString(resultSet.getInt("srn_number"), SRN),
+                    util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), SRN),
+                    resultSet.getDate("srn_date"),
+                    SupplierController.getSupplier(resultSet.getString("supplier_id")),
+                    resultSet.getString("location"),
+                    srnItemList
+            );
         }
         return null;
     }
 
     public static boolean addSrn(SupplierReturnNote srn) throws SQLException {
-        Connection connection = DBConnection.getConnectionToDB();
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnectionToDB();
 
-        String query = "INSERT INTO " + SRN + " (srn_number, grn_number, srn_date, supplier_id, location) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO " + SRN + " (srn_number, grn_number, srn_date, supplier_id, location) VALUES (?, ?, ?, ?, ?)";
 
-        Object[] ob = {
-            util.Utilities.convertKeyToInteger(srn.getF19Number()),
-            util.Utilities.convertKeyToInteger(srn.getGrnNumber()),
-            srn.getDate(),
-            util.Utilities.convertKeyToInteger(srn.getSupplier().getSupplerID()),
-            srn.getLocation()
-        };
+            Object[] ob = {
+                util.Utilities.convertKeyToInteger(srn.getF19Number()),
+                util.Utilities.convertKeyToInteger(srn.getGrnNumber()),
+                srn.getDate(),
+                util.Utilities.convertKeyToInteger(srn.getSupplier().getSupplerID()),
+                srn.getLocation()
+            };
 
-        boolean retVal = DBHandler.setData(connection, query, ob) == 1;
+            boolean retVal = DBHandler.setData(connection, query, ob) == 1;
 
-        for (SRNItem it : srn.getItems()) {
-            SRNItemController.addNewItem(it);
-            BatchController.reduceQuantity(it.getQuantity(), it.getBatchID());
+            for (SRNItem it : srn.getItems()) {
+                SRNItemController.addNewItem(it);
+                BatchController.reduceQuantity(it.getQuantity(), it.getBatchID());
+            }
+
+            return retVal;
+        } catch (Exception err0) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException err1) {
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException err2) {
+                }
+            }
         }
-
-        return retVal;
     }
 
     public static String getNextSrnID() throws SQLException {
