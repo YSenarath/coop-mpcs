@@ -144,12 +144,12 @@ public class ManageUsers extends javax.swing.JInternalFrame {
     }
 
     private String dataTruncation(String level) {
-        switch (level) {
-            case "Manager":
+        switch (level.toLowerCase().trim()) {
+            case "manager":
                 return "manager";
-            case "Cashier":
+            case "cashier":
                 return "cashier";
-            case "Inventory":
+            case "inventory":
                 return "inventory_manager";
         }
         return "";
