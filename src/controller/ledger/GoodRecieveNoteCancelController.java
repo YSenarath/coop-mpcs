@@ -32,31 +32,49 @@ public class GoodRecieveNoteCancelController {
                     util.Utilities.getDateFromString("cancel_date")
             );
         }
-        
+
         return null;
     }
 
     public static boolean addGrnCancel(GRNCancel grnCancel) throws SQLException {
 
-        Connection connection = DBConnection.getConnectionToDB();
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnectionToDB();
 
-        String query = "INSERT INTO " + GRN_CANCEL + " (grn_cancel_id, grn_number, cancel_date) VALUES (?, ?, ?)";
+            String query = "INSERT INTO " + GRN_CANCEL + " (grn_cancel_id, grn_number, cancel_date) VALUES (?, ?, ?)";
 
-        Object[] ob = {
-            util.Utilities.convertKeyToInteger(grnCancel.getF16aNumberCancel()),
-            util.Utilities.convertKeyToInteger(grnCancel.getF16aNumber()),
-            grnCancel.getDate()
-        };
+            Object[] ob = {
+                util.Utilities.convertKeyToInteger(grnCancel.getF16aNumberCancel()),
+                util.Utilities.convertKeyToInteger(grnCancel.getF16aNumber()),
+                grnCancel.getDate()
+            };
 
-        boolean retVal = DBHandler.setData(connection, query, ob) == 1;
+            boolean retVal = DBHandler.setData(connection, query, ob) == 1;
 
-        for (Batch it : grnCancel.getItems()) {
-            BatchController.reduceQuantity(it.getRecievedQuantity(), it.getBatchId());
-            BatchController.setGRN("G1", it.getBatchId());
-            BatchController.setBatchInStock(false, util.Utilities.convertKeyToInteger(it.getBatchId()), util.Utilities.convertKeyToInteger(it.getProductId()));
+            for (Batch it : grnCancel.getItems()) {
+                BatchController.reduceQuantity(it.getRecievedQuantity(), it.getBatchId());
+                BatchController.setGRN("G1", it.getBatchId());
+                BatchController.setBatchInStock(false, util.Utilities.convertKeyToInteger(it.getBatchId()), util.Utilities.convertKeyToInteger(it.getProductId()));
+            }
+
+            return retVal;
+        } catch (Exception err0) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException err1) {
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException err2) {
+                }
+            }
         }
-
-        return retVal;
     }
 
     public static String getNextGrnCancelID() throws SQLException {

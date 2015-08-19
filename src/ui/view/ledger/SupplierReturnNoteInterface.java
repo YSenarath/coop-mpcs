@@ -440,7 +440,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
         return false;
     }
 
-    private void addNewItem() {     
+    private void addNewItem() {
         try {
             if (!GoodRecieveNoteController.GRNExists(txtGRNNo.getText())) {
                 util.Utilities.ShowWarningMsg(this, "Enter GRN number first.");
@@ -449,6 +449,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
         } catch (SQLException ex) {
             logger.error(ex.getMessage());
         }
+        txtF19Number.setEnabled(false);
         BatchSelectionDialog d = new BatchSelectionDialog(this);
         ((JDesktopPane) this.getParent()).add(d);
         d.centerOnDesktop();
@@ -475,7 +476,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
             try {
                 model.addRow(new Object[]{model.getRowCount() + 1,
                     b,
-                    ProductController.getProduct(b.getProductId()),
+                    ProductController.getProduct(b.getProductId()).getDescription(),
                     0,
                     b.getUnit_cost(),
                     0,
@@ -527,7 +528,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
                     if (e.getColumn() == 1) {
 
                         // Auto generated Column
-                        String batchId = "B" + model.getValueAt(row, 1).toString();
+                        String batchId = ((Batch) model.getValueAt(row, 1)).getProductId();
                         fillProductDetails(row, batchId);
                     } else if (e.getColumn() == 3) {
 

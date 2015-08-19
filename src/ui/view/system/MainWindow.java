@@ -14,6 +14,8 @@ import model.people.User;
 import net.sf.jcarrierpigeon.Notification;
 import net.sf.jcarrierpigeon.NotificationQueue;
 import net.sf.jcarrierpigeon.WindowPosition;
+import ui.view.credit.FinalCredit;
+import ui.view.employee.ManageEmployees;
 import ui.view.inventory.DiscountInterface;
 import ui.view.inventory.ManageDepartment;
 import ui.view.inventory.ManageProduct;
@@ -25,6 +27,7 @@ import ui.view.ledger.SupplierReturnNoteInterface;
 import ui.view.report.GRNListingRequestInterfae;
 import ui.view.report.GRNRequestInterface;
 import ui.view.report.SRNListingRequestInterfae;
+import ui.view.settings.settings;
 import ui.view.supplier.SupplierInterface;
 import ui.view.user.ManageUsers;
 
@@ -91,6 +94,9 @@ public class MainWindow extends javax.swing.JFrame {
         mnuManageSupplier = new javax.swing.JMenuItem();
         setDiscountMenu = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        mnuCredit = new javax.swing.JMenu();
+        mnuEmployees = new javax.swing.JMenuItem();
+        mnuCoopCredit = new javax.swing.JMenuItem();
         mnuLedgers = new javax.swing.JMenu();
         mnuNewGRN = new javax.swing.JMenuItem();
         grnCancel = new javax.swing.JMenuItem();
@@ -102,6 +108,7 @@ public class MainWindow extends javax.swing.JFrame {
         mnuSrnListing = new javax.swing.JMenuItem();
         mnuUtilities = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
+        mnuSettings = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -145,7 +152,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         mainDesktopPanelLayout.setVerticalGroup(
             mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 526, Short.MAX_VALUE)
+            .addGap(0, 528, Short.MAX_VALUE)
             .addGroup(mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(welcomePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -214,6 +221,31 @@ public class MainWindow extends javax.swing.JFrame {
         mnuStock.add(jMenuItem3);
 
         jMenuBar1.add(mnuStock);
+
+        mnuCredit.setText("Credit");
+        mnuCredit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuCreditActionPerformed(evt);
+            }
+        });
+
+        mnuEmployees.setText("Employees");
+        mnuEmployees.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuEmployeesActionPerformed(evt);
+            }
+        });
+        mnuCredit.add(mnuEmployees);
+
+        mnuCoopCredit.setText("Coop Credit");
+        mnuCoopCredit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuCoopCreditActionPerformed(evt);
+            }
+        });
+        mnuCredit.add(mnuCoopCredit);
+
+        jMenuBar1.add(mnuCredit);
 
         mnuLedgers.setText("Transactions");
 
@@ -288,6 +320,14 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         mnuUtilities.add(jMenuItem4);
+
+        mnuSettings.setText("Settings");
+        mnuSettings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuSettingsActionPerformed(evt);
+            }
+        });
+        mnuUtilities.add(mnuSettings);
 
         jMenuBar1.add(mnuUtilities);
 
@@ -377,6 +417,22 @@ public class MainWindow extends javax.swing.JFrame {
         createUserManagement();
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
+    private void mnuCreditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCreditActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mnuCreditActionPerformed
+
+    private void mnuCoopCreditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCoopCreditActionPerformed
+        createFinalCredit();
+    }//GEN-LAST:event_mnuCoopCreditActionPerformed
+
+    private void mnuEmployeesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuEmployeesActionPerformed
+        createEmployeeManagement();
+    }//GEN-LAST:event_mnuEmployeesActionPerformed
+
+    private void mnuSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuSettingsActionPerformed
+        createSttings();
+    }//GEN-LAST:event_mnuSettingsActionPerformed
+
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -425,6 +481,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JDesktopPane mainDesktopPanel;
     private javax.swing.JMenuItem mnuAddDamagedStock;
+    private javax.swing.JMenuItem mnuCoopCredit;
+    private javax.swing.JMenu mnuCredit;
+    private javax.swing.JMenuItem mnuEmployees;
     private javax.swing.JMenuItem mnuExit;
     private javax.swing.JMenuItem mnuGRNRequest;
     private javax.swing.JMenuItem mnuGrnList;
@@ -434,6 +493,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuNewGRN;
     private javax.swing.JMenuItem mnuNewSRN;
     private javax.swing.JMenu mnuReports;
+    private javax.swing.JMenuItem mnuSettings;
     private javax.swing.JMenuItem mnuSrnListing;
     private javax.swing.JMenu mnuStock;
     private javax.swing.JMenu mnuUtilities;
@@ -559,6 +619,36 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void createUserManagement() {
         ManageUsers i = new ManageUsers();
+
+        mainDesktopPanel.add(i);
+
+        setInternalFrameLocation(i);
+
+        i.show();
+    }
+
+    private void createEmployeeManagement() {
+        ManageEmployees i = new ManageEmployees();
+
+        mainDesktopPanel.add(i);
+
+        setInternalFrameLocation(i);
+
+        i.show();
+    }
+
+    private void createFinalCredit() {
+        FinalCredit i = new FinalCredit();
+
+        mainDesktopPanel.add(i);
+
+        setInternalFrameLocation(i);
+
+        i.show();
+    }
+
+    private void createSttings() {
+        settings i = new settings();
 
         mainDesktopPanel.add(i);
 

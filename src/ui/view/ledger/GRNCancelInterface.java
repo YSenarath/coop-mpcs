@@ -350,6 +350,7 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
             logger.error(ex.getMessage());
         }
         if (model.getRowCount() == 0 || isItemValid(model.getRowCount() - 1)) {
+            txtF16aNumber.setEnabled(false);
             BatchSelectionDialog d = new BatchSelectionDialog(this);
             ((JDesktopPane) this.getParent()).add(d);
             d.centerOnDesktop();

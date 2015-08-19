@@ -306,6 +306,21 @@ public class CustomerCreditController implements DatabaseInterface {
 
         return customers;
     }
+
+    public static boolean checkDataExistence(String name) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "SELECT * FROM " + CREDIT_CUSTOMER + " WHERE customer_name=? ";
+        Object[] ob = {
+            name
+        };
+        ResultSet resultSet = DBHandler.getData(connection, query, ob);
+
+        if (resultSet.next()) {
+            return true;
+
+        }
+        return false;
+    }
 }
 
 /*   public static void setDetails(CreditCustomer creditCustomer, int i) throws SQLException {

@@ -197,7 +197,7 @@ public class SRNListingRequestInterfae extends javax.swing.JInternalFrame {
                 supplierName = s.getName();
             }
             try {
-                SRNListing.produceListing(list, supplierName, fromDate, toDate);
+                SRNListing.produceCopyTest(list, supplierName, fromDate, toDate);
             } catch (JRException ex) {
                 util.Utilities.ShowErrorMsg(this, "Unable to print the document, Check the date inputs again.");
                 logger.error(ex.getMessage());

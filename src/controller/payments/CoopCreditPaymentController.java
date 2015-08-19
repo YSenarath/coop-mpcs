@@ -39,7 +39,17 @@ public class CoopCreditPaymentController implements DatabaseInterface {
         }
         return null;
     }
+   
+    public static boolean deleteDeatils(int id) throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "DELETE FROM " + COOP_CREDIT_PAYMENT + " WHERE bill_id=?";
 
+        Object[] ob = {
+            id
+        };
+        return DBHandler.setData(connection, query, ob) == 1;
+    }
+    
     public static boolean addCoopPayment(CoopCreditPayment coopPayment) throws SQLException {
         Connection connection = DBConnection.getConnectionToDB();
         String query = "INSERT INTO " + COOP_CREDIT_PAYMENT + " (bill_id,coop_credit_payment_id,customer_id,amount) VALUES (?,?,?,?)";

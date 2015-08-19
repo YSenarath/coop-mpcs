@@ -40,7 +40,7 @@ public class GoodRecieveNoteController {
             // int f16bNumber, String invoiceNo, Date invoiceDate,
             // Supplier supplier, String location, String paymentMethod
             return new GoodRecieveNote(
-                    util.Utilities.convertKeyToString(resultSet.getInt("grn_number"), GRN),
+                    grnNumber,
                     resultSet.getString("invoice_no"),
                     resultSet.getDate("invoice_date"),
                     SupplierController.getSupplier(util.Utilities.convertKeyToString(resultSet.getInt("supplier_id"), SUPPLIER)),
@@ -102,30 +102,47 @@ public class GoodRecieveNoteController {
     }
 
     public static boolean addGrn(GoodRecieveNote grn) throws SQLException {
-        Connection connection = DBConnection.getConnectionToDB();
+        Connection connection = null;
+        try {
+            connection = DBConnection.getConnectionToDB();
 
-        String query = "INSERT INTO " + GRN + " (grn_number, invoice_no, invoice_date, supplier_id, location, payment_method, loading_fee, PurchasingBill_discount, sellingBill_discount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO " + GRN + " (grn_number, invoice_no, invoice_date, supplier_id, location, payment_method, loading_fee, PurchasingBill_discount, sellingBill_discount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        Object[] ob = {
-            util.Utilities.convertKeyToInteger(grn.getF16bNumber()),
-            grn.getInvoiceNo(),
-            grn.getInvoiceDate(),
-            util.Utilities.convertKeyToInteger(grn.getSupplierId()),
-            grn.getLocation(),
-            grn.getPaymentMethod(),
-            grn.getLoadingFee(),
-            grn.getPurchasingBillDiscount(),
-            grn.getSellingBillDiscount()
-        };
+            Object[] ob = {
+                util.Utilities.convertKeyToInteger(grn.getF16bNumber()),
+                grn.getInvoiceNo(),
+                grn.getInvoiceDate(),
+                util.Utilities.convertKeyToInteger(grn.getSupplierId()),
+                grn.getLocation(),
+                grn.getPaymentMethod(),
+                grn.getLoadingFee(),
+                grn.getPurchasingBillDiscount(),
+                grn.getSellingBillDiscount()
+            };
 
-        boolean retVal = DBHandler.setData(connection, query, ob) == 1;
+            boolean retVal = DBHandler.setData(connection, query, ob) == 1;
 
-        for (Batch b : grn.getBatches()) {
-            BatchController.addBatch(b);
-            GRNItemController.addNewItem(b);
+            for (Batch b : grn.getBatches()) {
+                BatchController.addNewBatch(b);
+                GRNItemController.addNewItem(b);
+            }
+            return retVal;
+        } catch (Exception err0) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException err1) {
+                }
+            }
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException err2) {
+                }
+            }
         }
-
-        return retVal;
     }
 
     public static String getNextGrnID() throws SQLException {

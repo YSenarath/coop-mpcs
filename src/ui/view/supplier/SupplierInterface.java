@@ -384,6 +384,12 @@ public class SupplierInterface extends javax.swing.JInternalFrame {
                 output = false;
 
             }
+            if (!util.Utilities.isDateBeforeLimit(dateRegDate.getDate(), dateCancelDate.getDate())) {
+                if (dateRegDate.getDate() != null && dateCancelDate.getDate() != null) {
+                    util.Utilities.ShowWarningMsg(this, "Enter Valid Dates.");
+                    return false;
+                }
+            }
         }
         return output;
     }
@@ -422,11 +428,12 @@ public class SupplierInterface extends javax.swing.JInternalFrame {
                     SupplierController.updateSupplier(currSupplier);
                     util.Utilities.showMsgBox("Supplier details updated.", "Alart", JOptionPane.HEIGHT);
                 } else {
-                    util.Utilities.showMsgBox("Supplier update cancled.", "Alart", JOptionPane.HEIGHT);
+                    util.Utilities.showMsgBox("Supplier updated.", "Alart", JOptionPane.HEIGHT);
                 }
             } else {
                 // Add new supplier
                 SupplierController.addSupplier(currSupplier);
+                util.Utilities.showMsgBox("Supplier update cancled.", "Alart", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (SQLException | NumberFormatException ex) {
             contentVarifier(false);
@@ -464,8 +471,10 @@ public class SupplierInterface extends javax.swing.JInternalFrame {
     }
 
     private void initInterface() {
-        ((PlainDocument) txtTPno.getDocument()).setDocumentFilter(new util.IntegerFilter());
-        ((PlainDocument) txtFax.getDocument()).setDocumentFilter(new util.IntegerFilter());
+        ((PlainDocument) txtTPno.getDocument()).setDocumentFilter(new util.IntegerTenDigitFilter());
+        ((PlainDocument) txtFax.getDocument()).setDocumentFilter(new util.IntegerTenDigitFilter());
+        ((PlainDocument) txtName.getDocument()).setDocumentFilter(new util.CompanyNameFilter());
+        ((PlainDocument) txtContactPerson.getDocument()).setDocumentFilter(new util.NameFilter());
 
         newSupplier();
     }
