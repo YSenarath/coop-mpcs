@@ -97,7 +97,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                     return;
                 }
             } catch (SQLException ex) {
-                logger.error("SQL exception has occured");
+                logger.error("SQL exception has occured-001");
                 Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -144,12 +144,13 @@ public class ManageUsers extends javax.swing.JInternalFrame {
     }
 
     private String dataTruncation(String level) {
+        logger.debug(level.toLowerCase());
         switch (level.toLowerCase().trim()) {
             case "manager":
                 return "manager";
             case "cashier":
                 return "cashier";
-            case "inventory":
+            case "inventory" :
                 return "inventory_manager";
         }
         return "";
@@ -162,7 +163,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             User user = new User(
                     addUserUserNameTxt1.getText(),
                     Utilities.getSHA1(addUserPasswordTxt.getPassword()),
-                    dataTruncation(addUserUserLevelComboBox1.getSelectedItem().toString()),
+                    dataTruncation(addUserUserLevelComboBox1.getSelectedItem().toString().trim()).trim(),
                     false
             );
             logger.info("details loaded to an userobject");
@@ -172,7 +173,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             Utilities.showMsgBox("New user details added to the database", "Confirm", JOptionPane.WARNING_MESSAGE);
 
         } catch (SQLException ex) {
-            logger.error("SQL exception has occured");
+            logger.error("SQL exception has occured-002");
             Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
         }
 

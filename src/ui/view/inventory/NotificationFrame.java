@@ -49,18 +49,16 @@ public class NotificationFrame extends javax.swing.JWindow {
         notificationTextField = new javax.swing.JTextArea();
         jButton2 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setUndecorated(true);
         setType(java.awt.Window.Type.POPUP);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(java.awt.SystemColor.controlDkShadow);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(51, 51, 255));
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Notifications");
+        jLabel1.setForeground(java.awt.Color.orange);
 
-        jButton1.setBackground(new java.awt.Color(255, 255, 255));
+        jButton1.setBackground(java.awt.Color.orange);
         jButton1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jButton1.setText("Check Notification");
         jButton1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -72,16 +70,20 @@ public class NotificationFrame extends javax.swing.JWindow {
         });
 
         notificationTextField.setEditable(false);
+        notificationTextField.setBackground(java.awt.SystemColor.activeCaptionBorder);
         notificationTextField.setColumns(20);
+        notificationTextField.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         notificationTextField.setRows(5);
         notificationTextField.setBorder(null);
+        notificationTextField.setForeground(javax.swing.UIManager.getDefaults().getColor("nb.errorForeground"));
         jScrollPane1.setViewportView(notificationTextField);
 
+        jButton2.setBackground(java.awt.Color.orange);
         jButton2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 0, 0));
         jButton2.setText("-");
         jButton2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton2.setContentAreaFilled(false);
+        jButton2.setForeground(java.awt.Color.orange);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);

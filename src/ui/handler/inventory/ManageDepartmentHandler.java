@@ -64,13 +64,13 @@ public class ManageDepartmentHandler {
             categoryDiscounts = CategoryDiscountController.getCategoryDiscountsForDepartment(departmentID);
 
             int catDisIndex = 0;
-            String discount ;
-            String startDate ;
-            String endDate ;
+            String discount;
+            String startDate;
+            String endDate;
 
             for (Category c : categories) {
 
-                if (catDisIndex<categoryDiscounts.size() && c.getCategoryId().equals(categoryDiscounts.get(catDisIndex).getCategoryId())) {
+                if (catDisIndex < categoryDiscounts.size() && c.getCategoryId().equals(categoryDiscounts.get(catDisIndex).getCategoryId())) {
                     discount = categoryDiscounts.get(catDisIndex).getDiscount() + "%";
                     startDate = Utilities.getStringDate(categoryDiscounts.get(catDisIndex).getStartDate());
                     endDate = Utilities.getStringDate(categoryDiscounts.get(catDisIndex).getEndDate());
@@ -81,7 +81,7 @@ public class ManageDepartmentHandler {
                     endDate = "";
 
                 }
-                ((DefaultTableModel) (gui.getCategoryTable().getModel())).addRow(new String[]{c.getCategoryId(), c.getCategoryName(), c.getDescription(),discount, startDate, endDate});
+                ((DefaultTableModel) (gui.getCategoryTable().getModel())).addRow(new String[]{c.getCategoryId(), c.getCategoryName(), c.getDescription(), discount, startDate, endDate});
 
             }
         }
@@ -93,16 +93,14 @@ public class ManageDepartmentHandler {
         String depId = gui.getDepIdText().getText().trim();
         String depName = gui.getDepNameText().getText().trim();
 
-//        if (!depId.matches("^D[0-9]{2}$") && !depId.isEmpty()) {
-//            gui.setIdWarning("Not a valid ID");
-//            return false;
-//        }
         if (depName.equals("")) {
             Utilities.ShowErrorMsg(gui, "Enter a valid Name");
+            gui.getDepNameText().requestFocus();
             return false;
         }
         for (Department d : departments) {
             if (d.getDepartmentName().equals(depName)) {
+                gui.getDepNameText().requestFocus();
                 Utilities.ShowErrorMsg(gui, "The Department already exists");
                 return false;
             }
@@ -122,21 +120,20 @@ public class ManageDepartmentHandler {
         String depId = gui.getDepIdText().getText().trim();
         String depName = gui.getDepNameText().getText().trim();
 
-//        if (!depId.matches("^D[0-9]{2}$") && !depId.isEmpty()) {
-//            gui.setIdWarning("Not a valid ID");
-//            return false;
-//        }
         if (depName.equals("")) {
             Utilities.ShowErrorMsg(gui, "Enter a valid Name");
+            gui.getDepNameText().requestFocus();
             return false;
         }
+        if (!depName.equals(gui.getDepNameCombo().getSelectedItem().toString().trim())) {
+            for (Department d : departments) {
+                if (d.getDepartmentName().equals(depName)) {
+                    Utilities.ShowErrorMsg(gui, "The Department already exists");
+                    gui.getDepNameText().requestFocus();
+                    return false;
+                }
 
-        for (Department d : departments) {
-            if (d.getDepartmentName().equals(depName)) {
-                Utilities.ShowErrorMsg(gui, "The Department already exists");
-                return false;
             }
-
         }
 
         Department d = new Department(depId, depName);
@@ -170,13 +167,22 @@ public class ManageDepartmentHandler {
         String cDesc = gui.getDescText().getText().trim();
         String depId = departments.get(index - 1).getDepartmentId();
 
-        if (cName.equals("") || cDesc.equals("")) {
-            Utilities.ShowErrorMsg(gui, "Emtpy Field");
+        if (cName.equals("") ) {
+            Utilities.ShowErrorMsg(gui, "Emtpy Name Field");
+            gui.getNameText().requestFocus();
             return false;
         }
+        
+        if (cDesc.equals("")) {
+            Utilities.ShowErrorMsg(gui, "Emtpy Description Field");
+            gui.getDescText().requestFocus();
+            return false;
+        }
+        
         for (Category c : categories) {
             if (c.getCategoryName().equals(cName)) {
                 Utilities.ShowErrorMsg(gui, "Duplicate Name : " + cName);
+                gui.getNameText().requestFocus();
                 return false;
             }
         }
@@ -196,14 +202,24 @@ public class ManageDepartmentHandler {
         String cDesc = gui.getDescText().getText().trim();
         String depId = departments.get(index - 1).getDepartmentId();
 
-        if (cName.equals("") || cDesc.equals("")) {
-            Utilities.ShowErrorMsg(gui, "Emtpy Field");
+        if (cName.equals("")) {
+            Utilities.ShowErrorMsg(gui, "Emtpy Name Field");
+            gui.getNameText().requestFocus();
             return false;
         }
-        for (Category c : categories) {
-            if (c.getCategoryName().equals(cName)) {
-                Utilities.ShowErrorMsg(gui, "Duplicate Category : " + cName);
-                return false;
+        
+        if (cDesc.equals("")) {
+            Utilities.ShowErrorMsg(gui, "Emtpy Description Field");
+            gui.getDescText().requestFocus();
+            return false;
+        }
+        if (!cName.equals(gui.getCategoryTable().getValueAt(gui.getCategoryTable().getSelectedRow(), 1).toString().trim())) {
+            for (Category c : categories) {
+                if (c.getCategoryName().equals(cName)) {
+                    Utilities.ShowErrorMsg(gui, "Duplicate Category : " + cName);
+                     gui.getNameText().requestFocus();
+                    return false;
+                }
             }
         }
 

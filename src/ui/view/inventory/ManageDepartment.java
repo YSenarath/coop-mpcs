@@ -6,8 +6,6 @@
 package ui.view.inventory;
 
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -15,6 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
+import jxl.common.Logger;
 import ui.handler.inventory.ManageDepartmentHandler;
 import util.Utilities;
 
@@ -33,6 +32,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
     private String tableName;
     private ManageDepartmentHandler handler;
     private boolean isEditing;
+    private final static Logger logger = Logger.getLogger(ManageDepartment.class);
 
     /**
      *
@@ -112,6 +112,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
 
         updateDepartment.setMinimumSize(new java.awt.Dimension(401, 258));
         updateDepartment.setModal(true);
+        updateDepartment.setResizable(false);
         updateDepartment.setType(java.awt.Window.Type.POPUP);
 
         fullPanel2.setPreferredSize(new java.awt.Dimension(775, 319));
@@ -156,7 +157,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(depIdText, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, enterPanel3Layout.createSequentialGroup()
-                        .addComponent(nameLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                        .addComponent(nameLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(depNameText, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(35, 35, 35))
@@ -218,7 +219,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                 .addGroup(updateDepPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(buttonPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(enterPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGap(20, 20, 20))
         );
         updateDepPanelLayout.setVerticalGroup(
             updateDepPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -227,7 +228,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                 .addComponent(enterPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(56, 56, 56))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout fullPanel2Layout = new javax.swing.GroupLayout(fullPanel2);
@@ -249,7 +250,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         );
         updateDepartmentLayout.setVerticalGroup(
             updateDepartmentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(fullPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
+            .addComponent(fullPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
         );
 
         updateCategory.setMinimumSize(new java.awt.Dimension(534, 250));
@@ -750,7 +751,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                 try {
                     handler.loadCategories(index);
                 } catch (SQLException ex) {
-                    Logger.getLogger(ManageDepartment.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.error(ex);
                 }
             }
         }
@@ -785,7 +786,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                 try {
                     handler.loadCategories(index);
                 } catch (SQLException ex) {
-                    Logger.getLogger(ManageDepartment.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.error(ex);
                 }
             }
         }
@@ -829,14 +830,14 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             try {
                 if (!isEditing && handler.addCategory(index)) {
                     updateCategory.setVisible(false);
-                }
-                else if (isEditing && handler.editCategory(index)){
+                } else if (isEditing && handler.editCategory(index)) {
                     updateCategory.setVisible(false);
                 }
-
             } catch (SQLException ex) {
-                Utilities.ShowErrorMsg(this, "Unknown Error");
+                Utilities.ShowErrorMsg(this, "Upadating failed! Database Error");
             }
+        } else {
+            Utilities.ShowErrorMsg(this, "Please select a department");
         }
     }//GEN-LAST:event_addB2ActionPerformed
 
@@ -910,8 +911,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(ManageDepartment.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex);
         }
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -921,8 +921,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                     new ManageDepartment().setVisible(true);
 
                 } catch (SQLException ex) {
-                    Logger.getLogger(ManageDepartment.class
-                            .getName()).log(Level.SEVERE, null, ex);
+                    logger.error(ex);
                 }
             }
         });
@@ -1027,7 +1026,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                     handler.removeDepartment();
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(ManageDepartment.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(ex);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Please select the Department to be deleted");
@@ -1060,9 +1059,21 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             if (selRow >= 0) {
                 isEditing = true;
 
-                catIdText2.setText(categoryTable.getValueAt(selRow, 0).toString());
-                catNameText2.setText(categoryTable.getValueAt(selRow, 1).toString());
-                CatDescText2.setText(categoryTable.getValueAt(selRow, 2).toString());
+                if (categoryTable.getValueAt(selRow, 0) != null) {
+                    catIdText2.setText(categoryTable.getValueAt(selRow, 0).toString());
+                } else {
+                    catIdText2.setText("");
+                }
+                if (categoryTable.getValueAt(selRow, 1) != null) {
+                    catNameText2.setText(categoryTable.getValueAt(selRow, 1).toString());
+                } else {
+                    catNameText2.setText("");
+                }
+                if (categoryTable.getValueAt(selRow, 2) != null) {
+                    CatDescText2.setText(categoryTable.getValueAt(selRow, 2).toString());
+                } else {
+                    CatDescText2.setText("");
+                }
 
                 catTitlePanel3.setTitle("Edit Category");
                 updateCategory.setLocationRelativeTo(null);
@@ -1082,16 +1093,16 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             int selRow = categoryTable.getSelectedRow();
 
             if (selRow >= 0) {
-               
-                    try {
-                        int ans = JOptionPane.showConfirmDialog(this, "Do you want to remove Category : " + categoryTable.getValueAt(selRow, 1)+ " ?", "Remove Category", 0);
-                        if (ans == 0) {
-                            handler.removeCategory();
-                        }
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ManageDepartment.class.getName()).log(Level.SEVERE, null, ex);
+
+                try {
+                    int ans = JOptionPane.showConfirmDialog(this, "Do you want to remove Category : " + categoryTable.getValueAt(selRow, 1) + " ?", "Remove Category", 0);
+                    if (ans == 0) {
+                        handler.removeCategory();
                     }
-               
+                } catch (SQLException ex) {
+                    logger.error(ex);
+                }
+
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a Category to be Removed");
             }
@@ -1100,4 +1111,14 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         }
     }
 
+    public void setVisible(boolean isVisible) {
+        super.setVisible(isVisible);
+        try {
+            if (handler != null) {
+                handler.loadDepartmentCombo();
+            }
+        } catch (SQLException ex) {
+            logger.error(ex);
+        }
+    }
 }
