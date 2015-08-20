@@ -7,7 +7,6 @@ package ui.view.inventory;
 
 import controller.inventory.ProductController;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import javax.swing.JComboBox;
@@ -176,7 +175,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jLabel13 = new javax.swing.JLabel();
         qtyTB = new javax.swing.JTextField();
         unitText = new javax.swing.JTextField();
-        jPanel9 = new javax.swing.JPanel();
+        searchPanel = new javax.swing.JPanel();
         nameSearchField = new org.jdesktop.swingx.JXSearchField();
         idSearchField = new org.jdesktop.swingx.JXSearchField();
         jLabel1 = new javax.swing.JLabel();
@@ -1159,7 +1158,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder6 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder6.setShowLeftShadow(true);
         dropShadowBorder6.setShowTopShadow(true);
-        jPanel9.setBorder(dropShadowBorder6);
+        searchPanel.setBorder(dropShadowBorder6);
 
         nameSearchField.setPrompt("Search Name");
         nameSearchField.setMinimumSize(new java.awt.Dimension(105, 22));
@@ -1210,30 +1209,30 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         jLabel2.setText("Product Name");
         jLabel2.setFocusable(false);
 
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
+        javax.swing.GroupLayout searchPanelLayout = new javax.swing.GroupLayout(searchPanel);
+        searchPanel.setLayout(searchPanelLayout);
+        searchPanelLayout.setHorizontalGroup(
+            searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchPanelLayout.createSequentialGroup()
                 .addGap(39, 39, 39)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(idSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(nameSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(72, 72, 72))
         );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+        searchPanelLayout.setVerticalGroup(
+            searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchPanelLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(idSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(nameSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(24, 24, 24))
@@ -1341,7 +1340,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
@@ -1385,7 +1384,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
@@ -1821,6 +1820,9 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private void depComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_depComboItemStateChanged
         try {
             handler.loadCategories(depCombo.getSelectedIndex(), catIDR.isSelected());
+            if (handler.getCategories() < 0) {
+                Utilities.ShowErrorMsg(updateProduct, "This department has zero categories. Select another department");
+            }
         } catch (SQLException ex) {
             Utilities.ShowErrorMsg(updateProduct, "Unknown Error!");
         }
@@ -1890,7 +1892,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_sizeTB1ActionPerformed
 
     private void clearB1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearB1ActionPerformed
-        // TODO add your handling code here:
+        clearUpdateProduct();
     }//GEN-LAST:event_clearB1ActionPerformed
 
     private void cancleBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancleBActionPerformed
@@ -1994,7 +1996,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
         if (!idSearchField.getText().trim().equals("") && idSearchField != null) {
             if (reOrderSetButton.getText().trim().equals("Set")) {
                 reOrderLevelTB.setEditable(true);
-                
+
                 reOrderSetButton.setText("Save");
             } else if (reOrderSetButton.getText().trim().equals("Save")) {
                 try {
@@ -2004,7 +2006,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
                     logger.debug(ex);
                 }
                 reOrderLevelTB.setEditable(false);
-                
+
                 reOrderSetButton.setText("Set");
             }
         } else {
@@ -2269,7 +2271,6 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTextField jTextField2;
@@ -2301,6 +2302,7 @@ public class ManageProduct extends javax.swing.JInternalFrame {
     private javax.swing.JTextField roQtyTB;
     private javax.swing.JTextField roValue;
     private javax.swing.JTextField roValueTB;
+    private javax.swing.JPanel searchPanel;
     private javax.swing.JTextField sizeTB;
     private javax.swing.JTextField sizeTB1;
     private javax.swing.JTextField totalQtyText;
@@ -2317,27 +2319,21 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
         try {
             handler.loadDepartmentCombo(depIDR.isSelected());
+            if (handler.getDepartment() > 0) {
+                clearUpdateProduct();
+
+                updateProductTitle.setTitle("Add Product");
+                isEditing = false;
+                updateProduct.setVisible(true);
+                logger.debug("Debug : Display product add dialog");
+            } else {
+                Utilities.ShowErrorMsg(updateProduct, "There are No departments saved. Please Enter a department before enter products");
+            }
         } catch (SQLException ex) {
             logger.error("Database Error : " + ex.getLocalizedMessage());
         }
 
         //set values
-        catCombo.removeAllItems();
-        catCombo.addItem("");
-        pIdTB.setText(handler.getNextIndex());
-        pNameTB.setText("");
-        pBarcodeTB1.setText("");
-        pDesTB1.setText("");
-        unitTB1.setText("");
-        sizeTB1.setText("0");
-        roValue.setText("0.00");
-        roQty.setText("0");
-        maxQtyTB1.setText("0");
-
-        updateProductTitle.setTitle("Add Product");
-        isEditing = false;
-        updateProduct.setVisible(true);
-        logger.debug("Debug : Display product add dialog");
     }
 
     private void displayEditProduct() {
@@ -2438,6 +2434,43 @@ public class ManageProduct extends javax.swing.JInternalFrame {
 
     public JTextField getReOrderLevelTB() {
         return reOrderLevelTB;
+    }
+
+    public void clearFields() {
+
+        nameSearchField.setText("");
+        idSearchField.setText("");
+        getpDesTB().setText("");
+        getpBarcodeTB().setText("");
+        getDepIdTB().setText("");
+        getDepNameTB().setText("");
+        getCatIdTB().setText("");
+        getCatNameTB().setText("");
+        getSizeTB().setText("0.00");
+        getUnitTB().setText("");
+        getRoQtyTB().setText("0.00");
+        getRoValueTB().setText("0.00");
+        getMaxQtyTB().setText("0.00");
+        getUnitText().setText("");
+        qtyTB.setText("0.00");
+        reOrderLevelTB.setText("0.00");
+
+        searchPanel.requestFocus();
+    }
+
+    private void clearUpdateProduct() {
+        pIdTB.setText(handler.getNextIndex());
+        depCombo.setSelectedIndex(0);
+        catCombo.removeAllItems();
+        catCombo.addItem("");
+        pNameTB.setText("");
+        pBarcodeTB1.setText("");
+        pDesTB1.setText("");
+        unitTB1.setText("");
+        sizeTB1.setText("0.00");
+        roValue.setText("0.00");
+        roQty.setText("0.00");
+        maxQtyTB1.setText("0.00");
     }
 
 }

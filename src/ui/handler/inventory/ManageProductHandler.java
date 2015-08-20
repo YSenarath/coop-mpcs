@@ -13,8 +13,11 @@ import database.connector.DatabaseInterface;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -123,9 +126,7 @@ public class ManageProductHandler {
 
     public void loadDepartmentCombo(boolean isID) throws SQLException {
 
-        if (departments.isEmpty()) {
-            departments = DepartmentController.getDepartments();
-        }
+        departments = DepartmentController.getDepartments();
 
         initiating = true;
 
@@ -229,47 +230,63 @@ public class ManageProductHandler {
         String depID;
         String catID;
 
-        if (pName == null || pName.equals("")) {
-            Utilities.ShowErrorMsg(gui.getUpdateProduct(), "Product Name can't be empty");
+        if (!pid.matches("^P[0-9]{5}$") && !pid.isEmpty()) {
+            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + pid + "\" is not a valid Product ID.\nEnter a valid Product ID", "Invalid Product ID", 2);
+            gui.getpIdTB().requestFocus();
             return false;
         }
+
+        if (pName == null || pName.equals("")) {
+            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Name can't be empty.\nEnter the Product Name", "Empty Field Error", 2);
+            gui.getpNameTB().requestFocus();
+            return false;
+        }
+
         if (gui.getpBarcodeTB1().getText().trim() == null || gui.getpBarcodeTB1().getText().trim().equals("")) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Barcode can't be empty.\nEnter the Product Barcode", "Empty Field Error", 2);
+            gui.getpBarcodeTB1().requestFocus();
             return false;
         }
         try {
             barcode = Long.parseLong(gui.getpBarcodeTB1().getText().trim());
             if (barcode < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getpBarcodeTB1().getText() + "\" is not a valid Barcode.\nEnter a valid Barcode", "Invalid Data", 2);
+                gui.getpBarcodeTB1().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getpBarcodeTB1().getText() + "\" is not a valid Barcode.\nEnter a valid Barcode", "Invalid Data", 2);
+            gui.getpBarcodeTB1().requestFocus();
             return false;
         }
         if (desc == null || desc.equals("")) {
             Utilities.ShowErrorMsg(gui.getUpdateProduct(), "Product Description can't be empty");
+            gui.getpDesTB1().requestFocus();
             return false;
         }
         try {
-            roQty = Double.parseDouble(gui.getRoValue().getText().trim());
-            if (roQty < 0) {
+            roValue = Double.parseDouble(gui.getRoValue().getText().trim());
+            if (roValue < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getRoValue().getText() + "\" is not a valid Quantity.\nEnter a valid Quantity", "Invalid Data", 2);
+                gui.getRoValue().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getRoValue().getText() + "\" is not a valid Quantity.\nEnter a valid Quantity", "Invalid Data", 2);
+            gui.getRoValue().requestFocus();
             return false;
         }
 
         try {
-            roValue = Double.parseDouble(gui.getRoQty().getText().trim());
-            if (roValue < 0) {
+            roQty = Double.parseDouble(gui.getRoQty().getText().trim());
+            if (roQty < 0) {
+                gui.getRoQty().requestFocus();
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getRoQty().getText() + "\" is not a valid Value.\nEnter a valid Value", "Invalid Data", 2);
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getRoQty().getText() + "\" is not a valid Value.\nEnter a valid Value", "Invalid Data", 2);
+            gui.getRoQty().requestFocus();
             return false;
         }
 
@@ -277,10 +294,12 @@ public class ManageProductHandler {
             roMax = Double.parseDouble(gui.getMaxQtyTB1().getText().trim());
             if (roMax < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getMaxQtyTB1().getText() + "\" is not a valid Quantity.\nEnter a valid Quantity", "Invalid Data", 2);
+                gui.getMaxQtyTB1().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getMaxQtyTB1().getText() + "\" is not a valid Quantity.\nEnter a valid Quantity", "Invalid Data", 2);
+            gui.getMaxQtyTB1().requestFocus();
             return false;
         }
 
@@ -288,10 +307,12 @@ public class ManageProductHandler {
             pack = Double.parseDouble(gui.getSizeTB1().getText().trim());
             if (pack < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getSizeTB1().getText() + "\" is not a valid Pack Size.\nEnter a valid Pack Size", "Invalid Data", 2);
+                gui.getSizeTB1().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getSizeTB1().getText() + "\" is not a valid Pack Size.\nEnter a valid Pack Size", "Invalid Data", 2);
+            gui.getSizeTB1().requestFocus();
             return false;
         }
 
@@ -300,6 +321,7 @@ public class ManageProductHandler {
             depID = departments.get(index - 1).getDepartmentId();
         } else {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Select the Department", "Empty Field Error", 2);
+            gui.getDepCombo().requestFocus();
             return false;
         }
 
@@ -308,36 +330,25 @@ public class ManageProductHandler {
             catID = categories.get(index - 1).getCategoryId();
         } else {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Select the Category", "Empty Field Error", 2);
+            gui.getCatCombo().requestFocus();
             return false;
         }
 
-        if (!pid.matches("^P[0-9]{5}$") && !pid.isEmpty()) {
-            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + pid + "\" is not a valid Product ID.\nEnter a valid Product ID", "Invalid Product ID", 2);
-            return false;
-        }
-
-        if (!catID.matches("^C[0-9]{4}$") && !pid.isEmpty()) {
+        if (!catID.matches("^C[0-9]{4}$")) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + catID + "\" is not a valid Category ID.\nEnter a valid Category ID", "Invalid Category ID", 2);
+            gui.getpIdTB().requestFocus();
             return false;
         }
 
-        if (!depID.matches("^D[0-9]{2}$") && !pid.isEmpty()) {
+        if (!depID.matches("^D[0-9]{2}$")) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + depID + "\" is not a valid Department ID.\nEnter a valid Department ID", "Invalid Departmentt ID", 2);
-            return false;
-        }
-
-        if (pName == null || pName.equals("")) {
-            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Name can't be empty.\nEnter the Product Name", "Empty Field Error", 2);
-            return false;
-        }
-
-        if (desc == null || desc.equals("")) {
-            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Description can't be empty.\nEnter the Product Description", "Empty Field Error", 2);
+            gui.getpIdTB().requestFocus();
             return false;
         }
 
         if (unit == null || unit.equals("")) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Unit can't be empty.\nEnter the Product Unit", "Empty Field", 2);
+            gui.getUnitTB1().requestFocus();
             return false;
         }
 
@@ -378,11 +389,11 @@ public class ManageProductHandler {
             gui.getRoValueTB().setText(product.getReorderValue() + "");
             gui.getMaxQtyTB().setText(product.getMaxQuantity() + "");
             gui.getUnitText().setText(product.getUnit());
-            gui.getQtyTB().setText(product.getTotalQuantity()+ "");
-            if (product.getReorderLevel() > 0){
-            gui.getReOrderLevelTB().setText(product.getReorderLevel() + "");
-            }else{
-                gui.getReOrderLevelTB().setText( "Not Set");
+            gui.getQtyTB().setText(product.getTotalQuantity() + "");
+            if (product.getReorderLevel() > 0) {
+                gui.getReOrderLevelTB().setText(product.getReorderLevel() + "");
+            } else {
+                gui.getReOrderLevelTB().setText("Not Set");
             }
         }
 
@@ -402,11 +413,17 @@ public class ManageProductHandler {
         gui.getRoValueTB().setText("0.00");
         gui.getMaxQtyTB().setText("0.00");
         gui.getUnitText().setText("");
+        gui.getQtyTB().setText("0.00");
+        gui.getReOrderLevelTB().setText("0.00");
     }
 
     public String getNextIndex() {
-        int index = Utilities.convertKeyToInteger(products.get(products.size() - 1).getProductId());
-        return Utilities.convertKeyToString(index + 1, DatabaseInterface.PRODUCT);
+        if (!products.isEmpty()) {
+            int index = Utilities.convertKeyToInteger(products.get(products.size() - 1).getProductId());
+            return Utilities.convertKeyToString(index + 1, DatabaseInterface.PRODUCT);
+        } else {
+            return Utilities.convertKeyToString(1, DatabaseInterface.PRODUCT);
+        }
     }
 
     public boolean removeProduct() throws SQLException {
@@ -437,47 +454,61 @@ public class ManageProductHandler {
         String depID;
         String catID;
 
+        if (!pid.matches("^P[0-9]{5}$") && !pid.isEmpty()) {
+            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + pid + "\" is not a valid Product ID.\nEnter a valid Product ID", "Invalid Product ID", 2);
+            return false;
+        }
+
         if (pName == null || pName.equals("")) {
             Utilities.ShowErrorMsg(gui.getUpdateProduct(), "Product Name can't be empty");
+            gui.getpNameTB().requestFocus();
             return false;
         }
         if (gui.getpBarcodeTB1().getText().trim() == null || gui.getpBarcodeTB1().getText().trim().equals("")) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Barcode can't be empty.\nEnter the Product Barcode", "Empty Field Error", 2);
+            gui.getpBarcodeTB1().requestFocus();
             return false;
         }
         try {
             barcode = Long.parseLong(gui.getpBarcodeTB1().getText().trim());
             if (barcode < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getpBarcodeTB1().getText() + "\" is not a valid Barcode.\nEnter a valid Barcode", "Invalid Data", 2);
+                gui.getpBarcodeTB1().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getpBarcodeTB1().getText() + "\" is not a valid Barcode.\nEnter a valid Barcode", "Invalid Data", 2);
+            gui.getpBarcodeTB1().requestFocus();
             return false;
         }
         if (desc == null || desc.equals("")) {
             Utilities.ShowErrorMsg(gui.getUpdateProduct(), "Product Description can't be empty");
+            gui.getpDesTB1().requestFocus();
             return false;
         }
         try {
-            roQty = Double.parseDouble(gui.getRoValue().getText().trim());
-            if (roQty < 0) {
+            roValue = Double.parseDouble(gui.getRoValue().getText().trim());
+            if (roValue < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getRoValue().getText() + "\" is not a valid Quantity.\nEnter a valid Quantity", "Invalid Data", 2);
+                gui.getRoValue().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getRoValue().getText() + "\" is not a valid Quantity.\nEnter a valid Quantity", "Invalid Data", 2);
+            gui.getRoValue().requestFocus();
             return false;
         }
 
         try {
-            roValue = Double.parseDouble(gui.getRoQty().getText().trim());
-            if (roValue < 0) {
+            roQty = Double.parseDouble(gui.getRoQty().getText().trim());
+            if (roQty < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getRoQty().getText() + "\" is not a valid Value.\nEnter a valid Value", "Invalid Data", 2);
+                gui.getRoQty().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getRoQty().getText() + "\" is not a valid Value.\nEnter a valid Value", "Invalid Data", 2);
+            gui.getRoQty().requestFocus();
             return false;
         }
 
@@ -485,10 +516,12 @@ public class ManageProductHandler {
             roMax = Double.parseDouble(gui.getMaxQtyTB1().getText().trim());
             if (roMax < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getMaxQtyTB1().getText() + "\" is not a valid Quantity.\nEnter a valid Quantity", "Invalid Data", 2);
+                gui.getMaxQtyTB1().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getMaxQtyTB1().getText() + "\" is not a valid Quantity.\nEnter a valid Quantity", "Invalid Data", 2);
+            gui.getMaxQtyTB1().requestFocus();
             return false;
         }
 
@@ -496,10 +529,12 @@ public class ManageProductHandler {
             pack = Double.parseDouble(gui.getSizeTB1().getText().trim());
             if (pack < 0) {
                 JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getSizeTB1().getText() + "\" is not a valid Pack Size.\nEnter a valid Pack Size", "Invalid Data", 2);
+                gui.getSizeTB1().requestFocus();
                 return false;
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + gui.getSizeTB1().getText() + "\" is not a valid Pack Size.\nEnter a valid Pack Size", "Invalid Data", 2);
+            gui.getSizeTB1().requestFocus();
             return false;
         }
 
@@ -508,6 +543,7 @@ public class ManageProductHandler {
             depID = departments.get(index - 1).getDepartmentId();
         } else {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Select the Department", "Empty Field Error", 2);
+            gui.getDepCombo().requestFocus();
             return false;
         }
 
@@ -516,11 +552,7 @@ public class ManageProductHandler {
             catID = categories.get(index - 1).getCategoryId();
         } else {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Select the Category", "Empty Field Error", 2);
-            return false;
-        }
-
-        if (!pid.matches("^P[0-9]{5}$") && !pid.isEmpty()) {
-            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! \"" + pid + "\" is not a valid Product ID.\nEnter a valid Product ID", "Invalid Product ID", 2);
+            gui.getCatCombo().requestFocus();
             return false;
         }
 
@@ -534,18 +566,9 @@ public class ManageProductHandler {
             return false;
         }
 
-        if (pName == null || pName.equals("")) {
-            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Name can't be empty.\nEnter the Product Name", "Empty Field Error", 2);
-            return false;
-        }
-
-        if (desc == null || desc.equals("")) {
-            JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Description can't be empty.\nEnter the Product Description", "Empty Field Error", 2);
-            return false;
-        }
-
         if (unit == null || unit.equals("")) {
             JOptionPane.showMessageDialog(gui.getUpdateProduct(), "Error! Product Unit can't be empty.\nEnter the Product Unit", "Empty Field", 2);
+            gui.getUnitTB1().requestFocus();
             return false;
         }
 
@@ -555,6 +578,7 @@ public class ManageProductHandler {
             logger.info("Product Edit Succeded");
             loadProducts();
             displayProduct(ProductController.getProduct(selectedPro.getProductId()));
+            selectedPro.setProductName(pName);
             setSearchFieldTexts();
             gui.getUpdateProduct().setVisible(false);
             return true;
@@ -620,25 +644,63 @@ public class ManageProductHandler {
     public void showSetNotifiation() {
         gui.getWinSetNotification().setLocationRelativeTo(gui);
         JTable batchTable = gui.getBatchTable();
-        int row = batchTable.getSelectedRow();
-        if (row >= 0) {
-            gui.getpNameLable().setText(gui.getpIdText().getText() + "   " + gui.getpNameText().getText());
-            gui.getpBatchIdLabel().setText(batchTable.getValueAt(row, 0).toString());
-            gui.getpExpDateLabel().setText(batchTable.getValueAt(row, 8).toString());
-            gui.getWinSetNotification().setVisible(true);
+        if (batchTable.getRowCount() > 0) {
+            int row = batchTable.getSelectedRow();
+            if (row >= 0) {
+                gui.getpNameLable().setText(gui.getpIdText().getText() + "   " + gui.getpNameText().getText());
+                gui.getpBatchIdLabel().setText(batchTable.getValueAt(row, 0).toString());
+                if (batchTable.getValueAt(row, 8) != null) {
+                    gui.getpExpDateLabel().setText(batchTable.getValueAt(row, 8).toString());
+                }
+                gui.getpSetNotifyBox().setDate(null);
+                gui.getWinSetNotification().setVisible(true);
+            } else {
+                Utilities.ShowWarningMsg(gui, "Select a batch first");
+            }
         } else {
-            Utilities.ShowWarningMsg(gui, "Select a batch first");
+            Utilities.ShowErrorMsg(gui, "Table is Empty");
         }
     }
 
     public void setNotification() throws SQLException {
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
         Date notifyDate = gui.getpSetNotifyBox().getDate();
-        String productId = gui.getpIdText().getText();
-        String batchId = gui.getpBatchIdLabel().getText();
-        BatchController.updateBatchWithNotifyDate(productId, batchId, notifyDate);
-        loadBatches();
-        gui.getWinSetNotification().setVisible(false);
+        if (gui.getpExpDateLabel().getText() != null || !gui.getpExpDateLabel().getText().equals("")) {
+            try {
+                if (notifyDate == null) {
+                    Utilities.ShowErrorMsg(gui, "Notification Date is not a valid value");
+                } else if (notifyDate.before(Utilities.getToday())) {
+                    Utilities.ShowErrorMsg(gui, "Notification Date is an expired date");
+                } else if (notifyDate.after(sf.parse(gui.getpExpDateLabel().getText()))) {
 
+                    Utilities.ShowErrorMsg(gui, "Notification Date is after Expired date");
+
+                } else {
+                    String productId = gui.getpIdText().getText();
+                    String batchId = gui.getpBatchIdLabel().getText();
+                    BatchController.updateBatchWithNotifyDate(productId, batchId, notifyDate);
+                    loadBatches();
+                    gui.getWinSetNotification().setVisible(false);
+                }
+            } catch (ParseException ex) {
+                Utilities.ShowErrorMsg(gui, "Notification Date is not a valid value");
+            }
+        }
+
+    }
+
+    public int getDepartment() {
+        if (departments != null) {
+            return departments.size();
+        }
+        return 0;
+    }
+
+    public int getCategories() {
+        if (categories != null) {
+            return categories.size();
+        }
+        return 0;
     }
 
 }

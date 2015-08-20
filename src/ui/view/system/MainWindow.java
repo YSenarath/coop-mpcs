@@ -109,7 +109,6 @@ public class MainWindow extends javax.swing.JFrame {
         mnuUtilities = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         mnuSettings = new javax.swing.JMenuItem();
-        jMenu6 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -331,9 +330,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         jMenuBar1.add(mnuUtilities);
 
-        jMenu6.setText("Help");
-        jMenuBar1.add(jMenu6);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -361,6 +357,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        winManagePro.clearFields();
         winManagePro.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -457,7 +454,6 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem grnCancel;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
