@@ -6,6 +6,7 @@ import controller.ledger.GoodRecieveNoteController;
 import database.connector.DBConnection;
 import java.sql.SQLException;
 import javax.swing.JDesktopPane;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -320,7 +321,7 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
     private void addNewItem() {
         try {
             if (!GoodRecieveNoteController.GRNExists(txtF16aNumber.getText())) {
-                util.Utilities.ShowWarningMsg(this, "Enter GRN number first.");
+                util.Utilities.ShowWarningMsg(this, "Enter valid GRN number first.");
                 return;
             }
         } catch (SQLException ex) {
@@ -356,6 +357,14 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
                 txtF16aNumber.getText(),
                 datePicker.getDate()
         );
+
+        if (model.getRowCount() <= 0) {
+            int i = util.Utilities.showButtonMsg("This GRN Cancel dosen't contailn any items. Do you still want to add this?",
+                    "Alart!", JOptionPane.YES_NO_OPTION);
+            if (i == 1) {
+                return;
+            }
+        }
 
         for (int i = 0; i < model.getRowCount(); i++) {
             grnCancel.addBatch((Batch) model.getValueAt(i, 1));

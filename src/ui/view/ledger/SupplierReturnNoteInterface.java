@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDesktopPane;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
@@ -396,6 +397,14 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
         } catch (SQLException ex) {
             logger.error(ex.getMessage());
             return;
+        }
+
+        if (model.getRowCount() <= 0) {
+            int i = util.Utilities.showButtonMsg("This SRN Cancel dosen't contailn any items. Do you still want to add this?",
+                    "Alart!", JOptionPane.YES_NO_OPTION);
+            if (i == 1) {
+                return;
+            }
         }
 
         for (int i = 0; i < model.getRowCount(); i++) {
