@@ -521,6 +521,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
 
         @Override
         public void tableChanged(TableModelEvent e) {
+            this.model.removeTableModelListener(this);
             Double totalCost = 0.0;
             Double totalSales = 0.0;
             for (int row = 0; row < model.getRowCount(); row++) {
@@ -544,7 +545,6 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
                             } else if (quantity < 0) {
                                 model.setValueAt("0", row, 3);
                             }
-
                         } catch (Exception ex) {
                             model.setValueAt("0", row, 3);
                         }
@@ -570,6 +570,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
 
             txtTotalCost.setText(totalCost.toString());
             txtTotalSales.setText(totalSales.toString());
+            this.model.addTableModelListener(this);
         }
 
         private void fillProductDetails(int row, String batchId) {

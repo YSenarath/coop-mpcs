@@ -91,7 +91,7 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
 
             },
             new String [] {
-                "", "Product Id", "Description", "Damaged Quantity", "Unit Price", "Quantity", "Value", "Loss"
+                "", "Item Code", "Description", "Damaged Quantity", "Unit Price", "Quantity", "Value", "Loss"
             }
         ) {
             Class[] types = new Class [] {
@@ -409,6 +409,7 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
 
         @Override
         public void tableChanged(TableModelEvent e) {
+            this.model.removeTableModelListener(this);
             Double totalLoss = 0.0;
             for (int row = 0; row < model.getRowCount(); row++) {
                 try {
@@ -454,6 +455,7 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
                 }
                 // for (int column = 0; column < model.getColumnCount(); column++) {}
             }
+            this.model.addTableModelListener(this);
         }
     }
 

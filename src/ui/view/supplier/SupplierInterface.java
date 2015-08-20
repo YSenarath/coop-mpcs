@@ -433,7 +433,7 @@ public class SupplierInterface extends javax.swing.JInternalFrame {
             } else {
                 // Add new supplier
                 SupplierController.addSupplier(currSupplier);
-                util.Utilities.showMsgBox("Supplier update cancled.", "Alart", JOptionPane.INFORMATION_MESSAGE);
+                util.Utilities.showMsgBox("Supplier update success.", "Alart", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (SQLException | NumberFormatException ex) {
             contentVarifier(false);

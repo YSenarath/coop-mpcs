@@ -50,8 +50,6 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
         btnNewItem = new javax.swing.JButton();
         btnDeleteItem = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
-        txtTotalDiscount = new javax.swing.JTextField();
         datePicker = new org.jdesktop.swingx.JXDatePicker();
         lblTitle = new javax.swing.JLabel();
 
@@ -138,14 +136,6 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
             }
         });
 
-        jLabel5.setText("Total Discount");
-
-        txtTotalDiscount.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtTotalDiscountActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -163,12 +153,8 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
                             .addComponent(txtF16aNumber)
                             .addComponent(txtF16aCancelNumber)
                             .addComponent(datePicker, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                            .addComponent(jLabel5)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(txtTotalDiscount, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
                             .addComponent(btnDeleteItem, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(btnNewItem)
@@ -204,9 +190,7 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnDeleteItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel5)
-                        .addComponent(txtTotalDiscount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnDeleteItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(btnNewItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -254,10 +238,6 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
 
     }//GEN-LAST:event_itemDataTableInputMethodTextChanged
 
-    private void txtTotalDiscountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalDiscountActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtTotalDiscountActionPerformed
-
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         recordGrnCancel();
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -290,14 +270,12 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JTextField txtF16aCancelNumber;
     private javax.swing.JTextField txtF16aNumber;
-    private javax.swing.JTextField txtTotalDiscount;
     // End of variables declaration//GEN-END:variables
 
     // </editor-fold>
