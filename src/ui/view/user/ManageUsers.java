@@ -194,24 +194,6 @@ public class ManageUsers extends javax.swing.JInternalFrame {
 
     }
 
-    private String dataTruncation(String level) {
-        switch (level.toLowerCase().trim()) {
-            case "manager":
-                return "manager";
-            case "cashier":
-                return "cashier";
-            case "inventory":
-                return "inventory_manager";
-        }
-        else if(level.equals("Cashier")){
-            return newLevel = "cashier";
-        }
-        else if(level.equals("Inventory")){
-            return newLevel = "inventory_manager";
-        }
-       return "";
-    }
-
     private void addUser() {
         logger.debug("addUser method invoked");
         try {
