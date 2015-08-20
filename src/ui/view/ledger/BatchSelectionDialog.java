@@ -199,14 +199,16 @@ public class BatchSelectionDialog extends javax.swing.JInternalFrame {
     }
 
     private void initInterface() {
-        tableModel = (DefaultTableModel) itemDataTable.getModel(); 
+        tableModel = (DefaultTableModel) itemDataTable.getModel();
         addAllBatchesToTable();
     }
 
     private void addSelectedBatch() {
         int row = itemDataTable.getSelectedRow();
-        Batch b = (Batch) tableModel.getValueAt(row, 0);
-        parent.batchSelectionResponce(b);
+        if (row >= 0) {
+            Batch b = (Batch) tableModel.getValueAt(row, 0);
+            parent.batchSelectionResponce(b);
+        }
     }
 
     public void disableGRNSelection(String text) {

@@ -194,25 +194,6 @@ public class ManageUsers extends javax.swing.JInternalFrame {
 
     }
 
-//    private String dataTruncation(String level) {
-//        logger.debug(level.toLowerCase());
-//        switch (level.toLowerCase().trim()) {
-//            case "manager":
-//                return "manager";
-//            case "cashier":
-//                return "cashier";
-//            case "inventory" :
-//                return "inventory_manager";
-//        }
-//        else if(level.equals("Cashier")){
-//            return newLevel = "cashier";
-//        }
-//        else if(level.equals("Inventory")){
-//            return newLevel = "inventory_manager";
-//        }
-//       return "";
-//    }
-
     private void addUser() {
         logger.debug("addUser method invoked");
         try {
@@ -230,7 +211,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             Utilities.showMsgBox("New user details added to the database", "Confirm", JOptionPane.WARNING_MESSAGE);
 
         } catch (SQLException ex) {
-            logger.error("SQL exception has occured-002");
+            logger.error("SQL exception has occured");
             Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }

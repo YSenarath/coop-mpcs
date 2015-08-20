@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDesktopPane;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
@@ -398,6 +399,14 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
             return;
         }
 
+        if (model.getRowCount() <= 0) {
+            int i = util.Utilities.showButtonMsg("This SRN Cancel dosen't contailn any items. Do you still want to add this?",
+                    "Alart!", JOptionPane.YES_NO_OPTION);
+            if (i == 1) {
+                return;
+            }
+        }
+
         for (int i = 0; i < model.getRowCount(); i++) {
             SRNItem itm;
             try {
@@ -521,6 +530,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
 
         @Override
         public void tableChanged(TableModelEvent e) {
+            this.model.removeTableModelListener(this);
             Double totalCost = 0.0;
             Double totalSales = 0.0;
             for (int row = 0; row < model.getRowCount(); row++) {
@@ -544,7 +554,6 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
                             } else if (quantity < 0) {
                                 model.setValueAt("0", row, 3);
                             }
-
                         } catch (Exception ex) {
                             model.setValueAt("0", row, 3);
                         }
@@ -570,6 +579,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
 
             txtTotalCost.setText(totalCost.toString());
             txtTotalSales.setText(totalSales.toString());
+            this.model.addTableModelListener(this);
         }
 
         private void fillProductDetails(int row, String batchId) {

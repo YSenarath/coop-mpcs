@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDesktopPane;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
@@ -91,7 +92,7 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
 
             },
             new String [] {
-                "", "Product Id", "Description", "Damaged Quantity", "Unit Price", "Quantity", "Value", "Loss"
+                "", "Item Code", "Description", "Damaged Quantity", "Unit Price", "Quantity", "Value", "Loss"
             }
         ) {
             Class[] types = new Class [] {
@@ -409,6 +410,7 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
 
         @Override
         public void tableChanged(TableModelEvent e) {
+            this.model.removeTableModelListener(this);
             Double totalLoss = 0.0;
             for (int row = 0; row < model.getRowCount(); row++) {
                 try {
@@ -454,6 +456,7 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
                 }
                 // for (int column = 0; column < model.getColumnCount(); column++) {}
             }
+            this.model.addTableModelListener(this);
         }
     }
 
@@ -467,6 +470,14 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
                 datePicker.getDate(),
                 (String) comboLocation.getSelectedItem()
         );
+
+        if (model.getRowCount() <= 0) {
+            int i = util.Utilities.showButtonMsg("This Danmage Stock dosen't contailn any items. Do you still want to add this?",
+                    "Alart!", JOptionPane.YES_NO_OPTION);
+            if (i == 1) {
+                return;
+            }
+        }
 
         for (int i = 0; i < model.getRowCount(); i++) {
             DamagedItem itm;

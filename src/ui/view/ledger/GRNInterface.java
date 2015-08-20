@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
@@ -136,11 +137,11 @@ public class GRNInterface extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "", "Product Id", "Description", "Cost Price", "Cost Discount", "Expiration date", "Selling Price", "Quantity", "Recieved Quantity", "Cost Value", "Selling Value"
+                "", "Item Code", "Description", "Cost Price", "Cost Discount", "Expiration date", "Selling Price", "Quantity", "Recieved Quantity", "Cost Value", "Selling Value"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 true, true, false, true, true, true, true, true, true, false, false
@@ -501,9 +502,22 @@ public class GRNInterface extends javax.swing.JInternalFrame {
             util.Utilities.showMsgBox("Unable to add grn, enter Invoice number(Code).", "Grn Error", 0);
             return;
         }
+        
+        if (model.getRowCount() <= 0) {
+            int i = util.Utilities.showButtonMsg("This GRN dosen't contailn any items. Do you still want to add the GRN?",
+                    "Alart!", JOptionPane.YES_NO_OPTION);
+            if (i == 1) {
+                return;
+            }
+        }
 
         for (int i = 0; i < model.getRowCount(); i++) {
             try {
+                if (!GRNInterface.isItemValid(i, model)) {
+                    util.Utilities.showMsgBox("Unable to add grn, Invalid batch", "Grn Error", 0);
+                    return;
+                }
+
                 Date date = util.Utilities.getDateFromString(model.getValueAt(i, 5).toString());
                 if (date == null) {
                     util.Utilities.showMsgBox("Unable to add grn, Invalid batch", "Grn Error", 0);
@@ -585,6 +599,63 @@ public class GRNInterface extends javax.swing.JInternalFrame {
         if (row >= 0 && row < model.getRowCount()) {
             try {
                 if (ProductController.getProduct("p" + model.getValueAt(row, 1).toString()) == null) {
+                    out = false;
+                }
+            } catch (SQLException ex) {
+                model.setValueAt("", row, 1);
+                out = false;
+            }
+
+            if (util.Utilities.getDateFromString(model.getValueAt(row, 5).toString()) == null) {
+                // util.Utilities.ShowWarningMsg(null, "Enter a valid date");
+                out = false;
+            }
+
+            try {
+                if (Double.parseDouble(model.getValueAt(row, 4).toString()) < 0) {
+                    out = false;
+                }
+            } catch (Exception ex) {
+                out = false;
+            }
+
+            try {
+                if (Double.parseDouble(model.getValueAt(row, 4).toString()) > 100) {
+                    out = false;
+                }
+            } catch (Exception ex) {
+                out = false;
+            }
+
+            int[] checkInt = new int[]{3, 6, 7, 8};
+            for (int column : checkInt) {
+                try {
+                    if (Double.parseDouble(model.getValueAt(row, column).toString()) < 0) {
+                        out = false;
+                    }
+                } catch (Exception ex) {
+                    out = false;
+                }
+            }
+
+            try {
+                if (Double.parseDouble(model.getValueAt(row, 7).toString()) < Double.parseDouble(model.getValueAt(row, 8).toString())) {
+                    out = false;
+                }
+            } catch (Exception ex) {
+                out = false;
+            }
+
+            return out;
+        }
+        return out;
+    }
+
+    public static boolean isItemValidWithChanges(int row, DefaultTableModel model) {
+        Boolean out = true;
+        if (row >= 0 && row < model.getRowCount()) {
+            try {
+                if (ProductController.getProduct("p" + model.getValueAt(row, 1).toString()) == null) {
                     model.setValueAt("", row, 1);
                     out = false;
                 }
@@ -595,26 +666,27 @@ public class GRNInterface extends javax.swing.JInternalFrame {
 
             if (util.Utilities.getDateFromString(model.getValueAt(row, 5).toString()) == null) {
                 model.setValueAt(util.Utilities.getStringDate(util.Utilities.getCurrentDate()), row, 5);
+                // util.Utilities.ShowWarningMsg(null, "Enter a valid date");
                 out = false;
             }
 
             try {
                 if (Double.parseDouble(model.getValueAt(row, 4).toString()) < 0) {
-                    model.setValueAt("0", row, 4);
+                    model.setValueAt(0, row, 4);
                     out = false;
                 }
             } catch (Exception ex) {
-                model.setValueAt("0", row, 4);
+                model.setValueAt(0, row, 4);
                 out = false;
             }
 
             try {
                 if (Double.parseDouble(model.getValueAt(row, 4).toString()) > 100) {
-                    model.setValueAt("100", row, 4);
+                    model.setValueAt(100, row, 4);
                     out = false;
                 }
             } catch (Exception ex) {
-                model.setValueAt("100", row, 4);
+                model.setValueAt(100, row, 4);
                 out = false;
             }
 
@@ -622,14 +694,25 @@ public class GRNInterface extends javax.swing.JInternalFrame {
             for (int column : checkInt) {
                 try {
                     if (Double.parseDouble(model.getValueAt(row, column).toString()) < 0) {
-                        model.setValueAt("0", row, column);
+                        model.setValueAt(0, row, column);
                         out = false;
                     }
                 } catch (Exception ex) {
-                    model.setValueAt("0", row, column);
+                    model.setValueAt(0, row, column);
                     out = false;
                 }
             }
+
+            try {
+                if (Double.parseDouble(model.getValueAt(row, 7).toString()) < Double.parseDouble(model.getValueAt(row, 8).toString())) {
+                    model.setValueAt(Double.parseDouble(model.getValueAt(row, 7).toString()), row, 8);
+                    out = false;
+                }
+            } catch (Exception ex) {
+                model.setValueAt(0, row, 8);
+                out = false;
+            }
+
             return out;
         }
         return out;
@@ -637,7 +720,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
 
     private void addNewItem() {
         if (model.getRowCount() == 0 || isItemValid(model.getRowCount() - 1, model)) {
-            model.addRow(new Object[]{model.getRowCount() + 1, 0, "", 0, 0, "", 0, 0, 0, 0, 0});
+            model.addRow(new Object[]{model.getRowCount() + 1, 0, "", 0, 0, util.Utilities.getStringDate(util.Utilities.getCurrentDate()), 0, 0, 0, 0, 0});
         }
     }
 
@@ -666,9 +749,10 @@ public class GRNInterface extends javax.swing.JInternalFrame {
 
         @Override
         public void tableChanged(TableModelEvent e) {
+            this.model.removeTableModelListener(this);
             for (int row = 0; row < model.getRowCount(); row++) {
                 try {
-                    // GRNInterface.isItemValid(row, model);
+                    GRNInterface.isItemValidWithChanges(row, model);
                     if (e.getColumn() == 1) {
                         // Auto generated Column
                         String productId = "P" + model.getValueAt(row, 1).toString();
@@ -686,12 +770,16 @@ public class GRNInterface extends javax.swing.JInternalFrame {
 
                 }
             }
+            this.model.addTableModelListener(this);
         }
 
         private void fillProductDetails(int row, String productId) {
             Product result;
             try {
                 result = ProductController.getProduct(productId);
+                if (result == null) 
+                model.setValueAt("", row, 2);
+                else
                 model.setValueAt(result.getProductName(), row, 2);
             } catch (SQLException ex) {
                 logger.error(ex.getMessage());
