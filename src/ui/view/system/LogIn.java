@@ -3,14 +3,10 @@ package ui.view.system;
 import controller.user.UserController;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
-import java.util.Properties;
-import java.util.logging.Level;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import model.people.User;
 import org.apache.log4j.Logger;
-import ui.view.inventory.ManageDepartment;
 import util.Utilities;
 
 public class LogIn extends javax.swing.JFrame {
@@ -32,6 +28,11 @@ public class LogIn extends javax.swing.JFrame {
         userType = null;
         userName = null;
         initComponents();
+        try {
+            setIconImage(new ImageIcon(getClass().getResource("/ui/view/system/resources/coop_icon.png")).getImage());
+        } catch (Exception ex) {
+
+        }
         setLocationRelativeTo(null);
         txtUserName.requestFocus();
     }
@@ -82,7 +83,7 @@ public class LogIn extends javax.swing.JFrame {
         if (user != null) {
             char[] dbHash = user.getPassword().toCharArray();
             if (Utilities.isHashSame(dbHash, password)) {
-                logger.info("User varified");
+                logger.info("User verified");
 
                 if (user.getUserType().equals(User.CASHIER)) {
                     throw new Exception("User does not have administrator privilages");
@@ -149,12 +150,14 @@ public class LogIn extends javax.swing.JFrame {
                 txtPassword.setText("");
                 txtUserName.requestFocus();
                 logger.info("Empty user name");
+                Utilities.ShowErrorMsg(this, "Login Error! \nUsername can't be Empty");
                 return;
             }
 
             if (txtPassword.getPassword().length == 0) {
                 txtPassword.requestFocus();
                 logger.info("Empty password");
+                Utilities.ShowErrorMsg(this, "Login Error! \nPassword can't be Empty");
                 return;
             }
 
@@ -348,32 +351,26 @@ public class LogIn extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPasswordKeyReleased
 
     public static void main(String args[]) {
-        //setupUI();
+        Utilities.setupMainUI();
 
-        Properties props = new Properties();
-
-        props.put("logoString", "");
-
-        com.jtattoo.plaf.acryl.AcrylLookAndFeel.setCurrentTheme(props);
-
-        try {
-            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
-            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
-            //UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
-            //UIManager.setLookAndFeel("com.jtattoo.plaf.aluminium.AluminiumLookAndFeel");
-            // UIManager.setLookAndFeel("com.jtattoo.plaf.luna.LunaLookAndFeel");
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            try {
-                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                    if ("Nimbus".equals(info.getName())) {
-                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                        break;
-                    }
-                }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex1) {
-                java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-        }
+//        try {
+//            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
+//            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+//            //UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+//            //UIManager.setLookAndFeel("com.jtattoo.plaf.aluminium.AluminiumLookAndFeel");
+//            // UIManager.setLookAndFeel("com.jtattoo.plaf.luna.LunaLookAndFeel");
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+//            try {
+//                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                    if ("Nimbus".equals(info.getName())) {
+//                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                        break;
+//                    }
+//                }
+//            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex1) {
+//                java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            }
+//        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new LogIn().setVisible(true);

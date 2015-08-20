@@ -28,12 +28,12 @@ public class BatchDiscountController {
         String query = "SELECT batch_id, "
                 + "discount, "
                 + "start_date, "
-                + " , promotional , "
+                + "promotional , "
                 + "qty , "
                 + "members_only FROM "
                 + DatabaseInterface.BATCH_DISCOUNT
                 + " WHERE product_id=? "
-                + "AND batch_id=?";
+                + " AND batch_id=?";
 
         Object[] ob = {
             Utilities.convertKeyToInteger(productId),

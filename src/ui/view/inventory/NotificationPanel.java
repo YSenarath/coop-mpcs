@@ -9,9 +9,12 @@ import java.awt.CardLayout;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
 import javax.swing.JTable;
 import org.apache.log4j.Logger;
 import ui.handler.inventory.NotificationPanelHandler;
+import util.Utilities;
 
 /**
  *
@@ -30,6 +33,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
        
         initComponents();
         handler = new NotificationPanelHandler(this);
+        handler.loadSettings();
         handler.notifyUser();
         
         try {
@@ -66,6 +70,9 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        positionBGroup = new javax.swing.ButtonGroup();
+        timeBGroup = new javax.swing.ButtonGroup();
+        diplayGroup = new javax.swing.ButtonGroup();
         expireTitlePanel = new org.jdesktop.swingx.JXTitledPanel();
         jPanel1 = new javax.swing.JPanel();
         jXTaskPaneContainer1 = new org.jdesktop.swingx.JXTaskPaneContainer();
@@ -75,6 +82,8 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         jXTaskPane2 = new org.jdesktop.swingx.JXTaskPane();
         aboutToFinishB = new javax.swing.JButton();
         outOfStockB = new javax.swing.JButton();
+        jXTaskPane3 = new org.jdesktop.swingx.JXTaskPane();
+        jButton1 = new javax.swing.JButton();
         cardPanel = new javax.swing.JPanel();
         emptyPanel = new javax.swing.JPanel();
         expirationPanel = new javax.swing.JPanel();
@@ -85,6 +94,30 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         lowQuantityTable = new javax.swing.JTable();
         reorderTitlePanel = new javax.swing.JLabel();
+        Settings = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        bottomRight = new javax.swing.JRadioButton();
+        jPanel3 = new javax.swing.JPanel();
+        topLeft = new javax.swing.JRadioButton();
+        topRight = new javax.swing.JRadioButton();
+        bottomLeft = new javax.swing.JRadioButton();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        displayTime = new javax.swing.JSlider();
+        interval = new javax.swing.JSlider();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        minR = new javax.swing.JRadioButton();
+        hoursR = new javax.swing.JRadioButton();
+        daysR = new javax.swing.JRadioButton();
+        secR1 = new javax.swing.JRadioButton();
+        MinR1 = new javax.swing.JRadioButton();
+        jButton2 = new javax.swing.JButton();
 
         setClosable(true);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
@@ -146,6 +179,20 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         jXTaskPaneContainer1.add(jXTaskPane2);
 
+        jXTaskPane3.setSpecial(true);
+        jXTaskPane3.setTitle("Settings");
+
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton1.setText("Settings");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jXTaskPane3.getContentPane().add(jButton1);
+
+        jXTaskPaneContainer1.add(jXTaskPane3);
+
         cardPanel.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
         cardPanel.setMinimumSize(new java.awt.Dimension(940, 450));
         cardPanel.setPreferredSize(new java.awt.Dimension(940, 450));
@@ -166,7 +213,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
             .addGap(0, 450, Short.MAX_VALUE)
         );
 
-        cardPanel.add(emptyPanel, "card4");
+        cardPanel.add(emptyPanel, "emptyPanel");
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder1 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder1.setShowLeftShadow(true);
@@ -331,6 +378,291 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         cardPanel.add(quantityPanel, "quantityPanel");
 
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder5 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder5.setShowLeftShadow(true);
+        dropShadowBorder5.setShowTopShadow(true);
+        jPanel2.setBorder(dropShadowBorder5);
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Settings");
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Position", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
+
+        positionBGroup.add(bottomRight);
+        bottomRight.setText("Bottom Right");
+        bottomRight.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bottomRightActionPerformed(evt);
+            }
+        });
+
+        jPanel3.setBackground(java.awt.SystemColor.controlDkShadow);
+        org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder6 = new org.jdesktop.swingx.border.DropShadowBorder();
+        dropShadowBorder6.setShowLeftShadow(true);
+        dropShadowBorder6.setShowTopShadow(true);
+        jPanel3.setBorder(dropShadowBorder6);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 159, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 106, Short.MAX_VALUE)
+        );
+
+        positionBGroup.add(topLeft);
+        topLeft.setText("Top Left");
+        topLeft.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                topLeftActionPerformed(evt);
+            }
+        });
+
+        positionBGroup.add(topRight);
+        topRight.setText("Top Right");
+
+        positionBGroup.add(bottomLeft);
+        bottomLeft.setText("Bottom Left");
+        bottomLeft.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bottomLeftActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(246, 246, 246)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addComponent(bottomLeft)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(bottomRight))
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addComponent(topLeft)
+                            .addGap(147, 147, 147)
+                            .addComponent(topRight))))
+                .addContainerGap(267, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(topRight)
+                    .addComponent(topLeft))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(3, 3, 3)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bottomLeft)
+                    .addComponent(bottomRight))
+                .addGap(0, 9, Short.MAX_VALUE))
+        );
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Time Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel2.setText("Time Interval");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel4.setText("Display Time");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setText("1");
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel7.setText("1");
+
+        displayTime.setMajorTickSpacing(10);
+        displayTime.setMaximum(60);
+        displayTime.setMinimum(1);
+        displayTime.setMinorTickSpacing(1);
+
+        interval.setForeground(java.awt.Color.orange);
+        interval.setMajorTickSpacing(10);
+        interval.setMaximum(60);
+        interval.setMinimum(1);
+        interval.setMinorTickSpacing(1);
+        interval.setSnapToTicks(true);
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel6.setText("60");
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel8.setText("60");
+
+        timeBGroup.add(minR);
+        minR.setText("Min");
+        minR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minRActionPerformed(evt);
+            }
+        });
+
+        timeBGroup.add(hoursR);
+        hoursR.setText("Hours");
+        hoursR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hoursRActionPerformed(evt);
+            }
+        });
+
+        timeBGroup.add(daysR);
+        daysR.setText("Days");
+        daysR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                daysRActionPerformed(evt);
+            }
+        });
+
+        diplayGroup.add(secR1);
+        secR1.setText("Sec");
+        secR1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                secR1ActionPerformed(evt);
+            }
+        });
+
+        diplayGroup.add(MinR1);
+        MinR1.setText("Min");
+        MinR1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MinR1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(interval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(41, 41, 41)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(displayTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(42, 42, 42)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(minR)
+                    .addComponent(secR1))
+                .addGap(51, 51, 51)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(hoursR)
+                        .addGap(54, 54, 54)
+                        .addComponent(daysR))
+                    .addComponent(MinR1))
+                .addContainerGap(53, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(42, 42, 42)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(interval, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(minR)
+                                .addComponent(hoursR)
+                                .addComponent(daysR)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(displayTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(secR1)
+                                .addComponent(MinR1)))))
+                .addContainerGap())
+        );
+
+        jButton2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton2.setText("Save");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(51, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(49, 49, 49))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton2)
+                .addGap(31, 31, 31))
+        );
+
+        javax.swing.GroupLayout SettingsLayout = new javax.swing.GroupLayout(Settings);
+        Settings.setLayout(SettingsLayout);
+        SettingsLayout.setHorizontalGroup(
+            SettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, SettingsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        SettingsLayout.setVerticalGroup(
+            SettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(SettingsLayout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        cardPanel.add(Settings, "setting");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -401,6 +733,51 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         showReOrderCard(true);
     }//GEN-LAST:event_outOfStockBActionPerformed
 
+    private void topLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topLeftActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_topLeftActionPerformed
+
+    private void bottomLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bottomLeftActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bottomLeftActionPerformed
+
+    private void bottomRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bottomRightActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bottomRightActionPerformed
+
+    private void minRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minRActionPerformed
+        handler.getSettings().setIntervalType(0);
+    }//GEN-LAST:event_minRActionPerformed
+
+    private void hoursRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hoursRActionPerformed
+        handler.getSettings().setIntervalType(1);
+    }//GEN-LAST:event_hoursRActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        handler.saveSettings();
+        
+        handler.loadSettings();
+        Utilities.ShowCompleteMsg(this, "Settings save succeed");
+        ((CardLayout) (cardPanel.getLayout())).show(cardPanel, "emptyPanel");
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ((CardLayout) (cardPanel.getLayout())).show(cardPanel, "setting");
+        handler.loadSettings();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void secR1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_secR1ActionPerformed
+        handler.getSettings().setDisplayType(0);
+    }//GEN-LAST:event_secR1ActionPerformed
+
+    private void MinR1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MinR1ActionPerformed
+        handler.getSettings().setDisplayType(1);
+    }//GEN-LAST:event_MinR1ActionPerformed
+
+    private void daysRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_daysRActionPerformed
+       handler.getSettings().setIntervalType(2);
+    }//GEN-LAST:event_daysRActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -440,6 +817,42 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         return expireTable;
     }
 
+    public JRadioButton getBottomLeft() {
+        return bottomLeft;
+    }
+
+    public JRadioButton getBottomRight() {
+        return bottomRight;
+    }
+
+    public JRadioButton getDaysR() {
+        return daysR;
+    }
+
+    public JSlider getDisplayTime() {
+        return displayTime;
+    }
+
+    public JRadioButton getHoursR() {
+        return hoursR;
+    }
+
+    public JSlider getInterval() {
+        return interval;
+    }
+
+    public JRadioButton getMinR() {
+        return minR;
+    }
+
+    public JRadioButton getTopLeft() {
+        return topLeft;
+    }
+
+    public JRadioButton getTopRight() {
+        return topRight;
+    }
+
    
 
     public JTable getLowQuantityTable() {
@@ -461,6 +874,15 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
     public JButton getOutOfStockB() {
         return outOfStockB;
     }
+
+    public JRadioButton getMinR1() {
+        return MinR1;
+    }
+
+    public JRadioButton getSecR1() {
+        return secR1;
+    }
+    
 
     private void showReOrderCard(boolean onlyOutOfStock) {
 
@@ -485,25 +907,54 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton MinR1;
+    private javax.swing.JPanel Settings;
     private javax.swing.JButton aboutToExpireB;
     private javax.swing.JButton aboutToFinishB;
+    private javax.swing.JRadioButton bottomLeft;
+    private javax.swing.JRadioButton bottomRight;
     private javax.swing.JPanel cardPanel;
+    private javax.swing.JRadioButton daysR;
+    private javax.swing.ButtonGroup diplayGroup;
+    private javax.swing.JSlider displayTime;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JPanel expirationPanel;
     private javax.swing.JLabel expirationTitle;
     private javax.swing.JTable expireTable;
     private org.jdesktop.swingx.JXTitledPanel expireTitlePanel;
     private javax.swing.JButton expiredBatchesB;
+    private javax.swing.JRadioButton hoursR;
+    private javax.swing.JSlider interval;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane1;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane2;
+    private org.jdesktop.swingx.JXTaskPane jXTaskPane3;
     private org.jdesktop.swingx.JXTaskPaneContainer jXTaskPaneContainer1;
     private javax.swing.JTable lowQuantityTable;
+    private javax.swing.JRadioButton minR;
     private javax.swing.JButton outOfStockB;
+    private javax.swing.ButtonGroup positionBGroup;
     private javax.swing.JPanel quantityPanel;
     private javax.swing.JLabel reorderTitlePanel;
+    private javax.swing.JRadioButton secR1;
+    private javax.swing.ButtonGroup timeBGroup;
+    private javax.swing.JRadioButton topLeft;
+    private javax.swing.JRadioButton topRight;
     // End of variables declaration//GEN-END:variables
 
 }

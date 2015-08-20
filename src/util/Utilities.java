@@ -255,12 +255,12 @@ public class Utilities {
                 suffix = "E";
                 size = 4;
                 break;
-                
+
             case DatabaseInterface.GRN_CANCEL:
                 suffix = "N";
                 size = 5;
                 break;
-                
+
             default:
                 return null;
         }
@@ -285,8 +285,8 @@ public class Utilities {
     public static void showMsgBox(String msg, String title, int msgType) {
         JOptionPane.showMessageDialog(null, msg, title, msgType);
     }
-    
-        //Show OkCancel boxes
+
+    //Show OkCancel boxes
     public static int showOkCancel(String theMessage) {
         int result = JOptionPane.showConfirmDialog((Component) null, theMessage,
                 "alert", JOptionPane.OK_CANCEL_OPTION);
@@ -391,6 +391,77 @@ public class Utilities {
         }
     }
 
+    public static void setupMainUI() {
+        Properties props = new Properties();
+
+        //RGB colours
+        String buttonClolor = "200 200 200";
+        String controlClolor = "200 200 200";
+
+        String menuColor = "222 222 222";
+        String menuBackgroundColor = "224 224 224";
+
+        String selectionBackgroundColor = "240 240 240";
+        String selectionForegroundColor = "67 148 103";
+
+        String rollOverClolor = "114 114 114";
+
+        String frameColor = "171 171 171";
+        String windowTitleColor = "10 10 10";
+
+        //Customize Theme
+        props.put("logoString", "");
+
+//        props.put("linuxStyleScrollBar", "on");
+//        props.put("centerWindowTitle", "on");
+//        props.put("textAntiAliasing", "on");
+//        props.put("textAntiAliasingMode", "default");
+//        props.put("toolbarDecorated", "off");
+//        props.put("windowDecoration", "on");
+//        props.put("dynamicLayout", "on");
+//        props.put("darkTexture", "off");
+
+//        props.put("buttonColor", buttonClolor);//button colours
+//        props.put("buttonColorLight", buttonClolor);
+//        props.put("buttonColorDark", buttonClolor);
+
+//        props.put("controlColor", controlClolor);//Control colours
+//        props.put("controlColorLight", controlClolor);
+//        props.put("controlColorDark", controlClolor);
+//
+//        props.put("menuColorLight", menuColor);//menu colours
+//        props.put("menuColorDark", menuColor);
+//        props.put("menuBackgroundColor", menuBackgroundColor);
+//
+//        props.put("selectionBackgroundColor", selectionBackgroundColor);//hilighted text
+//        props.put("selectionForegroundColor", selectionForegroundColor);
+//
+//        props.put("rolloverColor", rollOverClolor); //on hovering
+//        props.put("rolloverColorLight", rollOverClolor);
+//        props.put("rolloverColorDark", rollOverClolor);
+
+//        props.put("frameColor", frameColor);
+//        props.put("windowTitleColorLight", windowTitleColor);//Windows boarder colours
+//        props.put("windowTitleColorDark", windowTitleColor);
+//        props.put("disabledForegroundColor", windowTitleColor);
+
+        try {
+            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setCurrentTheme(props);
+            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+            //UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+            //UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+            //UIManager.setLookAndFeel("com.jtattoo.plaf.aluminium.AluminiumLookAndFeel");
+            // UIManager.setLookAndFeel("com.jtattoo.plaf.luna.LunaLookAndFeel");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ey) {
+                System.exit(3);
+            }
+            System.exit(3);
+        }
+    }
+
     //nadheesh
     public static Date getToday() {
         String date = getStringDate((Calendar.getInstance().getTime()));
@@ -412,7 +483,6 @@ public class Utilities {
         JOptionPane.showMessageDialog(component, msg, "Success", 1);
     }
 
-    
     public static void ShowWarningMsg(Component component, String msg) {
         JOptionPane.showMessageDialog(component, msg, "Warning", 2);
     }

@@ -37,6 +37,8 @@ import util.Utilities;
  */
 public class ManageProductHandler {
 
+    
+    // <editor-fold defaultstate="collapsed" desc="Variables">
     private final ManageProduct gui;
     private ArrayList<Product> products;
     private ArrayList<Batch> batches;
@@ -49,11 +51,15 @@ public class ManageProductHandler {
     private ActionListener idItemListener;
     private Product selectedPro;
 
+     // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Constructor">
     public ManageProductHandler(ManageProduct gui) {
         this.gui = gui;
         initiating = false;
         departments = new ArrayList<>();
 
+        
         //action listner for search popup items
         nameItemListener = new ActionListener() {
             @Override
@@ -118,6 +124,9 @@ public class ManageProductHandler {
 
     }
 
+    // </editor-fold>
+    
+    
     public void loadProducts() throws SQLException {
 
         products = ProductController.getProductIdentities();
@@ -603,7 +612,7 @@ public class ManageProductHandler {
 
     public void searchIdMatches(String id) {
         gui.getIDPopUp().removeAll();
-
+        
         for (Product p : products) {
 
             if (p.getProductId().toLowerCase().contains(id.toLowerCase())) {

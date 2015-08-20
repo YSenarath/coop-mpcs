@@ -1,19 +1,11 @@
 package ui.view.system;
 
 import java.awt.Dimension;
-import static java.awt.SystemColor.window;
 import java.sql.SQLException;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import model.people.User;
-import net.sf.jcarrierpigeon.Notification;
-import net.sf.jcarrierpigeon.NotificationQueue;
-import net.sf.jcarrierpigeon.WindowPosition;
 import ui.view.credit.FinalCredit;
 import ui.view.employee.ManageEmployees;
 import ui.view.inventory.DiscountInterface;
@@ -47,7 +39,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         initComponents();
         initializeGUI();
+        try {
+            setIconImage(new ImageIcon(getClass().getResource("/ui/view/system/resources/coop_icon.png")).getImage());
+        } catch (Exception ex) {
 
+        }
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         //--------------------------------Internal Frames == Inventory-----------------------
@@ -81,9 +77,12 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jProgressBar1 = new javax.swing.JProgressBar();
         mainDesktopPanel = new javax.swing.JDesktopPane();
         welcomePanel = new javax.swing.JPanel();
         lblWelcome = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         mnuLogOff = new javax.swing.JMenuItem();
@@ -93,7 +92,6 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         mnuManageSupplier = new javax.swing.JMenuItem();
         setDiscountMenu = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
         mnuCredit = new javax.swing.JMenu();
         mnuEmployees = new javax.swing.JMenuItem();
         mnuCoopCredit = new javax.swing.JMenuItem();
@@ -108,6 +106,7 @@ public class MainWindow extends javax.swing.JFrame {
         mnuSrnListing = new javax.swing.JMenuItem();
         mnuUtilities = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
         mnuSettings = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -120,46 +119,67 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        welcomePanel.setBackground(new java.awt.Color(153, 153, 153));
+        mainDesktopPanel.setOpaque(false);
 
+        welcomePanel.setBackground(javax.swing.UIManager.getDefaults().getColor("Button.light"));
+        welcomePanel.setOpaque(false);
+
+        lblWelcome.setBackground(new java.awt.Color(255, 255, 255));
         lblWelcome.setFont(new java.awt.Font("Tahoma", 2, 36)); // NOI18N
-        lblWelcome.setForeground(new java.awt.Color(255, 255, 255));
         lblWelcome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblWelcome.setText("Welcome to MEGA COOP CITY ");
+
+        jLabel1.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ui/view/system/resources/coop_300.png"))); // NOI18N
 
         javax.swing.GroupLayout welcomePanelLayout = new javax.swing.GroupLayout(welcomePanel);
         welcomePanel.setLayout(welcomePanelLayout);
         welcomePanelLayout.setHorizontalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(lblWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, welcomePanelLayout.createSequentialGroup()
-                .addContainerGap(450, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblWelcome)
-                .addGap(32, 32, 32))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout mainDesktopPanelLayout = new javax.swing.GroupLayout(mainDesktopPanel);
         mainDesktopPanel.setLayout(mainDesktopPanelLayout);
         mainDesktopPanelLayout.setHorizontalGroup(
             mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 838, Short.MAX_VALUE)
+            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
             .addGroup(mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(welcomePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mainDesktopPanelLayout.setVerticalGroup(
             mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 528, Short.MAX_VALUE)
+            .addGroup(mainDesktopPanelLayout.createSequentialGroup()
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10))
             .addGroup(mainDesktopPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(welcomePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainDesktopPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(welcomePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         mainDesktopPanel.setLayer(welcomePanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        mainDesktopPanel.setLayer(jSeparator1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        jMenuBar1.setBackground(javax.swing.UIManager.getDefaults().getColor("Button.shadow"));
+        jMenuBar1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jMenuBar1.setOpaque(false);
 
         jMenu1.setText("File");
 
+        mnuLogOff.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.ALT_MASK));
         mnuLogOff.setText("Log Off");
+        mnuLogOff.setBackground(new java.awt.Color(248, 248, 248));
+        mnuLogOff.setOpaque(true);
         mnuLogOff.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuLogOffActionPerformed(evt);
@@ -167,7 +187,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jMenu1.add(mnuLogOff);
 
+        mnuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
         mnuExit.setText("Exit");
+        mnuExit.setBackground(new java.awt.Color(248, 248, 248));
+        mnuExit.setOpaque(true);
         mnuExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuExitActionPerformed(evt);
@@ -179,7 +202,10 @@ public class MainWindow extends javax.swing.JFrame {
 
         mnuStock.setText("Stock");
 
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem1.setText("Departments");
+        jMenuItem1.setBackground(new java.awt.Color(248, 248, 248));
+        jMenuItem1.setOpaque(true);
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
@@ -187,7 +213,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuStock.add(jMenuItem1);
 
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem2.setText("Products");
+        jMenuItem2.setBackground(new java.awt.Color(248, 248, 248));
+        jMenuItem2.setOpaque(true);
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem2ActionPerformed(evt);
@@ -195,7 +224,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuStock.add(jMenuItem2);
 
+        mnuManageSupplier.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuManageSupplier.setText("Suppliers");
+        mnuManageSupplier.setBackground(new java.awt.Color(248, 248, 248));
+        mnuManageSupplier.setOpaque(true);
         mnuManageSupplier.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuManageSupplierActionPerformed(evt);
@@ -203,7 +235,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuStock.add(mnuManageSupplier);
 
+        setDiscountMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         setDiscountMenu.setText("Discount");
+        setDiscountMenu.setBackground(new java.awt.Color(248, 248, 248));
+        setDiscountMenu.setOpaque(true);
         setDiscountMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setDiscountMenuActionPerformed(evt);
@@ -211,24 +246,20 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuStock.add(setDiscountMenu);
 
-        jMenuItem3.setText("Notification");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        mnuStock.add(jMenuItem3);
-
         jMenuBar1.add(mnuStock);
 
         mnuCredit.setText("Credit");
+        mnuCredit.setBackground(javax.swing.UIManager.getDefaults().getColor("Button.disabledShadow"));
         mnuCredit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuCreditActionPerformed(evt);
             }
         });
 
+        mnuEmployees.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuEmployees.setText("Employees");
+        mnuEmployees.setBackground(new java.awt.Color(248, 248, 248));
+        mnuEmployees.setOpaque(true);
         mnuEmployees.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuEmployeesActionPerformed(evt);
@@ -236,7 +267,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuCredit.add(mnuEmployees);
 
+        mnuCoopCredit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuCoopCredit.setText("Coop Credit");
+        mnuCoopCredit.setBackground(new java.awt.Color(248, 248, 248));
+        mnuCoopCredit.setOpaque(true);
         mnuCoopCredit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuCoopCreditActionPerformed(evt);
@@ -248,7 +282,10 @@ public class MainWindow extends javax.swing.JFrame {
 
         mnuLedgers.setText("Transactions");
 
+        mnuNewGRN.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.ALT_MASK));
         mnuNewGRN.setText("GoodRecieveNote");
+        mnuNewGRN.setBackground(new java.awt.Color(248, 248, 248));
+        mnuNewGRN.setOpaque(true);
         mnuNewGRN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuNewGRNActionPerformed(evt);
@@ -256,7 +293,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuLedgers.add(mnuNewGRN);
 
+        grnCancel.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_MASK));
         grnCancel.setText("Good Recive Note Cancel");
+        grnCancel.setBackground(new java.awt.Color(248, 248, 248));
+        grnCancel.setOpaque(true);
         grnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 grnCancelActionPerformed(evt);
@@ -264,7 +304,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuLedgers.add(grnCancel);
 
+        mnuNewSRN.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK));
         mnuNewSRN.setText("SupplierReturnNote");
+        mnuNewSRN.setBackground(new java.awt.Color(248, 248, 248));
+        mnuNewSRN.setOpaque(true);
         mnuNewSRN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuNewSRNActionPerformed(evt);
@@ -272,7 +315,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuLedgers.add(mnuNewSRN);
 
+        mnuAddDamagedStock.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
         mnuAddDamagedStock.setText("DamagedStock");
+        mnuAddDamagedStock.setBackground(new java.awt.Color(248, 248, 248));
+        mnuAddDamagedStock.setOpaque(true);
         mnuAddDamagedStock.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuAddDamagedStockActionPerformed(evt);
@@ -284,7 +330,10 @@ public class MainWindow extends javax.swing.JFrame {
 
         mnuReports.setText("Reports");
 
+        mnuGRNRequest.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuGRNRequest.setText("GRN Request");
+        mnuGRNRequest.setBackground(new java.awt.Color(248, 248, 248));
+        mnuGRNRequest.setOpaque(true);
         mnuGRNRequest.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuGRNRequestActionPerformed(evt);
@@ -292,7 +341,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuReports.add(mnuGRNRequest);
 
+        mnuGrnList.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuGrnList.setText("GRN Listing");
+        mnuGrnList.setBackground(new java.awt.Color(248, 248, 248));
+        mnuGrnList.setOpaque(true);
         mnuGrnList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuGrnListActionPerformed(evt);
@@ -300,7 +352,10 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuReports.add(mnuGrnList);
 
+        mnuSrnListing.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuSrnListing.setText("SRN Listing");
+        mnuSrnListing.setBackground(new java.awt.Color(248, 248, 248));
+        mnuSrnListing.setOpaque(true);
         mnuSrnListing.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuSrnListingActionPerformed(evt);
@@ -312,7 +367,10 @@ public class MainWindow extends javax.swing.JFrame {
 
         mnuUtilities.setText("Utilities");
 
+        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem4.setText("User Management");
+        jMenuItem4.setBackground(new java.awt.Color(248, 248, 248));
+        jMenuItem4.setOpaque(true);
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem4ActionPerformed(evt);
@@ -320,7 +378,21 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mnuUtilities.add(jMenuItem4);
 
+        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem3.setText("Notification");
+        jMenuItem3.setBackground(new java.awt.Color(248, 248, 248));
+        jMenuItem3.setOpaque(true);
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        mnuUtilities.add(jMenuItem3);
+
+        mnuSettings.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         mnuSettings.setText("Settings");
+        mnuSettings.setBackground(new java.awt.Color(248, 248, 248));
+        mnuSettings.setOpaque(true);
         mnuSettings.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuSettingsActionPerformed(evt);
@@ -358,6 +430,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         winManagePro.clearFields();
+        winManagePro.setFirstCard();
         winManagePro.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -430,35 +503,19 @@ public class MainWindow extends javax.swing.JFrame {
         createSttings();
     }//GEN-LAST:event_mnuSettingsActionPerformed
 
-    public static void main(String args[]) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainWindow().setVisible(true);
-
-            }
-        });
-    }
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem grnCancel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JDesktopPane mainDesktopPanel;
     private javax.swing.JMenuItem mnuAddDamagedStock;

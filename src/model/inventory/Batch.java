@@ -6,7 +6,6 @@
 package model.inventory;
 
 import controller.inventory.ProductController;
-import groovy.transform.ToString;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Date;
