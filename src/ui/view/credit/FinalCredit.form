@@ -869,13 +869,11 @@
                               <Component id="installmentPaymentLbl" min="-2" pref="395" max="-2" attributes="0"/>
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="InstallmentPaymentDateLbl" max="32767" attributes="0"/>
                                       <Component id="installmetPaymentCustomerNameLbl" alignment="0" max="32767" attributes="0"/>
                                       <Component id="InstallmetPaymentPaymentValue" alignment="0" pref="130" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="InstallmentPaymentDatePicker" pref="247" max="32767" attributes="0"/>
                                       <Component id="InstallmentPaymentPaymentAmountLbl" alignment="0" max="32767" attributes="0"/>
                                       <Component id="InstallmentPaymentCustomerNameLblValue" alignment="0" max="32767" attributes="0"/>
                                   </Group>
@@ -895,12 +893,7 @@
                               <Component id="installmetPaymentCustomerNameLbl" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                               <Component id="InstallmentPaymentCustomerNameLblValue" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="InstallmentPaymentDateLbl" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
-                              <Component id="InstallmentPaymentDatePicker" linkSize="5" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="InstallmetPaymentPaymentValue" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                               <Component id="InstallmentPaymentPaymentAmountLbl" linkSize="5" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
@@ -910,7 +903,7 @@
                               <Component id="installmentPaymentSubmitBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="InstallmentPaymentCancelBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="30" max="32767" attributes="0"/>
+                          <EmptySpace pref="47" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -922,14 +915,6 @@
                       <Connection component="customerSearchCustomerNameLbl" name="font" type="property"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Customer Name"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JLabel" name="InstallmentPaymentDateLbl">
-                  <Properties>
-                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                      <Connection component="customerSearchCustomerNameLbl" name="font" type="property"/>
-                    </Property>
-                    <Property name="text" type="java.lang.String" value="Date Settlement"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JButton" name="installmentPaymentSubmitBtn">
@@ -968,8 +953,6 @@
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="InstallmentPaymentCancelBtnActionPerformed"/>
                   </Events>
-                </Component>
-                <Component class="org.jdesktop.swingx.JXDatePicker" name="InstallmentPaymentDatePicker">
                 </Component>
                 <Component class="javax.swing.JLabel" name="InstallmentPaymentCustomerNameLblValue">
                   <Properties>

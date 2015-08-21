@@ -131,7 +131,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             char[] password;
             password = addUserPasswordTxt.getPassword();
 
-            if (addUserPasswordTxt.getPassword() != null) {
+            if (addUserPasswordTxt.getPassword().length != 0) {
                 hashedPassword = Utilities.getSHA1(password);
 
                 logger.info("valid password");
@@ -144,7 +144,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                 Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            if (this.addUserPasswordTxt.getPassword() == null) {
+            if (this.addUserPasswordTxt.getPassword().length == 0) {
                 logger.debug((Object) "invalid detail or empty block found");
                 Utilities.showMsgBox((String) "Give a valid password", (String) " Error", (int) 2);
                 return;
@@ -152,7 +152,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             logger.info((Object) "valid password");
             char[] passwordCnfrm;
             passwordCnfrm = addUserPasswordTxt.getPassword();
-            if (addUserPasswordTxt.getPassword() != null) {
+            if (addUserPasswordTxt.getPassword().length != 0) {
                 hashedcnfrmPassword = Utilities.getSHA1(passwordCnfrm);
                 logger.info("valid cnfrmpassword");
             } else {

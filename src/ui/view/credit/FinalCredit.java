@@ -355,6 +355,7 @@ public class FinalCredit extends javax.swing.JInternalFrame {
 
     public void loadCreditDetails() {
         logger.debug("loadCreditDetails method invoked");
+        paymentAmountCrdtTblTxt.setText("");
         try {
             CreditCustomer customer = (CustomerCreditController.searchDetails(CreditDetailsCustomerComboBoxModel.getSelectedItem().toString()));
             double paidAmount = 0;
@@ -434,11 +435,9 @@ public class FinalCredit extends javax.swing.JInternalFrame {
         installmentPaymentPanel = new javax.swing.JPanel();
         installmentPaymentPanelSmall = new javax.swing.JPanel();
         installmetPaymentCustomerNameLbl = new javax.swing.JLabel();
-        InstallmentPaymentDateLbl = new javax.swing.JLabel();
         installmentPaymentSubmitBtn = new javax.swing.JButton();
         installmentPaymentLbl = new javax.swing.JLabel();
         InstallmentPaymentCancelBtn = new javax.swing.JButton();
-        InstallmentPaymentDatePicker = new org.jdesktop.swingx.JXDatePicker();
         InstallmentPaymentCustomerNameLblValue = new javax.swing.JLabel();
         InstallmetPaymentPaymentValue = new javax.swing.JLabel();
         InstallmentPaymentPaymentAmountLbl = new javax.swing.JLabel();
@@ -783,9 +782,6 @@ public class FinalCredit extends javax.swing.JInternalFrame {
         installmetPaymentCustomerNameLbl.setFont(customerSearchCustomerNameLbl.getFont());
         installmetPaymentCustomerNameLbl.setText("Customer Name");
 
-        InstallmentPaymentDateLbl.setFont(customerSearchCustomerNameLbl.getFont());
-        InstallmentPaymentDateLbl.setText("Date Settlement");
-
         installmentPaymentSubmitBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         installmentPaymentSubmitBtn.setText("Submit");
         installmentPaymentSubmitBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -829,12 +825,10 @@ public class FinalCredit extends javax.swing.JInternalFrame {
                     .addComponent(installmentPaymentLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(installmentPaymentPanelSmallLayout.createSequentialGroup()
                         .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(InstallmentPaymentDateLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(installmetPaymentCustomerNameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(InstallmetPaymentPaymentValue, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(InstallmentPaymentDatePicker, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
                             .addComponent(InstallmentPaymentPaymentAmountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(InstallmentPaymentCustomerNameLblValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(20, 20, 20))
@@ -848,11 +842,7 @@ public class FinalCredit extends javax.swing.JInternalFrame {
                 .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(installmetPaymentCustomerNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(InstallmentPaymentCustomerNameLblValue, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(InstallmentPaymentDateLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(InstallmentPaymentDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(30, 30, 30)
                 .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(InstallmetPaymentPaymentValue, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(InstallmentPaymentPaymentAmountLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -860,10 +850,10 @@ public class FinalCredit extends javax.swing.JInternalFrame {
                 .addGroup(installmentPaymentPanelSmallLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(installmentPaymentSubmitBtn)
                     .addComponent(InstallmentPaymentCancelBtn))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
 
-        installmentPaymentPanelSmallLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {InstallmentPaymentCustomerNameLblValue, InstallmentPaymentDateLbl, InstallmentPaymentDatePicker, InstallmentPaymentPaymentAmountLbl, InstallmetPaymentPaymentValue, installmetPaymentCustomerNameLbl});
+        installmentPaymentPanelSmallLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {InstallmentPaymentCustomerNameLblValue, InstallmentPaymentPaymentAmountLbl, InstallmetPaymentPaymentValue, installmetPaymentCustomerNameLbl});
 
         javax.swing.GroupLayout installmentPaymentPanelLayout = new javax.swing.GroupLayout(installmentPaymentPanel);
         installmentPaymentPanel.setLayout(installmentPaymentPanelLayout);
@@ -1594,7 +1584,7 @@ public class FinalCredit extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 1014, Short.MAX_VALUE)
+                .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1014, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -1613,7 +1603,7 @@ public class FinalCredit extends javax.swing.JInternalFrame {
     private void installmentPaymentSubmitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installmentPaymentSubmitBtnActionPerformed
         // TODO add your handling code here:
 
-        if ((InstallmentPaymentDatePicker.getDate() != null)) {
+      //  if ((InstallmentPaymentDatePicker.getDate() != null)) {
             try {
                 logger.info("credit customer payment confirmation");
                 CustomerCreditController.settleCustomerCredit((Double.parseDouble(InstallmentPaymentPaymentAmountLbl.getText()) - CustomerCreditController.getCustomer(Integer.parseInt(creditDetailsSettlementNoTxt.getText())).getCurrentCredit()), Integer.parseInt(creditDetailsSettlementNoTxt.getText()));
@@ -1625,7 +1615,7 @@ public class FinalCredit extends javax.swing.JInternalFrame {
 
                 Utilities.showMsgBox("Payment Successful", "Confirmed", JOptionPane.PLAIN_MESSAGE);
                 InstallmentPaymentCustomerNameLblValue.setText(null);
-                InstallmentPaymentDatePicker.setDate(null);
+              //  InstallmentPaymentDatePicker.setDate(null);
                 InstallmentPaymentPaymentAmountLbl.setText(null);
                 cleanCreditTbl();
                 chngTblModel();
@@ -1636,10 +1626,10 @@ public class FinalCredit extends javax.swing.JInternalFrame {
                 Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-        } else {
-            Utilities.showMsgBox("Select the date", "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+       // } else {
+          //  Utilities.showMsgBox("Select the date", "Error", JOptionPane.WARNING_MESSAGE);
+         //   return;
+        //}
 
     }//GEN-LAST:event_installmentPaymentSubmitBtnActionPerformed
 
@@ -1648,7 +1638,7 @@ public class FinalCredit extends javax.swing.JInternalFrame {
         CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "creditDetails");
         InstallmentPaymentCustomerNameLblValue.setText(null);
-        InstallmentPaymentDatePicker.setDate(null);
+//  InstallmentPaymentDatePicker.setDate(null);
         InstallmentPaymentPaymentAmountLbl.setText(null);
     }//GEN-LAST:event_InstallmentPaymentCancelBtnActionPerformed
 
@@ -1894,7 +1884,7 @@ public class FinalCredit extends javax.swing.JInternalFrame {
             return;
         }
           String address = editCustomerAddressTxt2.getText();
-         if (this.editCustomerAddressTxt2.getText() == null || editCustomerAddressTxt2.getText().trim().equals("") || !this.validateName(editCustomerAddressTxt2.getText().trim())) {
+         if (this.editCustomerAddressTxt2.getText() == null || editCustomerAddressTxt2.getText().trim().equals("") ) {
                 logger.debug((Object) "invalid detail or empty block found");
                 Utilities.showMsgBox((String) "Give a valid address", (String) " Error", (int) 2);
                 return;
@@ -1991,7 +1981,9 @@ public class FinalCredit extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         for (int i = 0; i < creditTbl.getRowCount(); i++) {
             creditTbl.setValueAt(false, 0, i);
+            
         }
+        paymentAmountCrdtTblTxt.setText("");
     }//GEN-LAST:event_cancelBtn1ActionPerformed
 
     private void creditTblBackBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditTblBackBtnActionPerformed
@@ -2098,8 +2090,6 @@ public class FinalCredit extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton InstallmentPaymentCancelBtn;
     private javax.swing.JLabel InstallmentPaymentCustomerNameLblValue;
-    private javax.swing.JLabel InstallmentPaymentDateLbl;
-    private org.jdesktop.swingx.JXDatePicker InstallmentPaymentDatePicker;
     private javax.swing.JLabel InstallmentPaymentPaymentAmountLbl;
     private javax.swing.JLabel InstallmetPaymentPaymentValue;
     private javax.swing.JPanel addCustomer;
