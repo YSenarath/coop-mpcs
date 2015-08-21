@@ -98,7 +98,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
         setClosable(true);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        lblTitle.setBackground(java.awt.SystemColor.textHighlight);
+        lblTitle.setBackground(java.awt.SystemColor.activeCaptionBorder);
         lblTitle.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         lblTitle.setForeground(new java.awt.Color(255, 255, 255));
         lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -367,7 +367,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -376,25 +376,28 @@ public class GRNInterface extends javax.swing.JInternalFrame {
                     .addComponent(btnAddGrn)
                     .addComponent(btnNewItem)
                     .addComponent(btnDeleteItem))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblTitle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -493,6 +496,11 @@ public class GRNInterface extends javax.swing.JInternalFrame {
                 Double.parseDouble(txtSellingBillDiscount.getText())
         );
 
+        if (datePickInvoiceDate.getDate() == null) {
+            util.Utilities.showMsgBox("Unable to add grn, Enter valid Date.", "Grn Error", 0);
+            return;
+        }
+        
         if (grn.getSupplier() == null) {
             util.Utilities.showMsgBox("Unable to add grn, Select a valid supplier.", "Grn Error", 0);
             return;
@@ -502,7 +510,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
             util.Utilities.showMsgBox("Unable to add grn, enter Invoice number(Code).", "Grn Error", 0);
             return;
         }
-        
+
         if (model.getRowCount() <= 0) {
             int i = util.Utilities.showButtonMsg("This GRN dosen't contailn any items. Do you still want to add the GRN?",
                     "Alart!", JOptionPane.YES_NO_OPTION);
@@ -777,10 +785,11 @@ public class GRNInterface extends javax.swing.JInternalFrame {
             Product result;
             try {
                 result = ProductController.getProduct(productId);
-                if (result == null) 
-                model.setValueAt("", row, 2);
-                else
-                model.setValueAt(result.getProductName(), row, 2);
+                if (result == null) {
+                    model.setValueAt("", row, 2);
+                } else {
+                    model.setValueAt(result.getProductName(), row, 2);
+                }
             } catch (SQLException ex) {
                 logger.error(ex.getMessage());
                 model.setValueAt("", row, 2);
