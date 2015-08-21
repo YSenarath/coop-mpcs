@@ -266,7 +266,7 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        lblTitle.setBackground(java.awt.SystemColor.textHighlight);
+        lblTitle.setBackground(java.awt.SystemColor.activeCaptionBorder);
         lblTitle.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         lblTitle.setForeground(new java.awt.Color(255, 255, 255));
         lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -282,13 +282,17 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(lblTitle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
-                .addGap(0, 0, 0)
+                .addContainerGap()
+                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -399,6 +403,11 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
             return;
         }
 
+        if (datePicker.getDate() == null) {
+            util.Utilities.showMsgBox("Unable to add SRN, Enter valid Date.", "SRN Error", 0);
+            return;
+        }
+
         if (model.getRowCount() <= 0) {
             int i = util.Utilities.showButtonMsg("This SRN Cancel dosen't contailn any items. Do you still want to add this?",
                     "Alart!", JOptionPane.YES_NO_OPTION);
@@ -476,6 +485,8 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
             for (int i = 0; i < model.getRowCount(); i++) {
                 model.setValueAt(i + 1, i, 0);
             }
+        } else {
+            util.Utilities.ShowErrorMsg(this, "Selct a row to Delete.");
         }
     }
 

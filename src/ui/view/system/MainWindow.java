@@ -283,8 +283,8 @@ public class MainWindow extends javax.swing.JFrame {
         mnuLedgers.setText("Transactions");
 
         mnuNewGRN.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.ALT_MASK));
-        mnuNewGRN.setText("GoodRecieveNote");
         mnuNewGRN.setBackground(new java.awt.Color(248, 248, 248));
+        mnuNewGRN.setText("Good Recieve Note");
         mnuNewGRN.setOpaque(true);
         mnuNewGRN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -305,8 +305,8 @@ public class MainWindow extends javax.swing.JFrame {
         mnuLedgers.add(grnCancel);
 
         mnuNewSRN.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK));
-        mnuNewSRN.setText("SupplierReturnNote");
         mnuNewSRN.setBackground(new java.awt.Color(248, 248, 248));
+        mnuNewSRN.setText("Supplier Return Note");
         mnuNewSRN.setOpaque(true);
         mnuNewSRN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -316,8 +316,8 @@ public class MainWindow extends javax.swing.JFrame {
         mnuLedgers.add(mnuNewSRN);
 
         mnuAddDamagedStock.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
-        mnuAddDamagedStock.setText("DamagedStock");
         mnuAddDamagedStock.setBackground(new java.awt.Color(248, 248, 248));
+        mnuAddDamagedStock.setText("Damaged Stock");
         mnuAddDamagedStock.setOpaque(true);
         mnuAddDamagedStock.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
