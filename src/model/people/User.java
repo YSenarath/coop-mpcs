@@ -2,9 +2,9 @@ package model.people;
 
 public class User {
 
-    public static String MANAGER = "MANAGER";
-    public static String CASHIER = "CASHIER";
-    public static String INVENTORY = "INVENTORY";
+    public final static String MANAGER = "MANAGER";
+    public final static String CASHIER = "CASHIER";
+    public final static String INVENTORY = "INVENTORY";
 
     private String userName;
     private String password;
@@ -14,14 +14,14 @@ public class User {
     public User(String userName, String password, String userType, boolean loggedin) {
         this.userName = userName;
         this.password = password;
-        switch (userType) {
+        switch (userType.toLowerCase().trim()) {
             case "manager":
                 this.userType = MANAGER;
                 break;
             case "cashier":
                 this.userType = CASHIER;
                 break;
-            case "inventory_manager":
+            case "inventory":
                 this.userType = INVENTORY;
                 break;
         }
@@ -85,14 +85,25 @@ public class User {
     }
 
     public String dataTruncation(String level) {
-        switch (level) {
-            case "MANAGER":
-                return "manager";
-            case "CASHIER":
-                return "cashier";
-            case "INVENTORY":
-                return "inventory_manager";
+        String ret = "";
+       
+        switch (level.trim().toUpperCase()) {
+            case User.MANAGER:
+                ret= "manager";
+                break;
+            case CASHIER :
+                ret= "cashier";
+                break;
+            case INVENTORY :
+                ret= "inventory_manager";
+                break;
+                
         }
-        return "";
+ 
+        return ret;
+    }
+    @Override
+    public String toString(){
+        return userName;
     }
 }

@@ -28,6 +28,7 @@ public class BatchDiscountController {
         String query = "SELECT batch_id, "
                 + "discount, "
                 + "start_date, "
+                + "end_date, "
                 + "promotional , "
                 + "qty , "
                 + "members_only FROM "

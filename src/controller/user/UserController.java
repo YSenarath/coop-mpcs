@@ -72,11 +72,11 @@ public class UserController implements DatabaseInterface {
     public static void addUser(User user) throws SQLException {
 
         Connection connection = DBConnection.getConnectionToDB();
-        String query = "INSERT INTO " + USER + " (user_name,password,access_level,isLoggedIn) VALUES (?,?,?,?) ";
+        String query = "INSERT INTO " + USER + " (user_name , password, access_level , isLoggedIn ) VALUES (?,?,?,?) ";
         Object[] ob = {
             user.getUserName(),
             user.getPassword(),
-            user.getUserType(),
+            user.dataTruncation(user.getUserType()).trim(),
             user.isLoggedin()
         };
         DBHandler.setData(connection, query, ob);
@@ -166,5 +166,29 @@ public class UserController implements DatabaseInterface {
            
         }
         return false;
+    }
+    
+     public static ArrayList<User> getAllManager() throws SQLException {
+        Connection connection = DBConnection.getConnectionToDB();
+        String query = "Select * From " + USER  + " WHERE access_level = ?" ;
+        
+        Object[] obs = {
+            "manager"
+        };
+        
+        ResultSet resultSet = DBHandler.getData(connection, query, obs);
+
+        ArrayList<User> allUsers = new ArrayList<>();
+        while (resultSet.next()) {
+            User user = new User(
+                    resultSet.getString("user_name"),
+                    resultSet.getString("password"),
+                    resultSet.getString("access_level"),
+                    resultSet.getBoolean("isLoggedIn")
+            );
+            allUsers.add(user);
+        }
+
+        return allUsers;
     }
 }

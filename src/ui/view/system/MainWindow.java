@@ -584,6 +584,7 @@ public class MainWindow extends javax.swing.JFrame {
     public void initializeGUI() {
         logger.debug("initializeGUI invoked");
         if (logIn != null) {
+            
             mnuUtilities.setEnabled(false);
             mnuReports.setEnabled(false);
             mnuLedgers.setEnabled(false);

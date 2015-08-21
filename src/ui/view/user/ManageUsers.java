@@ -5,13 +5,10 @@
  */
 package ui.view.user;
 
-import controller.credit.EmployeeCreditController;
 import controller.user.UserController;
 import java.awt.CardLayout;
-import java.awt.Dimension;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -19,7 +16,6 @@ import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.text.PlainDocument;
-import model.creditManagement.Employee;
 import model.people.User;
 import net.proteanit.sql.DbUtils;
 import ui.view.credit.FinalCredit;
@@ -36,22 +32,34 @@ public class ManageUsers extends javax.swing.JInternalFrame {
 
     DefaultComboBoxModel addUserFullNameComboBox1Model;
 
-   // private HashMap<Integer, User> users;
+    // private HashMap<Integer, User> users;
     /**
      * Creates new form ManageEmployees
      */
     public ManageUsers() {
         initComponents();
         addUserFullNameComboBox1Model = (DefaultComboBoxModel) comboModelUsers.getModel();
+
         loadDetails();
         chngTblModel();
         userTable.setSelectionMode(0);
-        
-           ((PlainDocument) addUserPasswordTxt.getDocument()).setDocumentFilter(new PasswordFilter());
-       ((PlainDocument) addUserUserNameTxt1.getDocument()).setDocumentFilter(new PasswordFilter());
-      ((PlainDocument) editUserUserNameTxt2.getDocument()).setDocumentFilter(new PasswordFilter());
-       ((PlainDocument) editUserPasswordTxt1.getDocument()).setDocumentFilter(new PasswordFilter());
-    
+
+        editUserUserLevelComboBox2.removeAllItems();
+        addUserUserLevelComboBox1.removeAllItems();
+
+        editUserUserLevelComboBox2.addItem("Manager");
+        editUserUserLevelComboBox2.addItem("Cashier");
+        editUserUserLevelComboBox2.addItem("Inventory");
+
+        addUserUserLevelComboBox1.addItem("Manager");
+        addUserUserLevelComboBox1.addItem("Cashier");
+        addUserUserLevelComboBox1.addItem("Inventory");
+
+        ((PlainDocument) addUserPasswordTxt.getDocument()).setDocumentFilter(new PasswordFilter());
+        ((PlainDocument) addUserUserNameTxt1.getDocument()).setDocumentFilter(new PasswordFilter());
+        ((PlainDocument) editUserUserNameTxt2.getDocument()).setDocumentFilter(new PasswordFilter());
+        ((PlainDocument) editUserPasswordTxt1.getDocument()).setDocumentFilter(new PasswordFilter());
+
     }
 
     public void loadDetails() {
@@ -85,48 +93,25 @@ public class ManageUsers extends javax.swing.JInternalFrame {
 
     public void addUserValidation() {
         //Get password char array from 'txtPassword' password field
+        //Get hashed password string
 
-//Get hashed password string
         logger.debug("addUserValidations method invoked");
-//checkvalidations
+        //checkvalidations
+
         String hashedPassword = "";
         String hashedcnfrmPassword = "";
         boolean isValid = false;
-       
-      /*  if (addUserUserNameTxt1.getText() != null && validateName(addUserUserNameTxt1.getText()) ) {
-            try {
-                isValid = UserController.checkDataExistence(addUserUserNameTxt1.getText());
-                if(!isValid){
-                    logger.info("valid name entered");
-                }
-                else{
-                    logger.error("this name exists");
-                    Utilities.showMsgBox("This user name already taken", " Error", JOptionPane.WARNING_MESSAGE);
-                    addUserUserNameTxt1.setText("");
-                    addUserUserNameTxt1.requestFocus();
+
+        if (userName1.getSelectedItem() != null && ((User) userName1.getSelectedItem()).getPassword().equals(Utilities.getSHA1(editUserPasswordTxt4.getPassword()))) {
+
+            if (this.addUserUserNameTxt1.getText() != null && !this.addUserUserNameTxt1.getText().trim().equals("")) {
+                try {
+                    isValid = UserController.checkDataExistence((String) this.addUserUserNameTxt1.getText().trim());
+                } catch (SQLException ex) {
+                    logger.error("SQL exception has occured");
+                    Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
                     return;
-                    
                 }
-            } catch (SQLException ex) {
-                logger.error("SQL exception has occured");
-            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-               
-            }
-        } else {
-            logger.error("invalid name");
-            Utilities.showMsgBox("invalid name", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        */
-           if (this.addUserUserNameTxt1.getText() != null && !this.addUserUserNameTxt1.getText().trim().equals("") ) {
-            try {
-                isValid = UserController.checkDataExistence((String) this.addUserUserNameTxt1.getText().trim());
-            } catch (SQLException ex) {
-                logger.error("SQL exception has occured");
-            Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-                  }
                 if (isValid) {
                     logger.error((Object) "this name exists");
                     Utilities.showMsgBox((String) "This user name already taken", (String) " Error", (int) 2);
@@ -143,53 +128,58 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                 return;
             }
             logger.info((Object) "valid name");
-        char[] password;
-        password = addUserPasswordTxt.getPassword();
-        
-        if (addUserPasswordTxt.getPassword() != null ) {
-            hashedPassword = Utilities.getSHA1(password);
-            
-            logger.info("valid password");
-            if(hashedPassword.length()<5){
-                
-                Utilities.showMsgBox("Password strength is weak","Password Error", WIDTH);
+            char[] password;
+            password = addUserPasswordTxt.getPassword();
+
+            if (addUserPasswordTxt.getPassword() != null) {
+                hashedPassword = Utilities.getSHA1(password);
+
+                logger.info("valid password");
+                if (hashedPassword.length() < 5) {
+
+                    Utilities.showMsgBox("Password strength is weak", "Password Error", WIDTH);
+                }
+            } else {
+                logger.error(" empty block found");
+                Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
+                return;
             }
-        } else {
-            logger.error(" empty block found");
-            Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        if (this.addUserPasswordTxt.getPassword() == null ) {
+            if (this.addUserPasswordTxt.getPassword() == null) {
                 logger.debug((Object) "invalid detail or empty block found");
                 Utilities.showMsgBox((String) "Give a valid password", (String) " Error", (int) 2);
                 return;
             }
             logger.info((Object) "valid password");
-        char[] passwordCnfrm;
-        passwordCnfrm = addUserPasswordTxt.getPassword();
-        if (addUserPasswordTxt.getPassword() != null) {
-            hashedcnfrmPassword = Utilities.getSHA1(passwordCnfrm);
-            logger.info("valid cnfrmpassword");
-        } else {
-            logger.error(" empty block found");
-            Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        if (hashedPassword.equals(hashedcnfrmPassword)) {
+            char[] passwordCnfrm;
+            passwordCnfrm = addUserPasswordTxt.getPassword();
+            if (addUserPasswordTxt.getPassword() != null) {
+                hashedcnfrmPassword = Utilities.getSHA1(passwordCnfrm);
+                logger.info("valid cnfrmpassword");
+            } else {
+                logger.error(" empty block found");
+                Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if ((new String(addUserPasswordTxt.getPassword())).equals(new String(addUserPasswordTxtcnfrm.getPassword()))) {
 
-            logger.info("confirm password");
-        } else {
-            logger.error("not the same password.");
-            Utilities.showMsgBox("Recheck the password", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        if (addUserUserLevelComboBox1.getSelectedItem() != null) {
+                logger.info("confirm password");
+            } else {
+                logger.error("not the same password.");
+                Utilities.showMsgBox("Recheck the password", " Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (addUserUserLevelComboBox1.getSelectedItem() != null) {
 
-            addUser();
+                addUser();
+            } else {
+                logger.error("user level not selected");
+                Utilities.showMsgBox("Recheck the password", " Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         } else {
-            logger.error("user level not selected");
-            Utilities.showMsgBox("Recheck the password", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
+            Utilities.ShowErrorMsg(this, "Login Error! Invalid Admistrator Login\n");
+            editUserPasswordTxt4.setText("");
+            editUserPasswordTxt4.requestFocus();
         }
 
     }
@@ -204,9 +194,10 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                     addUserUserLevelComboBox1.getSelectedItem().toString(),
                     false
             );
+            logger.debug(user.dataTruncation(user.getUserType()) + " User type");
             logger.info("details loaded to an userobject");
-            System.out.println(addUserUserLevelComboBox1.getSelectedItem().toString());
             UserController.addUser(user);
+
             logger.info("new user added");
             Utilities.showMsgBox("New user details added to the database", "Confirm", JOptionPane.WARNING_MESSAGE);
 
@@ -217,35 +208,42 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         }
 
         chngTblModel();
-          CardLayout card = (CardLayout) cardPanel.getLayout();
-            card.show(cardPanel, "manageUsers");
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "manageUsers");
         addUserUserNameTxt1.setText("");
         addUserPasswordTxt.setText("");
         addUserPasswordTxtcnfrm.setText("");
-        
 
     }
 
     public void showUserEditDetails(String name) {
         logger.debug("showUserEditDetails method invoked");
-
+        ArrayList<User> managers = new ArrayList<>();
         User user = null;
         try {
             user = UserController.getUser("user_name", name);
+            managers = UserController.getAllManager();
         } catch (SQLException ex) {
             Logger.getLogger(ManageUsers.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        userName.removeAllItems();
         if (user != null) {
+
+            if (managers.size() > 0) {
+                for (User u : managers) {
+                    userName.addItem(u);
+                }
+            }
+            editUserPasswordTxt2.setText("");
+            editUserPasswordTxt1.setText("");
+            editUserPasswordTxt3.setText("");
             editUserUserNameTxt2.setText(user.getUserName());
-           jLabel1.setText(user.getPassword());
+            jLabel1.setText(user.getPassword());
 
             editUserUserLevelComboBox2.setSelectedItem(user.getUserType());
-           
 
-           CardLayout card = (CardLayout) cardPanel.getLayout();
+            CardLayout card = (CardLayout) cardPanel.getLayout();
             card.show(cardPanel, "editUser");
-            
 
         } else {
             return;
@@ -258,56 +256,44 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         try {
             if (editUserUserNameTxt2.getText() != null && validateName(editUserUserNameTxt2.getText())) {
                 isValid = UserController.checkDataExistence(editUserUserNameTxt2.getText());
-                if(!isValid){
-                    logger.info("valid name entered");
+                if (isValid) {
+                    isValid = !editUserUserNameTxt2.getText().trim().toLowerCase().equals(userTable.getValueAt(userTable.getSelectedRow(), 0).toString().trim().toLowerCase());
                 }
-                else{
+
+                if (!isValid) {
+                    logger.info("valid name entered");
+                } else {
                     logger.error("this name exists");
                     Utilities.showMsgBox("This user name already taken", " Error", JOptionPane.WARNING_MESSAGE);
                     editUserUserNameTxt2.setText("");
                     editUserUserNameTxt2.requestFocus();
                     return;
-                    
                 }
-            logger.info("valid name entered");
-        } else {
-            logger.error("invalid name");
-            Utilities.showMsgBox("invalid name", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-            String newPassword="";
+                logger.info("valid name entered");
+            } else {
+                logger.error("invalid name");
+                Utilities.showMsgBox("invalid name", " Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String newPassword = "";
             char[] password;
-        password = editUserPasswordTxt1.getPassword();
-        if (editUserPasswordTxt1.getPassword() != null) {
+            password = editUserPasswordTxt1.getPassword();
             newPassword = Utilities.getSHA1(password);
-            logger.info("valid password");
-            if(newPassword == jLabel1.getText()){
-                logger.info("password matches with the database");  
-            }
-            else{
-                logger.error("Not matches with previous password");
-            Utilities.showMsgBox("Incorrect password entered.", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-            }
-        } else {
-            logger.error(" empty block found");
-            Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-            
+
             //All edit details are varified before this method
             //   int customerId = Integer.parseInt(editCustomerCoopIdTxt2.getText());
             User user = new User(
                     editUserUserNameTxt2.getText(),
                     newPassword,
-                    editUserUserLevelComboBox2.getSelectedItem().toString(),
+                    editUserUserLevelComboBox2.getSelectedItem().toString().trim().toUpperCase(),
                     false
             );
 
+            logger.debug("JNJ debugging......" + editUserUserLevelComboBox2.getSelectedItem().toString().trim().toUpperCase());
             boolean result = UserController.editUser(user);
             if (result) {
                 Utilities.showMsgBox("Changes saved", "Success", JOptionPane.INFORMATION_MESSAGE);
-
             } else {
                 logger.error("Changes not saved");
             }
@@ -379,16 +365,18 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         addUserUserNameLbl2 = new javax.swing.JLabel();
         addUserPasswordLbl2 = new javax.swing.JLabel();
         addUserUserLevelLbl2 = new javax.swing.JLabel();
-        addUserOnlineUsersLbl2 = new javax.swing.JLabel();
         addUserUserNameTxt1 = new javax.swing.JTextField();
         addUserUserLevelComboBox1 = new javax.swing.JComboBox();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        addUserOnlineUsersTxt1 = new javax.swing.JTextArea();
         customerSearchLBl = new javax.swing.JLabel();
         addUserPasswordTxt = new javax.swing.JPasswordField();
         addUserPasswordLblcnfrm = new javax.swing.JLabel();
         addUserPasswordTxtcnfrm = new javax.swing.JPasswordField();
         addUserCancelBtn = new org.jdesktop.swingx.JXButton();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        editUserPasswordTxt4 = new javax.swing.JPasswordField();
+        userName1 = new javax.swing.JComboBox();
         manageUsersPanel = new javax.swing.JPanel();
         jScrollPane7 = new javax.swing.JScrollPane();
         userTable = new org.jdesktop.swingx.JXTable();
@@ -408,8 +396,16 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         editUserPasswordTxt1 = new javax.swing.JPasswordField();
         jLabel1 = new javax.swing.JLabel();
         editUserCancelBtn1 = new org.jdesktop.swingx.JXButton();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        editUserPasswordTxt2 = new javax.swing.JPasswordField();
+        userName = new javax.swing.JComboBox();
+        editUserPasswordLbl4 = new javax.swing.JLabel();
+        editUserPasswordTxt3 = new javax.swing.JPasswordField();
 
         setClosable(true);
+        setTitle("Manage Users");
 
         parentPanel.setFocusable(false);
 
@@ -485,6 +481,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         subCardPanel.setLayout(new java.awt.CardLayout());
 
         userSearchPanel.setToolTipText("");
+        userSearchPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         userSearchPanel.setName("paymentHistory");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -546,15 +543,17 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         userSearchPanel.setLayout(userSearchPanelLayout);
         userSearchPanelLayout.setHorizontalGroup(
             userSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userSearchPanelLayout.createSequentialGroup()
-                .addGap(270, 270, 270)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, userSearchPanelLayout.createSequentialGroup()
+                .addContainerGap(261, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(259, 259, 259))
         );
         userSearchPanelLayout.setVerticalGroup(
             userSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(userSearchPanelLayout.createSequentialGroup()
-                .addGap(90, 90, 90)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(219, 219, 219)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(258, Short.MAX_VALUE))
         );
 
         subCardPanel.add(userSearchPanel, "userSearch");
@@ -570,16 +569,19 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         buttonGroup1.add(userDetailsAdministratorRadioBtn);
         userDetailsAdministratorRadioBtn.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         userDetailsAdministratorRadioBtn.setText("Administrator");
+        userDetailsAdministratorRadioBtn.setEnabled(false);
 
         buttonGroup1.add(userDetailsManagerRadioBtn);
         userDetailsManagerRadioBtn.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         userDetailsManagerRadioBtn.setText("Manager");
+        userDetailsManagerRadioBtn.setEnabled(false);
 
         userDetailsUserNameTxt.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
 
         buttonGroup1.add(userDetailsLevel1RadioBtn);
         userDetailsLevel1RadioBtn.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         userDetailsLevel1RadioBtn.setText("Level 1");
+        userDetailsLevel1RadioBtn.setEnabled(false);
 
         installmentPaymentLbl2.setBackground(new java.awt.Color(204, 204, 204));
         installmentPaymentLbl2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -697,9 +699,6 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         addUserUserLevelLbl2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addUserUserLevelLbl2.setText("User Level");
 
-        addUserOnlineUsersLbl2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        addUserOnlineUsersLbl2.setText("Online Users");
-
         addUserUserNameTxt1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         addUserUserNameTxt1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -714,12 +713,6 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                 addUserUserLevelComboBox1ActionPerformed(evt);
             }
         });
-
-        addUserOnlineUsersTxt1.setEditable(false);
-        addUserOnlineUsersTxt1.setColumns(20);
-        addUserOnlineUsersTxt1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        addUserOnlineUsersTxt1.setRows(5);
-        jScrollPane6.setViewportView(addUserOnlineUsersTxt1);
 
         customerSearchLBl.setBackground(new java.awt.Color(204, 204, 204));
         customerSearchLBl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -743,6 +736,47 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             }
         });
 
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Administrator Login", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel4.setText("User Name");
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel5.setText("Password");
+
+        editUserPasswordTxt4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+
+        userName1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(editUserPasswordTxt4)
+                    .addComponent(userName1, 0, 193, Short.MAX_VALUE))
+                .addGap(31, 31, 31))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(userName1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(editUserPasswordTxt4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20))
+        );
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -757,8 +791,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                                 .addComponent(addUserPasswordLblcnfrm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(addUserUserLevelLbl2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(addUserPasswordLbl2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(addUserUserNameLbl2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(addUserOnlineUsersLbl2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(addUserUserNameLbl2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(addUserCancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -766,11 +799,14 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                             .addComponent(addUserPasswordTxtcnfrm, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(addUserPasswordTxt, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(addUserUserNameTxt1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane6)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                                 .addGap(152, 152, 152)
                                 .addComponent(addUserActivateBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(20, 20, 20))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -794,31 +830,29 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                     .addComponent(addUserUserLevelComboBox1)
                     .addComponent(addUserUserLevelLbl2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(addUserOnlineUsersLbl2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addUserActivateBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(addUserCancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(30, 30, 30))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout addUserPanelLayout = new javax.swing.GroupLayout(addUserPanel);
         addUserPanel.setLayout(addUserPanelLayout);
         addUserPanelLayout.setHorizontalGroup(
             addUserPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(addUserPanelLayout.createSequentialGroup()
-                .addGap(250, 250, 250)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addUserPanelLayout.createSequentialGroup()
+                .addContainerGap(258, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(249, Short.MAX_VALUE))
+                .addGap(241, 241, 241))
         );
         addUserPanelLayout.setVerticalGroup(
             addUserPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(addUserPanelLayout.createSequentialGroup()
-                .addGap(90, 90, 90)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addUserPanelLayout.createSequentialGroup()
+                .addContainerGap(127, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(155, Short.MAX_VALUE))
+                .addGap(121, 121, 121))
         );
 
         jPanel2.getAccessibleContext().setAccessibleParent(cardPanel);
@@ -897,7 +931,8 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                 .addGroup(manageUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(customerSearchLBl1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(manageUsersPanelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
+                        .addContainerGap()
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(manageUserEditPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(20, 20, 20))
@@ -909,8 +944,9 @@ public class ManageUsers extends javax.swing.JInternalFrame {
                 .addComponent(customerSearchLBl1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(manageUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 610, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(manageUserEditPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(manageUserEditPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21))
         );
 
         cardPanel.add(manageUsersPanel, "manageUsers");
@@ -971,79 +1007,140 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             }
         });
 
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Administrator Login", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel2.setText("User Name");
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setText("Password");
+
+        editUserPasswordTxt2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+
+        userName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(editUserPasswordTxt2)
+                    .addComponent(userName, 0, 193, Short.MAX_VALUE))
+                .addGap(31, 31, 31))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(userName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(editUserPasswordTxt2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20))
+        );
+
+        editUserPasswordLbl4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        editUserPasswordLbl4.setText("Confirm Password");
+
+        editUserPasswordTxt3.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(customerSearchLBl3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(editUserUserLevelLbl3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(editUserPasswordLbl3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(editUserUserNameLbl3, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(editUserUserLevelLbl3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(editUserPasswordLbl3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(editUserUserNameLbl3, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
+                                    .addComponent(editUserPasswordLbl4, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(4, 4, Short.MAX_VALUE)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(editUserUserLevelComboBox2, javax.swing.GroupLayout.Alignment.LEADING, 0, 252, Short.MAX_VALUE)
+                                    .addComponent(editUserPasswordTxt3, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(editUserPasswordTxt1, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(editUserUserNameTxt2, javax.swing.GroupLayout.Alignment.LEADING)))))
+                                    .addComponent(editUserUserNameTxt2, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(editUserUserLevelComboBox2, 0, 240, Short.MAX_VALUE))
+                                .addGap(12, 12, 12)))
+                        .addGap(20, 20, 20))
                     .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
                         .addComponent(editUserCancelBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(editUserSaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(20, 20, 20))
+                        .addComponent(editUserSaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(19, 19, 19))))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(15, 15, 15)
+                .addComponent(customerSearchLBl3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editUserUserNameLbl3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editUserUserNameTxt2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editUserPasswordLbl3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editUserPasswordTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editUserPasswordLbl4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editUserPasswordTxt3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(editUserUserLevelComboBox2)
+                    .addComponent(editUserUserLevelLbl3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(10, 10, 10)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(editUserCancelBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(3, 3, 3))
+                            .addComponent(editUserCancelBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(customerSearchLBl3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(editUserUserNameLbl3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(editUserUserNameTxt2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(editUserPasswordLbl3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(editUserPasswordTxt1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(editUserUserLevelComboBox2)
-                            .addComponent(editUserUserLevelLbl3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(20, 20, 20)
+                        .addGap(11, 11, 11)
                         .addComponent(editUserSaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(30, 30, 30))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout editUserPanel1Layout = new javax.swing.GroupLayout(editUserPanel1);
         editUserPanel1.setLayout(editUserPanel1Layout);
         editUserPanel1Layout.setHorizontalGroup(
             editUserPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editUserPanel1Layout.createSequentialGroup()
-                .addGap(250, 250, 250)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editUserPanel1Layout.createSequentialGroup()
+                .addContainerGap(282, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(282, Short.MAX_VALUE))
+                .addGap(220, 220, 220))
         );
         editUserPanel1Layout.setVerticalGroup(
             editUserPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(editUserPanel1Layout.createSequentialGroup()
-                .addGap(90, 90, 90)
+                .addGap(104, 104, 104)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(318, Short.MAX_VALUE))
+                .addContainerGap(139, Short.MAX_VALUE))
         );
 
         cardPanel.add(editUserPanel1, "editUser");
@@ -1066,7 +1163,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
         parentPanelLayout.setHorizontalGroup(
             parentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(parentPanelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(0, 0, 0)
                 .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1091,7 +1188,7 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(parentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 17, Short.MAX_VALUE))
+                .addGap(1, 1, 1))
         );
 
         pack();
@@ -1120,15 +1217,15 @@ public class ManageUsers extends javax.swing.JInternalFrame {
 
     private void taskPaneAddUserBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_taskPaneAddUserBtnActionPerformed
         //try {
-            cleanUi();
-            //addUserOnlineUsersTxt1.setText(UserController.getLoggedInUsers().getUserName());
+        cleanUi();
 
-            CardLayout card = (CardLayout) cardPanel.getLayout();
-            card.show(cardPanel, "addUser");
+        //addUserOnlineUsersTxt1.setText(UserController.getLoggedInUsers().getUserName());
+        CardLayout card = (CardLayout) cardPanel.getLayout();
+        card.show(cardPanel, "addUser");
         //} catch (SQLException ex) {
-           // logger.error("SQL exception has occured");
-           // Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
-           // return;
+        // logger.error("SQL exception has occured");
+        // Utilities.showMsgBox(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+        // return;
         //}
     }//GEN-LAST:event_taskPaneAddUserBtnActionPerformed
 
@@ -1142,28 +1239,40 @@ public class ManageUsers extends javax.swing.JInternalFrame {
 
     private void editUserBtn3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editUserBtn3ActionPerformed
         // TODO add your handling code here:
+
         int row = userTable.getSelectedRow();
         if (row > -1) {
             System.out.println("Selected customer row : " + row);
             showUserEditDetails(userTable.getValueAt(row, 0).toString());
         } else {
             Utilities.showMsgBox("Select a row to edit details", "WARNING", JOptionPane.WARNING_MESSAGE);
-            return;
         }
+
+
     }//GEN-LAST:event_editUserBtn3ActionPerformed
     public void cleanUi() {
         // comboModelUsers.setSelectedItem(null);
+        ArrayList<User> managers = new ArrayList<>();
+        try {
+            managers = UserController.getAllManager();
+        } catch (SQLException ex) {
+            logger.debug("Managers are empty");
+        }
+        userName1.removeAllItems();
+        if (managers.size() > 0) {
+            for (User u : managers) {
+                userName1.addItem(u);
+            }
+        }
+        editUserPasswordTxt4.setText("");
         userDetailsUserNameTxt.setText("");
         userDetailsManagerRadioBtn.setSelected(false);
         userDetailsLevel1RadioBtn.setSelected(false);
         userDetailsAdministratorRadioBtn.setSelected(false);
-        // addUserFullNameComboBox1Model.setSelectedItem(null);
-        addUserOnlineUsersTxt1.setText("");
         addUserPasswordTxt.setText("");
         addUserPasswordTxtcnfrm.setText("");
         addUserUserNameTxt1.setText("");
         editUserPasswordTxt1.setText("");
-
         editUserUserNameTxt2.setText("");
         editUserUserLevelComboBox2.setSelectedItem(null);
 
@@ -1189,13 +1298,12 @@ public class ManageUsers extends javax.swing.JInternalFrame {
             deleteUser(userTable.getValueAt(row, 0).toString());
         } else {
             Utilities.showMsgBox("Select a row to delete", "WARNING", JOptionPane.WARNING_MESSAGE);
-            return;
         }
     }//GEN-LAST:event_deleteUserBtn3ActionPerformed
 
     private void userSeachUserSearchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userSeachUserSearchBtnActionPerformed
         cleanUi();
-        
+
         try {
             userDetailsManagerRadioBtn.setSelected(false);
             userDetailsLevel1RadioBtn.setSelected(false);
@@ -1238,34 +1346,38 @@ public class ManageUsers extends javax.swing.JInternalFrame {
 
     private void editUserSaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editUserSaveBtnActionPerformed
         // TODO add your handling code here:
-        if (editUserUserNameTxt2.getText() != null && validateName(editUserUserNameTxt2.getText())) {
-            logger.info("valid name entered");
-        } else {
-            logger.error("invalid name");
-            Utilities.showMsgBox("invalid name", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        if (editUserPasswordTxt1.getPassword() != null) {
-            logger.info("valid password");
-        } else {
-            logger.error(" empty block found");
-            Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-       
-        if (editUserPasswordTxt1.getPassword() != null) {
-            logger.info("valid password");
-        } else {
-            logger.error(" empty block found");
-            Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-       
 
-        editUser();
-        CardLayout card = (CardLayout) cardPanel.getLayout();
-        card.show(cardPanel, "customerDetails");
+        if (((User) userName.getSelectedItem()).getPassword().equals(Utilities.getSHA1(editUserPasswordTxt2.getPassword()))) {
+            if (editUserUserNameTxt2.getText() != null && validateName(editUserUserNameTxt2.getText())) {
+                logger.info("valid name entered");
+            } else {
+                logger.error("invalid name");
+                Utilities.showMsgBox("invalid name", " Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
+            if (editUserPasswordTxt1.getPassword().length != 0 && editUserPasswordTxt3.getPassword().length != 0) {
+                logger.info("valid password");
+            } else if (!(new String(editUserPasswordTxt1.getPassword())).equals(new String(editUserPasswordTxt3.getPassword()))) {
+                Utilities.ShowErrorMsg(this, "Recheck the password");
+                editUserPasswordTxt1.setText("");
+                editUserPasswordTxt3.setText("");
+                editUserPasswordTxt1.requestFocus();
+                return;
+            } else {
+                logger.error(" empty block found");
+                Utilities.showMsgBox("Give a password", " Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            editUser();
+            CardLayout card = (CardLayout) cardPanel.getLayout();
+            card.show(cardPanel, "manageUsers");
+        } else {
+            Utilities.ShowErrorMsg(this, "Login Error! Invalid Admistrator Login\n");
+            editUserPasswordTxt2.setText("");
+            editUserPasswordTxt2.requestFocus();
+        }
     }//GEN-LAST:event_editUserSaveBtnActionPerformed
 
     private void editUserUserNameTxt2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editUserUserNameTxt2ActionPerformed
@@ -1300,9 +1412,9 @@ public class ManageUsers extends javax.swing.JInternalFrame {
 
     private void editUserCancelBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editUserCancelBtn1ActionPerformed
         // TODO add your handling code here:
-         editUserUserNameTxt2.setText("");
-            editUserPasswordTxt1.setText("");
-             CardLayout card = (CardLayout) cardPanel.getLayout();
+        editUserUserNameTxt2.setText("");
+        editUserPasswordTxt1.setText("");
+        CardLayout card = (CardLayout) cardPanel.getLayout();
         card.show(cardPanel, "manageUsers");
 
 
@@ -1357,8 +1469,6 @@ public class ManageUsers extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.jdesktop.swingx.JXButton addUserActivateBtn1;
     private org.jdesktop.swingx.JXButton addUserCancelBtn;
-    private javax.swing.JLabel addUserOnlineUsersLbl2;
-    private javax.swing.JTextArea addUserOnlineUsersTxt1;
     private javax.swing.JPanel addUserPanel;
     private javax.swing.JLabel addUserPasswordLbl2;
     private javax.swing.JLabel addUserPasswordLblcnfrm;
@@ -1381,7 +1491,11 @@ public class ManageUsers extends javax.swing.JInternalFrame {
     private org.jdesktop.swingx.JXButton editUserCancelBtn1;
     private javax.swing.JPanel editUserPanel1;
     private javax.swing.JLabel editUserPasswordLbl3;
+    private javax.swing.JLabel editUserPasswordLbl4;
     private javax.swing.JPasswordField editUserPasswordTxt1;
+    private javax.swing.JPasswordField editUserPasswordTxt2;
+    private javax.swing.JPasswordField editUserPasswordTxt3;
+    private javax.swing.JPasswordField editUserPasswordTxt4;
     private org.jdesktop.swingx.JXButton editUserSaveBtn;
     private javax.swing.JComboBox editUserUserLevelComboBox2;
     private javax.swing.JLabel editUserUserLevelLbl3;
@@ -1389,12 +1503,17 @@ public class ManageUsers extends javax.swing.JInternalFrame {
     private javax.swing.JTextField editUserUserNameTxt2;
     private javax.swing.JLabel installmentPaymentLbl2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane7;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane1;
     private org.jdesktop.swingx.JXTaskPane jXTaskPane2;
@@ -1412,6 +1531,8 @@ public class ManageUsers extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton userDetailsManagerRadioBtn;
     private javax.swing.JButton userDetailsOkjButton1;
     private javax.swing.JLabel userDetailsUserNameTxt;
+    private javax.swing.JComboBox userName;
+    private javax.swing.JComboBox userName1;
     private javax.swing.JButton userSeachUserSearchBtn;
     private javax.swing.JPanel userSearch;
     private javax.swing.JPanel userSearchPanel;

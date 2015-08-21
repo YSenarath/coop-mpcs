@@ -7,11 +7,13 @@ package ui.view.inventory;
 
 import java.sql.SQLException;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import jxl.common.Logger;
 import ui.handler.inventory.ManageDepartmentHandler;
@@ -48,7 +50,11 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         isEditing = false;
         initComponents();
 
-        jXTitledPanel1.setTitle("Manage Departments");
+        //center data in the table
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        categoryTable.setDefaultRenderer(String.class, centerRenderer);
+
         categoryTable.setDragEnabled(false);
 
         //----------------------------------------------------------------------------------------
@@ -109,6 +115,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         categoryTable = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         closeB = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
 
         updateDepartment.setMinimumSize(new java.awt.Dimension(401, 258));
         updateDepartment.setModal(true);
@@ -125,19 +132,21 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         dropShadowBorder1.setShowTopShadow(true);
         enterPanel3.setBorder(dropShadowBorder1);
 
-        idLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        idLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         idLabel3.setText("Department ID");
 
-        nameLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        nameLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         nameLabel5.setText("Department Name");
 
         depIdText.setEditable(false);
+        depIdText.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         depIdText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 depIdTextActionPerformed(evt);
             }
         });
 
+        depNameText.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         depNameText.setText("  ");
         depNameText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -176,6 +185,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                 .addContainerGap(31, Short.MAX_VALUE))
         );
 
+        saveDepB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         saveDepB.setText("Save");
         saveDepB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -183,6 +193,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             }
         });
 
+        closeB3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         closeB3.setText("Cancel");
         closeB3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -196,17 +207,17 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             buttonPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buttonPanel3Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(saveDepB, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(saveDepB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(closeB3))
+                .addComponent(closeB3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         buttonPanel3Layout.setVerticalGroup(
             buttonPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(buttonPanel3Layout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addGroup(buttonPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(saveDepB)
-                    .addComponent(closeB3))
+                    .addComponent(saveDepB, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(closeB3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -228,7 +239,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                 .addComponent(enterPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(69, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout fullPanel2Layout = new javax.swing.GroupLayout(fullPanel2);
@@ -253,7 +264,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             .addComponent(fullPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
         );
 
-        updateCategory.setMinimumSize(new java.awt.Dimension(534, 250));
+        updateCategory.setMinimumSize(new java.awt.Dimension(534, 260));
         updateCategory.setModal(true);
         updateCategory.setResizable(false);
 
@@ -266,28 +277,31 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         dropShadowBorder2.setShowTopShadow(true);
         enterPanel5.setBorder(dropShadowBorder2);
 
-        idLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        idLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         idLabel5.setText("Category ID");
 
-        nameLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        nameLabel9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         nameLabel9.setText("Category Name");
 
         catIdText2.setEditable(false);
+        catIdText2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         catIdText2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 catIdText2catIdTextActionPerformed(evt);
             }
         });
 
+        catNameText2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         catNameText2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 catNameText2catNameTextActionPerformed(evt);
             }
         });
 
-        nameLabel10.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        nameLabel10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         nameLabel10.setText("Description");
 
+        CatDescText2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         CatDescText2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CatDescText2CatDescTextActionPerformed(evt);
@@ -336,6 +350,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
+        addB2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         addB2.setText("Save");
         addB2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -343,6 +358,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             }
         });
 
+        closeB2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         closeB2.setText("Cancel");
         closeB2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -356,9 +372,9 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             buttonPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buttonPanel2Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(addB2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addB2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(closeB2)
+                .addComponent(closeB2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         buttonPanel2Layout.setVerticalGroup(
@@ -366,8 +382,8 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             .addGroup(buttonPanel2Layout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addGroup(buttonPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(addB2)
-                    .addComponent(closeB2))
+                    .addComponent(addB2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(closeB2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -406,8 +422,11 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         setClosable(true);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setIconifiable(true);
+        setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/ui/view/system/resources/coop_200.png"))); // NOI18N
 
+        jXTitledPanel1.setTitle("");
         jXTitledPanel1.setTitleFont(new java.awt.Font("Calibri", 1, 20)); // NOI18N
+        jXTitledPanel1.setTitlePainter(null);
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder3 = new org.jdesktop.swingx.border.DropShadowBorder();
         dropShadowBorder3.setShowLeftShadow(true);
@@ -415,14 +434,15 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         jPanel1.setBorder(dropShadowBorder3);
         jPanel1.setEnabled(false);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText(idString+ " "+ "ID");
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText(nameString+ " "+ "Name");
 
         jLabel3.setText("  ");
 
+        depIdCombo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         depIdCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "" }));
         depIdCombo.setAutoscrolls(true);
         depIdCombo.addItemListener(new java.awt.event.ItemListener() {
@@ -445,6 +465,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             }
         });
 
+        depNameCombo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         depNameCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "" }));
         depNameCombo.setAutoscrolls(true);
         depNameCombo.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
@@ -462,21 +483,33 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             }
         });
 
+        jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton2.setText("New Entry");
+        jButton2.setMaximumSize(new java.awt.Dimension(120, 30));
+        jButton2.setMinimumSize(new java.awt.Dimension(120, 30));
+        jButton2.setPreferredSize(new java.awt.Dimension(120, 30));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
+        jButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton3.setText("Edit Department");
+        jButton3.setMaximumSize(new java.awt.Dimension(120, 30));
+        jButton3.setMinimumSize(new java.awt.Dimension(120, 30));
+        jButton3.setPreferredSize(new java.awt.Dimension(120, 30));
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
 
+        jButton4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton4.setText("Remove");
+        jButton4.setMaximumSize(new java.awt.Dimension(120, 30));
+        jButton4.setMinimumSize(new java.awt.Dimension(120, 30));
+        jButton4.setPreferredSize(new java.awt.Dimension(120, 30));
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
@@ -490,24 +523,20 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton2)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton4)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -548,6 +577,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Update "+ tableName, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11)));
 
+        addB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         addB.setText("New Entry");
         addB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -555,6 +585,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             }
         });
 
+        editB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         editB.setText("Edit Category");
         editB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -562,6 +593,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             }
         });
 
+        removeB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         removeB.setText("Remove");
         removeB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -575,11 +607,11 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(8, 8, 8)
-                .addComponent(addB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addB, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(editB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(editB, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(removeB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(removeB, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -587,9 +619,9 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(addB)
-                    .addComponent(editB)
-                    .addComponent(removeB)))
+                    .addComponent(addB, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editB, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(removeB, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         org.jdesktop.swingx.border.DropShadowBorder dropShadowBorder4 = new org.jdesktop.swingx.border.DropShadowBorder();
@@ -598,6 +630,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         jScrollPane1.setBorder(dropShadowBorder4);
 
         categoryTable.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        categoryTable.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         categoryTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -615,6 +648,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             }
         });
         categoryTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        categoryTable.setColumnSelectionAllowed(true);
         categoryTable.setFillsViewportHeight(true);
         categoryTable.setFocusCycleRoot(true);
         categoryTable.getTableHeader().setReorderingAllowed(false);
@@ -623,7 +657,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         if (categoryTable.getColumnModel().getColumnCount() > 0) {
             categoryTable.getColumnModel().getColumn(0).setMinWidth(100);
             categoryTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-            categoryTable.getColumnModel().getColumn(1).setMinWidth(100);
+            categoryTable.getColumnModel().getColumn(1).setMinWidth(150);
             categoryTable.getColumnModel().getColumn(1).setPreferredWidth(100);
             categoryTable.getColumnModel().getColumn(2).setMinWidth(200);
             categoryTable.getColumnModel().getColumn(2).setPreferredWidth(200);
@@ -631,15 +665,15 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
             categoryTable.getColumnModel().getColumn(3).setPreferredWidth(100);
             categoryTable.getColumnModel().getColumn(4).setMinWidth(125);
             categoryTable.getColumnModel().getColumn(4).setPreferredWidth(125);
-            categoryTable.getColumnModel().getColumn(5).setMinWidth(125);
-            categoryTable.getColumnModel().getColumn(5).setPreferredWidth(125);
+            categoryTable.getColumnModel().getColumn(5).setMinWidth(130);
+            categoryTable.getColumnModel().getColumn(5).setPreferredWidth(130);
         }
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
@@ -651,6 +685,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        closeB.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         closeB.setText("OK");
         closeB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -663,33 +698,42 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(662, Short.MAX_VALUE)
-                .addComponent(closeB, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(682, Short.MAX_VALUE)
+                .addComponent(closeB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(closeB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addComponent(closeB, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
+
+        jLabel4.setBackground(java.awt.SystemColor.activeCaptionBorder);
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel4.setText("Manage Departments");
+        jLabel4.setOpaque(true);
 
         javax.swing.GroupLayout jXTitledPanel1Layout = new javax.swing.GroupLayout(jXTitledPanel1.getContentContainer());
         jXTitledPanel1.getContentContainer().setLayout(jXTitledPanel1Layout);
         jXTitledPanel1Layout.setHorizontalGroup(
             jXTitledPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jXTitledPanel1Layout.createSequentialGroup()
+            .addGroup(jXTitledPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jXTitledPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jXTitledPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jXTitledPanel1Layout.setVerticalGroup(
             jXTitledPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jXTitledPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -957,6 +1001,7 @@ public class ManageDepartment extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
