@@ -485,6 +485,8 @@ public class SupplierReturnNoteInterface extends javax.swing.JInternalFrame impl
             for (int i = 0; i < model.getRowCount(); i++) {
                 model.setValueAt(i + 1, i, 0);
             }
+        } else {
+            util.Utilities.ShowErrorMsg(this, "Selct a row to Delete.");
         }
     }
 

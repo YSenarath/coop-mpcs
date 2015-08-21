@@ -500,7 +500,7 @@ public class GRNInterface extends javax.swing.JInternalFrame {
             util.Utilities.showMsgBox("Unable to add grn, Enter valid Date.", "Grn Error", 0);
             return;
         }
-        
+
         if (grn.getSupplier() == null) {
             util.Utilities.showMsgBox("Unable to add grn, Select a valid supplier.", "Grn Error", 0);
             return;
@@ -744,6 +744,8 @@ public class GRNInterface extends javax.swing.JInternalFrame {
             for (int i = 0; i < model.getRowCount(); i++) {
                 model.setValueAt(i + 1, i, 0);
             }
+        } else {
+            util.Utilities.ShowErrorMsg(this, "Selct a row to Delete.");
         }
     }
 

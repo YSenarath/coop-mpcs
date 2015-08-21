@@ -172,10 +172,10 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Alt+G"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="GoodRecieveNote"/>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="f8" green="f8" red="f8" type="rgb"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Good Recieve Note"/>
                 <Property name="opaque" type="boolean" value="true"/>
               </Properties>
               <Events>
@@ -202,10 +202,10 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Alt+S"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="SupplierReturnNote"/>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="f8" green="f8" red="f8" type="rgb"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Supplier Return Note"/>
                 <Property name="opaque" type="boolean" value="true"/>
               </Properties>
               <Events>
@@ -217,10 +217,10 @@
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Alt+D"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="DamagedStock"/>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="f8" green="f8" red="f8" type="rgb"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Damaged Stock"/>
                 <Property name="opaque" type="boolean" value="true"/>
               </Properties>
               <Events>

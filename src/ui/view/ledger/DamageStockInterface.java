@@ -361,6 +361,8 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
             for (int i = 0; i < model.getRowCount(); i++) {
                 model.setValueAt(i + 1, i, 0);
             }
+        } else {
+            util.Utilities.ShowErrorMsg(this, "Selct a row to Delete.");
         }
     }
 
@@ -473,8 +475,7 @@ public class DamageStockInterface extends javax.swing.JInternalFrame implements 
                 datePicker.getDate(),
                 (String) comboLocation.getSelectedItem()
         );
-        
-        
+
         if (datePicker.getDate() == null) {
             util.Utilities.showMsgBox("Unable to add Damaged Stock, Enter valid Date.", "Damage Stock Error", 0);
             return;

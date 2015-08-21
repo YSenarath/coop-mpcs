@@ -322,6 +322,8 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
             for (int i = 0; i < model.getRowCount(); i++) {
                 model.setValueAt(i + 1, i, 0);
             }
+        } else {
+            util.Utilities.ShowErrorMsg(this, "Selct a row to Delete.");
         }
     }
 
@@ -330,6 +332,8 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
             if (!GoodRecieveNoteController.GRNExists(txtF16aNumber.getText())) {
                 util.Utilities.ShowWarningMsg(this, "Enter valid GRN number first.");
                 return;
+            } else {
+                util.Utilities.ShowErrorMsg(this, "Selct a row to Delete.");
             }
         } catch (SQLException ex) {
             util.Utilities.ShowWarningMsg(this, "Invalid GRN.");
@@ -365,12 +369,11 @@ public class GRNCancelInterface extends javax.swing.JInternalFrame implements Ba
                 datePicker.getDate()
         );
 
-        
         if (datePicker.getDate() == null) {
             util.Utilities.showMsgBox("Unable to add GRN-Cancel, Enter valid Date.", "GRN cancel Error", 0);
             return;
         }
-        
+
         if (model.getRowCount() <= 0) {
             int i = util.Utilities.showButtonMsg("This GRN Cancel dosen't contailn any items. Do you still want to add this?",
                     "Alart!", JOptionPane.YES_NO_OPTION);
