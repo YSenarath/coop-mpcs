@@ -324,7 +324,7 @@ public class NotificationPanelHandler {
                 <= 0) {
             settings.setTimeInterval(1);
         }
-
+        
         scheduler.scheduleAtFixedRate(notifier,
                 0, settings.getTimeInterval(), tu);
     }

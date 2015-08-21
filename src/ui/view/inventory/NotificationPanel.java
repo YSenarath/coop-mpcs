@@ -9,6 +9,7 @@ import java.awt.CardLayout;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JTable;
@@ -118,13 +119,15 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         secR1 = new javax.swing.JRadioButton();
         MinR1 = new javax.swing.JRadioButton();
         jButton2 = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
 
         setClosable(true);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setIconifiable(true);
 
-        expireTitlePanel.setTitle("Notifications");
+        expireTitlePanel.setTitle("");
         expireTitlePanel.setTitleFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        expireTitlePanel.setTitlePainter(null);
         expireTitlePanel.setMinimumSize(new java.awt.Dimension(1286, 481));
 
         jXTaskPaneContainer1.setBackground(java.awt.SystemColor.controlShadow);
@@ -136,6 +139,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         aboutToExpireB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         aboutToExpireB.setText("About To Expire");
+        aboutToExpireB.setIconTextGap(6);
         aboutToExpireB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutToExpireBActionPerformed(evt);
@@ -145,6 +149,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         expiredBatchesB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         expiredBatchesB.setText("Expired Batches");
+        expiredBatchesB.setIconTextGap(6);
         expiredBatchesB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 expiredBatchesBActionPerformed(evt);
@@ -161,6 +166,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         aboutToFinishB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         aboutToFinishB.setText("About To Finish");
+        aboutToFinishB.setIconTextGap(6);
         aboutToFinishB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutToFinishBActionPerformed(evt);
@@ -170,6 +176,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         outOfStockB.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         outOfStockB.setText("Out Of Stock");
+        outOfStockB.setIconTextGap(6);
         outOfStockB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 outOfStockBActionPerformed(evt);
@@ -184,6 +191,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         jButton1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jButton1.setText("Settings");
+        jButton1.setIconTextGap(6);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -206,11 +214,11 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         emptyPanel.setLayout(emptyPanelLayout);
         emptyPanelLayout.setHorizontalGroup(
             emptyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 940, Short.MAX_VALUE)
+            .addGap(0, 943, Short.MAX_VALUE)
         );
         emptyPanelLayout.setVerticalGroup(
             emptyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 450, Short.MAX_VALUE)
+            .addGap(0, 462, Short.MAX_VALUE)
         );
 
         cardPanel.add(emptyPanel, "emptyPanel");
@@ -291,7 +299,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
             expirationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, expirationPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(expirationTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                .addComponent(expirationTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -335,7 +343,6 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        lowQuantityTable.setColumnSelectionAllowed(true);
         lowQuantityTable.setFillsViewportHeight(true);
         lowQuantityTable.setShowHorizontalLines(false);
         lowQuantityTable.setShowVerticalLines(false);
@@ -370,7 +377,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
             quantityPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, quantityPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(reorderTitlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                .addComponent(reorderTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -390,6 +397,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Position", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
 
         positionBGroup.add(bottomRight);
+        bottomRight.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         bottomRight.setText("Bottom Right");
         bottomRight.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -415,6 +423,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         );
 
         positionBGroup.add(topLeft);
+        topLeft.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         topLeft.setText("Top Left");
         topLeft.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -423,9 +432,11 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         });
 
         positionBGroup.add(topRight);
+        topRight.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         topRight.setText("Top Right");
 
         positionBGroup.add(bottomLeft);
+        bottomLeft.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         bottomLeft.setText("Bottom Left");
         bottomLeft.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -452,7 +463,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
                             .addComponent(topLeft)
                             .addGap(147, 147, 147)
                             .addComponent(topRight))))
-                .addContainerGap(267, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -471,10 +482,10 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Time Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel2.setText("Time Interval");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel4.setText("Display Time");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -608,7 +619,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jButton2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jButton2.setText("Save");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -624,11 +635,11 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(51, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(54, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(49, 49, 49))
         );
         jPanel2Layout.setVerticalGroup(
@@ -642,7 +653,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2)
-                .addGap(31, 31, 31))
+                .addGap(30, 30, 30))
         );
 
         javax.swing.GroupLayout SettingsLayout = new javax.swing.GroupLayout(Settings);
@@ -663,21 +674,33 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
         cardPanel.add(Settings, "setting");
 
+        jLabel10.setBackground(java.awt.SystemColor.activeCaptionBorder);
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("Notifications");
+        jLabel10.setOpaque(true);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 943, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(7, 7, 7)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jXTaskPaneContainer1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -690,7 +713,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
             expireTitlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(expireTitlePanelLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 0, 0))
         );
         expireTitlePanelLayout.setVerticalGroup(
             expireTitlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -701,13 +724,13 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(expireTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 1179, Short.MAX_VALUE)
+            .addComponent(expireTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 1185, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(expireTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 0, 0)
+                .addComponent(expireTitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -755,7 +778,6 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         handler.saveSettings();
-        
         handler.loadSettings();
         Utilities.ShowCompleteMsg(this, "Settings save succeed");
         ((CardLayout) (cardPanel.getLayout())).show(cardPanel, "emptyPanel");
@@ -871,6 +893,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
         return expiredBatchesB;
     }
 
+
     public JButton getOutOfStockB() {
         return outOfStockB;
     }
@@ -928,6 +951,7 @@ public class NotificationPanel extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

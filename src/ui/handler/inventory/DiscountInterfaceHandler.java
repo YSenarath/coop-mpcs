@@ -513,6 +513,8 @@ public final class DiscountInterfaceHandler {
                 CategoryDiscountController.removeCateogryDiscount(id[1], id[0]);
                 loadTableWithCategoryDiscount();
             }
+        }else{
+            Utilities.ShowErrorMsg(gui, "Select a Category Discount to be removed");
         }
     }
 
@@ -529,6 +531,8 @@ public final class DiscountInterfaceHandler {
                 BatchDiscountController.removeBatchDiscount(gui.getBatchDisTable().getValueAt(row, 2).toString().trim(), gui.getBatchDisTable().getValueAt(row, 0).toString().trim());
                 loadTableWithBatchDiscount();
             }
+        }else{
+            Utilities.ShowErrorMsg(gui, "Select a Batch Discount to be removed");
         }
     }
 
